@@ -1,30 +1,31 @@
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
-#include "Grid.h"
+#include "Game.h"
 
 
 
 int main()
 {
-    sf::RenderWindow test(sf::VideoMode(1280, 720), "hehe");
-
-    sf::Vector2f startPos(600, 300);
+    sf::RenderWindow wandow(sf::VideoMode(1280, 720), "hehe");
+    wandow.setFramerateLimit(120);
     
-    Grid roomba(sf::Vector2i(10, 10), sf::Vector2f(600, 300));
+    sf::Clock deltaTimer;
+    
+    Game game(&wandow);
     
 
-    while (test.isOpen())
+    while (wandow.isOpen())
     {
         
+        game.update(deltaTimer.restart().asMilliseconds());
+
+        game.draw();
+
+
+
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-            test.close();
-    
-    
-        test.clear(sf::Color(0, 200, 255));
-        test.draw(roomba);
-        test.display();
-    
+            wandow.close();
     }
 
 
