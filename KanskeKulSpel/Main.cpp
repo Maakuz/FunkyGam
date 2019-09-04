@@ -4,12 +4,23 @@
 
 int main()
 {
+
+    float x = 300, y = 400;
+    float r = 300;
+
+    
+
+
+
+
+
+    srand(time(0));
+
     
     sf::RenderWindow wandow(sf::VideoMode(1280, 720), "hehe");
     sf::Cursor curse;
     if (curse.loadFromSystem(sf::Cursor::Arrow))
         wandow.setMouseCursor(curse);
-    
     
     wandow.setFramerateLimit(120);
     

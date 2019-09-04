@@ -27,9 +27,6 @@ Grid::Grid(int xTiles, int yTiles, float tileSizeX, float tileSizeY, float xPos,
 {
 }
 
-Grid::~Grid()
-{
-}
 
 Tile& Grid::getTile(sf::Vector2f pos)
 {
@@ -54,6 +51,11 @@ Tile& Grid::getTile(sf::Vector2i gridPos)
         return this->tiles[gridPos.y][gridPos.x];
 }
 
+sf::Vector2f Grid::getTileSize() const
+{
+    return this->tileSize;
+}
+
 sf::Vector2i Grid::getGridPos(sf::Vector2f pos) const
 {
     sf::Vector2i xy = sf::Vector2i(changeBase(pos));
@@ -62,6 +64,12 @@ sf::Vector2i Grid::getGridPos(sf::Vector2f pos) const
     xy.y = std::max(0, std::min((int)this->tiles.size() - 1, xy.y));
 
     return xy;
+}
+
+sf::Vector2f Grid::tileToWorldPos(sf::Vector2i tile) const
+{
+    if (this->tileExists(tile))
+        return this->tiles[tile.y][tile.x].getPosition();
 }
 
 void Grid::highlightTile(sf::Vector2f pos)
@@ -105,6 +113,14 @@ bool Grid::isInsideGrid(sf::Vector2f pos) const
         return true;
     
     return false;
+}
+
+bool Grid::tileExists(sf::Vector2i tile) const
+{
+    if (tile.x < 0 || tile.y < 0 || tile.y >= tiles.size() || tile.x >= tiles[0].size())
+        return false;
+
+    return true;
 }
 
 void Grid::draw(sf::RenderTarget & target, sf::RenderStates states) const
