@@ -13,8 +13,14 @@ Game::~Game()
 
 void Game::update(float dt)
 {
-    printf("%f\n", dt);
-
+    //printf("%f\n", dt);
+    sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window);
+    sf::Vector2i gridlock;
+    if (this->testGrid.isInsideGrid(mousePos))
+    {
+        gridlock = this->testGrid.getGridPos(mousePos);
+        this->testGrid.getTile(gridlock).setFillColor(sf::Color::Black);
+    }
 
 
 }
