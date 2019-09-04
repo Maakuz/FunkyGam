@@ -19,6 +19,8 @@ public:
     void highlightTile(sf::Vector2f pos);
     void highlightTile(sf::Vector2i gridPos);
 
+    void removeAllHighlights();
+
     bool isInsideGrid(sf::Vector2i pos) const;
     bool isInsideGrid(sf::Vector2f pos) const;
 

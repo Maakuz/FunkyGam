@@ -71,7 +71,22 @@ void Grid::highlightTile(sf::Vector2f pos)
 
 void Grid::highlightTile(sf::Vector2i gridPos)
 {
+    for (auto &tile : this->highlightedTiles)
+        if (gridPos == tile)
+            return; //Already highlighted
+
     this->highlightedTiles.push_back(gridPos);
+    this->tiles[gridPos.y][gridPos.x].setFillColor(sf::Color::White);
+}
+
+void Grid::removeAllHighlights()
+{
+    for (auto& xy : this->highlightedTiles)
+    {
+        this->tiles[xy.y][xy.x].setFillColor(sf::Color::Green);
+    }
+
+    this->highlightedTiles.clear();
 }
 
 bool Grid::isInsideGrid(sf::Vector2i pos) const

@@ -16,13 +16,13 @@ void Game::update(float dt)
     //printf("%f\n", dt);
     sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window);
     sf::Vector2i gridlock;
-    if (this->testGrid.isInsideGrid(mousePos))
+    if (this->testGrid.isInsideGrid(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
     {
-        gridlock = this->testGrid.getGridPos(mousePos);
-        this->testGrid.getTile(gridlock).setFillColor(sf::Color::Black);
+        this->testGrid.highlightTile(mousePos);
     }
 
-
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Button::Right))
+        this->testGrid.removeAllHighlights();
 }
 
 void Game::draw()
