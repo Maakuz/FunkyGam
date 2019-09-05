@@ -20,5 +20,6 @@ private:
 
     int health;
     int speed;
+
     int attack;
 };
