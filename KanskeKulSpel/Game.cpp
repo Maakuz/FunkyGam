@@ -1,4 +1,7 @@
 #include "Game.h"
+#include "KeyboardState.h"
+
+#define DEBUG_MODE true
 
 Game::Game(sf::RenderWindow* window)
    : testGrid(sf::Vector2i(20, 20), sf::Vector2f(600, 300))
@@ -14,8 +17,10 @@ Game::Game(sf::RenderWindow* window)
     this->fullscreenboi.setPosition(0, 0);
     
 
-    this->testure.create(window->getSize().x, window->getSize().y);
-    this->testure2.create(window->getSize().x, window->getSize().y);
+    for (int i = 0; i < RENDER_TARGET_AMOUNT; i++)
+    {
+        this->renderTargets[i].create(window->getSize().x, window->getSize().y);
+    }
 }
 
 Game::~Game()
@@ -29,12 +34,6 @@ void Game::loadFiles()
 
     if (!textures.blob.loadFromFile(TEXTURE_PATH("blob.png")))
         exit(-22);
-
-    if (!this->oof.loadFromFile(SHADER_PATH("Lighting.frag"), sf::Shader::Type::Fragment))
-    {
-        system("pause");
-        exit(-23);
-    }
     
     std::vector<sf::Glsl::Vec2>lightPoints;
 
@@ -42,24 +41,12 @@ void Game::loadFiles()
     lightPoints.push_back(sf::Glsl::Vec2(800, 400));
     lightPoints.push_back(sf::Glsl::Vec2(500, 300));
     lightPoints.push_back(sf::Glsl::Vec2(200, 500));
-    lightPoints.push_back(sf::Glsl::Vec2(700, 800));
+    lightPoints.push_back(sf::Glsl::Vec2(700, 500));
 
-    oof.setUniform("testSize", (int)lightPoints.size());
-    oof.setUniformArray("test", lightPoints.data(), lightPoints.size());
-
-    if (!this->oof2.loadFromFile(SHADER_PATH("GaussianVert.frag"), sf::Shader::Type::Fragment))
-    {
-        system("pause");
-        exit(-23);
-    }
-    oof2.setUniform("texture", sf::Shader::CurrentTexture);
-
-    if (!this->oof3.loadFromFile(SHADER_PATH("GaussianHor.frag"), sf::Shader::Type::Fragment))
-    {
-        system("pause");
-        exit(-23);
-    }
-    oof3.setUniform("texture", sf::Shader::CurrentTexture);
+    shaders[SHADER::lighting].setUniform("testSize", (int)lightPoints.size());
+    shaders[SHADER::lighting].setUniformArray("test", lightPoints.data(), lightPoints.size());
+    shaders[SHADER::gaussHorizontal].setUniform("texture", sf::Shader::CurrentTexture);
+    shaders[SHADER::gaussVertical].setUniform("texture", sf::Shader::CurrentTexture);
 
 
     this->player.setTexture(textures.player);
@@ -77,6 +64,12 @@ void Game::update(float dt)
 {
     //printf("%f\n", dt);
     sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window);
+
+    KEYBOARD::KeyboardState::updateKeys();
+    
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::A))
+        printf("Tut\n");
+
     sf::Vector2i gridlock;
     if (this->testGrid.isInsideGrid(mousePos) && sf::Mouse::isButtonPressed(sf::Mouse::Button::Left))
     {
@@ -89,22 +82,17 @@ void Game::update(float dt)
 
 void Game::draw()
 {
-   
-    //Light drawing hopefully
-    this->testure.clear(sf::Color::Red);
-    this->testure.draw(this->fullscreenboi, &oof);
-    this->testure.display();
-    
 
-    this->fullscreenboi.setTexture(&testure.getTexture());
+    ////Light drawing hopefully
 
-    this->testure2.clear(sf::Color::Red);
-    this->testure2.draw(this->fullscreenboi, &oof2);
-    this->testure2.display();
+    for (int i = 0; i < RENDER_TARGET_AMOUNT; i++)
+    {
+        this->renderTargets[i].clear(sf::Color::Transparent);
+        this->renderTargets[i].draw(this->fullscreenboi, &shaders[i]);
+        this->renderTargets[i].display();
 
-    this->testure.clear(sf::Color::Red);
-    this->testure.draw(this->fullscreenboi, &oof);
-    this->testure.display();
+        this->fullscreenboi.setTexture(&this->renderTargets[i].getTexture());
+    }
 
 
     //Window drawing
@@ -116,9 +104,42 @@ void Game::draw()
 
     this->window->draw(this->player);
 
-    sf::Sprite testSprite(testure2.getTexture());
+#if DEBUG_MODE
+    static int swap = 0;
 
-    this->window->draw(testSprite);
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F1))
+        swap = 0;
+
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F2))
+        swap = 1;
+
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F3))
+        swap = 2;
+
+    switch (swap)
+    {
+    case 0:
+        break;
+
+    case 1:
+        this->fullscreenboi.setTexture(&renderTargets[0].getTexture());
+        break;
+
+    case 2:
+        this->fullscreenboi.setTexture(&renderTargets[1].getTexture());
+        break;
+
+    default:
+        break;
+    }
+       
+
+
+#endif
+
+
+
+    this->window->draw(fullscreenboi);
 
     this->window->display();
 }

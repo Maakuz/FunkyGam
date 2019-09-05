@@ -8,10 +8,6 @@ int main()
     float x = 300, y = 400;
     float r = 300;
 
-    
-
-
-
 
 
     srand(time(0));

@@ -2,20 +2,22 @@
 #include "SFML/Window.hpp"
 #include "Grid.h"
 #include "Player.h"
+#include "ShaderHandler.h"
 
 #define MAX_LIGHTS 200
-
-#define SHADER_FOLDER "../Shaders/"
-#define SHADER_PATH(x) SHADER_FOLDER x
+#define RENDER_TARGET_AMOUNT 3
 
 #define TEXTURE_FOLDER "../Sprites/"
 #define TEXTURE_PATH(x) TEXTURE_FOLDER x
-struct Textures 
-{
-    sf::Texture 
-        player,
-        blob;
-};
+
+
+
+struct Textures
+    {
+        sf::Texture
+            player,
+            blob;
+    };
 
 
 class Game
@@ -29,8 +31,6 @@ public:
     void update(float dt);
     void draw();
     
-
-    
 private:
 
     sf::RenderWindow* window;
@@ -41,10 +41,8 @@ private:
     Player player;
     std::vector<Entity> enemoos;
 
-    sf::Shader oof;
-    sf::Shader oof2;
-    sf::Shader oof3;
-    sf::RenderTexture testure;
-    sf::RenderTexture testure2;
+    ShaderHandler shaders;
+
+    sf::RenderTexture renderTargets[RENDER_TARGET_AMOUNT];
     sf::RectangleShape fullscreenboi;
 };
