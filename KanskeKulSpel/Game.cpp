@@ -12,7 +12,8 @@ Game::Game(sf::RenderWindow* window)
 
     this->fullscreenboi = sf::RectangleShape(sf::Vector2f(window->getSize()));
     this->fullscreenboi.setPosition(0, 0);
-    this->fullscreenboi.setFillColor(sf::Color::Black);
+    
+
     this->testure.create(window->getSize().x, window->getSize().y);
     this->testure2.create(window->getSize().x, window->getSize().y);
 }
@@ -46,13 +47,21 @@ void Game::loadFiles()
     oof.setUniform("testSize", (int)lightPoints.size());
     oof.setUniformArray("test", lightPoints.data(), lightPoints.size());
 
-    if (!this->oof2.loadFromFile(SHADER_PATH("Gaussian.frag"), sf::Shader::Type::Fragment))
+    if (!this->oof2.loadFromFile(SHADER_PATH("GaussianVert.frag"), sf::Shader::Type::Fragment))
     {
         system("pause");
         exit(-23);
     }
+    oof2.setUniform("texture", sf::Shader::CurrentTexture);
 
-    
+    if (!this->oof3.loadFromFile(SHADER_PATH("GaussianHor.frag"), sf::Shader::Type::Fragment))
+    {
+        system("pause");
+        exit(-23);
+    }
+    oof3.setUniform("texture", sf::Shader::CurrentTexture);
+
+
     this->player.setTexture(textures.player);
 
     for (size_t i = 0; i < 10; i++)
@@ -85,10 +94,18 @@ void Game::draw()
     this->testure.clear(sf::Color::Red);
     this->testure.draw(this->fullscreenboi, &oof);
     this->testure.display();
-
-    oof2.setUniform("texture", &testure.getTexture());
     
+
+    this->fullscreenboi.setTexture(&testure.getTexture());
+
+    this->testure2.clear(sf::Color::Red);
     this->testure2.draw(this->fullscreenboi, &oof2);
+    this->testure2.display();
+
+    this->testure.clear(sf::Color::Red);
+    this->testure.draw(this->fullscreenboi, &oof);
+    this->testure.display();
+
 
     //Window drawing
     this->window->clear(sf::Color(0, 200, 255));
@@ -100,6 +117,7 @@ void Game::draw()
     this->window->draw(this->player);
 
     sf::Sprite testSprite(testure2.getTexture());
+
     this->window->draw(testSprite);
 
     this->window->display();

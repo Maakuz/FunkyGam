@@ -43,6 +43,7 @@ private:
 
     sf::Shader oof;
     sf::Shader oof2;
+    sf::Shader oof3;
     sf::RenderTexture testure;
     sf::RenderTexture testure2;
     sf::RectangleShape fullscreenboi;

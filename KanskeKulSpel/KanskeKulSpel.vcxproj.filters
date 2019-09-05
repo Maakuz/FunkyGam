@@ -55,7 +55,10 @@
     <None Include="..\Shaders\Lighting.frag">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\Shaders\Gaussian.frag">
+    <None Include="..\Shaders\GaussianVert.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\Shaders\GaussianHor.frag">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
