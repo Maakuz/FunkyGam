@@ -8,18 +8,34 @@ public:
     struct AnimationData
     {
         sf::Texture * spriteSheet;
-        sf::Vector2i sheetSize;
+        sf::Vector2u frameCount;
         float animationSpeed;
+
+        AnimationData(sf::Texture * spriteSheet, sf::Vector2u frameCount, float animationSpeed)
+        {
+            this->spriteSheet = spriteSheet;
+            this->frameCount = frameCount;
+            this->animationSpeed = animationSpeed;
+        }
+        AnimationData() {};
     };
 
     AnimatedEntity(AnimationData data, sf::Vector2f pos, int health = 100, int speed = 10, int attack = 10);
-    ~AnimatedEntity() {};
+    AnimatedEntity(sf::Vector2f pos, int health = 100, int speed = 10, int attack = 10);
+    virtual ~AnimatedEntity() {};
 
-    void update(float dt);
+    void setAnimationData(AnimationData data);
+
+protected:
+    void updateAnimation(float dt);
+    void setAnimationFrame(sf::Vector2i frame) { this->currentFrame = frame; };
+
 private:
     sf::Vector2i currentFrame;
-    sf::Vector2i frameSize;
+
     float timer;
+
+    sf::IntRect texRect;
 
     AnimationData data;
 };

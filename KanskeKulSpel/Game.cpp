@@ -26,7 +26,10 @@ Game::Game(sf::RenderWindow* window)
     window->setView(view);
 
     this->player = Player(sf::Vector2f(1280 / 4, 720 - 720 / 4));
-    this->player.setTexture(this->textures.playerSprite);
+
+    Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(3, 1), 300);
+
+    this->player.setAnimationData(data);
 
 
 }
