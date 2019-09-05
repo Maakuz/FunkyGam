@@ -35,16 +35,12 @@ void Game::loadFiles()
     if (!textures.blob.loadFromFile(TEXTURE_PATH("blob.png")))
         exit(-22);
     
-    std::vector<sf::Glsl::Vec2>lightPoints;
+    pointLights.push_back(sf::Glsl::Vec2(100, 100));
+    pointLights.push_back(sf::Glsl::Vec2(800, 400));
+    pointLights.push_back(sf::Glsl::Vec2(500, 300));
+    pointLights.push_back(sf::Glsl::Vec2(200, 500));
+    pointLights.push_back(sf::Glsl::Vec2(700, 500));
 
-    lightPoints.push_back(sf::Glsl::Vec2(100, 100));
-    lightPoints.push_back(sf::Glsl::Vec2(800, 400));
-    lightPoints.push_back(sf::Glsl::Vec2(500, 300));
-    lightPoints.push_back(sf::Glsl::Vec2(200, 500));
-    lightPoints.push_back(sf::Glsl::Vec2(700, 500));
-
-    shaders[SHADER::lighting].setUniform("testSize", (int)lightPoints.size());
-    shaders[SHADER::lighting].setUniformArray("test", lightPoints.data(), lightPoints.size());
     shaders[SHADER::gaussHorizontal].setUniform("texture", sf::Shader::CurrentTexture);
     shaders[SHADER::gaussVertical].setUniform("texture", sf::Shader::CurrentTexture);
 
@@ -84,6 +80,8 @@ void Game::draw()
 {
 
     ////Light drawing hopefully
+    shaders[SHADER::lighting].setUniform("testSize", (int)pointLights.size());
+    shaders[SHADER::lighting].setUniformArray("test", pointLights.data(), pointLights.size());
 
     for (int i = 0; i < RENDER_TARGET_AMOUNT; i++)
     {

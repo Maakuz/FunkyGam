@@ -43,6 +43,8 @@ private:
 
     ShaderHandler shaders;
 
+    std::vector<sf::Glsl::Vec2>pointLights;
+
     sf::RenderTexture renderTargets[RENDER_TARGET_AMOUNT];
     sf::RectangleShape fullscreenboi;
 };

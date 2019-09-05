@@ -138,6 +138,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity.h" />
+    <ClInclude Include="EntityHandler.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="KeyboardState.h" />
     <ClInclude Include="Grid.h" />
