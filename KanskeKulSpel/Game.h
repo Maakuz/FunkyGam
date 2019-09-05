@@ -1,11 +1,12 @@
 #pragma once
 #include "SFML/Window.hpp"
-#include "Grid.h"
 #include "Player.h"
 #include "ShaderHandler.h"
+#include "LightQueue.h"
+#include "AnimatedEntity.h"
 
 #define MAX_LIGHTS 200
-#define RENDER_TARGET_AMOUNT 3
+#define NR_OF_RENDER_TARGETS 3
 
 #define TEXTURE_FOLDER "../Sprites/"
 #define TEXTURE_PATH(x) TEXTURE_FOLDER x
@@ -15,8 +16,8 @@
 struct Textures
     {
         sf::Texture
-            player,
-            blob;
+            floorPiece,
+            playerSprite;
     };
 
 
@@ -36,15 +37,12 @@ private:
     sf::RenderWindow* window;
     Textures textures;
 
-    Grid testGrid;
-
     Player player;
     std::vector<Entity> enemoos;
+    sf::View view;
 
     ShaderHandler shaders;
 
-    std::vector<sf::Glsl::Vec2>pointLights;
-
-    sf::RenderTexture renderTargets[RENDER_TARGET_AMOUNT];
+    sf::RenderTexture renderTargets[NR_OF_RENDER_TARGETS];
     sf::RectangleShape fullscreenboi;
 };
