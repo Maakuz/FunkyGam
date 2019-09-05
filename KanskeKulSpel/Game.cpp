@@ -80,23 +80,27 @@ void Game::update(float dt)
 
 void Game::draw()
 {
+   
+    //Light drawing hopefully
+    this->testure.clear(sf::Color::Red);
+    this->testure.draw(this->fullscreenboi, &oof);
+    this->testure.display();
+
+    oof2.setUniform("texture", &testure.getTexture());
+    
+    this->testure2.draw(this->fullscreenboi, &oof2);
+
+    //Window drawing
     this->window->clear(sf::Color(0, 200, 255));
     this->window->draw(this->testGrid);
 
     for (auto& e : this->enemoos)
         this->window->draw(e);
 
-
     this->window->draw(this->player);
 
-    this->testure.clear(sf::Color::Red);
-    this->testure.draw(this->fullscreenboi, &oof);
-    this->testure.display();
-
-    oof2.setUniform("texture", &testure.getTexture());
-    this->fullscreenboi.setTexture(&testure.getTexture());
-
-
+    sf::Sprite testSprite(testure2.getTexture());
+    this->window->draw(testSprite);
 
     this->window->display();
 }
