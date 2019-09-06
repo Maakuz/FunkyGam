@@ -1,7 +1,7 @@
 #include "AnimatedEntity.h"
 
 AnimatedEntity::AnimatedEntity(AnimationData data, sf::Vector2f pos)
-    :Entity(pos)
+    :Entity(pos, data.spriteSheet)
 {
     setAnimationData(data);
     this->addCollision();

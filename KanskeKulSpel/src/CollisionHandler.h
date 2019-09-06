@@ -3,23 +3,16 @@
 #include "Entities/Entity.h"
 
 
-//todo: optimize
 class CollisionHandler
 {
 public:
-    struct CollisionData
-    {
-        Entity* causer;
-        CollisionBox* box;
-    };
-
     CollisionHandler() {};
     ~CollisionHandler() {};
 
-    void processQueue();
+    void processQueue(); //todo: optimize
 
-    static void queueCollider(CollisionData collider);
+    static void queueCollider(Entity* causer);
 
 private:
-    static std::vector<CollisionData> boxes;
+    static std::vector<Entity*> colliders;
 };

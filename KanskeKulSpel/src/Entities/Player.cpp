@@ -2,7 +2,7 @@
 #include "Lighting/LightQueue.h"
 #include "KeyboardState.h"
 
-#define WALK_SPEED 0.5f
+#define WALK_SPEED 0.1f
 
 Player::Player(AnimationData data, sf::Vector2f pos)
 :AnimatedEntity(data, pos)
@@ -23,6 +23,8 @@ void Player::update(float dt)
 
     Light light(getPosition() + sf::Vector2f(0, this->lightBounceHeight * sin(2 * 3.1415 * this->lightBounceFreq * elapsedTime + (720 - 720 / 4))), 100);
     LightQueue::get().queue(light);
+
+    this->collisionBox.setPosition(getPosition());
 
     this->move(dt);
 }

@@ -3,7 +3,7 @@
 #include "Entities/Player.h"
 #include "ShaderHandler.h"
 #include "Lighting/LightQueue.h"
-#include "Entities/AnimatedEntity.h"
+#include "CollisionHandler.h"
 
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3
@@ -33,11 +33,14 @@ public:
     void draw();
     
 private:
+    CollisionHandler collisionHandler;
 
     sf::RenderWindow* window;
     Textures textures;
 
     Player* player;
+    Entity* ground;
+
     std::vector<Entity> enemoos;
     sf::View view;
 

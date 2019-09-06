@@ -6,28 +6,27 @@ CollisionBox::CollisionBox(AABB collisionBox, bool enabled)
     this->enabled = enabled;
 }
 
-CollisionBox::CollisionBox(sf::Vector2f min, sf::Vector2f max)
-:box(min, max)
+CollisionBox::CollisionBox(sf::Vector2f pos, sf::Vector2f size)
+:box(pos, size)
 {
     enabled = true;
 }
 
 bool CollisionBox::intersects(const AABB & other) const
 {
-    if (box.max.x < other.min.x || box.max.y < other.min.y ||
-        other.max.x < box.max.x || other.max.y < box.max.y)
+    if (this->box.max().x < other.min().x || this->box.max().y < other.min().y ||
+        other.max().x < this->box.min().x || other.max().y < this->box.min().y)
         return false;
 
     return true;
 }
 
+bool CollisionBox::intersects(const CollisionBox & other) const
+{
+    return this->intersects(other.getBox());
+}
+
 void CollisionBox::addComponent(collisionComponents comp)
 {
     this->components.push_back(comp);
-}
-
-void CollisionBox::setPosition(sf::Vector2f pos)
-{
-    this->box.max += pos;
-    this->box.min += pos;
 }
