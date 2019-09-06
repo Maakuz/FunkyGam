@@ -1,9 +1,9 @@
 #pragma once
 #include "SFML/Window.hpp"
-#include "Player.h"
+#include "Entities/Player.h"
 #include "ShaderHandler.h"
-#include "LightQueue.h"
-#include "AnimatedEntity.h"
+#include "Lighting/LightQueue.h"
+#include "Entities/AnimatedEntity.h"
 
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3

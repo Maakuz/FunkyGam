@@ -10,7 +10,10 @@ public:
     void update(float dt);
 
 private:
-    float acceleration;
+    void move(float dt);
+
+    sf::Vector2i acceleration;
+    sf::Vector2f momentum;
     float friction;
 
     float lightBounceFreq;

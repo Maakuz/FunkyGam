@@ -91,7 +91,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\SPELTJOSAN\KanskeKulSpel\SFML-2.5.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\SPELTJOSAN\KanskeKulSpel\SFML-2.5.1\include;$(SolutionDir)\KanskeKulSpel\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>F:\SPELTJOSAN\KanskeKulSpel\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -127,30 +127,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="AnimatedEntity.cpp" />
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="Game.cpp" />
-    <ClCompile Include="KeyboardState.cpp" />
-    <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Player.cpp" />
-    <ClCompile Include="ShaderHandler.cpp" />
+    <ClCompile Include="src\Entities\AnimatedEntity.cpp" />
+    <ClCompile Include="src\CollisionBox.cpp" />
+    <ClCompile Include="src\Entities\Entity.cpp" />
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\KeyboardState.cpp" />
+    <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Entities\Player.cpp" />
+    <ClCompile Include="src\ShaderHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AnimatedEntity.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="Game.h" />
-    <ClInclude Include="Light.h" />
-    <ClInclude Include="KeyboardState.h" />
-    <ClInclude Include="LightQueue.h" />
-    <ClInclude Include="Player.h" />
-    <ClInclude Include="ShaderHandler.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\Shaders\GaussianHor.frag" />
-    <None Include="..\Shaders\GaussianVert.frag" />
-    <None Include="..\Shaders\Lighting.frag">
-      <FileType>Document</FileType>
-    </None>
+    <ClInclude Include="src\Entities\AnimatedEntity.h" />
+    <ClInclude Include="src\CollisionBox.h" />
+    <ClInclude Include="src\Entities\Entity.h" />
+    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\Lighting\Light.h" />
+    <ClInclude Include="src\KeyboardState.h" />
+    <ClInclude Include="src\Lighting\LightQueue.h" />
+    <ClInclude Include="src\Entities\Player.h" />
+    <ClInclude Include="src\ShaderHandler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

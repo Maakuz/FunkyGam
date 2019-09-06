@@ -49,10 +49,10 @@ void AnimatedEntity::updateAnimation(float dt)
                 currentFrame.y = 0;
             }
         }
-
+        
         texRect.left = currentFrame.x * texRect.width;
         texRect.top = currentFrame.y * texRect.height;
-
+        
         setTextureRect(texRect);
     }
 }
