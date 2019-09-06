@@ -4,8 +4,8 @@
 
 #define WALK_SPEED 0.5f
 
-Player::Player(sf::Vector2f pos, int health, int speed, int attack)
-:AnimatedEntity(pos, health, speed, attack)
+Player::Player(sf::Vector2f pos)
+:AnimatedEntity(pos)
 {
     this->lightBounceFreq = 100;
     this->lightBounceHeight = 30;

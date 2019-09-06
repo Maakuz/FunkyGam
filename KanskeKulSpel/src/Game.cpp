@@ -126,8 +126,7 @@ void Game::draw()
 
 #endif
 
-    sf::Sprite test(textures.floorPiece);
-    test.setPosition(0, 720 - textures.floorPiece.getSize().y);
+    Entity test(sf::Vector2f(0, 720 - textures.floorPiece.getSize().y), &textures.floorPiece);
 
     this->window->draw(test);
     this->window->draw(player);

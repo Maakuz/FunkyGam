@@ -1,24 +1,20 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "CollisionBox.h"
 
 class Entity : public sf::Sprite
 {
 public:
-    Entity(sf::Vector2f pos, int health = 100, int speed = 10, int attack = 10);
+    Entity(sf::Vector2f pos, sf::Texture * texture);
+    Entity(sf::Vector2f pos);
     ~Entity() {};
 
-    void setCollisionBox(sf::IntRect collisionBox);
-    bool isCollisionEnabled() const;
-    void enableCollision(bool boi);
+    void addCollision(CollisionBox::AABB aabb);
+
+    //Uses textureRect to determinate bounds
+    void addCollision();
+
 
 protected:
-    
-    int health;
-    int speed;
-
-    int attack;
-
-    bool collisionEnabled;
-    
-    sf::IntRect collissionBox;
+    CollisionBox collisionBox;
 };

@@ -20,8 +20,8 @@ public:
         AnimationData() {};
     };
 
-    AnimatedEntity(AnimationData data, sf::Vector2f pos, int health = 100, int speed = 10, int attack = 10);
-    AnimatedEntity(sf::Vector2f pos, int health = 100, int speed = 10, int attack = 10);
+    AnimatedEntity(AnimationData data, sf::Vector2f pos);
+    AnimatedEntity(sf::Vector2f pos);
     virtual ~AnimatedEntity() {};
 
     void setAnimationData(AnimationData data);

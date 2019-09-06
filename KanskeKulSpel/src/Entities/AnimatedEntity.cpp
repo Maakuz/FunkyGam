@@ -1,13 +1,13 @@
 #include "AnimatedEntity.h"
 
-AnimatedEntity::AnimatedEntity(AnimationData data, sf::Vector2f pos, int health, int speed, int attack)
-    :Entity(pos, health, speed, attack)
+AnimatedEntity::AnimatedEntity(AnimationData data, sf::Vector2f pos)
+    :Entity(pos)
 {
     setAnimationData(data);
 }
 
-AnimatedEntity::AnimatedEntity(sf::Vector2f pos, int health, int speed, int attack)
-    :Entity(pos, health, speed, attack)
+AnimatedEntity::AnimatedEntity(sf::Vector2f pos)
+    :Entity(pos)
 {
 }
 
