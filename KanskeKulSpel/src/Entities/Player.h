@@ -4,7 +4,7 @@
 class Player : public AnimatedEntity 
 {
 public:
-    Player(sf::Vector2f pos = sf::Vector2f(0, 0));
+    Player(AnimationData data, sf::Vector2f pos = sf::Vector2f(0, 0));
     ~Player() {};
 
     void update(float dt);

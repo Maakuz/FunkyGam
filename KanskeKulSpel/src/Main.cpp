@@ -4,13 +4,19 @@
 
 int main()
 {
+#ifdef _DEBUG
+    int flag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
+    flag |= _CRTDBG_LEAK_CHECK_DF; // Turn on leak-checking bit
+    _CrtSetDbgFlag(flag);
+    //_CrtSetBreakAlloc(689); // Comment or un-comment on need basis
+#endif
 
     float x = 300, y = 400;
     float r = 300;
 
 
 
-    srand(time(0));
+    srand((int)time(0));
 
     
     sf::RenderWindow wandow(sf::VideoMode(1280, 720), "hehe");
@@ -27,7 +33,7 @@ int main()
 
     while (wandow.isOpen())
     {
-        game.update(deltaTimer.restart().asMilliseconds());
+        game.update((float)deltaTimer.restart().asMilliseconds());
         
         game.draw();
 

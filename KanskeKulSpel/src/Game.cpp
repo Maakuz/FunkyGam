@@ -25,17 +25,19 @@ Game::Game(sf::RenderWindow* window)
     this->view.setCenter(1280 / 4, 720 -  720 / 4);
     window->setView(view);
 
-    this->player = Player(sf::Vector2f(1280 / 4, 720 - 720 / 4));
-
     Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(3, 1), 300);
 
-    this->player.setAnimationData(data);
+    this->player = new Player(data, sf::Vector2f(1280 / 4, 720 - 720 / 4));
+
+
+    this->player->setAnimationData(data);
 
 
 }
 
 Game::~Game()
 {
+    delete player;
 }
 
 void Game::loadFiles()
@@ -67,7 +69,7 @@ void Game::update(float dt)
 
     LightQueue::get().queue(testLight);
 
-    this->player.update(dt);
+    this->player->update(dt);
 
 }
 
@@ -129,7 +131,7 @@ void Game::draw()
     Entity test(sf::Vector2f(0, 720 - textures.floorPiece.getSize().y), &textures.floorPiece);
 
     this->window->draw(test);
-    this->window->draw(player);
+    this->window->draw(*player);
 
 #if DEBUG_MODE
     static bool skip = false;

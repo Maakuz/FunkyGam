@@ -4,11 +4,7 @@ AnimatedEntity::AnimatedEntity(AnimationData data, sf::Vector2f pos)
     :Entity(pos)
 {
     setAnimationData(data);
-}
-
-AnimatedEntity::AnimatedEntity(sf::Vector2f pos)
-    :Entity(pos)
-{
+    this->addCollision();
 }
 
 void AnimatedEntity::setAnimationData(AnimationData data)

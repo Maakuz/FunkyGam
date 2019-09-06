@@ -21,7 +21,6 @@ public:
     };
 
     AnimatedEntity(AnimationData data, sf::Vector2f pos);
-    AnimatedEntity(sf::Vector2f pos);
     virtual ~AnimatedEntity() {};
 
     void setAnimationData(AnimationData data);

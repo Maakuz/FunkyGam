@@ -37,7 +37,7 @@ private:
     sf::RenderWindow* window;
     Textures textures;
 
-    Player player;
+    Player* player;
     std::vector<Entity> enemoos;
     sf::View view;
 
