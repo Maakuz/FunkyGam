@@ -22,21 +22,20 @@ Game::Game(sf::RenderWindow* window)
     this->view.setSize(1280 / 2, 720 / 2);
 
     this->view.setCenter(1280 / 4, 720 -  720 / 4);
-    window->setView(view);
+    //window->setView(view);
 
-    Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(3, 1), 300);
+    Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(6, 1), 150);
 
     this->player = new Player(data, sf::Vector2f(1280 / 4, 0));
     this->player->setAnimationData(data);
 
-    this->ground = new Tile(sf::Vector2f(0, 720 - textures.floorPiece.getSize().y), &textures.floorPiece);
+    levelHandler.loadLevel();
 
 }
 
 Game::~Game()
 {
     delete player;
-    delete ground;
 }
 
 void Game::loadFiles()
@@ -70,7 +69,6 @@ void Game::update(float dt)
 
     this->player->update(dt);
 
-    this->collisionHandler.queueCollider(this->ground);
     this->collisionHandler.queueCollider(this->player);
 
     this->collisionHandler.processQueue();
@@ -131,8 +129,7 @@ void Game::draw()
     //Window drawing
     this->window->clear(sf::Color(0, 155, 200));
 
-
-    this->window->draw(*ground);
+    this->window->draw(this->levelHandler);
     this->window->draw(*player);
 
 #if DEBUG_MODE
@@ -154,12 +151,7 @@ void Game::draw()
         sf::RectangleShape r1(sf::RectangleShape(player->getCollisionBox().getBox().size));
         r1.setPosition(player->getCollisionBox().getBox().pos);
 
-        sf::RectangleShape r2(sf::RectangleShape(ground->getCollisionBox().getBox().size));
-        r2.setPosition(ground->getCollisionBox().getBox().pos);
-
-
         recs.push_back(r1);
-        recs.push_back(r2);
 
 
         for (auto & r : recs)

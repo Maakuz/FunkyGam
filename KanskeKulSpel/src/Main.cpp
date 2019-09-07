@@ -19,7 +19,7 @@ int main()
     srand((int)time(0));
 
     
-    sf::RenderWindow wandow(sf::VideoMode(1280, 720), "hehe");
+    sf::RenderWindow wandow(sf::VideoMode(1920, 1080), "hehe");
     sf::Cursor curse;
     if (curse.loadFromSystem(sf::Cursor::Arrow))
         wandow.setMouseCursor(curse);

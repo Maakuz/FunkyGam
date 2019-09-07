@@ -42,7 +42,7 @@
     <ClCompile Include="src\CollisionHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Entities\Tile.cpp">
+    <ClCompile Include="src\Handlers\LevelHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,10 +77,10 @@
     <ClInclude Include="src\CollisionHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Entities\Tile.h">
+    <ClInclude Include="src\Definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Definitions.h">
+    <ClInclude Include="src\Handlers\LevelHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

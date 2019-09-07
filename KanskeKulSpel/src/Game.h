@@ -1,10 +1,10 @@
 #pragma once
 #include "SFML/Window.hpp"
 #include "Entities/Player.h"
-#include "Entities/Tile.h"
 #include "ShaderHandler.h"
 #include "Lighting/LightQueue.h"
 #include "CollisionHandler.h"
+#include "Handlers/LevelHandler.h"
 
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3
@@ -35,17 +35,18 @@ public:
     
 private:
     CollisionHandler collisionHandler;
+    LevelHandler levelHandler;
 
     sf::RenderWindow* window;
     Textures textures;
 
     Player* player;
-    Tile* ground;
 
     std::vector<Entity> enemoos;
     sf::View view;
 
     ShaderHandler shaders;
+
 
     sf::RenderTexture renderTargets[NR_OF_RENDER_TARGETS];
     sf::RectangleShape fullscreenboi;
