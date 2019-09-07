@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Window.hpp"
 #include "Entities/Player.h"
+#include "Entities/Tile.h"
 #include "ShaderHandler.h"
 #include "Lighting/LightQueue.h"
 #include "CollisionHandler.h"
@@ -39,7 +40,7 @@ private:
     Textures textures;
 
     Player* player;
-    Entity* ground;
+    Tile* ground;
 
     std::vector<Entity> enemoos;
     sf::View view;

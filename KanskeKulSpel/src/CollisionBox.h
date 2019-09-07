@@ -1,12 +1,12 @@
 #pragma once
 #include "SFML/System/Vector2.hpp"
-#include <vector>
+#include <set>
 
 
 class CollisionBox
 {
 public:
-    enum collisionComponents
+    enum colliderComponents
     {
         Ground = 0,
         Player = 1
@@ -42,8 +42,9 @@ public:
     bool intersects(const AABB& other) const;
     bool intersects(const CollisionBox& other) const;
 
-    void addComponent(collisionComponents comp);
+    void addComponent(colliderComponents comp);
 
+    bool hasComponent(colliderComponents component) const;
     
     AABB getBox() const { return this->box; };
     void setBox(AABB box) { this->box = box; };
@@ -55,5 +56,5 @@ public:
 private:
     bool enabled;
     AABB box;
-    std::vector<collisionComponents> components;
+    std::set<colliderComponents> components;
 };

@@ -131,6 +131,7 @@
     <ClCompile Include="src\Entities\AnimatedEntity.cpp" />
     <ClCompile Include="src\CollisionBox.cpp" />
     <ClCompile Include="src\Entities\Entity.cpp" />
+    <ClCompile Include="src\Entities\Tile.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\KeyboardState.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -139,9 +140,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CollisionHandler.h" />
+    <ClInclude Include="src\Definitions.h" />
     <ClInclude Include="src\Entities\AnimatedEntity.h" />
     <ClInclude Include="src\CollisionBox.h" />
     <ClInclude Include="src\Entities\Entity.h" />
+    <ClInclude Include="src\Entities\Tile.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Lighting\Light.h" />
     <ClInclude Include="src\KeyboardState.h" />

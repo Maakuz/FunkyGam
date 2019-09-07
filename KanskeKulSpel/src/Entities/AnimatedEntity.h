@@ -27,10 +27,10 @@ public:
 
 protected:
     void updateAnimation(float dt);
-    void setAnimationFrame(sf::Vector2i frame) { this->currentFrame = frame; };
+    void setAnimationFrame(sf::Vector2u frame) { this->currentFrame = frame; };
 
 private:
-    sf::Vector2i currentFrame;
+    sf::Vector2u currentFrame;
 
     float timer;
 

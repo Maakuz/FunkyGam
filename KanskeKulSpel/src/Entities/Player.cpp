@@ -1,8 +1,11 @@
 #include "Player.h"
-#include "Lighting/LightQueue.h"
+#include "Definitions.h"
 #include "KeyboardState.h"
+#include "Lighting/LightQueue.h"
 
-#define WALK_SPEED 0.1f
+#define PLAYER_WALK_SPEED 0.1f
+#define AIR_RESISTANCE 0.8f
+#define GROUND_RESISTANCE 0.9f
 
 Player::Player(AnimationData data, sf::Vector2f pos)
 :AnimatedEntity(data, pos)
@@ -12,7 +15,6 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 
     this->acceleration = sf::Vector2i(0, 0);
     this->momentum = sf::Vector2f(0, 0);
-    this->friction = 0.9f;
 }
 
 void Player::update(float dt)
@@ -27,6 +29,15 @@ void Player::update(float dt)
     this->collisionBox.setPosition(getPosition());
 
     this->move(dt);
+}
+
+void Player::handleCollision(const Entity& collider)
+{
+    if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
+    {
+        this->momentum.y = 0;
+        setPosition(getPosition().x, collider.getPosition().y - getTextureRect().height);
+    }
 }
 
 void Player::move(float dt)
@@ -46,8 +57,11 @@ void Player::move(float dt)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         acceleration.y = -1;
 
-    momentum.x += acceleration.x * WALK_SPEED * dt;
-    momentum.x *= friction;
+    momentum.x += acceleration.x * PLAYER_WALK_SPEED * dt;
+    momentum.x *= GROUND_RESISTANCE;
+   
+    momentum.y += GRAVITY * dt;
+    momentum.y *= AIR_RESISTANCE;
 
 
     setPosition(getPosition() + sf::Vector2f(momentum));

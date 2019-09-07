@@ -10,8 +10,8 @@ void CollisionHandler::processQueue()
         {
             if (colliders[i]->getCollisionBox().intersects(colliders[j]->getCollisionBox()))
             {
-                colliders[i]->handleCollision(colliders[j]->getCollisionBox());
-                colliders[j]->handleCollision(colliders[i]->getCollisionBox());
+                colliders[i]->handleCollision(*colliders[j]);
+                colliders[j]->handleCollision(*colliders[i]);
                 static int k = 0;
                 k++;
                 printf("ooof %d\n", k);

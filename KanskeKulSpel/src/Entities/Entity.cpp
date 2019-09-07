@@ -16,7 +16,7 @@ void Entity::addCollision(CollisionBox::AABB aabb)
 void Entity::addCollision()
 {
     //Change this to texture if this is not worinbg
-    CollisionBox::AABB aabb(getPosition(), sf::Vector2f(getTextureRect().width, getTextureRect().height));
+    CollisionBox::AABB aabb(getPosition(), sf::Vector2f((float)getTextureRect().width, (float)getTextureRect().height));
 
     this->addCollision(aabb);
 }

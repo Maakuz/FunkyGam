@@ -26,10 +26,10 @@ Game::Game(sf::RenderWindow* window)
 
     Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(3, 1), 300);
 
-    this->player = new Player(data, sf::Vector2f(1280 / 4, 720 - 720 / 4));
+    this->player = new Player(data, sf::Vector2f(1280 / 4, 0));
     this->player->setAnimationData(data);
 
-    this->ground = new Entity(sf::Vector2f(0, 720 - textures.floorPiece.getSize().y), &textures.floorPiece);
+    this->ground = new Tile(sf::Vector2f(0, 720 - textures.floorPiece.getSize().y), &textures.floorPiece);
 
 }
 

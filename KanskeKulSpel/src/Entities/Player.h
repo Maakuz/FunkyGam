@@ -9,12 +9,13 @@ public:
 
     void update(float dt);
 
+    virtual void handleCollision(const Entity&  collider);
+
 private:
     void move(float dt);
 
     sf::Vector2i acceleration;
     sf::Vector2f momentum;
-    float friction;
 
     float lightBounceFreq;
     float lightBounceHeight;

@@ -9,7 +9,7 @@ public:
     CollisionHandler() {};
     ~CollisionHandler() {};
 
-    void processQueue(); //todo: optimize
+    void processQueue(); //todo: optimize with quadtree and whatnot
 
     static void queueCollider(Entity* causer);
 

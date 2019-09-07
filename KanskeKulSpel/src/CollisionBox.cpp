@@ -26,7 +26,15 @@ bool CollisionBox::intersects(const CollisionBox & other) const
     return this->intersects(other.getBox());
 }
 
-void CollisionBox::addComponent(collisionComponents comp)
+void CollisionBox::addComponent(colliderComponents comp)
 {
-    this->components.push_back(comp);
+    this->components.insert(comp);
+}
+
+bool CollisionBox::hasComponent(colliderComponents component) const
+{
+    if (this->components.count(component))
+        return true;
+
+    return false;
 }

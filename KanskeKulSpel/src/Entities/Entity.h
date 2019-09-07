@@ -14,13 +14,9 @@ public:
     void addCollision();
 
     ////ONLY USE THIS FROM THE OUTSIDE
-    CollisionBox getCollisionBox() { return this->collisionBox; };
+    CollisionBox getCollisionBox() const { return this->collisionBox; };
 
-    //Todo: Make pure virtual as soon as floors are done
-    virtual void handleCollision(CollisionBox const & collider) 
-    {
-
-    } 
+    virtual void handleCollision(const Entity& collider) = 0;
 
 protected:
     CollisionBox collisionBox;
