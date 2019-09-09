@@ -46,8 +46,8 @@ public:
 
     bool hasComponent(colliderComponents component) const;
     
-    AABB getBox() const { return this->box; };
-    void setBox(AABB box) { this->box = box; };
+    AABB getAABB() const { return this->box; };
+    void setAABB(AABB box) { this->box = box; };
     void setPosition(sf::Vector2f pos) { this->box.pos = pos; };
 
     void enableCollision(bool boi) { this->enabled = boi; };

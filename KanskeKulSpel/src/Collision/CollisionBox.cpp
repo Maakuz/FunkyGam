@@ -23,7 +23,7 @@ bool CollisionBox::intersects(const AABB & other) const
 
 bool CollisionBox::intersects(const CollisionBox & other) const
 {
-    return this->intersects(other.getBox());
+    return this->intersects(other.getAABB());
 }
 
 void CollisionBox::addComponent(colliderComponents comp)

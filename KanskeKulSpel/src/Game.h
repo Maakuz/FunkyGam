@@ -3,7 +3,7 @@
 #include "Entities/Player.h"
 #include "ShaderHandler.h"
 #include "Lighting/LightQueue.h"
-#include "CollisionHandler.h"
+#include "Collision/CollisionHandler.h"
 #include "Handlers/LevelHandler.h"
 
 #define MAX_LIGHTS 200

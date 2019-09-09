@@ -6,6 +6,11 @@
 #define LAYER_AMOUNT 3
 #define TILE_SIZE 32
 
+enum hitBoxTypes 
+{
+    standard = 501
+};
+
 const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
 {"TestMap.yay"};
 
@@ -16,9 +21,15 @@ LevelHandler::LevelHandler()
 bool LevelHandler::loadLevel()
 {
     importLevel(levels::forest);
-
+    generateHitboxes();
 
     return true;
+}
+
+void LevelHandler::updateLevel(float dt)
+{
+    for (auto & ter : terrain)
+        CollisionHandler::queueCollider(&ter);
 }
 
 void LevelHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
@@ -54,6 +65,18 @@ void LevelHandler::draw(sf::RenderTarget & target, sf::RenderStates states) cons
     }
 }
 
+void LevelHandler::drawCollision(sf::RenderWindow & window, sf::RenderStates states) const
+{
+    for (size_t i = 0; i < terrain.size(); i++)
+    {
+        sf::RectangleShape rect(terrain[i].getCollisionBox().getAABB().size);
+        rect.setFillColor(sf::Color(255, (i / (float)terrain.size()) * 255, 0, 255));
+        rect.setPosition(terrain[i].getCollisionBox().getAABB().pos);
+
+        window.draw(rect);
+    }
+}
+
 bool LevelHandler::importLevel(levels level)
 {
     std::string trash = "";
@@ -85,6 +108,19 @@ bool LevelHandler::importLevel(levels level)
             }
         }
 
+        this->hitboxData.resize(y);
+        for (int j = 0; j < y; j++)
+        {
+            hitboxData[j].resize(x);
+            for (int k = 0; k < x; k++)
+            {
+                in >> this->hitboxData[j][k].textureID;
+                in >> this->hitboxData[j][k].tileID;
+                this->hitboxData[j][k].x = k * TILE_SIZE;
+                this->hitboxData[j][k].y = j * TILE_SIZE;
+            }
+        }
+
         int texCount = 0;
         in >> texCount;
 
@@ -109,4 +145,36 @@ bool LevelHandler::importLevel(levels level)
     }
 
     return false;
+}
+
+bool LevelHandler::generateHitboxes()
+{
+    sf::Vector2i end = sf::Vector2i(hitboxData[0].size(), hitboxData.size());
+
+    for (int i = 0; i < end.y; i++)
+    {
+        for (int j = 0; j < end.x; j++)
+        {
+            if (hitboxData[i][j].tileID == hitBoxTypes::standard)
+            {
+                sf::Vector2f min = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y);
+                sf::Vector2f max = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y + TILE_SIZE);
+            
+                int k = 0;
+                while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID)
+                {
+                    k++;
+                    max.x += TILE_SIZE;
+                }
+
+                j += k;
+
+                Terrain ter(CollisionBox::AABB(min, max - min));
+                terrain.push_back(ter);
+            }
+        }
+    }
+
+
+    return true;
 }

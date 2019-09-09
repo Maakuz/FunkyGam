@@ -10,7 +10,7 @@ Entity::Entity(sf::Vector2f pos, sf::Texture * texture)
 
 void Entity::addCollision(CollisionBox::AABB aabb)
 {
-    collisionBox.setBox(aabb);
+    collisionBox.setAABB(aabb);
 }
 
 void Entity::addCollision()

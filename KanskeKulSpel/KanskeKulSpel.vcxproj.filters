@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\CollisionBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -39,18 +36,21 @@
     <ClCompile Include="src\Entities\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\CollisionHandler.cpp">
+    <ClCompile Include="src\Handlers\LevelHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Handlers\LevelHandler.cpp">
+    <ClCompile Include="src\Collision\CollisionBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Collision\CollisionHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Entities\Terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\ShaderHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\CollisionBox.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game.h">
@@ -74,13 +74,19 @@
     <ClInclude Include="src\Entities\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\CollisionHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Definitions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Handlers\LevelHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Collision\CollisionBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Collision\CollisionHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Entities\Terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

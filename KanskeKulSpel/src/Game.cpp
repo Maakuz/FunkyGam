@@ -26,7 +26,7 @@ Game::Game(sf::RenderWindow* window)
 
     Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(6, 1), 150);
 
-    this->player = new Player(data, sf::Vector2f(1280 / 4, 0));
+    this->player = new Player(data, sf::Vector2f(0, -1600));
     this->player->setAnimationData(data);
 
     levelHandler.loadLevel();
@@ -68,9 +68,10 @@ void Game::update(float dt)
     LightQueue::get().queue(testLight);
 
     this->player->update(dt);
+    this->levelHandler.updateLevel(dt);
+
 
     this->collisionHandler.queueCollider(this->player);
-
     this->collisionHandler.processQueue();
 }
 
@@ -146,10 +147,10 @@ void Game::draw()
 
     if (drawHitbaxes)
     { 
-        //
+        levelHandler.drawCollision(*window, sf::RenderStates::Default);
         std::vector<sf::RectangleShape> recs;
-        sf::RectangleShape r1(sf::RectangleShape(player->getCollisionBox().getBox().size));
-        r1.setPosition(player->getCollisionBox().getBox().pos);
+        sf::RectangleShape r1(sf::RectangleShape(player->getCollisionBox().getAABB().size));
+        r1.setPosition(player->getCollisionBox().getAABB().pos);
 
         recs.push_back(r1);
 

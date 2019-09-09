@@ -1,6 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "CollisionBox.h"
+#include "Collision/CollisionBox.h"
 
 class Entity : public sf::Sprite
 {
