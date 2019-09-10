@@ -1,15 +1,38 @@
 #include "CollisionBox.h"
+#include "Definitions.h"
+#include "SFML/Graphics.hpp"
+#define EDGE_SIZE TILE_SIZE / 4
 
 CollisionBox::CollisionBox(AABB collisionBox, bool enabled)
-:box(collisionBox)
+:box(collisionBox),
+up(collisionBox),
+down(collisionBox),
+left(collisionBox),
+right(collisionBox)
 {
     this->enabled = enabled;
+
+
+    up.size.y = EDGE_SIZE;
+
+    down.size.y = EDGE_SIZE;
+    down.pos.y = box.max().y - down.size.y;
+
+    left.size.x = EDGE_SIZE;
+    left.size.y -= (EDGE_SIZE * 2);
+
+    left.pos.x = box.max().x - left.size.x;
+    left.pos.y += EDGE_SIZE;
+
+    right.size.x = EDGE_SIZE;
+    right.size.y -= (EDGE_SIZE * 2);
+
+    right.pos.y += EDGE_SIZE;
 }
 
 CollisionBox::CollisionBox(sf::Vector2f pos, sf::Vector2f size)
-:box(pos, size)
+    :CollisionBox(CollisionBox::AABB(pos, size))
 {
-    enabled = true;
 }
 
 bool CollisionBox::intersects(const AABB & other) const
@@ -37,4 +60,62 @@ bool CollisionBox::hasComponent(colliderComponents component) const
         return true;
 
     return false;
+}
+
+void CollisionBox::setAABB(AABB box)
+{
+    this->box = box;
+    this->left = box;
+    this->right = box;
+    this->up = box;
+    this->down = box;
+
+    up.size.y = EDGE_SIZE;
+
+    down.size.y = EDGE_SIZE;
+    down.pos.y = box.max().y - down.size.y;
+
+    left.size.x = EDGE_SIZE;
+    left.size.y -= (EDGE_SIZE * 2);
+
+    left.pos.x = box.max().x - left.size.x;
+    left.pos.y += EDGE_SIZE;
+
+    right.size.x = EDGE_SIZE;
+    right.size.y -= (EDGE_SIZE * 2);
+
+    right.pos.y += EDGE_SIZE;
+}
+
+void CollisionBox::setPosition(sf::Vector2f pos)
+{
+    this->setAABB(AABB(pos, box.size));
+}
+
+void CollisionBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    sf::RectangleShape rect(box.size);
+    rect.setFillColor(sf::Color::Green);
+    rect.setPosition(box.pos);
+
+    target.draw(rect);
+
+    sf::RectangleShape sides[4];
+    sides[0].setPosition(up.pos);
+    sides[0].setSize(up.size);
+
+    sides[1].setPosition(down.pos);
+    sides[1].setSize(down.size);
+
+    sides[2].setPosition(left.pos);
+    sides[2].setSize(left.size);
+
+    sides[3].setPosition(right.pos);
+    sides[3].setSize(right.size);
+
+    for (int j = 0; j < 4; j++)
+    {
+        sides[j].setFillColor(sf::Color(255, 255 * (j / 4.f), 0, 255));
+        target.draw(sides[j]);
+    }
 }

@@ -1,9 +1,10 @@
 #pragma once
 #include "SFML/System/Vector2.hpp"
+#include "SFML/Graphics/Drawable.hpp"
 #include <set>
 
-
-class CollisionBox
+//Rename, very confusing. Drawable is only for debug. Remove when sometime
+class CollisionBox : public sf::Drawable
 {
 public:
     enum colliderComponents
@@ -47,14 +48,26 @@ public:
     bool hasComponent(colliderComponents component) const;
     
     AABB getAABB() const { return this->box; };
-    void setAABB(AABB box) { this->box = box; };
-    void setPosition(sf::Vector2f pos) { this->box.pos = pos; };
+    void setAABB(AABB box);
+    void setPosition(sf::Vector2f pos);
+
+    CollisionBox::AABB getUp() const { return this->up; };
+    CollisionBox::AABB getDown() const { return this->down; };
+    CollisionBox::AABB getLeft() const { return this->left; };
+    CollisionBox::AABB getRight() const { return this->right; };
 
     void enableCollision(bool boi) { this->enabled = boi; };
     bool isCollisionEnabled()const { return this->enabled; };
 
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
 private:
     bool enabled;
     AABB box;
+    CollisionBox::AABB up;
+    CollisionBox::AABB down;
+    CollisionBox::AABB left;
+    CollisionBox::AABB right;
+
     std::set<colliderComponents> components;
 };

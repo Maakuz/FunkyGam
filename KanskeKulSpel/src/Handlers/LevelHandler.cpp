@@ -1,10 +1,11 @@
 #include "LevelHandler.h"
 #include <fstream>
+#include "Definitions.h"
 
 #define LEVEL_FOLDER "../Maps/"
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
 #define LAYER_AMOUNT 3
-#define TILE_SIZE 32
+
 
 enum hitBoxTypes 
 {
@@ -69,11 +70,7 @@ void LevelHandler::drawCollision(sf::RenderWindow & window, sf::RenderStates sta
 {
     for (size_t i = 0; i < terrain.size(); i++)
     {
-        sf::RectangleShape rect(terrain[i].getCollisionBox().getAABB().size);
-        rect.setFillColor(sf::Color(255, (i / (float)terrain.size()) * 255, 0, 255));
-        rect.setPosition(terrain[i].getCollisionBox().getAABB().pos);
-
-        window.draw(rect);
+        window.draw(terrain[i].getCollisionBox());
     }
 }
 

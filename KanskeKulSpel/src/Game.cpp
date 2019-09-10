@@ -45,7 +45,7 @@ void Game::loadFiles()
     if (!this->textures.floorPiece.loadFromFile(TEXTURE_PATH("floorPiece.png")))
         exit(-2);
 
-    if (!this->textures.playerSprite.loadFromFile(TEXTURE_PATH("cateSheet.png")))
+    if (!this->textures.playerSprite.loadFromFile(TEXTURE_PATH("smallCate.png")))
         exit(-2);
 
     this->shaders[SHADER::gaussHorizontal].setUniform("texture", sf::Shader::CurrentTexture);
@@ -148,20 +148,7 @@ void Game::draw()
     if (drawHitbaxes)
     { 
         levelHandler.drawCollision(*window, sf::RenderStates::Default);
-        std::vector<sf::RectangleShape> recs;
-        sf::RectangleShape r1(sf::RectangleShape(player->getCollisionBox().getAABB().size));
-        r1.setPosition(player->getCollisionBox().getAABB().pos);
-
-        recs.push_back(r1);
-
-
-        for (auto & r : recs)
-        {
-            r.setFillColor(sf::Color::Green);
-            window->draw(r);
-        }
-    
-
+        window->draw(player->getCollisionBox());
     }
 #else
     this->window->draw(fullscreenboi);

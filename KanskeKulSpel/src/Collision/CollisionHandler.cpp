@@ -14,8 +14,6 @@ void CollisionHandler::processQueue()
                 colliders[j]->handleCollision(*colliders[i]);
                 static int k = 0;
                 k++;
-                printf("ooof %d\n", k);
-
             }
         }
     }

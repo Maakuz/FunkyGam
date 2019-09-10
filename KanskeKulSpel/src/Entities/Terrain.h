@@ -8,6 +8,8 @@ public:
     ~Terrain() {};
 
     virtual void handleCollision(const Entity& collider) {};
+
 private:
+
 
 };
