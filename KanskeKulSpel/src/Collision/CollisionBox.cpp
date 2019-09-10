@@ -12,22 +12,7 @@ right(collisionBox)
 {
     this->enabled = enabled;
 
-
-    up.size.y = EDGE_SIZE;
-
-    down.size.y = EDGE_SIZE;
-    down.pos.y = box.max().y - down.size.y;
-
-    left.size.x = EDGE_SIZE;
-    left.size.y -= (EDGE_SIZE * 2);
-
-    left.pos.x = box.max().x - left.size.x;
-    left.pos.y += EDGE_SIZE;
-
-    right.size.x = EDGE_SIZE;
-    right.size.y -= (EDGE_SIZE * 2);
-
-    right.pos.y += EDGE_SIZE;
+    setSides();
 }
 
 CollisionBox::CollisionBox(sf::Vector2f pos, sf::Vector2f size)
@@ -37,11 +22,14 @@ CollisionBox::CollisionBox(sf::Vector2f pos, sf::Vector2f size)
 
 bool CollisionBox::intersects(const AABB & other) const
 {
-    if (this->box.max().x < other.min().x || this->box.max().y < other.min().y ||
-        other.max().x < this->box.min().x || other.max().y < this->box.min().y)
-        return false;
+    return (this->box.max().x >= other.min().x && this->box.max().y >= other.min().y &&
+        other.max().x >= this->box.min().x && other.max().y >= this->box.min().y);
+}
 
-    return true;
+bool CollisionBox::intersects(const AABB & a, const AABB & b) const
+{
+    return (a.max().x >= b.min().x && a.max().y >= b.min().y &&
+        b.max().x >= a.min().x && b.max().y >= a.min().y);
 }
 
 bool CollisionBox::intersects(const CollisionBox & other) const
@@ -65,26 +53,8 @@ bool CollisionBox::hasComponent(colliderComponents component) const
 void CollisionBox::setAABB(AABB box)
 {
     this->box = box;
-    this->left = box;
-    this->right = box;
-    this->up = box;
-    this->down = box;
 
-    up.size.y = EDGE_SIZE;
-
-    down.size.y = EDGE_SIZE;
-    down.pos.y = box.max().y - down.size.y;
-
-    left.size.x = EDGE_SIZE;
-    left.size.y -= (EDGE_SIZE * 2);
-
-    left.pos.x = box.max().x - left.size.x;
-    left.pos.y += EDGE_SIZE;
-
-    right.size.x = EDGE_SIZE;
-    right.size.y -= (EDGE_SIZE * 2);
-
-    right.pos.y += EDGE_SIZE;
+    setSides();
 }
 
 void CollisionBox::setPosition(sf::Vector2f pos)
@@ -118,4 +88,28 @@ void CollisionBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
         sides[j].setFillColor(sf::Color(255, 255 * (j / 4.f), 0, 255));
         target.draw(sides[j]);
     }
+}
+
+void CollisionBox::setSides()
+{
+    this->left = box;
+    this->right = box;
+    this->up = box;
+    this->down = box;
+
+    up.size.y = EDGE_SIZE;
+
+    down.size.y = EDGE_SIZE;
+    down.pos.y = box.max().y - down.size.y;
+
+    right.size.x = EDGE_SIZE;
+    right.size.y -= (EDGE_SIZE * 2);
+
+    right.pos.x = box.max().x - right.size.x;
+    right.pos.y += EDGE_SIZE;
+
+    left.size.x = EDGE_SIZE;
+    left.size.y -= (EDGE_SIZE * 2);
+
+    left.pos.y += EDGE_SIZE;
 }

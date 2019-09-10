@@ -41,6 +41,7 @@ public:
     ~CollisionBox() {};
 
     bool intersects(const AABB& other) const;
+    bool intersects(const AABB& a, const AABB& b) const;
     bool intersects(const CollisionBox& other) const;
 
     void addComponent(colliderComponents comp);
@@ -62,6 +63,8 @@ public:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 private:
+    void setSides();
+
     bool enabled;
     AABB box;
     CollisionBox::AABB up;

@@ -13,6 +13,7 @@ public:
 
 private:
     void move(float dt);
+    void jump();
 
     sf::Vector2i acceleration;
     sf::Vector2f momentum;
