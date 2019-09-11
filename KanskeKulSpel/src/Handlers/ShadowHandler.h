@@ -20,7 +20,8 @@ public:
     ShadowHandler();
     ~ShadowHandler() {};
 
-    void generateShadowMap();
+    void generateShadowMap(sf::RenderTarget& target, sf::RenderStates states);
+
 
     static void queueLine(Line line);
 
@@ -36,6 +37,8 @@ private:
             this->parent = parent;
         }
     };
+
+    void drawShadowMap();
 
     sf::RenderTexture shadowMap;
     std::vector<sf::ConvexShape> triangles;
