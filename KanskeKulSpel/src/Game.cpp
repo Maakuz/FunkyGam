@@ -26,7 +26,7 @@ Game::Game(sf::RenderWindow* window)
 
     Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(6, 1), 150);
 
-    this->player = new Player(data, sf::Vector2f(0, -1600));
+    this->player = new Player(data, sf::Vector2f(0, 0));
     this->player->setAnimationData(data);
 
     levelHandler.loadLevel();

@@ -1,5 +1,5 @@
 #pragma once
 
-#define GRAVITY 0.2f
+#define GRAVITY 0.1f
 
 #define TILE_SIZE 32

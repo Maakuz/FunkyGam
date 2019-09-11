@@ -3,10 +3,10 @@
 #include "KeyboardState.h"
 #include "Lighting/LightQueue.h"
 
-#define PLAYER_WALK_SPEED 0.1f
-#define AIR_RESISTANCE 0.8f
+#define PLAYER_WALK_SPEED 0.05f
+#define AIR_RESISTANCE 0.9f
 #define GROUND_RESISTANCE 0.9f
-#define JUMP_HEIGHT 10
+#define JUMP_HEIGHT 3
 
 Player::Player(AnimationData data, sf::Vector2f pos)
 :AnimatedEntity(data, pos)
@@ -43,6 +43,13 @@ void Player::handleCollision(const Entity& collider)
             this->momentum.y = 0;
             setPosition(getPosition().x, collider.getPosition().y - getTextureRect().height);
         }
+        
+        //smackin into roof
+        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
+        {
+            this->momentum.y = 0;
+            setPosition(getPosition().x, collider.getPosition().y + collider.getCollisionBox().getAABB().size.y);
+        }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
@@ -69,7 +76,7 @@ void Player::move(float dt)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
         acceleration.x = -1;
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space))
         jump();
 
 
@@ -89,5 +96,5 @@ void Player::jump()
 {
     sf::Vector2f currentPos = getPosition();
     setPosition(currentPos.x, currentPos.y - JUMP_HEIGHT);
-    momentum.y -= JUMP_HEIGHT;
+    momentum.y -= JUMP_HEIGHT * 5;
 }
