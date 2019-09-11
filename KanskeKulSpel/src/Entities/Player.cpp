@@ -4,6 +4,8 @@
 #include "Lighting/LightQueue.h"
 #include "imgui.h"
 
+#define TERMINALVELOCITY 10.f
+
 Player::Player(AnimationData data, sf::Vector2f pos)
 :AnimatedEntity(data, pos)
 {
@@ -14,10 +16,9 @@ Player::Player(AnimationData data, sf::Vector2f pos)
     this->momentum = sf::Vector2f(0, 0);
 
     this->walkSpeed = 0.05f;
-    this->airRes = 0.9f;
     this->floorRes = 0.85f;
-    this->jumpHeight = 3.f;
-    this->mass = 1.f;
+    this->jumpHeight = 4.f;
+    this->mass = 0.22f;
 }
 
 void Player::update(float dt)
@@ -26,7 +27,7 @@ void Player::update(float dt)
     static float elapsedTime = 0;
     elapsedTime += dt;
 
-    Light light(getPosition() + sf::Vector2f(0, this->lightBounceHeight * sin(2 * 3.1415 * this->lightBounceFreq * elapsedTime + (720 - 720 / 4))), 100);
+    Light light(getPosition(), 300);
     LightQueue::get().queue(light);
 
     this->move(dt);
@@ -37,7 +38,6 @@ void Player::update(float dt)
     ImGui::Begin("turbotest");
     ImGui::SetWindowSize(sf::Vector2f(300, 300));
     ImGui::SliderFloat("Walkkk", &this->walkSpeed, 0, 5);
-    ImGui::SliderFloat("air res", &this->airRes, 0, 1);
     ImGui::SliderFloat("floor res", &this->floorRes, 0, 1);
     ImGui::SliderFloat("jump", &this->jumpHeight, 0, 10);
     ImGui::SliderFloat("weight", &this->mass, 0, 5);
@@ -96,8 +96,7 @@ void Player::move(float dt)
     momentum.x *= floorRes;
    
     momentum.y += GRAVITY * dt * this->mass;
-    momentum.y *= airRes;
-
+    momentum.y = std::min(TERMINALVELOCITY, momentum.y);
 
     setPosition(getPosition() + sf::Vector2f(momentum));
 
@@ -106,7 +105,5 @@ void Player::move(float dt)
 
 void Player::jump() // om släppa knapp trycka ner spelar lite jappjapp
 {
-    sf::Vector2f currentPos = getPosition();
-    //setPosition(currentPos.x, currentPos.y - jumpHeight);
-    momentum.y -= jumpHeight * 5;
+    momentum.y = -jumpHeight;
 }

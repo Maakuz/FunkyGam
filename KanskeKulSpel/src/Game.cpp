@@ -12,6 +12,7 @@ Game::Game(sf::RenderWindow* window)
     this->fullscreenboi = sf::RectangleShape(sf::Vector2f(window->getSize()));
     this->fullscreenboi.setPosition(0, 0);
     
+    this->shadowMap.create(window->getSize().x, window->getSize().y);
 
     for (int i = 0; i < NR_OF_RENDER_TARGETS; i++)
     {
@@ -19,10 +20,9 @@ Game::Game(sf::RenderWindow* window)
     }
 
 
-    this->view.setSize(1280 / 2, 720 / 2);
+    this->view.setSize(sf::Vector2f(window->getSize()) / 2.f);
 
-    this->view.setCenter(1280 / 4, 720 -  720 / 4);
-    //window->setView(view);
+    this->view.setCenter(sf::Vector2f(window->getSize()) / 4.f);
 
     Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(6, 1), 150);
 
@@ -55,17 +55,10 @@ void Game::loadFiles()
 
 void Game::update(float dt)
 {
-    //printf("%f\n", dt);
     sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window);
 
     KEYBOARD::KeyboardState::updateKeys();
     
-    static int i = 0;
-    i++;
-    i %= 300;
-    Light testLight(sf::Vector2f(500, 500), i);
-
-    LightQueue::get().queue(testLight);
 
     this->player->update(dt);
     this->levelHandler.updateLevel(dt);
@@ -77,17 +70,22 @@ void Game::update(float dt)
 
 void Game::draw()
 {
+    //Shadow map
+    this->shadowMap.clear(sf::Color::White);
+    this->shadowMap.draw(this->levelHandler, &shaders[SHADER::shadowMap]);
+    this->shadowMap.display();
 
     ////Light drawing hopefully
 
     int nrOfLights = LightQueue::get().getQueue().size();
     shaders[SHADER::lighting].setUniform("nrOfLights", nrOfLights);
     shaders[SHADER::lighting].setUniformArray("lights", (sf::Glsl::Vec3*)LightQueue::get().getQueue().data(), nrOfLights);
+    shaders[SHADER::lighting].setUniform("shadowMap", this->shadowMap.getTexture());
 
     for (int i = 0; i < NR_OF_RENDER_TARGETS; i++)
     {
         this->renderTargets[i].clear(sf::Color::Transparent);
-        this->renderTargets[i].draw(this->fullscreenboi, &shaders[i]);
+        this->renderTargets[i].draw(this->fullscreenboi, &shaders[shaders.lightingPass[i]]);
         this->renderTargets[i].display();
 
         this->fullscreenboi.setTexture(&this->renderTargets[i].getTexture());
@@ -107,6 +105,9 @@ void Game::draw()
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F3))
         swap = 2;
 
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F4))
+        swap = 3;
+
     switch (swap)
     {
     case 0:
@@ -120,6 +121,10 @@ void Game::draw()
         this->fullscreenboi.setTexture(&renderTargets[1].getTexture());
         break;
 
+    case 3:
+        this->fullscreenboi.setTexture(&shadowMap.getTexture());
+        break;
+
     default:
         break;
     }
@@ -131,27 +136,38 @@ void Game::draw()
 
     //Window drawing
 
-    this->window->draw(this->levelHandler);
-    this->window->draw(*player);
+
 
 #if DEBUG_MODE
+    static bool drawHitbaxes = false;
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F6))
+        drawHitbaxes = !drawHitbaxes;
+
+    if (drawHitbaxes)
+    {
+        levelHandler.drawCollision(*window, sf::RenderStates::Default);
+        window->draw(player->getCollisionBox());
+    }
+
+    static bool drawGeometry = true;
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F7))
+        drawGeometry = !drawGeometry;
+
+    if (drawGeometry)
+        this->window->draw(this->levelHandler);
+
+
+    this->window->draw(*player);
+
     static bool skip = false;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F5))
         skip = !skip;
 
     if (!skip)
         this->window->draw(fullscreenboi);
-
-    static bool drawHitbaxes = false;
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F6))
-        drawHitbaxes = !drawHitbaxes;
-
-    if (drawHitbaxes)
-    { 
-        levelHandler.drawCollision(*window, sf::RenderStates::Default);
-        window->draw(player->getCollisionBox());
-    }
 #else
+    this->window->draw(this->levelHandler);
+    this->window->draw(*player);
     this->window->draw(fullscreenboi);
 #endif
 

@@ -1,5 +1,6 @@
 uniform int nrOfLights;
 uniform vec3[200] lights;
+uniform sampler2D shadowMap;
 
 void main()
 {
@@ -7,7 +8,7 @@ void main()
 
     vec4 color = vec4(0, 0, 0, 0);
 
-    vec2 coord = vec2(gl_FragCoord.x, 720.0 - gl_FragCoord.y);
+    vec2 coord = vec2(gl_FragCoord.x, 1080.0 - gl_FragCoord.y);
 
     float distanceFromLight = 0;
     float radius = 0;
@@ -25,5 +26,6 @@ void main()
 
     clamp(color.a, 0, 1);
 
+    //gl_FragColor = texture2D(shadowMap, gl_TexCoord[0].xy); så gör man
     gl_FragColor = color;
 }

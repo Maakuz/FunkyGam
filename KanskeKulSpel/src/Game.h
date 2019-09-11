@@ -1,7 +1,7 @@
 #pragma once
 #include "SFML/Window.hpp"
 #include "Entities/Player.h"
-#include "ShaderHandler.h"
+#include "Handlers/ShaderHandler.h"
 #include "Lighting/LightQueue.h"
 #include "Collision/CollisionHandler.h"
 #include "Handlers/LevelHandler.h"
@@ -49,5 +49,6 @@ private:
 
 
     sf::RenderTexture renderTargets[NR_OF_RENDER_TARGETS];
+    sf::RenderTexture shadowMap;
     sf::RectangleShape fullscreenboi;
 };

@@ -62,7 +62,7 @@ void LevelHandler::draw(sf::RenderTarget & target, sf::RenderStates states) cons
 
     for (size_t i = 0; i < renderQueue.size(); i++)
     {
-        target.draw(renderQueue[i]);
+        target.draw(renderQueue[i], states);
     }
 }
 

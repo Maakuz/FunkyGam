@@ -24,9 +24,6 @@
     <ClCompile Include="src\Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\ShaderHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Entities\AnimatedEntity.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -60,11 +57,14 @@
     <ClCompile Include="..\Imgui\SFML-imgui\imgui-SFML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Handlers\ShaderHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Handlers\ShadowHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\ShaderHandler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -101,5 +101,20 @@
     <ClInclude Include="src\Entities\Terrain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Handlers\ShaderHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Handlers\ShadowHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\GaussianVert.frag" />
+    <None Include="..\Shaders\Lighting.frag" />
+    <None Include="..\Shaders\GaussianHor.frag" />
+    <None Include="..\Shaders\shadowMapGenerator.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\Lighting\big think.txt" />
   </ItemGroup>
 </Project>

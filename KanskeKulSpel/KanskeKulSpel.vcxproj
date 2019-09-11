@@ -138,10 +138,11 @@
     <ClCompile Include="src\Entities\Terrain.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Handlers\LevelHandler.cpp" />
+    <ClCompile Include="src\Handlers\ShadowHandler.cpp" />
     <ClCompile Include="src\KeyboardState.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Entities\Player.cpp" />
-    <ClCompile Include="src\ShaderHandler.cpp" />
+    <ClCompile Include="src\Handlers\ShaderHandler.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Collision\CollisionHandler.h" />
@@ -152,11 +153,21 @@
     <ClInclude Include="src\Entities\Terrain.h" />
     <ClInclude Include="src\Game.h" />
     <ClInclude Include="src\Handlers\LevelHandler.h" />
+    <ClInclude Include="src\Handlers\ShadowHandler.h" />
     <ClInclude Include="src\Lighting\Light.h" />
     <ClInclude Include="src\KeyboardState.h" />
     <ClInclude Include="src\Lighting\LightQueue.h" />
     <ClInclude Include="src\Entities\Player.h" />
-    <ClInclude Include="src\ShaderHandler.h" />
+    <ClInclude Include="src\Handlers\ShaderHandler.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Shaders\GaussianHor.frag" />
+    <None Include="..\Shaders\GaussianVert.frag" />
+    <None Include="..\Shaders\Lighting.frag" />
+    <None Include="..\Shaders\shadowMapGenerator.frag" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\Lighting\big think.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
