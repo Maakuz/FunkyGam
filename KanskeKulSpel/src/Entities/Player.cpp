@@ -2,11 +2,7 @@
 #include "Definitions.h"
 #include "KeyboardState.h"
 #include "Lighting/LightQueue.h"
-
-#define PLAYER_WALK_SPEED 0.05f
-#define AIR_RESISTANCE 0.9f
-#define GROUND_RESISTANCE 0.9f
-#define JUMP_HEIGHT 3
+#include "imgui.h"
 
 Player::Player(AnimationData data, sf::Vector2f pos)
 :AnimatedEntity(data, pos)
@@ -16,6 +12,12 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 
     this->acceleration = sf::Vector2i(0, 0);
     this->momentum = sf::Vector2f(0, 0);
+
+    this->walkSpeed = 0.05f;
+    this->airRes = 0.9f;
+    this->floorRes = 0.85f;
+    this->jumpHeight = 3.f;
+    this->mass = 1.f;
 }
 
 void Player::update(float dt)
@@ -31,6 +33,16 @@ void Player::update(float dt)
 
     this->collisionBox.setPosition(getPosition());
 
+    //imgui test
+    ImGui::Begin("turbotest");
+    ImGui::SetWindowSize(sf::Vector2f(300, 300));
+    ImGui::SliderFloat("Walkkk", &this->walkSpeed, 0, 5);
+    ImGui::SliderFloat("air res", &this->airRes, 0, 1);
+    ImGui::SliderFloat("floor res", &this->floorRes, 0, 1);
+    ImGui::SliderFloat("jump", &this->jumpHeight, 0, 10);
+    ImGui::SliderFloat("weight", &this->mass, 0, 5);
+    if (ImGui::Button("Reset player pos")) setPosition(0, 0);
+    ImGui::End();
 }
 
 void Player::handleCollision(const Entity& collider)
@@ -80,11 +92,11 @@ void Player::move(float dt)
         jump();
 
 
-    momentum.x += acceleration.x * PLAYER_WALK_SPEED * dt;
-    momentum.x *= GROUND_RESISTANCE;
+    momentum.x += acceleration.x * walkSpeed * dt;
+    momentum.x *= floorRes;
    
-    momentum.y += GRAVITY * dt;
-    momentum.y *= AIR_RESISTANCE;
+    momentum.y += GRAVITY * dt * this->mass;
+    momentum.y *= airRes;
 
 
     setPosition(getPosition() + sf::Vector2f(momentum));
@@ -92,9 +104,9 @@ void Player::move(float dt)
     this->updateAnimation(dt);
 }
 
-void Player::jump()
+void Player::jump() // om släppa knapp trycka ner spelar lite jappjapp
 {
     sf::Vector2f currentPos = getPosition();
-    setPosition(currentPos.x, currentPos.y - JUMP_HEIGHT);
-    momentum.y -= JUMP_HEIGHT * 5;
+    //setPosition(currentPos.x, currentPos.y - jumpHeight);
+    momentum.y -= jumpHeight * 5;
 }

@@ -93,6 +93,8 @@ void Game::draw()
         this->fullscreenboi.setTexture(&this->renderTargets[i].getTexture());
     }
 
+    LightQueue::get().clear();
+
 #if DEBUG_MODE
     static int swap = 0;
 
@@ -128,7 +130,6 @@ void Game::draw()
 
 
     //Window drawing
-    this->window->clear(sf::Color(0, 155, 200));
 
     this->window->draw(this->levelHandler);
     this->window->draw(*player);
@@ -154,8 +155,7 @@ void Game::draw()
     this->window->draw(fullscreenboi);
 #endif
 
-    this->window->display();
 
 
-    LightQueue::get().clear();
+
 }

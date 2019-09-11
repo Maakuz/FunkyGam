@@ -91,11 +91,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>F:\SPELTJOSAN\KanskeKulSpel\SFML-2.5.1\include;$(SolutionDir)\KanskeKulSpel\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>F:\SPELTJOSAN\KanskeKulSpel\SFML-2.5.1\include;$(SolutionDir)\KanskeKulSpel\src;F:\SPELTJOSAN\KanskeKulSpel\Imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>F:\SPELTJOSAN\KanskeKulSpel\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-system-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-graphics-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>F:\SPELTJOSAN\KanskeKulSpel\SFML-2.5.1\lib;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Opengl32.lib;sfml-system-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-graphics-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,6 +127,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\Imgui\imgui.cpp" />
+    <ClCompile Include="..\Imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\Imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\Imgui\SFML-imgui\imgui-SFML.cpp" />
     <ClCompile Include="src\Collision\CollisionHandler.cpp" />
     <ClCompile Include="src\Entities\AnimatedEntity.cpp" />
     <ClCompile Include="src\Collision\CollisionBox.cpp" />

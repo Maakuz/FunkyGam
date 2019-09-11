@@ -21,4 +21,10 @@ private:
     float lightBounceFreq;
     float lightBounceHeight;
 
+    float walkSpeed;
+    float airRes;
+    float floorRes;
+    float jumpHeight;
+    float mass;
+
 };

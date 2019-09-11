@@ -1,6 +1,9 @@
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 #include "Game.h"
+#include "imgui.h"
+#include "SFML-imgui/imgui-SFML.h"
+#include "SFML-imgui/imgui-SFML_export.h"
 
 int main()
 {
@@ -27,29 +30,42 @@ int main()
     wandow.setFramerateLimit(120);
     
     sf::Clock deltaTimer;
+    sf::Time deltaTime;
     
+    ImGui::SFML::Init(wandow);
+
     Game game(&wandow);
     
 
     while (wandow.isOpen())
     {
-        game.update((float)deltaTimer.restart().asMilliseconds());
-        
-        game.draw();
-
-
-
         sf::Event event;
         while (wandow.pollEvent(event))
         {
             // "close requested" event: we close the window
             if (event.type == sf::Event::Closed)
                 wandow.close();
+
+            ImGui::SFML::ProcessEvent(event);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
             wandow.close();
+
+        deltaTime = deltaTimer.restart();
+
+        ImGui::SFML::Update(wandow, deltaTime);
+        game.update(deltaTime.asMilliseconds());
+
+        wandow.clear(sf::Color(0, 155, 200));
+        game.draw();
+        ImGui::SFML::Render(wandow);
+        wandow.display();
+
     }
+
+
+    ImGui::SFML::Shutdown();
 
     return 0;
 };
