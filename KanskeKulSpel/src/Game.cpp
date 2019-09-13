@@ -58,22 +58,30 @@ void Game::update(float dt)
 
     KEYBOARD::KeyboardState::updateKeys();
     
-
+    PROFILER_START("PlayerUpdate")
     this->player->update(dt);
+    PROFILER_STOP
+
+    PROFILER_START("LevelUpdate")
     this->levelHandler.updateLevel(dt);
+    PROFILER_STOP
 
-
+    PROFILER_START("Collision")
     this->collisionHandler.queueCollider(this->player);
     this->collisionHandler.processQueue();
+    PROFILER_STOP
+    
 }
 
 void Game::draw()
 {
     //Shadow map
+    PROFILER_START("Shadow draw")
     this->shadowHandler.generateShadowMap(*this->window, sf::RenderStates::Default);
+    PROFILER_STOP
+
 
     ////Light drawing hopefully
-
     int nrOfLights = LightQueue::get().getQueue().size();
     shaders[SHADER::lighting].setUniform("nrOfLights", nrOfLights);
     shaders[SHADER::lighting].setUniformArray("lights", (sf::Glsl::Vec3*)LightQueue::get().getQueue().data(), nrOfLights);
@@ -101,8 +109,8 @@ void Game::draw()
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F3))
         swap = 2;
 
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F4))
-        swap = 3;
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F9))
+        swap = 8;
 
     switch (swap)
     {
@@ -117,8 +125,10 @@ void Game::draw()
         this->fullscreenboi.setTexture(&renderTargets[1].getTexture());
         break;
 
-    case 3:
-        //this->fullscreenboi.setTexture(&shadowMap.getTexture());
+    case 8:
+        PROFILER_START("PROFILER!?")
+        Profiler::get().drawGUI();
+        PROFILER_STOP
         break;
 
     default:

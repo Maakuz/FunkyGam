@@ -5,6 +5,7 @@
 #include "Imgui/imgui.h"
 
 #define TERMINALVELOCITY 10.f
+#define TESTING false
 
 Player::Player(AnimationData data, sf::Vector2f pos)
 :AnimatedEntity(data, pos)
@@ -30,11 +31,14 @@ void Player::update(float dt)
     Light light(getPosition(), 300);
     LightQueue::get().queue(light);
 
-    this->move(dt);
+    this->debugMove(dt);
 
     this->collisionBox.setPosition(getPosition());
 
+    this->updateAnimation(dt);
+    
     //imgui test
+#if TESTING
     ImGui::Begin("turbotest");
     ImGui::SetWindowSize(sf::Vector2f(300, 300));
     ImGui::SliderFloat("Walkkk", &this->walkSpeed, 0, 5);
@@ -43,6 +47,9 @@ void Player::update(float dt)
     ImGui::SliderFloat("weight", &this->mass, 0, 5);
     if (ImGui::Button("Reset player pos")) setPosition(0, 0);
     ImGui::End();
+#endif
+
+
 }
 
 void Player::handleCollision(const Entity& collider)
@@ -100,7 +107,35 @@ void Player::move(float dt)
 
     setPosition(getPosition() + sf::Vector2f(momentum));
 
-    this->updateAnimation(dt);
+}
+
+void Player::debugMove(float dt)
+{
+    this->acceleration.x = 0;
+    this->acceleration.y = 0;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+        this->acceleration.x = 1;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+        acceleration.x = -1;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        acceleration.y = -1;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
+        acceleration.y = 1;
+
+
+    momentum.x += acceleration.x * walkSpeed * dt;
+    momentum.y += acceleration.y * walkSpeed * dt;
+    momentum.x *= floorRes;
+    momentum.y *= floorRes;
+
+    //momentum.y += GRAVITY * dt * this->mass;
+    //momentum.y = std::min(TERMINALVELOCITY, momentum.y);
+
+    setPosition(getPosition() + sf::Vector2f(momentum));
 }
 
 void Player::jump() // om släppa knapp trycka ner spelar lite jappjapp
