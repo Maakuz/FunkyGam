@@ -48,7 +48,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
         points.push_back(PointOnLine(lines[i].p2, &lines[i]));
     }
 
-    
+
     //Works!
     for (size_t i = 0; i < points.size(); i++)
     {
@@ -66,21 +66,60 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     std::set<Line*> open;
     Line* closest = nullptr;
 
+    sf::ConvexShape tri(3);
+    tri.setFillColor(sf::Color::White);
+    tri.setPoint(0, sf::Vector2f(light.radius, light.radius));
+
     //base case, direction might be wrong af
     sf::Vector2f dir(-1, 0);
     for (size_t i = 0; i < lines.size(); i++)
     {
+        float t = findIntersectionPoint(light.pos, dir, lines[i].p1, lines[i].p2);
+
+        if (abs(t + 1) > EPSYLONE)
+            open.insert(&lines[i]);
+    }
+
+    //find closest
+    if (!open.empty())
+    {
+        auto iterator = open.begin();
+
+        auto min = iterator;
+
+
+        iterator++;
+        while (iterator != open.end())
+        {
+            sf::Vector2f minCenter = getCenterPoint((*min)->p1, (*min)->p2);
+            sf::Vector2f center2 = getCenterPoint((*iterator)->p1, (*iterator)->p2);
+
+            if (abs((center2 - light.pos).x) + abs((center2 - light.pos).y) <= abs((minCenter - light.pos).x) + abs((minCenter - light.pos).y) + EPSYLONE)
+                min = iterator;
+
+            iterator++;
+        }
+
+        closest = (*min);
+
+        if (atan2(closest->p1.y - light.pos.y, closest->p1.x - light.pos.x) > 0)
+            tri.setPoint(1, closest->p1 - light.pos + sf::Vector2f(light.radius, light.radius));
+
+        else
+            tri.setPoint(1, closest->p2 - light.pos + sf::Vector2f(light.radius, light.radius));
 
     }
 
-    sf::ConvexShape tri(3);
-    tri.setFillColor(sf::Color::White);
-    tri.setPoint(0, sf::Vector2f(light.radius, light.radius));
+
+
+
     static float stopVal = 100;
-     for (size_t i = 0; i < points.size(); i++)
-     {
-         if (atan2(points[i].p.y - light.pos.y, points[i].p.x - light.pos.x) > stopVal)
-             break;
+
+    //iteration start!
+    for (size_t i = 0; i < points.size(); i++)
+    {
+        if (atan2(points[i].p.y - light.pos.y, points[i].p.x - light.pos.x) > stopVal)
+            break;
 
         if (!open.count(points[i].parent))
         {
@@ -90,8 +129,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
             {
                 closest = points[i].parent;
                 tri.setPoint(1, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
-                
-                tri.setPoint(2, points[points.size() -1].p - light.pos + sf::Vector2f(light.radius, light.radius));
+
+                tri.setPoint(2, points[points.size() - 1].p - light.pos + sf::Vector2f(light.radius, light.radius));
 
 
                 triangles.push_back(tri);
@@ -109,19 +148,19 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                     normalize(dir);
 
                     float t = findIntersectionPoint(light.pos, dir, topLeft, topRight);
-                    
+
                     if (abs(t + 1) > EPSYLONE)
                         tri.setPoint(2, points[i].p + sf::Vector2f(dir.x * t, dir.y * t) - light.pos + sf::Vector2f(light.radius, light.radius));
 
                     else
                         tri.setPoint(2, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius)); // this one is tricky, needs to be projected or someting
-                        
 
-                    
-                    
+
+
+
                     //Exception if tri 1 and 2 are the same
                     //if (tri.getPoint(1).x + tri.getPoint(2).x > EPSYLONE || tri.getPoint(1).y + tri.getPoint(2).y > EPSYLONE)
-                        triangles.push_back(tri);
+                    triangles.push_back(tri);
 
                     closest = points[i].parent;
                     tri.setPoint(1, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
@@ -144,7 +183,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
                 tri.setPoint(2, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
                 triangles.push_back(tri);
-                
+
                 tri.setPoint(1, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
 
                 closest = nullptr;
@@ -163,9 +202,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                     iterator++; //might crash if only one wall
                     while (iterator != open.end())
                     {
-         
+
                         sf::Vector2f minCenter = getCenterPoint((*min)->p1, (*min)->p2);
-                        sf::Vector2f center2 =getCenterPoint((*iterator)->p1, (*iterator)->p2);
+                        sf::Vector2f center2 = getCenterPoint((*iterator)->p1, (*iterator)->p2);
 
                         if (abs((center2 - light.pos).x) + abs((center2 - light.pos).y) <= abs((minCenter - light.pos).x) + abs((minCenter - light.pos).y) + EPSYLONE)
                             min = iterator;
@@ -174,10 +213,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                     }
 
                     tri.setPoint(2, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
-                    
+
                     //if (tri.getPoint(1).x + tri.getPoint(2).x > EPSYLONE || tri.getPoint(1).y + tri.getPoint(2).y > EPSYLONE)
                     triangles.push_back(tri);
-                    
+
                     sf::Vector2f dir = points[i].p - light.pos;
                     normalize(dir);
 
@@ -194,13 +233,13 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
             }
         }
     }
-    
-     ImGui::Begin("LightData");
-     ImGui::Text(std::string(std::to_string(light.pos.x) + ", " + std::to_string(light.pos.y)).c_str());
-     ImGui::Text(std::string(std::to_string(light.radius)).c_str());
-     ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
-     ImGui::SliderFloat("radians", &stopVal, -3, 3);
-     ImGui::End();
+
+    ImGui::Begin("LightData");
+    ImGui::Text(std::string(std::to_string(light.pos.x) + ", " + std::to_string(light.pos.y)).c_str());
+    ImGui::Text(std::string(std::to_string(light.radius)).c_str());
+    ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
+    ImGui::SliderFloat("radians", &stopVal, -3, 3);
+    ImGui::End();
 
     drawShadowMap();
 
