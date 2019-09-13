@@ -1,9 +1,9 @@
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
 #include "Game.h"
-#include "imgui.h"
-#include "SFML-imgui/imgui-SFML.h"
-#include "SFML-imgui/imgui-SFML_export.h"
+#include "Imgui/imgui.h"
+#include "Imgui/SFML-imgui/imgui-SFML.h"
+#include "Imgui/SFML-imgui/imgui-SFML_export.h"
 
 int main()
 {

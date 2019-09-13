@@ -1,5 +1,5 @@
 #include "CollisionBox.h"
-#include "Definitions.h"
+#include "Misc/Definitions.h"
 #include "SFML/Graphics.hpp"
 #define EDGE_SIZE TILE_SIZE / 4
 

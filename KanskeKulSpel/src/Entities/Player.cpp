@@ -1,8 +1,8 @@
 #include "Player.h"
-#include "Definitions.h"
-#include "KeyboardState.h"
+#include "Misc/Definitions.h"
+#include "Misc/KeyboardState.h"
 #include "Lighting/LightQueue.h"
-#include "imgui.h"
+#include "Imgui/imgui.h"
 
 #define TERMINALVELOCITY 10.f
 

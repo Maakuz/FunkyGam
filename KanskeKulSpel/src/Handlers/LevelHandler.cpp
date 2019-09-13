@@ -1,6 +1,6 @@
 #include "LevelHandler.h"
 #include <fstream>
-#include "Definitions.h"
+#include "Misc/Definitions.h"
 
 #define LEVEL_FOLDER "../Maps/"
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"

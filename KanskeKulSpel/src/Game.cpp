@@ -1,5 +1,6 @@
 #include "Game.h"
-#include "KeyboardState.h"
+#include "Misc/KeyboardState.h"
+#include "Misc/Profiler.h"
 
 #define DEBUG_MODE true
 
@@ -11,8 +12,6 @@ Game::Game(sf::RenderWindow* window)
 
     this->fullscreenboi = sf::RectangleShape(sf::Vector2f(window->getSize()));
     this->fullscreenboi.setPosition(0, 0);
-    
-    this->shadowMap.create(window->getSize().x, window->getSize().y);
 
     for (int i = 0; i < NR_OF_RENDER_TARGETS; i++)
     {
@@ -71,16 +70,13 @@ void Game::update(float dt)
 void Game::draw()
 {
     //Shadow map
-    this->shadowMap.clear(sf::Color::White);
-    this->shadowMap.draw(this->levelHandler, &shaders[SHADER::shadowMap]);
-    this->shadowMap.display();
+    this->shadowHandler.generateShadowMap(*this->window, sf::RenderStates::Default);
 
     ////Light drawing hopefully
 
     int nrOfLights = LightQueue::get().getQueue().size();
     shaders[SHADER::lighting].setUniform("nrOfLights", nrOfLights);
     shaders[SHADER::lighting].setUniformArray("lights", (sf::Glsl::Vec3*)LightQueue::get().getQueue().data(), nrOfLights);
-    shaders[SHADER::lighting].setUniform("shadowMap", this->shadowMap.getTexture());
 
     for (int i = 0; i < NR_OF_RENDER_TARGETS; i++)
     {
@@ -122,7 +118,7 @@ void Game::draw()
         break;
 
     case 3:
-        this->fullscreenboi.setTexture(&shadowMap.getTexture());
+        //this->fullscreenboi.setTexture(&shadowMap.getTexture());
         break;
 
     default:

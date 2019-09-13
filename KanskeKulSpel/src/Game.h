@@ -2,6 +2,7 @@
 #include "SFML/Window.hpp"
 #include "Entities/Player.h"
 #include "Handlers/ShaderHandler.h"
+#include "Handlers/ShadowHandler.h"
 #include "Lighting/LightQueue.h"
 #include "Collision/CollisionHandler.h"
 #include "Handlers/LevelHandler.h"
@@ -46,9 +47,9 @@ private:
     sf::View view;
 
     ShaderHandler shaders;
+    ShadowHandler shadowHandler;
 
 
     sf::RenderTexture renderTargets[NR_OF_RENDER_TARGETS];
-    sf::RenderTexture shadowMap;
     sf::RectangleShape fullscreenboi;
 };

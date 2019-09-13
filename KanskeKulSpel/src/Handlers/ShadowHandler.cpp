@@ -2,6 +2,8 @@
 #include "Lighting/LightQueue.h"
 #include <set>
 
+std::vector<ShadowHandler::Line> ShadowHandler::ShadowHandler::lines;
+
 ShadowHandler::ShadowHandler()
 {
 }
@@ -16,6 +18,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
         points.push_back(PointOnLine(lines[i].p1, &lines[i]));
         points.push_back(PointOnLine(lines[i].p2, &lines[i]));
     }
+
+    lines.clear();
     
     Light light = LightQueue::get().getQueue()[0];
 
@@ -109,14 +113,20 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     drawShadowMap();
     //We done bois
 
+    //test to see what even
+    sf::Sprite test(shadowMap.getTexture());
+    target.draw(test, states);
+
 }
 
 void ShadowHandler::drawShadowMap()
 {
+    shadowMap.clear(sf::Color::Black);
     for (auto const & polies : this->triangles)
     {
         shadowMap.draw(polies);
     }
+    shadowMap.display();
 }
 
 void ShadowHandler::queueLine(Line line)
