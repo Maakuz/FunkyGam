@@ -39,7 +39,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     lines.push_back(Line(bottomLeft, topLeft));
     lines.push_back(Line(topLeft, topRight));
 
-    lines.push_back(Line(sf::Vector2f(500, 100), sf::Vector2f(300, 100)));
+    lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(300, 300)));
 
     std::vector<PointOnLine> points;
     for (size_t i = 0; i < lines.size(); i++)
@@ -70,16 +70,17 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     tri.setFillColor(sf::Color::White);
     tri.setPoint(0, sf::Vector2f(light.radius, light.radius));
 
-    //base case, direction might be wrong af
-    sf::Vector2f dir(-1, 0);
-    for (size_t i = 0; i < lines.size(); i++)
+    //base case
     {
-        float t = findIntersectionPoint(light.pos, dir, lines[i].p1, lines[i].p2);
+        sf::Vector2f dir(-1, 0);
+        for (size_t i = 0; i < lines.size(); i++)
+        {
+            float t = findIntersectionPoint(light.pos, dir, lines[i].p1, lines[i].p2);
 
-        if (abs(t + 1) > EPSYLONE)
-            open.insert(&lines[i]);
+            if (abs(t + 1) > EPSYLONE)
+                open.insert(&lines[i]);
+        }
     }
-
     //find closest
     if (!open.empty())
     {
@@ -102,12 +103,26 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
         closest = (*min);
 
+        sf::Vector2f p;
+
         if (atan2(closest->p1.y - light.pos.y, closest->p1.x - light.pos.x) > 0)
-            tri.setPoint(1, closest->p1 - light.pos + sf::Vector2f(light.radius, light.radius));
+            p = closest->p1;
 
         else
-            tri.setPoint(1, closest->p2 - light.pos + sf::Vector2f(light.radius, light.radius));
+            p = closest->p2;
 
+
+        if (atan2(p.y - light.pos.y, p.x - light.pos.x) > atan2(points[points.size() - 1].p.y - light.pos.y, points[points.size() - 1].p.x - light.pos.x))
+            tri.setPoint(1, p - light.pos + sf::Vector2f(light.radius, light.radius));
+
+        else
+        {
+            sf::Vector2f dir = points[points.size() - 1].p  - light.pos;
+            normalize(dir);
+            //For all open!!!!!!
+            float t = this->findIntersectionPoint(light.pos, dir, closest->p1, closest->p2);
+            tri.setPoint(1, points[points.size() - 1].p + sf::Vector2f(dir.x * t, dir.y * t) - light.pos + sf::Vector2f(light.radius, light.radius));
+        }
     }
 
 
@@ -124,16 +139,16 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
         if (!open.count(points[i].parent))
         {
             open.insert(points[i].parent);
-            //Could possibly just be a base case
+            
             if (closest == nullptr)
             {
                 closest = points[i].parent;
                 tri.setPoint(1, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
 
-                tri.setPoint(2, points[points.size() - 1].p - light.pos + sf::Vector2f(light.radius, light.radius));
+                //tri.setPoint(2, points[points.size() - 1].p - light.pos + sf::Vector2f(light.radius, light.radius));
 
 
-                triangles.push_back(tri);
+                //triangles.push_back(tri);
             }
 
             else
