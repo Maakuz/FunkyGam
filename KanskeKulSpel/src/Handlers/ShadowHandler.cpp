@@ -94,7 +94,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
             sf::Vector2f minCenter = getCenterPoint((*min)->p1, (*min)->p2);
             sf::Vector2f center2 = getCenterPoint((*iterator)->p1, (*iterator)->p2);
 
-            if (abs((center2 - light.pos).x) + abs((center2 - light.pos).y) <= abs((minCenter - light.pos).x) + abs((minCenter - light.pos).y) + EPSYLONE)
+            if (lengthSquared(center2 - light.pos) <= lengthSquared(minCenter - light.pos) + EPSYLONE)
                 min = iterator;
 
             iterator++;
@@ -141,7 +141,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                 sf::Vector2f closestCenter = getCenterPoint(closest->p1, closest->p2);
                 sf::Vector2f newCenter = getCenterPoint(points[i].parent->p1, points[i].parent->p2);
 
-                if (abs((newCenter - light.pos).x) + abs((newCenter - light.pos).y) <= abs((closestCenter - light.pos).x) + abs((closestCenter - light.pos).y) + EPSYLONE)
+                if (lengthSquared(newCenter - light.pos) <= lengthSquared(closestCenter - light.pos) + EPSYLONE)
                 {
 
                     sf::Vector2f dir = points[i].p - light.pos;
@@ -206,7 +206,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                         sf::Vector2f minCenter = getCenterPoint((*min)->p1, (*min)->p2);
                         sf::Vector2f center2 = getCenterPoint((*iterator)->p1, (*iterator)->p2);
 
-                        if (abs((center2 - light.pos).x) + abs((center2 - light.pos).y) <= abs((minCenter - light.pos).x) + abs((minCenter - light.pos).y) + EPSYLONE)
+                        if (lengthSquared(center2 - light.pos) <= lengthSquared(minCenter - light.pos) + EPSYLONE)
                             min = iterator;
 
                         iterator++;
