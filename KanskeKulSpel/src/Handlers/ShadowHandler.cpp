@@ -2,7 +2,6 @@
 #include "Lighting/LightQueue.h"
 #include "Misc/Definitions.h"
 #include "Imgui/imgui.h"
-#include <set>
 
 std::vector<ShadowHandler::Line> ShadowHandler::ShadowHandler::lines;
 
@@ -39,7 +38,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     lines.push_back(Line(bottomLeft, topLeft));
     lines.push_back(Line(topLeft, topRight));
 
-    lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(300, 300)));
+    //lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(300, 300)));
+    lines.push_back(Line(sf::Vector2f(500, 200), sf::Vector2f(500, 300)));
 
     std::vector<PointOnLine> points;
     for (size_t i = 0; i < lines.size(); i++)
@@ -117,22 +117,24 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
         else
         {
-            sf::Vector2f dir = points[points.size() - 1].p  - light.pos;
+            sf::Vector2f dir = points[points.size() - 1].p - light.pos;
             normalize(dir);
-            //For all open!!!!!!
-            float t = this->findIntersectionPoint(light.pos, dir, closest->p1, closest->p2);
+
+            float t = findClosestIntersection(open, light.pos, dir);
+
             tri.setPoint(1, points[points.size() - 1].p + sf::Vector2f(dir.x * t, dir.y * t) - light.pos + sf::Vector2f(light.radius, light.radius));
         }
     }
 
 
 
-
+    //debug
     static float stopVal = 100;
 
     //iteration start!
     for (size_t i = 0; i < points.size(); i++)
     {
+        //debug
         if (atan2(points[i].p.y - light.pos.y, points[i].p.x - light.pos.x) > stopVal)
             break;
 
@@ -162,7 +164,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                     sf::Vector2f dir = points[i].p - light.pos;
                     normalize(dir);
 
-                    float t = findIntersectionPoint(light.pos, dir, topLeft, topRight);
+                    float t = findClosestIntersection(open, light.pos, dir);
 
                     if (abs(t + 1) > EPSYLONE)
                         tri.setPoint(2, points[i].p + sf::Vector2f(dir.x * t, dir.y * t) - light.pos + sf::Vector2f(light.radius, light.radius));
@@ -235,7 +237,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                     sf::Vector2f dir = points[i].p - light.pos;
                     normalize(dir);
 
-                    float t = findIntersectionPoint(light.pos, dir, topLeft, topRight);
+                    float t = findClosestIntersection(open, light.pos, dir);
 
                     if (abs(t + 1) > EPSYLONE)
                         tri.setPoint(1, points[i].p + sf::Vector2f(dir.x * t, dir.y * t) - light.pos + sf::Vector2f(light.radius, light.radius));
@@ -291,7 +293,6 @@ sf::Vector2f ShadowHandler::getCenterPoint(sf::Vector2f p1, sf::Vector2f p2)
 
 float ShadowHandler::findIntersectionPoint(sf::Vector2f pos, sf::Vector2f dir, sf::Vector2f p1, sf::Vector2f p2)
 {
-    //might need to normazzise
     sf::Vector2f v1 = pos - p1;
     sf::Vector2f v2 = p2 - p1;
     sf::Vector2f v3 = sf::Vector2f(-dir.y, dir.x);
@@ -302,16 +303,40 @@ float ShadowHandler::findIntersectionPoint(sf::Vector2f pos, sf::Vector2f dir, s
 
     if (abs(dot) > EPSYLONE)
     {
+        //crioss
         t1 = ((v2.x * v1.y) - (v2.y * v1.x)) / dot;
+        //dot
         t2 = ((v1.x * v3.x) + (v1.y * v3.y)) / dot;
 
-        if (t1 < 0.f || (t2 < 0.f && t2 > 1.f))
+        if (t1 < 0.f || (t2 < 0.f || t2 > 1.f))
         {
             t1 = -1;
         }
     }
 
     return t1;
+}
+
+float ShadowHandler::findClosestIntersection(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir)
+{
+
+    auto iterator = openList.begin();
+    auto min = iterator;
+    float tMin = this->findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
+
+    iterator++; //might crash if only one wall
+    while (iterator != openList.end())
+    {
+
+        float t = this->findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
+
+        if (abs(t + 1) > EPSYLONE)
+            if (t < tMin)
+                tMin = t;
+
+        iterator++;
+    }
+    return tMin;
 }
 
 void ShadowHandler::queueLine(Line line)

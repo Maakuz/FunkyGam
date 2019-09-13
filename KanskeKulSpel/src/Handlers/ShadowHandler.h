@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include <vector>
+#include <set>
 
 class ShadowHandler
 {
@@ -33,6 +34,9 @@ private:
 
     //if direction is not normalized ima be mad
     float findIntersectionPoint(sf::Vector2f pos, sf::Vector2f dir, sf::Vector2f p1, sf::Vector2f p2);
+    //if direction is not normalized ima be mad
+    float findClosestIntersection(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir);
+
 
     sf::RenderTexture shadowMap;
     std::vector<sf::ConvexShape> triangles;
