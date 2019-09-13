@@ -1,6 +1,7 @@
 #include "LevelHandler.h"
 #include <fstream>
 #include "Misc/Definitions.h"
+#include "ShadowHandler.h"
 
 #define LEVEL_FOLDER "../Maps/"
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
@@ -31,6 +32,8 @@ void LevelHandler::updateLevel(float dt)
 {
     for (auto & ter : terrain)
         CollisionHandler::queueCollider(&ter);
+
+    queueShadows();
 }
 
 void LevelHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
@@ -174,4 +177,29 @@ bool LevelHandler::generateHitboxes()
 
 
     return true;
+}
+
+void LevelHandler::queueShadows()
+{
+    for (auto & ter : terrain)
+    {
+        ShadowHandler::Line top(
+            ter.getPosition(), 
+            sf::Vector2f(ter.getPosition().x + ter.getTexture()->getSize().x, ter.getPosition().y));
+
+        ShadowHandler::Line right(
+            sf::Vector2f(ter.getPosition().x + ter.getTexture()->getSize().x, ter.getPosition().y),
+            sf::Vector2f(ter.getPosition().x + ter.getTexture()->getSize().x, ter.getPosition().y + ter.getTexture()->getSize().y));
+
+        ShadowHandler::Line bottom(
+            sf::Vector2f(ter.getPosition().x + ter.getTexture()->getSize().x, ter.getPosition().y + ter.getTexture()->getSize().y),
+            sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getTexture()->getSize().y));
+        ShadowHandler::Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getTexture()->getSize().y),
+            ter.getPosition());
+
+        ShadowHandler::queueLine(top);
+        ShadowHandler::queueLine(right);
+        ShadowHandler::queueLine(bottom);
+        ShadowHandler::queueLine(left);
+    }
 }

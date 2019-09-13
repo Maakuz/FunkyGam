@@ -42,6 +42,7 @@ public:
 private:
     bool importLevel(levels level);
     bool generateHitboxes();
+    void queueShadows();
 
     typedef std::vector<std::vector<Tile>> Layer;
 
