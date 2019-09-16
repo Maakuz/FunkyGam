@@ -33,7 +33,7 @@ void LevelHandler::updateLevel(float dt)
     for (auto & ter : terrain)
         CollisionHandler::queueCollider(&ter);
 
-    queueShadows();
+    //queueShadows();
 }
 
 void LevelHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const

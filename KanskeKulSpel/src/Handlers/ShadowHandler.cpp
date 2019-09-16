@@ -22,6 +22,7 @@ ShadowHandler::ShadowHandler()
 {
 }
 
+//Please don't look here
 void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates states)
 {
     Light light = LightQueue::get().getQueue()[0];
@@ -33,21 +34,34 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     sf::Vector2f bottomLeft(light.pos.x - light.radius, light.pos.y + light.radius);
     sf::Vector2f bottomRight(light.pos.x + light.radius, light.pos.y + light.radius);
 
+    sf::FloatRect bounds(topLeft, sf::Vector2f(light.radius * 2, light.radius * 2));
+    
+
     lines.push_back(Line(topRight, bottomRight));
     lines.push_back(Line(bottomRight, bottomLeft));
     lines.push_back(Line(bottomLeft, topLeft));
     lines.push_back(Line(topLeft, topRight));
 
     //testlines
-   //lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(800, 300)));
-   //lines.push_back(Line(sf::Vector2f(1000, 0), sf::Vector2f(1000, 600)));
-   //lines.push_back(Line(sf::Vector2f(900, 200), sf::Vector2f(900, 300)));
+   lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(800, 300)));
+   lines.push_back(Line(sf::Vector2f(1000, 0), sf::Vector2f(1000, 600)));
+   lines.push_back(Line(sf::Vector2f(900, 200), sf::Vector2f(900, 300)));
 
     std::vector<PointOnLine> points;
     for (size_t i = 0; i < lines.size(); i++)
     {
-        points.push_back(PointOnLine(lines[i].p1, &lines[i]));
-        points.push_back(PointOnLine(lines[i].p2, &lines[i]));
+        //clamp them to light rect or discard if outside
+        if (this->inBounds(bounds, lines[i].p1) || this->inBounds(bounds, lines[i].p2))
+        {
+            lines[i].p1.x = std::min(bottomRight.x, std::max(topLeft.x, lines[i].p1.x));
+            lines[i].p1.y = std::min(bottomRight.y, std::max(topLeft.y, lines[i].p1.y));
+
+            lines[i].p2.x = std::min(bottomRight.x, std::max(topLeft.x, lines[i].p2.x));
+            lines[i].p2.y = std::min(bottomRight.y, std::max(topLeft.y, lines[i].p2.y));
+
+            points.push_back(PointOnLine(lines[i].p1, &lines[i]));
+            points.push_back(PointOnLine(lines[i].p2, &lines[i]));
+        }
     }
 
 
@@ -165,15 +179,18 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
             else
             {
-                sf::Vector2f closestCenter = getCenterPoint(closest->p1, closest->p2);
-                sf::Vector2f newCenter = getCenterPoint(points[i].parent->p1, points[i].parent->p2);
+                //sf::Vector2f closestCenter = getCenterPoint(closest->p1, closest->p2);
+                //sf::Vector2f newCenter = getCenterPoint(points[i].parent->p1, points[i].parent->p2);
+                
+                sf::Vector2f dir = points[i].p - light.pos;
+                normalize(dir);
 
-                if (lengthSquared(newCenter - light.pos) <= lengthSquared(closestCenter - light.pos) + EPSYLONE)
+                // this->findIntersectionPoint(light.pos, dir, points[i].parent->p1, points[i].parent->p2);
+                float closestContender = length(points[i].p - light.pos);
+                float currentClosest = this->findIntersectionPoint(light.pos, dir, closest->p1, closest->p2);
+
+                if (closestContender < currentClosest + EPSYLONE && closestContender >= 0)
                 {
-
-                    sf::Vector2f dir = points[i].p - light.pos;
-                    normalize(dir);
-
                     float t = findClosestIntersectionDistance(open, light.pos, dir);
 
                     if (abs(t + 1) > EPSYLONE)
@@ -182,11 +199,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                     else
                         tri.setPoint(2, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius)); // this one is tricky, needs to be projected or someting
 
-
-
-
-                    //Exception if tri 1 and 2 are the same
-                    //if (tri.getPoint(1).x + tri.getPoint(2).x > EPSYLONE || tri.getPoint(1).y + tri.getPoint(2).y > EPSYLONE)
                     triangles.push_back(tri);
 
                     closest = points[i].parent;
@@ -219,31 +231,33 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
                 if (closest == points[i].parent)
                 {
-                    auto iterator = open.begin();
+                    //auto iterator = open.begin();
 
-                    auto min = iterator;
+                    //auto min = iterator;
 
-                    iterator++; //might crash if only one wall
-                    while (iterator != open.end())
-                    {
+                    //iterator++; //might crash if only one wall
+                    //while (iterator != open.end())
+                    //{
 
-                        sf::Vector2f minCenter = getCenterPoint((*min)->p1, (*min)->p2);
-                        sf::Vector2f center2 = getCenterPoint((*iterator)->p1, (*iterator)->p2);
+                    //    sf::Vector2f minCenter = getCenterPoint((*min)->p1, (*min)->p2);
+                    //    sf::Vector2f center2 = getCenterPoint((*iterator)->p1, (*iterator)->p2);
 
-                        if (lengthSquared(center2 - light.pos) <= lengthSquared(minCenter - light.pos) + EPSYLONE)
-                            min = iterator;
+                    //    if (lengthSquared(center2 - light.pos) <= lengthSquared(minCenter - light.pos) + EPSYLONE)
+                    //        min = iterator;
 
-                        iterator++;
-                    }
-                    closest = (*min);
-
-                    tri.setPoint(2, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
-
-                    //if (tri.getPoint(1).x + tri.getPoint(2).x > EPSYLONE || tri.getPoint(1).y + tri.getPoint(2).y > EPSYLONE)
-                    triangles.push_back(tri);
+                    //    iterator++;
+                    //}
+                    //closest = (*min);
 
                     sf::Vector2f dir = points[i].p - light.pos;
                     normalize(dir);
+
+                    closest = this->findClosestLine(open, light.pos, dir);
+
+                    tri.setPoint(2, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
+
+                    triangles.push_back(tri);
+
 
                     float t = findClosestIntersectionDistance(open, light.pos, dir);
 
@@ -346,6 +360,16 @@ float ShadowHandler::findClosestIntersectionDistance(const std::set<Line*>& open
     return tMin;
 }
 
+bool ShadowHandler::inBounds(sf::FloatRect bound, sf::Vector2f point)
+{
+    return 
+        bound.left - EPSYLONE < point.x &&
+        bound.top - EPSYLONE < point.y && 
+        bound.left + bound.width + EPSYLONE > point.x &&
+        bound.top + bound.height + EPSYLONE > point.y;
+}
+
+//might crash if only one wall
 ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir)
 {
     auto iterator = openList.begin();
@@ -353,6 +377,10 @@ ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openL
     float tMin = this->findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
 
     iterator++; //might crash if only one wall
+    
+    if (tMin < 0 && iterator == openList.end())
+            return nullptr;
+
     while (iterator != openList.end())
     {
 

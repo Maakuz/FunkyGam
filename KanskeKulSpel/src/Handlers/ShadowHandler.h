@@ -37,6 +37,8 @@ private:
     //if direction is not normalized ima be mad
     float findClosestIntersectionDistance(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir);
 
+    bool inBounds(sf::FloatRect bound, sf::Vector2f point);
+    
     Line* findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir);
 
     sf::RenderTexture shadowMap;
@@ -61,4 +63,5 @@ private:
         vec.x = vec.x / l;
         vec.y = vec.y / l;
     }
+
 };
