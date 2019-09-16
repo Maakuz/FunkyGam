@@ -29,7 +29,7 @@ public:
 
     sf::Shader& operator[](int i);
 
-    const int lightingPass[3] = {SHADER::shaders::lighting, SHADER::shaders::gaussVertical, SHADER::shaders::gaussHorizontal};
+    const int BLUR_PASS[2] = {SHADER::shaders::gaussVertical, SHADER::shaders::gaussHorizontal};
 
 private:
     static sf::Shader shaders[NR_OF_SHADERS];

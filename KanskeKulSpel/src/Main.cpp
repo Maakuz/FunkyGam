@@ -4,6 +4,7 @@
 #include "Imgui/imgui.h"
 #include "Imgui/SFML-imgui/imgui-SFML.h"
 #include "Imgui/SFML-imgui/imgui-SFML_export.h"
+#include "Misc/Profiler.h"
 
 int main()
 {
@@ -59,6 +60,11 @@ int main()
 
         wandow.clear(sf::Color(0, 155, 200));
         game.draw();
+
+        PROFILER_START("PROFILER!?")
+        Profiler::get().drawGUI();
+        PROFILER_STOP
+
         ImGui::SFML::Render(wandow);
         wandow.display();
 

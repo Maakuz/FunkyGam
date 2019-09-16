@@ -277,6 +277,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     lines.clear();
     triangles.clear();
 
+    shadowMap.generateMipmap();
+
     sf::Sprite test(shadowMap.getTexture());
     test.setPosition(light.pos - (sf::Vector2f(shadowMap.getSize()) / 2.f));
     target.draw(test, states);

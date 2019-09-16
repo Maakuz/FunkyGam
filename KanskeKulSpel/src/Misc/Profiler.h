@@ -17,11 +17,10 @@ public:
     }
     ~Profiler() {};
 
-    void drawGUI()
+    void drawGUI(float deltaTime = 0)
     {
-        std::string text = "";
-        ImGui::Begin("Profolio, MicroSec", NULL, sf::Vector2f(500, 500));
-
+        std::string text ="Profolio, MicroSec!";
+        ImGui::Begin(text.c_str(), NULL, sf::Vector2f(500, 500));
         for (size_t i = 0; i < times.size(); i++)
         {
             text = names[i] + ", " + std::to_string(times[i]);

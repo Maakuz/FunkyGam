@@ -60,7 +60,7 @@ void Game::update(float dt)
 
     KEYBOARD::KeyboardState::updateKeys();
     
-    Light light(player->getPosition(), 500);
+    Light light(player->getPosition(), 5000);
     LightQueue::get().queue(light);
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
@@ -101,14 +101,16 @@ void Game::draw()
 
     PROFILER_STOP
 
-    /*for (int i = 0; i < NR_OF_RENDER_TARGETS; i++)
+    PROFILER_START("Blur")
+    for (int i = 0; i < 2; i++)
     {
-        this->renderTargets[i].clear(sf::Color::Transparent);
-        this->renderTargets[i].draw(this->fullscreenboi, &shaders[shaders.lightingPass[i]]);
-        this->renderTargets[i].display();
+        this->renderTargets[i + 1].clear(sf::Color::Transparent);
+        this->renderTargets[i + 1].draw(this->fullscreenboi, &shaders[shaders.BLUR_PASS[i]]);
+        this->renderTargets[i + 1].display();
 
-        this->fullscreenboi.setTexture(&this->renderTargets[i].getTexture());
-    }*/
+        this->fullscreenboi.setTexture(&this->renderTargets[i + 1].getTexture());
+    }
+    PROFILER_STOP
 
     LightQueue::get().clear();
 
@@ -141,9 +143,7 @@ void Game::draw()
         break;
 
     case 8:
-        PROFILER_START("PROFILER!?")
-        Profiler::get().drawGUI();
-        PROFILER_STOP
+        
         break;
 
     default:
