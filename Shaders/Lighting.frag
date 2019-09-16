@@ -1,5 +1,8 @@
 uniform int nrOfLights;
-uniform vec3[200] lights;
+
+//first vec is pos and radius, second vector is color, third is padding/USELESS
+uniform mat3[200] lights;
+
 uniform sampler2D shadowMap;
 
 void main()
@@ -15,17 +18,20 @@ void main()
 
     for (int i = 0; i < nrOfLights; ++i)
     {
-        radius = lights[i].z;
+        radius = lights[i][0].z;
+        color.rgb = lights[i][1].xyz;
     
-        distanceFromLight = length(coord.xy - lights[i].xy);
+        distanceFromLight = length(coord.xy - lights[i][0].xy);
 
         color.a += 1 - clamp((distanceFromLight / (radius * (1 - noFadePercentage))) - noFadePercentage, 0.0, 1.0);
     }
 
-    color.a = 1 - color.a;
+    float alpha = 1 - texture2D(shadowMap, gl_TexCoord[0].xy).r;
+    
+    color.a = color.a - alpha;
 
     clamp(color.a, 0, 1);
 
-    //gl_FragColor = texture2D(shadowMap, gl_TexCoord[0].xy); så gör man
+    gl_FragColor = gl_Color;
     gl_FragColor = color;
 }

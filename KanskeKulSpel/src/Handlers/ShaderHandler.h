@@ -25,12 +25,12 @@ public:
     ShaderHandler();
     ~ShaderHandler() {};
 
-    sf::Shader& getShader(SHADER::shaders shader);
+    static sf::Shader& getShader(SHADER::shaders shader);
 
     sf::Shader& operator[](int i);
 
     const int lightingPass[3] = {SHADER::shaders::lighting, SHADER::shaders::gaussVertical, SHADER::shaders::gaussHorizontal};
 
 private:
-    sf::Shader shaders[NR_OF_SHADERS];
+    static sf::Shader shaders[NR_OF_SHADERS];
 };

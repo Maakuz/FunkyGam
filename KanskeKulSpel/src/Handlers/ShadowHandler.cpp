@@ -47,6 +47,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
    //lines.push_back(Line(sf::Vector2f(1000, 0), sf::Vector2f(1000, 600)));
    //lines.push_back(Line(sf::Vector2f(900, 200), sf::Vector2f(900, 300)));
 
+#pragma region prepping lines
     std::vector<PointOnLine> points;
     for (size_t i = 0; i < lines.size(); i++)
     {
@@ -71,7 +72,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     }
 
 
-    //Works!
+    //Insertion Sort
     for (size_t i = 0; i < points.size(); i++)
     {
         int min = i;
@@ -84,6 +85,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
         if (min != i)
             std::swap(points[min], points[i]);
     }
+#pragma endregion
 
     std::set<Line*> open;
     Line* closest = nullptr;
@@ -92,6 +94,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     tri.setFillColor(sf::Color::White);
     tri.setPoint(0, sf::Vector2f(light.radius, light.radius));
 
+#pragma region basecase -- uses old tech but it works with reasonable fast
     //base case
     {
         sf::Vector2f dir(-1, 0);
@@ -156,18 +159,18 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
             }
         }
     }
-
+#pragma endregion
 
 
     //debug
-    static float stopVal = 100;
+    //static float stopVal = 100;
 
     //iteration start!
     for (size_t i = 0; i < points.size(); i++)
     {
         //debug
-        if (atan2(points[i].p.y - light.pos.y, points[i].p.x - light.pos.x) > stopVal)
-            break;
+        //if (atan2(points[i].p.y - light.pos.y, points[i].p.x - light.pos.x) > stopVal)
+          //  break;
 
         if (!open.count(points[i].parent))
         {
@@ -176,18 +179,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
             {
                 closest = points[i].parent;
                 tri.setPoint(1, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
-
-                //tri.setPoint(2, points[points.size() - 1].p - light.pos + sf::Vector2f(light.radius, light.radius));
-
-
-                //triangles.push_back(tri);
             }
 
             else
             {
-                //sf::Vector2f closestCenter = getCenterPoint(closest->p1, closest->p2);
-                //sf::Vector2f newCenter = getCenterPoint(points[i].parent->p1, points[i].parent->p2);
-                
                 sf::Vector2f contenderOffset;
 
                 if (points[i].p == points[i].parent->p1)
@@ -243,24 +238,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
                 if (closest == points[i].parent)
                 {
-                    //auto iterator = open.begin();
-
-                    //auto min = iterator;
-
-                    //iterator++; //might crash if only one wall
-                    //while (iterator != open.end())
-                    //{
-
-                    //    sf::Vector2f minCenter = getCenterPoint((*min)->p1, (*min)->p2);
-                    //    sf::Vector2f center2 = getCenterPoint((*iterator)->p1, (*iterator)->p2);
-
-                    //    if (lengthSquared(center2 - light.pos) <= lengthSquared(minCenter - light.pos) + EPSYLONE)
-                    //        min = iterator;
-
-                    //    iterator++;
-                    //}
-                    //closest = (*min);
-
                     sf::Vector2f dir = points[i].p - light.pos;
                     normalize(dir);
 
@@ -274,7 +251,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                     float t = findClosestIntersectionDistance(open, light.pos, dir);
 
                     //Caring for corner case crap
-
                     if (i+1 < points.size() && points[i].p == points[i + 1].p)
                         tri.setPoint(1, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
 
@@ -289,39 +265,41 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
         }
     }
 
-    ImGui::Begin("LightData");
-    ImGui::Text(std::string(std::to_string(light.pos.x) + ", " + std::to_string(light.pos.y)).c_str());
-    ImGui::Text(std::string(std::to_string(light.radius)).c_str());
-    ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
-    ImGui::SliderFloat("radians", &stopVal, -3, 3);
-    ImGui::End();
+    //ImGui::Begin("LightData");
+    //ImGui::Text(std::string(std::to_string(light.pos.x) + ", " + std::to_string(light.pos.y)).c_str());
+    //ImGui::Text(std::string(std::to_string(light.radius)).c_str());
+    //ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
+    //ImGui::SliderFloat("radians", &stopVal, -3, 3);
+    //ImGui::End();
 
     drawShadowMap();
 
     lines.clear();
     triangles.clear();
-    //We done bois
 
-    //test to see what even
     sf::Sprite test(shadowMap.getTexture());
     test.setPosition(light.pos - (sf::Vector2f(shadowMap.getSize()) / 2.f));
     target.draw(test, states);
+    //We done bois
 
 }
 
 void ShadowHandler::drawShadowMap()
 {
-    for (size_t i = 0; i < triangles.size(); i++)
+    //For debugging
+    /*for (size_t i = 0; i < triangles.size(); i++)
     {
         triangles[i].setFillColor(sf::Color(100, 255 * (float(i) / triangles.size()), 255 * (float(i) / triangles.size()), 255));
-    }
+    }*/
 
-    shadowMap.clear(sf::Color::Black);
+    shadowMap.clear(sf::Color::Transparent);
     for (auto const & polies : this->triangles)
     {
         shadowMap.draw(polies);
     }
     shadowMap.display();
+
+
 }
 
 sf::Vector2f ShadowHandler::getCenterPoint(sf::Vector2f p1, sf::Vector2f p2)

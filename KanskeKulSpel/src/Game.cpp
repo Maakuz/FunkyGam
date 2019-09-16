@@ -48,6 +48,7 @@ void Game::loadFiles()
     if (!this->textures.playerSprite.loadFromFile(TEXTURE_PATH("smallCate.png")))
         exit(-2);
 
+    this->shaders[SHADER::lighting].setUniform("shadowMap", sf::Shader::CurrentTexture);
     this->shaders[SHADER::gaussHorizontal].setUniform("texture", sf::Shader::CurrentTexture);
     this->shaders[SHADER::gaussVertical  ].setUniform("texture", sf::Shader::CurrentTexture);
 
@@ -59,7 +60,7 @@ void Game::update(float dt)
 
     KEYBOARD::KeyboardState::updateKeys();
     
-    Light light(player->getPosition(), 300);
+    Light light(player->getPosition(), 500);
     LightQueue::get().queue(light);
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
@@ -83,25 +84,31 @@ void Game::update(float dt)
 
 void Game::draw()
 {
-    //Shadow map
-    PROFILER_START("Shadow draw")
-    this->shadowHandler.generateShadowMap(*this->window, sf::RenderStates::Default);
-    PROFILER_STOP
+    
 
 
     ////Light drawing hopefully
     int nrOfLights = LightQueue::get().getQueue().size();
     shaders[SHADER::lighting].setUniform("nrOfLights", nrOfLights);
-    shaders[SHADER::lighting].setUniformArray("lights", (sf::Glsl::Vec3*)LightQueue::get().getQueue().data(), nrOfLights);
+    shaders[SHADER::lighting].setUniformArray("lights", (sf::Glsl::Mat3*)LightQueue::get().getQueue().data(), nrOfLights);
+   
+    //Shadow map
+    PROFILER_START("Shadow draw")
+    this->renderTargets[0].clear(sf::Color::Transparent);
+        this->shadowHandler.generateShadowMap(this->renderTargets[0], &shaders[SHADER::lighting]);
+    this->renderTargets[0].display();
+    this->fullscreenboi.setTexture(&this->renderTargets[0].getTexture());
 
-    for (int i = 0; i < NR_OF_RENDER_TARGETS; i++)
+    PROFILER_STOP
+
+    /*for (int i = 0; i < NR_OF_RENDER_TARGETS; i++)
     {
         this->renderTargets[i].clear(sf::Color::Transparent);
         this->renderTargets[i].draw(this->fullscreenboi, &shaders[shaders.lightingPass[i]]);
         this->renderTargets[i].display();
 
         this->fullscreenboi.setTexture(&this->renderTargets[i].getTexture());
-    }
+    }*/
 
     LightQueue::get().clear();
 
@@ -178,7 +185,7 @@ void Game::draw()
         skip = !skip;
 
     if (!skip)
-        this->window->draw(fullscreenboi);
+        this->window->draw(fullscreenboi, sf::BlendMultiply);
 #else
     this->window->draw(this->levelHandler);
     this->window->draw(*player);

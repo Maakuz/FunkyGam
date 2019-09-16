@@ -2,6 +2,7 @@
 
 
 const std::string SHADER_NAMES[NR_OF_SHADERS] = {  "Lighting.frag" ,"shadowMapGenerator.frag", "GaussianVert.frag", "GaussianHor.frag" };
+sf::Shader ShaderHandler::shaders[NR_OF_SHADERS];
 
 ShaderHandler::ShaderHandler()
 {
@@ -22,7 +23,7 @@ ShaderHandler::ShaderHandler()
 
 sf::Shader& ShaderHandler::getShader(SHADER::shaders shader)
 {
-    return this->shaders[shader];
+    return shaders[shader];
 }
 
 sf::Shader& ShaderHandler::operator[](int i)
