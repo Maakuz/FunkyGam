@@ -33,7 +33,7 @@ void LevelHandler::updateLevel(float dt)
     for (auto & ter : terrain)
         CollisionHandler::queueCollider(&ter);
 
-    //queueShadows();
+    queueShadows();
 }
 
 void LevelHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
@@ -185,16 +185,16 @@ void LevelHandler::queueShadows()
     {
         ShadowHandler::Line top(
             ter.getPosition(), 
-            sf::Vector2f(ter.getPosition().x + ter.getTexture()->getSize().x, ter.getPosition().y));
+            sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y));
 
         ShadowHandler::Line right(
-            sf::Vector2f(ter.getPosition().x + ter.getTexture()->getSize().x, ter.getPosition().y),
-            sf::Vector2f(ter.getPosition().x + ter.getTexture()->getSize().x, ter.getPosition().y + ter.getTexture()->getSize().y));
+            sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y),
+            sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
 
         ShadowHandler::Line bottom(
-            sf::Vector2f(ter.getPosition().x + ter.getTexture()->getSize().x, ter.getPosition().y + ter.getTexture()->getSize().y),
-            sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getTexture()->getSize().y));
-        ShadowHandler::Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getTexture()->getSize().y),
+            sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
+            sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
+        ShadowHandler::Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
             ter.getPosition());
 
         ShadowHandler::queueLine(top);

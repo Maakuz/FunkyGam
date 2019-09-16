@@ -35,6 +35,8 @@ public:
     void draw();
     
 private:
+    bool running;
+
     CollisionHandler collisionHandler;
     LevelHandler levelHandler;
 

@@ -41,6 +41,8 @@ private:
     
     Line* findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir);
 
+    sf::Vector2f interpolateCorner(sf::Vector2f corner, sf::Vector2f otherPoint, float value);
+
     sf::RenderTexture shadowMap;
     std::vector<sf::ConvexShape> triangles;
 

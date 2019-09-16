@@ -43,9 +43,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     lines.push_back(Line(topLeft, topRight));
 
     //testlines
-   lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(800, 300)));
-   lines.push_back(Line(sf::Vector2f(1000, 0), sf::Vector2f(1000, 600)));
-   lines.push_back(Line(sf::Vector2f(900, 200), sf::Vector2f(900, 300)));
+   //lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(800, 300)));
+   //lines.push_back(Line(sf::Vector2f(1000, 0), sf::Vector2f(1000, 600)));
+   //lines.push_back(Line(sf::Vector2f(900, 200), sf::Vector2f(900, 300)));
 
     std::vector<PointOnLine> points;
     for (size_t i = 0; i < lines.size(); i++)
@@ -61,6 +61,12 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
             points.push_back(PointOnLine(lines[i].p1, &lines[i]));
             points.push_back(PointOnLine(lines[i].p2, &lines[i]));
+        }
+
+        else
+        {
+            lines.erase(lines.begin() + i);
+            i--;
         }
     }
 
@@ -182,14 +188,20 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
                 //sf::Vector2f closestCenter = getCenterPoint(closest->p1, closest->p2);
                 //sf::Vector2f newCenter = getCenterPoint(points[i].parent->p1, points[i].parent->p2);
                 
+                sf::Vector2f contenderOffset;
+
+                if (points[i].p == points[i].parent->p1)
+                    contenderOffset = this->interpolateCorner(points[i].p, points[i].parent->p2, 0.05f);
+                else
+                    contenderOffset = this->interpolateCorner(points[i].p, points[i].parent->p1, 0.05f);
+
                 sf::Vector2f dir = points[i].p - light.pos;
                 normalize(dir);
 
-                // this->findIntersectionPoint(light.pos, dir, points[i].parent->p1, points[i].parent->p2);
-                float closestContender = length(points[i].p - light.pos);
+                float closestContender = length(contenderOffset - light.pos);
                 float currentClosest = this->findIntersectionPoint(light.pos, dir, closest->p1, closest->p2);
 
-                if (closestContender < currentClosest + EPSYLONE && closestContender >= 0)
+                if (closestContender < currentClosest && currentClosest >= 0)
                 {
                     float t = findClosestIntersectionDistance(open, light.pos, dir);
 
@@ -261,7 +273,12 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
                     float t = findClosestIntersectionDistance(open, light.pos, dir);
 
-                    if (abs(t + 1) > EPSYLONE)
+                    //Caring for corner case crap
+
+                    if (i+1 < points.size() && points[i].p == points[i + 1].p)
+                        tri.setPoint(1, points[i].p - light.pos + sf::Vector2f(light.radius, light.radius));
+
+                    else if (abs(t + 1) > EPSYLONE)
                         tri.setPoint(1, sf::Vector2f(dir.x * t, dir.y * t) + sf::Vector2f(light.radius, light.radius));
 
                     else
@@ -329,7 +346,7 @@ float ShadowHandler::findIntersectionPoint(sf::Vector2f pos, sf::Vector2f dir, s
         //dot
         t2 = ((v1.x * v3.x) + (v1.y * v3.y)) / dot;
 
-        if (t1 < 0.f || (t2 < 0.f || t2 > 1.f))
+        if (t1 < 0.f || (t2 + EPSYLONE < 0.f || t2 > 1.f + EPSYLONE))
         {
             t1 = -1;
         }
@@ -396,6 +413,14 @@ ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openL
         iterator++;
     }
     return (*min);
+}
+
+sf::Vector2f ShadowHandler::interpolateCorner(sf::Vector2f corner, sf::Vector2f otherPoint, float value)
+{
+    sf::Vector2f point;
+    point.x = corner.x *(1 - value) + otherPoint.x * value;
+    point.y = corner.y *(1 - value) + otherPoint.y * value;
+    return point;
 }
 
 void ShadowHandler::queueLine(Line line)

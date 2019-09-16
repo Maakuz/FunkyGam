@@ -35,7 +35,6 @@ int main()
     ImGui::SFML::Init(wandow);
 
     Game game(&wandow);
-    
 
     while (wandow.isOpen())
     {
@@ -55,6 +54,7 @@ int main()
         deltaTime = deltaTimer.restart();
 
         ImGui::SFML::Update(wandow, deltaTime);
+
         game.update(deltaTime.asMilliseconds());
 
         wandow.clear(sf::Color(0, 155, 200));

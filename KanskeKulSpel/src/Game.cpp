@@ -7,6 +7,7 @@
 Game::Game(sf::RenderWindow* window)
 {
     this->window = window;
+    this->running = true;
 
     this->loadFiles();
 
@@ -58,8 +59,15 @@ void Game::update(float dt)
 
     KEYBOARD::KeyboardState::updateKeys();
     
+    Light light(player->getPosition(), 300);
+    LightQueue::get().queue(light);
+    
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
+        this->running = !this->running;
+
     PROFILER_START("PlayerUpdate")
-    this->player->update(dt);
+    if (this->running)
+        this->player->update(dt);
     PROFILER_STOP
 
     PROFILER_START("LevelUpdate")

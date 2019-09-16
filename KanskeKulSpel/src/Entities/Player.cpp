@@ -28,9 +28,6 @@ void Player::update(float dt)
     static float elapsedTime = 0;
     elapsedTime += dt;
 
-    Light light(getPosition(), 300);
-    LightQueue::get().queue(light);
-
     this->debugMove(dt);
 
     this->collisionBox.setPosition(getPosition());
