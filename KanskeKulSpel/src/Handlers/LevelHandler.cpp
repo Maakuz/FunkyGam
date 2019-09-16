@@ -203,4 +203,31 @@ void LevelHandler::queueShadows()
         ShadowHandler::queueLine(bottom);
         ShadowHandler::queueLine(left);
     }
+
+
+    /*sf::Vector2i end = sf::Vector2i(hitboxData[0].size(), hitboxData.size());
+
+    for (int i = 0; i < end.y; i++)
+    {
+        for (int j = 0; j < end.x; j++)
+        {
+            if (hitboxData[i][j].tileID == hitBoxTypes::standard)
+            {
+                sf::Vector2f min = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y);
+                sf::Vector2f max = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y + TILE_SIZE);
+
+                int k = 0;
+                while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID)
+                {
+                    k++;
+                    max.x += TILE_SIZE;
+                }
+
+                j += k;
+
+                Terrain ter(CollisionBox::AABB(min, max - min));
+                terrain.push_back(ter);
+            }
+        }
+    }*/
 }
