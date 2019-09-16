@@ -43,9 +43,13 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
     lines.push_back(Line(topLeft, topRight));
 
     //testlines
-   //lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(800, 300)));
-   //lines.push_back(Line(sf::Vector2f(1000, 0), sf::Vector2f(1000, 600)));
-   //lines.push_back(Line(sf::Vector2f(900, 200), sf::Vector2f(900, 300)));
+    //lines.push_back(Line(sf::Vector2f(500, 300), sf::Vector2f(800, 300)));
+    //lines.push_back(Line(sf::Vector2f(1000, 0), sf::Vector2f(1000, 600)));
+    //lines.push_back(Line(sf::Vector2f(900, 200), sf::Vector2f(900, 300)));
+    //
+    //Nu kör vi en diagonal jäkel
+    //lines.push_back(Line(sf::Vector2f(800, 200), sf::Vector2f(900, 300)));
+
 
 #pragma region prepping lines
     std::vector<PointOnLine> points;
@@ -276,8 +280,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::RenderStates
 
     lines.clear();
     triangles.clear();
-
-    shadowMap.generateMipmap();
 
     sf::Sprite test(shadowMap.getTexture());
     test.setPosition(light.pos - (sf::Vector2f(shadowMap.getSize()) / 2.f));

@@ -26,9 +26,11 @@ void main()
         color.a += 1 - clamp((distanceFromLight / (radius * (1 - noFadePercentage))) - noFadePercentage, 0.0, 1.0);
     }
 
-    float alpha = 1 - texture2DLod(shadowMap, gl_TexCoord[0].xy, 0).r;
+    //float alpha = 1 - texture2DLod(shadowMap, gl_TexCoord[0].xy, 0).r;
+    float alpha = texture2DLod(shadowMap, gl_TexCoord[0].xy, 0).r;
     
-    color.a = color.a - alpha;
+    //color.a = color.a - alpha;
+    color.a = color.a * (alpha + 0.63);
 
     clamp(color.a, 0, 1);
 

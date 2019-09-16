@@ -60,7 +60,7 @@ void Game::update(float dt)
 
     KEYBOARD::KeyboardState::updateKeys();
     
-    Light light(player->getPosition(), 5000);
+    Light light(player->getPosition(), 500, sf::Vector3f(1, 1, 1));
     LightQueue::get().queue(light);
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
