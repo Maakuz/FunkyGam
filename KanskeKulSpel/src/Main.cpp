@@ -61,7 +61,7 @@ int main()
         wandow.clear(sf::Color(0, 155, 200));
         game.draw();
 
-        Profiler::get().drawGUI();
+        Profiler::get().drawGUI(deltaTime.asMilliseconds());
 
         ImGui::SFML::Render(wandow);
         wandow.display();

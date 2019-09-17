@@ -21,6 +21,9 @@ public:
     {
         std::string text ="Profolio, MilSec!";
         ImGui::Begin(text.c_str(), NULL, sf::Vector2f(500, 500));
+        text = "Framratio: " + std::to_string(1000 / deltaTime);
+        ImGui::Text(text.c_str());
+
         for (size_t i = 0; i < times.size(); i++)
         {
             text = names[i] + ", " + std::to_string(times[i]);

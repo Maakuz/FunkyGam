@@ -43,10 +43,14 @@ private:
     bool importLevel(levels level);
     bool generateHitboxes();
     void queueShadows();
+    void createSpites();
 
     typedef std::vector<std::vector<Tile>> Layer;
+    typedef std::vector<std::vector<sf::Sprite>> SpriteLayer;
 
     std::vector<Layer> layers;
+    std::vector<SpriteLayer> spriteLayers;
+    std::vector<sf::Sprite> linearSprite;
     Layer hitboxData;
 
     std::vector<Terrain> terrain;

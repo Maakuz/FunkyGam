@@ -36,36 +36,12 @@ void LevelHandler::updateLevel(float dt)
     //queueShadows();
 }
 
-void LevelHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
+void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     //TODO: only draw stuff thats on the screen
-    std::vector<sf::Sprite> renderQueue;
-
-    for (size_t i = 0; i < layers.size(); i++)
+    for (size_t i = 0; i < linearSprite.size(); i++)
     {
-        for (size_t j = 0; j < layers[i].size(); j++)
-        {
-            for (size_t k = 0; k < layers[i][j].size(); k++)
-            {
-                Tile tile = layers[i][j][k];
-                if (tile.tileID != -1)
-                {
-                    sf::Sprite sprite;
-                    sprite.setTexture(tilemaps[tile.textureID].texture);
-                    sprite.setPosition(tile.x, tile.y);
-                    int xMap = tile.tileID % tilemaps[tile.textureID].x;
-                    int yMap = tile.tileID / tilemaps[tile.textureID].x;
-
-                    sprite.setTextureRect(sf::IntRect(xMap * TILE_SIZE, yMap * TILE_SIZE, TILE_SIZE, TILE_SIZE));
-                    renderQueue.push_back(sprite);
-                }
-            }
-        }
-    }
-
-    for (size_t i = 0; i < renderQueue.size(); i++)
-    {
-        target.draw(renderQueue[i], states);
+        target.draw(linearSprite[i]);
     }
 }
 
@@ -139,7 +115,7 @@ bool LevelHandler::importLevel(levels level)
         in.close();
 
 
-        
+        this->createSpites();
 
         return true;
     }
@@ -236,4 +212,32 @@ void LevelHandler::queueShadows()
             }
         }
     }*/
+}
+
+void LevelHandler::createSpites()
+{
+    spriteLayers.resize(LAYER_AMOUNT);
+    for (size_t i = 0; i < layers.size(); i++)
+    {
+        spriteLayers[i].resize(layers[i].size());
+        for (size_t j = 0; j < layers[i].size(); j++)
+        {
+            spriteLayers[i][j].resize(layers[i][j].size());
+            for (size_t k = 0; k < layers[i][j].size(); k++)
+            {
+                Tile tile = layers[i][j][k];
+                if (tile.tileID != -1)
+                {
+                    sf::Sprite sprite;
+                    sprite.setTexture(tilemaps[tile.textureID].texture);
+                    sprite.setPosition(tile.x, tile.y);
+                    int xMap = tile.tileID % tilemaps[tile.textureID].x;
+                    int yMap = tile.tileID / tilemaps[tile.textureID].x;
+
+                    sprite.setTextureRect(sf::IntRect(xMap * TILE_SIZE, yMap * TILE_SIZE, TILE_SIZE, TILE_SIZE));
+                    linearSprite.push_back(sprite);
+                }
+            }
+        }
+    }
 }
