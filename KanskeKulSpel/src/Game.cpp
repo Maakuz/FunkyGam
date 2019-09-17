@@ -89,8 +89,9 @@ void Game::draw()
 
     ////Light drawing hopefully
     int nrOfLights = LightQueue::get().getQueue().size();
-    shaders[SHADER::lighting].setUniform("nrOfLights", nrOfLights);
-    shaders[SHADER::lighting].setUniformArray("lights", (sf::Glsl::Mat3*)LightQueue::get().getQueue().data(), nrOfLights);
+    shaders[SHADER::lighting].setUniform("pos", LightQueue::get().getQueue().at(0).pos);
+    shaders[SHADER::lighting].setUniform("radius", LightQueue::get().getQueue().at(0).radius);
+    shaders[SHADER::lighting].setUniform("color", LightQueue::get().getQueue().at(0).color);
    
     //Shadow map
     PROFILER_START("Shadow draw")

@@ -207,6 +207,9 @@ void LevelHandler::queueShadows()
 
     /*sf::Vector2i end = sf::Vector2i(hitboxData[0].size(), hitboxData.size());
 
+    std::vector<std::vector<bool>> open(end.y, std::vector<bool>(end.x, true));
+    std::vector<sf::Vector2i> corners;
+
     for (int i = 0; i < end.y; i++)
     {
         for (int j = 0; j < end.x; j++)
@@ -215,12 +218,15 @@ void LevelHandler::queueShadows()
             {
                 sf::Vector2f min = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y);
                 sf::Vector2f max = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y + TILE_SIZE);
+                corners.push_back(sf::Vector2i(i, j));
 
-                int k = 0;
+                int k = 1;
                 while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID)
                 {
                     k++;
                     max.x += TILE_SIZE;
+                    corners.push_back(sf::Vector2i(i, j + k));
+
                 }
 
                 j += k;
