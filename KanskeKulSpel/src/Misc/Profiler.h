@@ -19,7 +19,7 @@ public:
 
     void drawGUI(float deltaTime = 0)
     {
-        std::string text ="Profolio, MicroSec!";
+        std::string text ="Profolio, MilSec!";
         ImGui::Begin(text.c_str(), NULL, sf::Vector2f(500, 500));
         for (size_t i = 0; i < times.size(); i++)
         {
@@ -43,7 +43,7 @@ public:
     void stop()
     {
         assert(started); //Start it first
-        times.push_back(timer.getElapsedTime().asMicroseconds());
+        times.push_back(timer.getElapsedTime().asMilliseconds());
         started = false;
     }
 

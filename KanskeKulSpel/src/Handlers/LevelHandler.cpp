@@ -14,7 +14,7 @@ enum hitBoxTypes
 };
 
 const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
-{"TestMap.yay"};
+{"Level1.yay"};
 
 LevelHandler::LevelHandler()
 {
@@ -33,7 +33,7 @@ void LevelHandler::updateLevel(float dt)
     for (auto & ter : terrain)
         CollisionHandler::queueCollider(&ter);
 
-    queueShadows();
+    //queueShadows();
 }
 
 void LevelHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const

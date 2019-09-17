@@ -6,7 +6,8 @@ uniform sampler2D shadowMap;
 
 void main()
 {
-    float noFadePercentage = 0.2;
+    //Something is off with this one
+    float noFadePercentage = 0.1;
 
     vec2 coord = vec2(gl_FragCoord.x, 1080.0 - gl_FragCoord.y);
 
@@ -16,8 +17,10 @@ void main()
     
     distanceFromLight = length(coord.xy - pos.xy);
     percentageFromLight = distanceFromLight / radius;
-    alpha = 1 -  clamp((distanceFromLight / (radius * (1 - noFadePercentage))) - noFadePercentage, 0.0, 1.0);
 
+    alpha = 1 - clamp(percentageFromLight, 0.0, 1.0);
+
+    //alpha = 1 - clamp((distanceFromLight / (radius * (1 - noFadePercentage))) - noFadePercentage, 0.0, 1.0);
 
     float shadowAlpha = texture2DLod(shadowMap, gl_TexCoord[0].xy, 0).r;
     

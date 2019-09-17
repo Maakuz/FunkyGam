@@ -60,8 +60,14 @@ void Game::update(float dt)
 
     KEYBOARD::KeyboardState::updateKeys();
     
-    Light light(player->getPosition(), 500, sf::Vector3f(1, 1, 1));
+    Light light(player->getPosition(), 200, sf::Vector3f(1, 1, 1));
     LightQueue::get().queue(light);
+
+    Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1, 0.3, 0.3));
+    LightQueue::get().queue(light2);
+
+    Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.5, 0.5, 0));
+    LightQueue::get().queue(light3);
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
         this->running = !this->running;
@@ -84,23 +90,12 @@ void Game::update(float dt)
 
 void Game::draw()
 {
-    
-
-
-    ////Light drawing hopefully
-    int nrOfLights = LightQueue::get().getQueue().size();
-    shaders[SHADER::lighting].setUniform("pos", LightQueue::get().getQueue().at(0).pos);
-    shaders[SHADER::lighting].setUniform("radius", LightQueue::get().getQueue().at(0).radius);
-    shaders[SHADER::lighting].setUniform("color", LightQueue::get().getQueue().at(0).color);
-   
     //Shadow map
-    PROFILER_START("Shadow draw")
     this->renderTargets[0].clear(sf::Color::Transparent);
-        this->shadowHandler.generateShadowMap(this->renderTargets[0], &shaders[SHADER::lighting]);
+    this->shadowHandler.generateShadowMap(this->renderTargets[0]);
     this->renderTargets[0].display();
-    this->fullscreenboi.setTexture(&this->renderTargets[0].getTexture());
 
-    PROFILER_STOP
+    this->fullscreenboi.setTexture(&this->renderTargets[0].getTexture());
 
     PROFILER_START("Blur")
     for (int i = 0; i < 2; i++)
@@ -161,16 +156,6 @@ void Game::draw()
 
 
 #if DEBUG_MODE
-    static bool drawHitbaxes = false;
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F6))
-        drawHitbaxes = !drawHitbaxes;
-
-    if (drawHitbaxes)
-    {
-        levelHandler.drawCollision(*window, sf::RenderStates::Default);
-        window->draw(player->getCollisionBox());
-    }
-
     static bool drawGeometry = true;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F7))
         drawGeometry = !drawGeometry;
@@ -187,6 +172,19 @@ void Game::draw()
 
     if (!skip)
         this->window->draw(fullscreenboi, sf::BlendMultiply);
+
+    else
+        this->window->draw(fullscreenboi);
+
+    static bool drawHitbaxes = false;
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F6))
+        drawHitbaxes = !drawHitbaxes;
+
+    if (drawHitbaxes)
+    {
+        levelHandler.drawCollision(*window, sf::RenderStates::Default);
+        window->draw(player->getCollisionBox());
+    }
 #else
     this->window->draw(this->levelHandler);
     this->window->draw(*player);

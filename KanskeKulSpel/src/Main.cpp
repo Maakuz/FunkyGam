@@ -61,9 +61,7 @@ int main()
         wandow.clear(sf::Color(0, 155, 200));
         game.draw();
 
-        PROFILER_START("PROFILER!?")
         Profiler::get().drawGUI();
-        PROFILER_STOP
 
         ImGui::SFML::Render(wandow);
         wandow.display();

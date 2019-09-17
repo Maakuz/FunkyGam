@@ -22,7 +22,7 @@ public:
     ShadowHandler();
     ~ShadowHandler() {};
 
-    void generateShadowMap(sf::RenderTarget& target, sf::RenderStates states);
+    void generateShadowMap(sf::RenderTarget& target);
 
 
     static void queueLine(Line line);
@@ -38,7 +38,8 @@ private:
     float findClosestIntersectionDistance(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir);
 
     bool inBounds(sf::FloatRect bound, sf::Vector2f point);
-    
+    bool lineVSaabbTest(sf::FloatRect bounds, sf::Vector2f p1, sf::Vector2f p2);
+
     Line* findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir);
 
     sf::Vector2f interpolateCorner(sf::Vector2f corner, sf::Vector2f otherPoint, float value);
