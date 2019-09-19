@@ -163,6 +163,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         //debug
         //static float stopVal = 100;
 
+                PROFILER_START("Iteracion: insert");
         //iteration start!
         for (size_t i = 0; i < points.size(); i++)
         {
@@ -172,7 +173,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
             if (!open.count(points[i].parent))
             {
-                PROFILER_START("Iteracion: insert");
                 if (closest == nullptr)
                 {
                     closest = points[i].parent;
@@ -212,12 +212,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                 }
 
                 open.insert(points[i].parent);
-                PROFILER_STOP
             }
 
             else
             {
-                PROFILER_START("Iteracion: remove");
                 //ooh i dont know bout this one Bobby
                 if (open.size() == 1)
                 {
@@ -233,6 +231,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
                 else
                 {
+
                     open.erase(points[i].parent);
 
                     if (closest == points[i].parent)
@@ -261,9 +260,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
                     }
                 }
-                PROFILER_STOP
+
             }
         }
+                PROFILER_STOP
         //ImGui::Begin("LightData");
         //ImGui::Text(std::string(std::to_string(light->pos.x) + ", " + std::to_string(light->pos.y)).c_str());
         //ImGui::Text(std::string(std::to_string(light->radius)).c_str());

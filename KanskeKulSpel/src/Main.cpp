@@ -66,6 +66,7 @@ int main()
         ImGui::SFML::Render(wandow);
         wandow.display();
 
+        //printf("%d\n", 1000 / deltaTime.asMilliseconds());
     }
 
 
