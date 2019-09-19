@@ -84,8 +84,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                 i--;
             }
         }
+        PROFILER_STOP
 
-
+        PROFILER_START("sort")
         //Insertion Sort
         for (size_t i = 0; i < points.size(); i++)
         {
@@ -99,6 +100,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             if (min != i)
                 std::swap(points[min], points[i]);
         }
+        PROFILER_STOP
 #pragma endregion
 
         std::set<Line*> open;
@@ -175,7 +177,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         }
 #pragma endregion
 
-        PROFILER_STOP
         //debug
         //static float stopVal = 100;
 

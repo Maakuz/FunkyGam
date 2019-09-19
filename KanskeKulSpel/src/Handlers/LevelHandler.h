@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "Collision/CollisionHandler.h"
 #include "Entities/Terrain.h"
+#include "ShadowHandler.h"
 #include <vector>
 
 #define NR_OF_LEVELS 1
@@ -42,7 +43,7 @@ public:
 private:
     bool importLevel(levels level);
     bool generateHitboxes();
-    void queueShadows();
+    void generateShadowLines();
     void createSpites();
 
     typedef std::vector<std::vector<Tile>> Layer;
@@ -52,6 +53,8 @@ private:
     std::vector<SpriteLayer> spriteLayers;
     std::vector<sf::Sprite> linearSprite;
     Layer hitboxData;
+
+    std::vector<ShadowHandler::Line> shadowLines;
 
     std::vector<Terrain> terrain;
 

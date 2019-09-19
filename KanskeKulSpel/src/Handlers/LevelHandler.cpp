@@ -1,7 +1,6 @@
 #include "LevelHandler.h"
 #include <fstream>
 #include "Misc/Definitions.h"
-#include "ShadowHandler.h"
 
 #define LEVEL_FOLDER "../Maps/"
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
@@ -22,8 +21,10 @@ LevelHandler::LevelHandler()
 
 bool LevelHandler::loadLevel()
 {
-    importLevel(levels::forest);
-    generateHitboxes();
+    this->importLevel(levels::forest);
+    this->generateHitboxes();
+    this->createSpites();
+    this->generateShadowLines();
 
     return true;
 }
@@ -33,7 +34,8 @@ void LevelHandler::updateLevel(float dt)
     for (auto & ter : terrain)
         CollisionHandler::queueStaticCollider(&ter);
 
-    //queueShadows();
+    for (auto & line : this->shadowLines)
+        ShadowHandler::queueLine(line);
 }
 
 void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -115,7 +117,7 @@ bool LevelHandler::importLevel(levels level)
         in.close();
 
 
-        this->createSpites();
+        
 
         return true;
     }
@@ -237,7 +239,7 @@ bool LevelHandler::generateHitboxes()
     return true;
 }
 
-void LevelHandler::queueShadows()
+void LevelHandler::generateShadowLines()
 {
     for (auto & ter : terrain)
     {
@@ -256,10 +258,10 @@ void LevelHandler::queueShadows()
         ShadowHandler::Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
             ter.getPosition());
 
-        ShadowHandler::queueLine(top);
-        ShadowHandler::queueLine(right);
-        ShadowHandler::queueLine(bottom);
-        ShadowHandler::queueLine(left);
+        this->shadowLines.push_back(top);
+        this->shadowLines.push_back(right);
+        this->shadowLines.push_back(bottom);
+        this->shadowLines.push_back(left);
     }
 
 
