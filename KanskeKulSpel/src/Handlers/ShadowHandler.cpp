@@ -16,12 +16,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 {
     for (size_t k = 0; k < LightQueue::get().getQueue().size(); k++)
     {
-        PROFILER_START("Copy")
         Light* light = LightQueue::get().getQueue()[k];
 
-        //shadowMap.create(light->radius * 2, light->radius * 2);
         std::vector<Line> currentLines = this->lines;
-        PROFILER_STOP
         PROFILER_START("Shadow prep")
         //For loop this perhaps
         sf::Vector2f topRight(light->pos.x + light->radius, light->pos.y - light->radius);
@@ -166,7 +163,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         //debug
         //static float stopVal = 100;
 
-        PROFILER_START("Iteracion");
         //iteration start!
         for (size_t i = 0; i < points.size(); i++)
         {
@@ -176,7 +172,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
             if (!open.count(points[i].parent))
             {
-
+                PROFILER_START("Iteracion: insert");
                 if (closest == nullptr)
                 {
                     closest = points[i].parent;
@@ -216,11 +212,12 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                 }
 
                 open.insert(points[i].parent);
-
+                PROFILER_STOP
             }
 
             else
             {
+                PROFILER_START("Iteracion: remove");
                 //ooh i dont know bout this one Bobby
                 if (open.size() == 1)
                 {
@@ -264,9 +261,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
                     }
                 }
+                PROFILER_STOP
             }
         }
-        PROFILER_STOP
         //ImGui::Begin("LightData");
         //ImGui::Text(std::string(std::to_string(light->pos.x) + ", " + std::to_string(light->pos.y)).c_str());
         //ImGui::Text(std::string(std::to_string(light->radius)).c_str());

@@ -19,7 +19,7 @@ public:
 
     void drawGUI(float deltaTime = 0)
     {
-        std::string text ="Profolio, MilSec!";
+        std::string text ="Profolio, MicSec!";
         ImGui::Begin(text.c_str(), NULL, sf::Vector2f(500, 500));
         text = "Framratio: " + std::to_string(1000 / deltaTime);
         ImGui::Text(text.c_str());
@@ -46,7 +46,7 @@ public:
     void stop()
     {
         assert(started); //Start it first
-        times.push_back(timer.getElapsedTime().asMilliseconds());
+        times.push_back(timer.getElapsedTime().asMicroseconds());
         started = false;
     }
 

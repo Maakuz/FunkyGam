@@ -50,7 +50,6 @@ private:
         }
     };
 
-    //sf::RenderTexture shadowMap;
     std::vector<sf::ConvexShape> triangles;
 
     static std::vector<Line> lines;
