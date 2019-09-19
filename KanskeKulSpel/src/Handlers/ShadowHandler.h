@@ -22,12 +22,32 @@ public:
     ShadowHandler();
     ~ShadowHandler() {};
 
+    //There is a case where perpendicular lines lets light through that will be fixed one day
     void generateShadowMap(sf::RenderTarget& target);
 
 
     static void queueLine(Line line);
 
 private:
+
+    struct PointOnLine
+    {
+        sf::Vector2f p;
+        ShadowHandler::Line* parent;
+        float angle;
+
+        PointOnLine(sf::Vector2f p, ShadowHandler::Line* parent)
+        {
+            this->p = p;
+            this->parent = parent;
+            this->angle = 0;
+        }
+
+        bool operator < (const PointOnLine& other) const
+        {
+            return this->angle < other.angle;
+        }
+    };
 
     void drawShadowMap();
     sf::Vector2f getCenterPoint(sf::Vector2f p1, sf::Vector2f p2);

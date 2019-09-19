@@ -63,11 +63,11 @@ void Game::update(float dt)
     Light light(player->getPosition(), 200, sf::Vector3f(1, 1, 1));
     LightQueue::get().queue(light);
 
-    Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1, 0.3, 0.3));
+    /*Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1, 0.3, 0.3));
     LightQueue::get().queue(light2);
 
     Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.5, 0.5, 0));
-    LightQueue::get().queue(light3);
+    LightQueue::get().queue(light3);*/
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
         this->running = !this->running;

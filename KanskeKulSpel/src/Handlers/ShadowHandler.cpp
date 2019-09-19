@@ -7,18 +7,6 @@
 
 std::vector<ShadowHandler::Line> ShadowHandler::ShadowHandler::lines;
 
-struct PointOnLine
-{
-    sf::Vector2f p;
-    ShadowHandler::Line* parent;
-
-    PointOnLine(sf::Vector2f p, ShadowHandler::Line* parent)
-    {
-        this->p = p;
-        this->parent = parent;
-    }
-};
-
 
 ShadowHandler::ShadowHandler()
 {
@@ -55,7 +43,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         //lines.push_back(Line(sf::Vector2f(1000, 0), sf::Vector2f(1000, 600)));
         //lines.push_back(Line(sf::Vector2f(900, 200), sf::Vector2f(900, 300)));
         //
-        //Nu kör vi en diagonal jäkel
+        //Nu kör vi en diagonal jäkel helst inte
         //lines.push_back(Line(sf::Vector2f(800, 200), sf::Vector2f(900, 300)));
 
 
@@ -74,8 +62,14 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                 currentLines[i].p2.x = std::min(bottomRight.x, std::max(topLeft.x, currentLines[i].p2.x));
                 currentLines[i].p2.y = std::min(bottomRight.y, std::max(topLeft.y, currentLines[i].p2.y));
 
-                points.push_back(PointOnLine(currentLines[i].p1, &currentLines[i]));
-                points.push_back(PointOnLine(currentLines[i].p2, &currentLines[i]));
+                PointOnLine p1(currentLines[i].p1, &currentLines[i]);
+                PointOnLine p2(currentLines[i].p2, &currentLines[i]);
+
+                p1.angle = atan2(p1.p.y - light.pos.y, p1.p.x - light.pos.x);
+                p2.angle = atan2(p2.p.y - light.pos.y, p2.p.x - light.pos.x);
+
+                points.push_back(p1);
+                points.push_back(p2);
             }
 
             else
@@ -87,19 +81,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         PROFILER_STOP
 
         PROFILER_START("sort")
-        //Insertion Sort
-        for (size_t i = 0; i < points.size(); i++)
-        {
-            int min = i;
-            for (size_t j = i + 1; j < points.size(); j++)
-            {
-                if (atan2(points[min].p.y - light.pos.y, points[min].p.x - light.pos.x) > atan2(points[j].p.y - light.pos.y, points[j].p.x - light.pos.x))
-                    min = j;
-            }
-
-            if (min != i)
-                std::swap(points[min], points[i]);
-        }
+        std::sort(points.begin(), points.end());
         PROFILER_STOP
 #pragma endregion
 
@@ -110,6 +92,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         tri.setFillColor(sf::Color::White);
         tri.setPoint(0, sf::Vector2f(light.radius, light.radius));
 
+        PROFILER_START("basecase")
 #pragma region basecase -- uses old tech but it works with reasonable fast
         //base case
         {
@@ -125,7 +108,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         //find closest
         if (!open.empty())
         {
-            auto iterator = open.begin();
+            /*auto iterator = open.begin();
 
             auto min = iterator;
 
@@ -143,6 +126,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             }
 
             closest = (*min);
+*/
+            sf::Vector2f dir(-1, 0);
+            closest = this->findClosestLine(open, light.pos, dir);
 
             sf::Vector2f p;
 
@@ -177,6 +163,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         }
 #pragma endregion
 
+        PROFILER_STOP
         //debug
         //static float stopVal = 100;
 
@@ -305,7 +292,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
         sf::Sprite sprite(shadowMap.getTexture());
         sprite.setPosition(light.pos - (sf::Vector2f(shadowMap.getSize()) / 2.f));
-        target.draw(sprite, state);
+        target.draw(sprite);
+        //target.draw(sprite, state);
         PROFILER_STOP
 
     }
@@ -316,10 +304,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 void ShadowHandler::drawShadowMap()
 {
     //For debugging
-    /*for (size_t i = 0; i < triangles.size(); i++)
+    for (size_t i = 0; i < triangles.size(); i++)
     {
         triangles[i].setFillColor(sf::Color(100, 255 * (float(i) / triangles.size()), 255 * (float(i) / triangles.size()), 255));
-    }*/
+    }
 
     shadowMap.clear(sf::Color::Transparent);
     for (auto const & polies : this->triangles)
@@ -393,6 +381,7 @@ bool ShadowHandler::inBounds(sf::FloatRect bound, sf::Vector2f point)
         bound.top + bound.height + EPSYLONE > point.y;
 }
 
+//only works for straight lines
 bool ShadowHandler::lineVSaabbTest(sf::FloatRect bounds, sf::Vector2f p1, sf::Vector2f p2)
 {
     return (p1.x < bounds.left
@@ -401,12 +390,27 @@ bool ShadowHandler::lineVSaabbTest(sf::FloatRect bounds, sf::Vector2f p1, sf::Ve
             && p1.y < bounds.top + bounds.height
             && p2.y > bounds.top
             && p2.y < bounds.top + bounds.height)
+
         || (p2.x < bounds.left
             && p1.x > bounds.left + bounds.width
             && p1.y > bounds.top
             && p1.y < bounds.top + bounds.height
             && p2.y > bounds.top
-            && p2.y < bounds.top + bounds.height);
+            && p2.y < bounds.top + bounds.height)
+
+        || (p1.y < bounds.top
+            && p2.y > bounds.top + bounds.height
+            && p1.x > bounds.left
+            && p1.x < bounds.left + bounds.width
+            && p2.x > bounds.left
+            && p2.x < bounds.left + bounds.width)
+
+        || (p2.y < bounds.top
+            && p1.y > bounds.top + bounds.height
+            && p2.x > bounds.left
+            && p2.x < bounds.left + bounds.width
+            && p1.x > bounds.left
+            && p1.x < bounds.left + bounds.width);
 }
 
 //might crash if only one wall
