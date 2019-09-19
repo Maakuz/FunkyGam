@@ -65,7 +65,7 @@ private:
     bool inBounds(sf::FloatRect bound, sf::Vector2f point);
     bool lineVSaabbTest(sf::FloatRect bounds, sf::Vector2f p1, sf::Vector2f p2);
 
-    Line* findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir);
+    Line* findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos);
 
     sf::Vector2f interpolateCorner(sf::Vector2f corner, sf::Vector2f otherPoint, float value);
 

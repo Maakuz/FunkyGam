@@ -89,7 +89,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
         PROFILER_START("basecase")
 #pragma region basecase
-        //base case
+            //base case
+            sf::Vector2f pointZero;
         {
             sf::Vector2f dir = points[points.size() - 1].p - light->pos;
             normalize(dir);
@@ -98,7 +99,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             {
                 float t = findIntersectionPoint(light->pos, dir, currentLines[i].p1, currentLines[i].p2);
                 float t2 = findIntersectionPoint(light->pos, sf::Vector2f(-1, 0), currentLines[i].p1, currentLines[i].p2);
-                
+
                 if (abs(t + 1) > EPSYLONE && abs(t2 + 1) > EPSYLONE)
                     open.insert(&currentLines[i]);
             }
@@ -107,11 +108,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             //find closest
             if (!open.empty())
             {
-                closest = this->findClosestLine(open, light->pos, dir);
+                closest = this->findClosestLine(open, light->pos);
 
-                bool isLastPointOpen = open.count(points[points.size() -1].parent);
-                //if (!isLastPointOpen)
-                    //open.insert(points[points.size() - 1].parent);
+                bool isLastPointOpen = open.count(points[points.size() - 1].parent);
 
                 sf::Vector2f p;
 
@@ -121,23 +120,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                 else
                     p = closest->p2;
 
-                if (!isLastPointOpen)
-                {
-                    float t = findClosestIntersectionDistance(open, light->pos, dir);
+                float t = findClosestIntersectionDistance(open, light->pos, dir);
 
-                    tri.setPoint(1, sf::Vector2f(dir.x * t, dir.y * t) + sf::Vector2f(light->radius, light->radius));
-                    //tri.setPoint(1, points[points.size() - 1].p - light->pos + sf::Vector2f(light->radius, light->radius));
-                }
-
-                else
-                {
-                    float t = findClosestIntersectionDistance(open, light->pos, dir);
-
-                    tri.setPoint(1, sf::Vector2f(dir.x * t, dir.y * t) + sf::Vector2f(light->radius, light->radius));
-                }
-
-                if (!isLastPointOpen)
-                    open.erase(points[points.size() - 1].parent);
+                pointZero = sf::Vector2f(dir.x * t, dir.y * t) + sf::Vector2f(light->radius, light->radius);
+                tri.setPoint(1, pointZero);
             }
         }
 #pragma endregion
@@ -222,7 +208,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                         sf::Vector2f dir = points[i].p - light->pos;
                         normalize(dir);
 
-                        closest = this->findClosestLine(open, light->pos, dir);
+                        closest = this->findClosestLine(open, light->pos);
 
                         tri.setPoint(2, points[i].p - light->pos + sf::Vector2f(light->radius, light->radius));
 
@@ -246,7 +232,12 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
             }
         }
-                PROFILER_STOP
+        PROFILER_STOP
+
+        //end case
+        tri.setPoint(2, pointZero);
+        triangles.push_back(tri);
+
         ImGui::Begin("LightData");
         ImGui::Text(std::string(std::to_string(light->pos.x) + ", " + std::to_string(light->pos.y)).c_str());
         ImGui::Text(std::string(std::to_string(light->radius)).c_str());
@@ -393,10 +384,20 @@ bool ShadowHandler::lineVSaabbTest(sf::FloatRect bounds, sf::Vector2f p1, sf::Ve
 }
 
 //might crash if only one wall
-ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir)
+ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos)
 {
     auto iterator = openList.begin();
     auto min = iterator;
+    sf::Vector2f dir;
+
+    if (lengthSquared((*min)->p1 - pos) < lengthSquared((*min)->p2 - pos))
+        dir = interpolateCorner((*min)->p1, (*min)->p2, 0.05) - pos;
+
+    else
+        dir = interpolateCorner((*min)->p2, (*min)->p1, 0.05) - pos;
+
+    normalize(dir);
+
     float tMin = this->findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
 
     iterator++;
@@ -406,6 +407,13 @@ ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openL
 
     while (iterator != openList.end())
     {
+        if (lengthSquared((*iterator)->p1 - pos) < lengthSquared((*iterator)->p2 - pos))
+            dir = interpolateCorner((*iterator)->p1, (*iterator)->p2, 0.05) - pos;
+
+        else
+            dir = interpolateCorner((*iterator)->p2, (*iterator)->p1, 0.05) - pos;
+
+        normalize(dir);
 
         float t = this->findIntersectionPoint(pos, dir, (*iterator)->p1, (*iterator)->p2);
 
