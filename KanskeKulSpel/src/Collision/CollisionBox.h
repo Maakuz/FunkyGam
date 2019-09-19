@@ -10,7 +10,8 @@ public:
     enum colliderComponents
     {
         Ground = 0,
-        Player = 1
+        Player = 1,
+        Static = 2
     };
 
     struct AABB

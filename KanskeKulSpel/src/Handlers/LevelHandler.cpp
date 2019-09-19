@@ -31,7 +31,7 @@ bool LevelHandler::loadLevel()
 void LevelHandler::updateLevel(float dt)
 {
     for (auto & ter : terrain)
-        CollisionHandler::queueCollider(&ter);
+        CollisionHandler::queueStaticCollider(&ter);
 
     //queueShadows();
 }
