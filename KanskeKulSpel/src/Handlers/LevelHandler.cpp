@@ -139,12 +139,50 @@ bool LevelHandler::generateHitboxes()
                 sf::Vector2f min = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y);
                 sf::Vector2f max = sf::Vector2f(hitboxData[i][j].x + TILE_SIZE, hitboxData[i][j].y + TILE_SIZE);
 
+                //Big 'ol box
+                if (open[i][j])
+                {
+                    sf::Vector2i bounds = sf::Vector2i(1, INT_MAX);
+                    bool foundYEnd = false;
+
+                    int k = 0;
+                    while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID && open[i][j + k])
+                    {
+                        int l = 1;
+                        while (l + i < end.y && hitboxData[i + l][j + k].tileID == hitboxData[i][j + k].tileID)
+                        {
+                            l++;
+                        }
+
+                        bounds.y = std::min(bounds.y, l);
+                        k++;
+                    }
+                    bounds.x = k;
+
+                    if (bounds.x > 1 && bounds.y > 1)
+                    {
+                        for (int l = 0; l < bounds.y; l++)
+                        {
+                            for (int m = 0; m < bounds.x; m++)
+                            {
+                                open[i + l][j + m] = false;
+                            }
+                        }
+                        max.y += TILE_SIZE * (bounds.y - 1);
+                        max.x += TILE_SIZE * (bounds.x - 1);
+
+
+                        Terrain ter(CollisionBox::AABB(min, max - min));
+                        terrain.push_back(ter);
+                    }
+
+                }
+
                 //Horizontal
                 if (open[i][j])
                 {
-                    open[i][j] = false;
                     int k = 1;
-                    while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID)
+                    while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID && open[i][j + k])
                     {
                         max.x += TILE_SIZE;
                         open[i][j + k] = false;
@@ -157,6 +195,7 @@ bool LevelHandler::generateHitboxes()
                     {
                         Terrain ter(CollisionBox::AABB(min, max - min));
                         terrain.push_back(ter);
+                        open[i][j] = false;
                     }
                 }
 
@@ -164,7 +203,7 @@ bool LevelHandler::generateHitboxes()
                 if (1 + i < end.y && hitboxData[i + 1][j].tileID == hitboxData[i][j].tileID && open[i + 1][j])
                 {
                     int k = 1;
-                    if (horExisits) 
+                    if (horExisits || !open[i][j]) 
                     {
                         min = sf::Vector2f(hitboxData[i + k][j].x, hitboxData[i + k][j].y);
                         max = sf::Vector2f(hitboxData[i + k][j].x + TILE_SIZE, hitboxData[i + k][j].y + TILE_SIZE);
