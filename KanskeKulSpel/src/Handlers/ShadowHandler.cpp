@@ -292,8 +292,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
         sf::Sprite sprite(shadowMap.getTexture());
         sprite.setPosition(light.pos - (sf::Vector2f(shadowMap.getSize()) / 2.f));
-        target.draw(sprite);
-        //target.draw(sprite, state);
+        target.draw(sprite, state);
         PROFILER_STOP
 
     }
