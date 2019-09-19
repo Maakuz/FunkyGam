@@ -64,11 +64,11 @@ void Game::update(float dt)
     light.pos = player->getPosition();
     LightQueue::get().queue(light);
 
-    //static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1, 0.3, 0.3));
-    //LightQueue::get().queue(light2);
+    static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1, 0.3, 0.3));
+    LightQueue::get().queue(light2);
 
-    //static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.5, 0.5, 0));
-    //LightQueue::get().queue(light3);
+    static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.5, 0.5, 0));
+    LightQueue::get().queue(light3);
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
         this->running = !this->running;
@@ -92,11 +92,13 @@ void Game::update(float dt)
 void Game::draw()
 {
     //Shadow map
+    PROFILER_START("Shoaduv");
     this->renderTargets[0].clear(sf::Color::Transparent);
     this->shadowHandler.generateShadowMap(this->renderTargets[0]);
     this->renderTargets[0].display();
 
     this->fullscreenboi.setTexture(&this->renderTargets[0].getTexture());
+    PROFILER_STOP
 
     PROFILER_START("Blur")
     for (int i = 0; i < 2; i++)

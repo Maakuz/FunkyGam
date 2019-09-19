@@ -19,7 +19,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         Light* light = LightQueue::get().getQueue()[k];
 
         std::vector<Line> currentLines = this->lines;
-        PROFILER_START("Shadow prep")
         //For loop this perhaps
         sf::Vector2f topRight(light->pos.x + light->radius, light->pos.y - light->radius);
         sf::Vector2f topLeft(light->pos.x - light->radius, light->pos.y - light->radius);
@@ -74,11 +73,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                 i--;
             }
         }
-        PROFILER_STOP
 
-        PROFILER_START("sort")
         std::sort(points.begin(), points.end());
-        PROFILER_STOP
 #pragma endregion
         std::set<Line*> open;
         Line* closest = nullptr;
@@ -87,7 +83,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         tri.setFillColor(sf::Color::White);
         tri.setPoint(0, sf::Vector2f(light->radius, light->radius));
 
-        PROFILER_START("basecase")
 #pragma region basecase
             //base case
             sf::Vector2f pointZero;
@@ -128,11 +123,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         }
 #pragma endregion
 
-        PROFILER_STOP
         //debug
         static float stopVal = 100;
 
-                PROFILER_START("Iteracion: insert");
         //iteration start!
         for (size_t i = 0; i < points.size(); i++)
         {
@@ -232,26 +225,22 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
             }
         }
-        PROFILER_STOP
 
         //end case
         tri.setPoint(2, pointZero);
         triangles.push_back(tri);
 
-        ImGui::Begin("LightData");
+        /*ImGui::Begin("LightData");
         ImGui::Text(std::string(std::to_string(light->pos.x) + ", " + std::to_string(light->pos.y)).c_str());
         ImGui::Text(std::string(std::to_string(light->radius)).c_str());
         ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
         ImGui::SliderFloat("radians", &stopVal, -3, 3);
-        ImGui::End();
+        ImGui::End();*/
 
-        PROFILER_START("draw triangles")
         drawShadowMap(light);
 
         triangles.clear();
-        PROFILER_STOP
 
-        PROFILER_START("lighting draw call")
         ShaderHandler::getShader(SHADER::lighting).setUniform("pos", light->pos);
         ShaderHandler::getShader(SHADER::lighting).setUniform("radius", light->radius);
         ShaderHandler::getShader(SHADER::lighting).setUniform("color", light->color);
@@ -262,9 +251,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
         sf::Sprite sprite(light->shadowMap.getTexture());
         sprite.setPosition(light->pos - (sf::Vector2f(light->shadowMap.getSize()) / 2.f));
-        target.draw(sprite);
-        //target.draw(sprite, state);
-        PROFILER_STOP
+        target.draw(sprite, state);
 
     }
     lines.clear();
@@ -274,10 +261,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 void ShadowHandler::drawShadowMap(Light* light)
 {
     //For debugging
-    for (size_t i = 0; i < triangles.size(); i++)
+    /*for (size_t i = 0; i < triangles.size(); i++)
     {
         triangles[i].setFillColor(sf::Color(100, 255 * (float(i) / triangles.size()), 255 * (float(i) / triangles.size()), 255));
-    }
+    }*/
 
     light->shadowMap.clear(sf::Color::Transparent);
     for (auto const & polies : this->triangles)
