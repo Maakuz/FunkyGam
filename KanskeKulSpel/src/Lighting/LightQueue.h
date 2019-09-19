@@ -12,9 +12,9 @@ public:
     }
     virtual ~LightQueue() {};
 
-    void queue(Light light)
+    void queue(Light& light)
     {
-        this->light.push_back(light);
+        this->light.push_back(&light);
     }
 
     void clear()
@@ -22,11 +22,11 @@ public:
         light.clear();
     }
 
-    std::vector<Light>& getQueue()
+    std::vector<Light*>& getQueue()
     {
         return light;
     }
 
 private:
-    std::vector<Light> light;
+    std::vector<Light*> light;
 };

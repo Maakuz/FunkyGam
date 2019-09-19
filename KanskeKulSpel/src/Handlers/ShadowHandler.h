@@ -1,5 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
+#include "Lighting/LightQueue.h"
 #include <vector>
 #include <set>
 
@@ -49,7 +50,12 @@ private:
         }
     };
 
-    void drawShadowMap();
+    //sf::RenderTexture shadowMap;
+    std::vector<sf::ConvexShape> triangles;
+
+    static std::vector<Line> lines;
+
+    void drawShadowMap(Light* light);
     sf::Vector2f getCenterPoint(sf::Vector2f p1, sf::Vector2f p2);
 
     //if direction is not normalized ima be mad
@@ -63,11 +69,6 @@ private:
     Line* findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir);
 
     sf::Vector2f interpolateCorner(sf::Vector2f corner, sf::Vector2f otherPoint, float value);
-
-    sf::RenderTexture shadowMap;
-    std::vector<sf::ConvexShape> triangles;
-
-    static std::vector<Line> lines;
 
     //These might get their own file later
     float lengthSquared(sf::Vector2f vec) const
