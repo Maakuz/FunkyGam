@@ -304,10 +304,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 void ShadowHandler::drawShadowMap()
 {
     //For debugging
-    for (size_t i = 0; i < triangles.size(); i++)
+    /*for (size_t i = 0; i < triangles.size(); i++)
     {
         triangles[i].setFillColor(sf::Color(100, 255 * (float(i) / triangles.size()), 255 * (float(i) / triangles.size()), 255));
-    }
+    }*/
 
     shadowMap.clear(sf::Color::Transparent);
     for (auto const & polies : this->triangles)
