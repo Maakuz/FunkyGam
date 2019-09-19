@@ -58,7 +58,7 @@ int main()
 
         game.update(deltaTime.asMilliseconds());
 
-        wandow.clear(sf::Color(0, 155, 200));
+        wandow.clear(sf::Color(0, 100, 155));
         game.draw();
 
         Profiler::get().drawGUI(deltaTime.asMilliseconds());

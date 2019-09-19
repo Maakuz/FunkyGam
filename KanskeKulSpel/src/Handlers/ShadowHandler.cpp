@@ -80,7 +80,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         std::sort(points.begin(), points.end());
         PROFILER_STOP
 #pragma endregion
-
         std::set<Line*> open;
         Line* closest = nullptr;
 
@@ -89,87 +88,71 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         tri.setPoint(0, sf::Vector2f(light->radius, light->radius));
 
         PROFILER_START("basecase")
-#pragma region basecase -- uses old tech but it works with reasonable fast
+#pragma region basecase
         //base case
         {
-            sf::Vector2f dir(-1, 0);
+            sf::Vector2f dir = points[points.size() - 1].p - light->pos;
+            normalize(dir);
+
             for (size_t i = 0; i < currentLines.size(); i++)
             {
                 float t = findIntersectionPoint(light->pos, dir, currentLines[i].p1, currentLines[i].p2);
-
-                if (abs(t + 1) > EPSYLONE)
+                float t2 = findIntersectionPoint(light->pos, sf::Vector2f(-1, 0), currentLines[i].p1, currentLines[i].p2);
+                
+                if (abs(t + 1) > EPSYLONE && abs(t2 + 1) > EPSYLONE)
                     open.insert(&currentLines[i]);
             }
-        }
-        //find closest
-        if (!open.empty())
-        {
-            /*auto iterator = open.begin();
-
-            auto min = iterator;
 
 
-            iterator++;
-            while (iterator != open.end())
+            //find closest
+            if (!open.empty())
             {
-                sf::Vector2f minCenter = getCenterPoint((*min)->p1, (*min)->p2);
-                sf::Vector2f center2 = getCenterPoint((*iterator)->p1, (*iterator)->p2);
+                closest = this->findClosestLine(open, light->pos, dir);
 
-                if (lengthSquared(center2 - light->pos) <= lengthSquared(minCenter - light->pos) + EPSYLONE)
-                    min = iterator;
+                bool isLastPointOpen = open.count(points[points.size() -1].parent);
+                //if (!isLastPointOpen)
+                    //open.insert(points[points.size() - 1].parent);
 
-                iterator++;
-            }
+                sf::Vector2f p;
 
-            closest = (*min);
-*/
-            sf::Vector2f dir(-1, 0);
-            closest = this->findClosestLine(open, light->pos, dir);
+                if (atan2(closest->p1.y - light->pos.y, closest->p1.x - light->pos.x) > atan2(closest->p2.y - light->pos.y, closest->p2.x - light->pos.x))
+                    p = closest->p1;
 
-            sf::Vector2f p;
+                else
+                    p = closest->p2;
 
-            if (atan2(closest->p1.y - light->pos.y, closest->p1.x - light->pos.x) > 0)
-                p = closest->p1;
-
-            else
-                p = closest->p2;
-
-
-            if (atan2(p.y - light->pos.y, p.x - light->pos.x) > atan2(points[points.size() - 1].p.y - light->pos.y, points[points.size() - 1].p.x - light->pos.x)
-                || p == points[points.size() - 1].p)
-                tri.setPoint(1, p - light->pos + sf::Vector2f(light->radius, light->radius));
-
-            else
-            {
-                if (open.size() > 1)
+                if (!isLastPointOpen)
                 {
-                    tri.setPoint(1, p - light->pos + sf::Vector2f(light->radius, light->radius));
+                    float t = findClosestIntersectionDistance(open, light->pos, dir);
+
+                    tri.setPoint(1, sf::Vector2f(dir.x * t, dir.y * t) + sf::Vector2f(light->radius, light->radius));
+                    //tri.setPoint(1, points[points.size() - 1].p - light->pos + sf::Vector2f(light->radius, light->radius));
                 }
 
                 else
                 {
-                    sf::Vector2f dir = points[points.size() - 1].p - light->pos;
-                    normalize(dir);
-
                     float t = findClosestIntersectionDistance(open, light->pos, dir);
 
                     tri.setPoint(1, sf::Vector2f(dir.x * t, dir.y * t) + sf::Vector2f(light->radius, light->radius));
                 }
+
+                if (!isLastPointOpen)
+                    open.erase(points[points.size() - 1].parent);
             }
         }
 #pragma endregion
 
         PROFILER_STOP
         //debug
-        //static float stopVal = 100;
+        static float stopVal = 100;
 
                 PROFILER_START("Iteracion: insert");
         //iteration start!
         for (size_t i = 0; i < points.size(); i++)
         {
             //debug
-            //if (atan2(points[i].p.y - light->pos.y, points[i].p.x - light->pos.x) > stopVal)
-              //  break;
+            if (atan2(points[i].p.y - light->pos.y, points[i].p.x - light->pos.x) > stopVal)
+                break;
 
             if (!open.count(points[i].parent))
             {
@@ -202,7 +185,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                             tri.setPoint(2, sf::Vector2f(dir.x * t, dir.y * t) + sf::Vector2f(light->radius, light->radius));
 
                         else
-                            tri.setPoint(2, points[i].p - light->pos + sf::Vector2f(light->radius, light->radius)); // this one is tricky, needs to be projected or someting
+                            tri.setPoint(2, points[i].p - light->pos + sf::Vector2f(light->radius, light->radius)); 
 
                         triangles.push_back(tri);
 
@@ -264,12 +247,12 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             }
         }
                 PROFILER_STOP
-        //ImGui::Begin("LightData");
-        //ImGui::Text(std::string(std::to_string(light->pos.x) + ", " + std::to_string(light->pos.y)).c_str());
-        //ImGui::Text(std::string(std::to_string(light->radius)).c_str());
-        //ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
-        //ImGui::SliderFloat("radians", &stopVal, -3, 3);
-        //ImGui::End();
+        ImGui::Begin("LightData");
+        ImGui::Text(std::string(std::to_string(light->pos.x) + ", " + std::to_string(light->pos.y)).c_str());
+        ImGui::Text(std::string(std::to_string(light->radius)).c_str());
+        ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
+        ImGui::SliderFloat("radians", &stopVal, -3, 3);
+        ImGui::End();
 
         PROFILER_START("draw triangles")
         drawShadowMap(light);
@@ -288,7 +271,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
         sf::Sprite sprite(light->shadowMap.getTexture());
         sprite.setPosition(light->pos - (sf::Vector2f(light->shadowMap.getSize()) / 2.f));
-        target.draw(sprite, state);
+        target.draw(sprite);
+        //target.draw(sprite, state);
         PROFILER_STOP
 
     }
@@ -299,10 +283,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 void ShadowHandler::drawShadowMap(Light* light)
 {
     //For debugging
-    /*for (size_t i = 0; i < triangles.size(); i++)
+    for (size_t i = 0; i < triangles.size(); i++)
     {
         triangles[i].setFillColor(sf::Color(100, 255 * (float(i) / triangles.size()), 255 * (float(i) / triangles.size()), 255));
-    }*/
+    }
 
     light->shadowMap.clear(sf::Color::Transparent);
     for (auto const & polies : this->triangles)
@@ -415,7 +399,7 @@ ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openL
     auto min = iterator;
     float tMin = this->findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
 
-    iterator++; //might crash if only one wall
+    iterator++;
     
     if (tMin < 0 && iterator == openList.end())
             return nullptr;
