@@ -1,6 +1,7 @@
 #include "Game.h"
 #include "Misc/KeyboardState.h"
 #include "Misc/Profiler.h"
+#include "Handlers/TextureHandler.h"
 
 #define DEBUG_MODE true
 
@@ -24,7 +25,7 @@ Game::Game(sf::RenderWindow* window)
 
     this->view.setCenter(sf::Vector2f(window->getSize()) / 4.f);
 
-    Player::AnimationData data(&this->textures.playerSprite, sf::Vector2u(6, 1), 150);
+    Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150);
 
     this->player = new Player(data, sf::Vector2f(0, 0));
     this->player->setAnimationData(data);
@@ -41,12 +42,8 @@ Game::~Game()
 void Game::loadFiles()
 {  
 
+    TextureHandler::get().loadTextures();
     
-    if (!this->textures.floorPiece.loadFromFile(TEXTURE_PATH("floorPiece.png")))
-        exit(-2);
-
-    if (!this->textures.playerSprite.loadFromFile(TEXTURE_PATH("smallCate.png")))
-        exit(-2);
 
     this->shaders[SHADER::lighting].setUniform("shadowMap", sf::Shader::CurrentTexture);
     this->shaders[SHADER::gaussHorizontal].setUniform("texture", sf::Shader::CurrentTexture);

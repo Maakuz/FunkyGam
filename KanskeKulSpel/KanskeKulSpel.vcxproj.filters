@@ -63,6 +63,12 @@
     <ClCompile Include="..\External\Include\Imgui\SFML-imgui\imgui-SFML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Entities\Throwable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Handlers\ProjectileHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -110,6 +116,15 @@
     <ClInclude Include="src\Misc\Profiler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Entities\Throwable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Handlers\ProjectileHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Handlers\TextureHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GaussianVert.frag" />
@@ -119,5 +134,6 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Lighting\big think.txt" />
+    <Text Include="src\Misc\Todo.txt" />
   </ItemGroup>
 </Project>

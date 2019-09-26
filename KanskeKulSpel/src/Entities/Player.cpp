@@ -3,6 +3,7 @@
 #include "Misc/KeyboardState.h"
 #include "Lighting/LightQueue.h"
 #include "Imgui/imgui.h"
+#include "Handlers/ProjectileHandler.h"
 
 #define TERMINALVELOCITY 10.f
 #define TESTING false
@@ -24,15 +25,19 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 
 void Player::update(float dt)
 {
-    //testittesti
-    static float elapsedTime = 0;
-    elapsedTime += dt;
+    this->move(dt);
 
-    this->debugMove(dt);
-
-    this->collisionBox.setPosition(getPosition());
+    this->collisionBox.setPosition(this->pos);
 
     this->updateAnimation(dt);
+
+    this->updatePosition();
+
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Num1))
+    {
+       // Throwable boimb(sf::Vector2f(0.5, 0.5), this->pos, );
+        //ProjectileHandler::addThrowable(boimb);
+    }
     
     //imgui test
 #if TESTING
@@ -57,26 +62,26 @@ void Player::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
-            setPosition(getPosition().x, collider.getPosition().y - getTextureRect().height);
+            this->pos.y = collider.getPosition().y - getTextureRect().height;
         }
         
         //smackin into roof
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
         {
             this->momentum.y = 0;
-            setPosition(getPosition().x, collider.getPosition().y + collider.getCollisionBox().getAABB().size.y);
+            this->pos.y = collider.getPosition().y + collider.getCollisionBox().getAABB().size.y;
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
             this->momentum.x *= -0.5f;
-            setPosition(collider.getPosition().x - getTextureRect().width, getPosition().y);
+            this->pos.x = collider.getPosition().x - getTextureRect().width;
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
         {
             this->momentum.x *= -0.5f;
-            setPosition(collider.getPosition().x + collider.getCollisionBox().getAABB().size.x, getPosition().y);
+            this->pos.x = collider.getPosition().x + collider.getCollisionBox().getAABB().size.x;
         }
     }
 }
@@ -102,7 +107,7 @@ void Player::move(float dt)
     momentum.y += GRAVITY * dt * this->mass;
     momentum.y = std::min(TERMINALVELOCITY, momentum.y);
 
-    setPosition(getPosition() + sf::Vector2f(momentum));
+    this->pos += momentum;
 
 }
 
@@ -132,7 +137,7 @@ void Player::debugMove(float dt)
     //momentum.y += GRAVITY * dt * this->mass;
     //momentum.y = std::min(TERMINALVELOCITY, momentum.y);
 
-    setPosition(getPosition() + sf::Vector2f(momentum));
+    this->pos = momentum;
 }
 
 void Player::jump() // om släppa knapp trycka ner spelar lite jappjapp

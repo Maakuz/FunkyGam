@@ -10,6 +10,7 @@ public:
 
     void addCollision(CollisionBox::AABB aabb);
 
+
     //Uses textureRect to determinate bounds
     void addCollision();
 
@@ -19,5 +20,9 @@ public:
     virtual void handleCollision(const Entity& collider) = 0;
 
 protected:
+    
+    void updatePosition() { this->setPosition(pos); };
+    
     CollisionBox collisionBox;
+    sf::Vector2f pos;
 };

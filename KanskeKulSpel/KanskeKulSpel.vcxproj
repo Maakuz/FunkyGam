@@ -142,8 +142,10 @@
     <ClCompile Include="src\Collision\CollisionBox.cpp" />
     <ClCompile Include="src\Entities\Entity.cpp" />
     <ClCompile Include="src\Entities\Terrain.cpp" />
+    <ClCompile Include="src\Entities\Throwable.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Handlers\LevelHandler.cpp" />
+    <ClCompile Include="src\Handlers\ProjectileHandler.cpp" />
     <ClCompile Include="src\Handlers\ShadowHandler.cpp" />
     <ClCompile Include="src\Misc\KeyboardState.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -152,6 +154,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Collision\CollisionHandler.h" />
+    <ClInclude Include="src\Entities\Throwable.h" />
+    <ClInclude Include="src\Handlers\ProjectileHandler.h" />
+    <ClInclude Include="src\Handlers\TextureHandler.h" />
     <ClInclude Include="src\Misc\Definitions.h" />
     <ClInclude Include="src\Entities\AnimatedEntity.h" />
     <ClInclude Include="src\Collision\CollisionBox.h" />
@@ -175,6 +180,7 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Lighting\big think.txt" />
+    <Text Include="src\Misc\Todo.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

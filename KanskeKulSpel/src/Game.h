@@ -10,17 +10,6 @@
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3
 
-#define TEXTURE_FOLDER "../Sprites/"
-#define TEXTURE_PATH(x) TEXTURE_FOLDER x
-
-
-
-struct Textures
-    {
-        sf::Texture
-            floorPiece,
-            playerSprite;
-    };
 
 
 class Game
@@ -41,7 +30,6 @@ private:
     LevelHandler levelHandler;
 
     sf::RenderWindow* window;
-    Textures textures;
 
     Player* player;
 
