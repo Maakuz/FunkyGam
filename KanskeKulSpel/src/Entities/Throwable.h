@@ -9,6 +9,8 @@ public:
 
     void update(float dt);
 
+    bool hasImpacted() const { return impacted; };
+
     virtual void handleCollision(const Entity& collider);
 private:
 
@@ -16,4 +18,7 @@ private:
     sf::Vector2f acceleration;
     sf::Vector2f momentum;
 
+    float armingCounter;
+    bool impacted;
+    bool isArmed;
 };

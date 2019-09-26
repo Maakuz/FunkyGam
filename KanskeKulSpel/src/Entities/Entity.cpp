@@ -21,3 +21,9 @@ void Entity::addCollision()
 
     this->addCollision(aabb);
 }
+
+void Entity::updatePosition() 
+{
+    this->setPosition(pos); 
+    this->collisionBox.setPosition(pos);
+}

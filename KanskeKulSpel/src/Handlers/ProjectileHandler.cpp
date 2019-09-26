@@ -1,4 +1,5 @@
 #include "ProjectileHandler.h"
+#include "Collision/CollisionHandler.h"
 
 std::vector<Throwable> ProjectileHandler::throwables;
 
@@ -8,8 +9,18 @@ ProjectileHandler::ProjectileHandler()
 
 void ProjectileHandler::update(float dt)
 {
-    for (auto & throwable : this->throwables)
-        throwable.update(dt);
+    for (int i = 0; i < throwables.size(); i++)
+    {
+        if (throwables[i].hasImpacted())
+        {
+            throwables.erase(throwables.begin() + i--);
+        }
+        else
+        {
+            throwables[i].update(dt);
+            CollisionHandler::queueCollider(&throwables[i]);
+        }
+    }
 }
 
 void ProjectileHandler::addThrowable(TextureHandler::throwables type, sf::Vector2f pos, sf::Vector2f momentum)

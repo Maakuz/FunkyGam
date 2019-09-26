@@ -26,12 +26,9 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 void Player::update(float dt)
 {
     this->move(dt);
-
-    this->collisionBox.setPosition(this->pos);
+    this->updatePosition();
 
     this->updateAnimation(dt);
-
-    this->updatePosition();
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Num1))
     {

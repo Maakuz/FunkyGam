@@ -21,7 +21,7 @@ public:
 
 protected:
     
-    void updatePosition() { this->setPosition(pos); };
+    void updatePosition();
     
     CollisionBox collisionBox;
     sf::Vector2f pos;

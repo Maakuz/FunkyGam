@@ -171,6 +171,7 @@
     <ClInclude Include="src\Entities\Player.h" />
     <ClInclude Include="src\Handlers\ShaderHandler.h" />
     <ClInclude Include="src\Misc\Profiler.h" />
+    <ClInclude Include="src\Particles\ParticleEmitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GaussianHor.frag" />
