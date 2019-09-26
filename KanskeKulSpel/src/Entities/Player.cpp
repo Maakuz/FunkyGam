@@ -35,8 +35,7 @@ void Player::update(float dt)
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Num1))
     {
-       // Throwable boimb(sf::Vector2f(0.5, 0.5), this->pos, );
-        //ProjectileHandler::addThrowable(boimb);
+        ProjectileHandler::addThrowable(TextureHandler::throwables::onlyBomb, this->pos, sf::Vector2f(5, -10));
     }
     
     //imgui test

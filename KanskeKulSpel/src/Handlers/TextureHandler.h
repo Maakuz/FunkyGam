@@ -15,7 +15,7 @@ public:
     };
 
     static const int NR_OF_BOMBS = 1;
-    enum bombs 
+    enum throwables 
     {
         onlyBomb = 0
     };
@@ -35,7 +35,7 @@ public:
         if (!this->miscTextures[misc::playerSprite].loadFromFile(TEXTURE_PATH("smallCate.png")))
             exit(-2);
 
-        if (!this->bombsTextures[bombs::onlyBomb].loadFromFile(TEXTURE_PATH("bamb.png")))
+        if (!this->bombsTextures[throwables::onlyBomb].loadFromFile(TEXTURE_PATH("bamb.png")))
             exit(-2);
     }
 
@@ -44,7 +44,7 @@ public:
         return &this->miscTextures[tex];
     }
 
-    sf::Texture* getTexture(bombs tex)
+    sf::Texture* getTexture(throwables tex)
     {
         return &this->bombsTextures[tex];
     }

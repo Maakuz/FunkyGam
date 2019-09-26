@@ -70,6 +70,10 @@ void Game::update(float dt)
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
         this->running = !this->running;
 
+    PROFILER_START("projectileUpdate")
+    this->projectileHandler.update(dt);
+    PROFILER_STOP
+
     PROFILER_START("PlayerUpdate")
     if (this->running)
         this->player->update(dt);
@@ -165,6 +169,7 @@ void Game::draw()
 
 
     this->window->draw(*player);
+    this->window->draw(this->projectileHandler);
 
     static bool skip = false;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F5))
@@ -187,6 +192,7 @@ void Game::draw()
     }
 #else
     this->window->draw(this->levelHandler);
+    this->window->draw(this->projectileHandler);
     this->window->draw(*player);
     this->window->draw(fullscreenboi);
 #endif

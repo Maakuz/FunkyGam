@@ -3,6 +3,7 @@
 Entity::Entity(sf::Vector2f pos, sf::Texture * texture)
 :collisionBox(sf::Vector2f(0, 0), sf::Vector2f(0, 0)) 
 {
+    this->pos = pos;
     setPosition(pos);
     setTexture(*texture, true);
     addCollision();
