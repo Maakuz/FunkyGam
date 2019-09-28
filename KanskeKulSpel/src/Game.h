@@ -7,6 +7,7 @@
 #include "Collision/CollisionHandler.h"
 #include "Handlers/LevelHandler.h"
 #include "Handlers/ProjectileHandler.h"
+#include "Handlers/ParticleHandler.h"
 
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3
@@ -30,6 +31,7 @@ private:
     CollisionHandler collisionHandler;
     LevelHandler levelHandler;
     ProjectileHandler projectileHandler;
+    ParticleHandler particleHandler;
 
     sf::RenderWindow* window;
 

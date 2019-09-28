@@ -31,7 +31,6 @@ Game::Game(sf::RenderWindow* window)
     this->player->setAnimationData(data);
 
     levelHandler.loadLevel();
-
 }
 
 Game::~Game()
@@ -43,7 +42,7 @@ void Game::loadFiles()
 {  
 
     TextureHandler::get().loadTextures();
-    
+    particleHandler.loadEmitters();
 
     this->shaders[SHADER::lighting].setUniform("shadowMap", sf::Shader::CurrentTexture);
     this->shaders[SHADER::gaussHorizontal].setUniform("texture", sf::Shader::CurrentTexture);
@@ -54,7 +53,7 @@ void Game::loadFiles()
 void Game::update(float dt)
 {
     sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window);
-
+    
     KEYBOARD::KeyboardState::updateKeys();
     
     static Light light(player->getPosition(), 200, sf::Vector3f(1, 1, 1));
@@ -74,6 +73,10 @@ void Game::update(float dt)
     this->projectileHandler.update(dt);
     PROFILER_STOP
 
+    PROFILER_START("particleUpdate")
+    this->particleHandler.update(dt);
+    PROFILER_STOP
+    
     PROFILER_START("PlayerUpdate")
     if (this->running)
         this->player->update(dt);
@@ -150,16 +153,6 @@ void Game::draw()
         break;
     }
 
-
-
-#endif
-
-
-    //Window drawing
-
-
-
-#if DEBUG_MODE
     static bool drawGeometry = true;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F7))
         drawGeometry = !drawGeometry;
@@ -170,6 +163,7 @@ void Game::draw()
 
     this->window->draw(*player);
     this->window->draw(this->projectileHandler);
+    this->window->draw(this->particleHandler);
 
     static bool skip = false;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F5))
@@ -196,8 +190,6 @@ void Game::draw()
     this->window->draw(*player);
     this->window->draw(fullscreenboi);
 #endif
-
-
 
 
 }

@@ -1,5 +1,6 @@
 #include "Throwable.h"
 #include "Misc/Definitions.h"
+#include "Handlers/ParticleHandler.h"
 
 //in MilSec
 #define ARMING_TIME 500 
@@ -31,5 +32,8 @@ void Throwable::update(float dt)
 void Throwable::handleCollision(const Entity& collider)
 {
     if (isArmed)
+    {
         this->impacted = true;
+        ParticleHandler::addEmitter(ParticleHandler::emitterTypes::bomb, this->pos);
+    }
 }

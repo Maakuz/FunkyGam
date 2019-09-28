@@ -3,7 +3,6 @@
 #include "Game.h"
 #include "Imgui/imgui.h"
 #include "Imgui/SFML-imgui/imgui-SFML.h"
-#include "Imgui/SFML-imgui/imgui-SFML_export.h"
 #include "Misc/Profiler.h"
 
 int main()

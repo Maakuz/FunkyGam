@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{9DE304C8-50D8-4A0D-85F8-31DC2495E11A}</ProjectGuid>
     <RootNamespace>KanskeKulSpel</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -47,7 +47,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -124,6 +124,7 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>F:\SPELTJOSAN\KanskeKulSpel\External\Include;$(SolutionDir)KanskeKulSpel\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -145,16 +146,19 @@
     <ClCompile Include="src\Entities\Throwable.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Handlers\LevelHandler.cpp" />
+    <ClCompile Include="src\Handlers\ParticleHandler.cpp" />
     <ClCompile Include="src\Handlers\ProjectileHandler.cpp" />
     <ClCompile Include="src\Handlers\ShadowHandler.cpp" />
     <ClCompile Include="src\Misc\KeyboardState.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Entities\Player.cpp" />
     <ClCompile Include="src\Handlers\ShaderHandler.cpp" />
+    <ClCompile Include="src\Particles\Emitter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Collision\CollisionHandler.h" />
     <ClInclude Include="src\Entities\Throwable.h" />
+    <ClInclude Include="src\Handlers\ParticleHandler.h" />
     <ClInclude Include="src\Handlers\ProjectileHandler.h" />
     <ClInclude Include="src\Handlers\TextureHandler.h" />
     <ClInclude Include="src\Misc\Definitions.h" />
@@ -171,7 +175,7 @@
     <ClInclude Include="src\Entities\Player.h" />
     <ClInclude Include="src\Handlers\ShaderHandler.h" />
     <ClInclude Include="src\Misc\Profiler.h" />
-    <ClInclude Include="src\Particles\ParticleEmitter.h" />
+    <ClInclude Include="src\Particles\Emitter.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GaussianHor.frag" />

@@ -69,6 +69,12 @@
     <ClCompile Include="src\Handlers\ProjectileHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Particles\Emitter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Handlers\ParticleHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -125,7 +131,10 @@
     <ClInclude Include="src\Handlers\TextureHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Particles\ParticleEmitter.h">
+    <ClInclude Include="src\Particles\Emitter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Handlers\ParticleHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
