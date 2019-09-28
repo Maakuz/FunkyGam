@@ -16,4 +16,5 @@ ParticleEmitter::ParticleEmitter()
 
 ParticleEmitter::~ParticleEmitter()
 {
+    test
 }
