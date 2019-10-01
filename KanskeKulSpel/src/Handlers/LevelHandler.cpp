@@ -6,12 +6,6 @@
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
 #define LAYER_AMOUNT 3
 
-
-enum hitBoxTypes 
-{
-    standard = 501
-};
-
 const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
 {"Level1.yay"};
 
@@ -22,7 +16,8 @@ LevelHandler::LevelHandler()
 bool LevelHandler::loadLevel()
 {
     this->importLevel(levels::forest);
-    this->generateHitboxes();
+    this->generateHitboxes(CollisionBox::colliderComponents::Ground);
+    this->generateHitboxes(CollisionBox::colliderComponents::Platform);
     this->createSpites();
     this->generateShadowLines();
 
@@ -125,7 +120,7 @@ bool LevelHandler::importLevel(levels level)
     return false;
 }
 
-bool LevelHandler::generateHitboxes()
+bool LevelHandler::generateHitboxes(CollisionBox::colliderComponents type)
 {
     sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
 
@@ -135,7 +130,7 @@ bool LevelHandler::generateHitboxes()
     {
         for (int j = 0; j < end.x; j++)
         {
-            if (hitboxData[i][j].tileID == hitBoxTypes::standard)
+            if (hitboxData[i][j].tileID == type)
             {
                 bool horExisits = false;
                 sf::Vector2f min = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
@@ -174,7 +169,7 @@ bool LevelHandler::generateHitboxes()
                         max.x += TILE_SIZE * (bounds.x - 1);
 
 
-                        Terrain ter(CollisionBox::AABB(min, max - min));
+                        Terrain ter(CollisionBox::AABB(min, max - min), type);
                         terrain.push_back(ter);
                     }
 
@@ -195,7 +190,8 @@ bool LevelHandler::generateHitboxes()
                     //if other tiles has been found
                     if (horExisits || (1 + i < end.y && hitboxData[i + 1][j].tileID != hitboxData[i][j].tileID))
                     {
-                        Terrain ter(CollisionBox::AABB(min, max - min));
+                        Terrain ter(CollisionBox::AABB(min, max - min), type);
+                        ter.getCollisionBox().addComponent(type);
                         terrain.push_back(ter);
                         open[i][j] = false;
                     }
@@ -228,7 +224,7 @@ bool LevelHandler::generateHitboxes()
                     }
 
 
-                    Terrain ter = Terrain(CollisionBox::AABB(min, max - min));
+                    Terrain ter = Terrain(CollisionBox::AABB(min, max - min), type);
                     terrain.push_back(ter);
                 }
             }
@@ -241,27 +237,30 @@ bool LevelHandler::generateHitboxes()
 
 void LevelHandler::generateShadowLines()
 {
-    for (auto & ter : terrain)
+    for (auto& ter : terrain)
     {
-        ShadowHandler::Line top(
-            ter.getPosition(), 
-            sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y));
+        if (ter.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
+        {
+            ShadowHandler::Line top(
+                ter.getPosition(),
+                sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y));
 
-        ShadowHandler::Line right(
-            sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y),
-            sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
+            ShadowHandler::Line right(
+                sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y),
+                sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
 
-        ShadowHandler::Line bottom(
-            sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
-            sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
+            ShadowHandler::Line bottom(
+                sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
+                sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
 
-        ShadowHandler::Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
-            ter.getPosition());
+            ShadowHandler::Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
+                ter.getPosition());
 
-        this->shadowLines.push_back(top);
-        this->shadowLines.push_back(right);
-        this->shadowLines.push_back(bottom);
-        this->shadowLines.push_back(left);
+            this->shadowLines.push_back(top);
+            this->shadowLines.push_back(right);
+            this->shadowLines.push_back(bottom);
+            this->shadowLines.push_back(left);
+        }
     }
 
 

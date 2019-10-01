@@ -9,7 +9,8 @@ class CollisionBox : public sf::Drawable
 public:
     enum colliderComponents
     {
-        Ground = 0,
+        Ground = 501,
+        Platform = 502,
         Player = 1,
         Static = 2,
         Bomb = 3

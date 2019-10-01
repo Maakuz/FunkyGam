@@ -41,8 +41,9 @@ public:
     void drawCollision(sf::RenderWindow& window, sf::RenderStates states) const;
 
 private:
+
     bool importLevel(levels level);
-    bool generateHitboxes();
+    bool generateHitboxes(CollisionBox::colliderComponents type);
     void generateShadowLines();
     void createSpites();
 

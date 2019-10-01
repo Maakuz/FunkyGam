@@ -4,7 +4,7 @@
 class Terrain : public Entity
 {
 public:
-    Terrain(CollisionBox::AABB aabb);
+    Terrain(CollisionBox::AABB aabb, CollisionBox::colliderComponents type);
     ~Terrain() {};
 
     virtual void handleCollision(const Entity& collider) {};

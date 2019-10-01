@@ -162,6 +162,7 @@
     <ClInclude Include="src\Handlers\ParticleHandler.h" />
     <ClInclude Include="src\Handlers\ProjectileHandler.h" />
     <ClInclude Include="src\Handlers\TextureHandler.h" />
+    <ClInclude Include="src\Misc\Counter.h" />
     <ClInclude Include="src\Misc\Definitions.h" />
     <ClInclude Include="src\Entities\AnimatedEntity.h" />
     <ClInclude Include="src\Collision\CollisionBox.h" />

@@ -21,6 +21,9 @@ Player::Player(AnimationData data, sf::Vector2f pos)
     this->floorRes = 0.85f;
     this->jumpHeight = 4.f;
     this->mass = 0.22f;
+
+    platformPassingCounter.stopValue = 1000;
+    platformPassingCounter.counter = platformPassingCounter.stopValue;
 }
 
 void Player::update(float dt)
@@ -81,6 +84,20 @@ void Player::handleCollision(const Entity& collider)
             this->pos.x = collider.getPosition().x + collider.getCollisionBox().getAABB().size.x;
         }
     }
+
+    else if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
+    {
+        //walking on ground
+        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
+        {
+            if (platformPassingCounter.isTimeUp())
+            {
+                this->momentum.y = 0;
+                this->pos.y = collider.getPosition().y - getTextureRect().height;
+                grounded = true;
+            }
+        }
+    }
 }
 
 void Player::move(float dt)
@@ -94,9 +111,13 @@ void Player::move(float dt)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
         acceleration.x = -1;
 
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space))
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         jump();
+    
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        platformPassingCounter.reset();
 
+    platformPassingCounter.update(dt);
 
     momentum.x += acceleration.x * walkSpeed * dt;
     momentum.x *= floorRes;

@@ -1,5 +1,6 @@
 #pragma once
 #include "AnimatedEntity.h"
+#include "Misc/Counter.h"
 
 class Player : public AnimatedEntity 
 {
@@ -28,5 +29,6 @@ private:
     float mass;
 
     bool grounded;
+    Counter platformPassingCounter;
 
 };
