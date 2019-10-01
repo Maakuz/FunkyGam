@@ -85,7 +85,7 @@ void CollisionBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
     for (int j = 0; j < 4; j++)
     {
-        sides[j].setFillColor(sf::Color(255, 255 * (j / 4.f), 0, 255));
+        sides[j].setFillColor(sf::Color(255, int(255 * (j / 4.f)), 0, 255));
         target.draw(sides[j]);
     }
 }

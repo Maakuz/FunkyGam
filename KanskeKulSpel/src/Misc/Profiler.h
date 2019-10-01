@@ -4,8 +4,8 @@
 #include <string>
 #include "Imgui/imgui.h"
 
-#define PROFILER_START(name) Profiler::get().start(name);
-#define PROFILER_STOP Profiler::get().stop();
+#define PROFILER_START(name) Profiler::get().start(name)
+#define PROFILER_STOP Profiler::get().stop()
 
 class Profiler
 {
@@ -46,7 +46,7 @@ public:
     void stop()
     {
         assert(started); //Start it first
-        times.push_back(timer.getElapsedTime().asMicroseconds());
+        times.push_back((float)timer.getElapsedTime().asMicroseconds());
         started = false;
     }
 

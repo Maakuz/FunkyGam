@@ -31,6 +31,8 @@ void CollisionHandler::processQueue()
 
 
     CollisionHandler::colliders.clear();
+
+    //WHO WHY WHAT
     CollisionHandler::staticColliders.clear();
 }
 

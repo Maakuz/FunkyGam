@@ -55,12 +55,12 @@ int main()
 
         ImGui::SFML::Update(wandow, deltaTime);
 
-        game.update(deltaTime.asMilliseconds());
+        game.update((float)deltaTime.asMilliseconds());
 
         wandow.clear(sf::Color(0, 100, 155));
         game.draw();
 
-        Profiler::get().drawGUI(deltaTime.asMilliseconds());
+        Profiler::get().drawGUI((float)deltaTime.asMilliseconds());
 
         ImGui::SFML::Render(wandow);
         wandow.display();

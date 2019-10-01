@@ -13,6 +13,6 @@ struct Light
         this->pos = pos;
         this->radius = radius;
         this->color = color;
-        this->shadowMap.create(radius * 2, radius * 2);
+        this->shadowMap.create((int)radius * 2, (int)radius * 2);
     }
 };

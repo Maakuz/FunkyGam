@@ -59,6 +59,7 @@ void Player::handleCollision(const Entity& collider)
         {
             this->momentum.y = 0;
             this->pos.y = collider.getPosition().y - getTextureRect().height;
+            grounded = true;
         }
         
         //smackin into roof
@@ -138,5 +139,9 @@ void Player::debugMove(float dt)
 
 void Player::jump() // om släppa knapp trycka ner spelar lite jappjapp
 {
-    momentum.y = -jumpHeight;
+    if (this->grounded)
+    {
+        momentum.y = -jumpHeight;
+        this->grounded = false;
+    }
 }

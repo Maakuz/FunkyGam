@@ -17,7 +17,11 @@ public:
             this->frameCount = frameCount;
             this->animationSpeed = animationSpeed;
         }
-        AnimationData() {};
+        AnimationData() 
+        {
+            this->animationSpeed = 0;
+            this->spriteSheet = nullptr;
+        };
     };
 
     AnimatedEntity(AnimationData data, sf::Vector2f pos);

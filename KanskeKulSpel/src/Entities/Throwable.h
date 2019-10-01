@@ -14,6 +14,7 @@ public:
     virtual void handleCollision(const Entity& collider);
 private:
 
+
     float mass;
     sf::Vector2f acceleration;
     sf::Vector2f momentum;

@@ -11,7 +11,8 @@ public:
     {
         Ground = 0,
         Player = 1,
-        Static = 2
+        Static = 2,
+        Bomb = 3
     };
 
     struct AABB

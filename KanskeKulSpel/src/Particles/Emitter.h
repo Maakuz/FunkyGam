@@ -1,6 +1,7 @@
 #pragma once#include <vector>
 #include <sstream>
 #include "SFML/Graphics.hpp"
+#include "Lighting/Light.h"
 
 struct Particle
 {
@@ -14,7 +15,9 @@ class Emitter : public sf::Drawable
 {
 public:
     Emitter(sf::Vector2f pos = sf::Vector2f(0, 0), sf::Vector2f particleSize = sf::Vector2f(1, 1), sf::Color color = sf::Color::White, float spawnRate = 500, float particleSpeed = 1, float particleLife = 0, float emitterLife = 0, int initialParticles = 0, int particlesPerSpawn = 1, int startAngle = 0, int spread = 360);
-    ~Emitter() {};
+    Emitter(const Emitter& other);
+    Emitter& operator=(const Emitter& other);
+    ~Emitter();
 
     void update(float dt);
 
@@ -35,10 +38,18 @@ public:
 
     void enableGravity(bool isAffectedByGravity) { this->affectedByGravity = isAffectedByGravity; };
 
-    void setEmitterPos(sf::Vector2f pos) { this->pos = pos; };
+    void setEmitterPos(sf::Vector2f pos);
+
+    //When emitter stops producing particles, for when all particles are gone, see "isVeryDead"
+    bool isDead() const { return this->emitterDead; };
+
+    //Not the best name
+    bool isVeryDead() const;
 
     void reset();
 private:
+    Light* emitterLight;
+
     sf::Vector2f pos;
 
     std::vector<Particle> particles;
@@ -52,13 +63,13 @@ private:
 
     float particleLifespan;
     float speed;
-    
+
     float spawnRate;
     float spawnCounter;
 
     int emitterAngle;
     int emitterCone;
-    
+
     sf::Vector2f size;
     sf::Color color;
 
@@ -67,7 +78,7 @@ private:
     bool immortalParticles;
     bool immortalEmitter;
 
-    bool emitterdead;
+    bool emitterDead;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

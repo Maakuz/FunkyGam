@@ -27,4 +27,6 @@ private:
     float jumpHeight;
     float mass;
 
+    bool grounded;
+
 };

@@ -1,5 +1,6 @@
 #include "ProjectileHandler.h"
 #include "Collision/CollisionHandler.h"
+#include "Misc/UnorderedErase.h"
 
 std::vector<Throwable> ProjectileHandler::throwables;
 
@@ -13,14 +14,20 @@ void ProjectileHandler::update(float dt)
     {
         if (throwables[i].hasImpacted())
         {
-            throwables.erase(throwables.begin() + i--);
+            //throwables.erase(throwables.begin() + i--);
+            unordered_erase(throwables, throwables.begin() + i--);
         }
         else
         {
             throwables[i].update(dt);
-            CollisionHandler::queueCollider(&throwables[i]);
         }
     }
+}
+
+void ProjectileHandler::queueColliders()
+{
+    for (auto& proj : throwables)
+        CollisionHandler::queueCollider(&proj);
 }
 
 void ProjectileHandler::addThrowable(TextureHandler::throwables type, sf::Vector2f pos, sf::Vector2f momentum)

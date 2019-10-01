@@ -8,7 +8,7 @@
 Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture)
     :Entity(pos, texture)
 {
-    this->mass = 0.3;
+    this->mass = 0.3f;
     this->momentum = momentum;
 
     this->armingCounter = 0;

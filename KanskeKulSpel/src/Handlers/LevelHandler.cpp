@@ -127,7 +127,7 @@ bool LevelHandler::importLevel(levels level)
 
 bool LevelHandler::generateHitboxes()
 {
-    sf::Vector2i end = sf::Vector2i(hitboxData[0].size(), hitboxData.size());
+    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
 
     std::vector<std::vector<bool>> open(end.y, std::vector<bool>(end.x, true));
 
@@ -138,8 +138,8 @@ bool LevelHandler::generateHitboxes()
             if (hitboxData[i][j].tileID == hitBoxTypes::standard)
             {
                 bool horExisits = false;
-                sf::Vector2f min = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y);
-                sf::Vector2f max = sf::Vector2f(hitboxData[i][j].x + TILE_SIZE, hitboxData[i][j].y + TILE_SIZE);
+                sf::Vector2f min = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
+                sf::Vector2f max = sf::Vector2f((float)hitboxData[i][j].x + TILE_SIZE, (float)hitboxData[i][j].y + TILE_SIZE);
 
                 //Big 'ol box
                 if (open[i][j])
@@ -207,16 +207,16 @@ bool LevelHandler::generateHitboxes()
                     int k = 1;
                     if (horExisits || !open[i][j]) 
                     {
-                        min = sf::Vector2f(hitboxData[i + k][j].x, hitboxData[i + k][j].y);
-                        max = sf::Vector2f(hitboxData[i + k][j].x + TILE_SIZE, hitboxData[i + k][j].y + TILE_SIZE);
+                        min = sf::Vector2f((float)hitboxData[i + k][j].x, (float)hitboxData[i + k][j].y);
+                        max = sf::Vector2f((float)hitboxData[i + k][j].x + TILE_SIZE, (float)hitboxData[i + k][j].y + TILE_SIZE);
                         open[i + k][j] = false;
                         k++;
                     }
 
                     else 
                     {
-                        min = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y);
-                        max = sf::Vector2f(hitboxData[i][j].x + TILE_SIZE, hitboxData[i][j].y + TILE_SIZE);
+                        min = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
+                        max = sf::Vector2f((float)hitboxData[i][j].x + TILE_SIZE, (float)hitboxData[i][j].y + TILE_SIZE);
                         open[i][j] = false;
                     }
 
@@ -314,7 +314,7 @@ void LevelHandler::createSpites()
                 {
                     sf::Sprite sprite;
                     sprite.setTexture(tilemaps[tile.textureID].texture);
-                    sprite.setPosition(tile.x, tile.y);
+                    sprite.setPosition((float)tile.x, (float)tile.y);
                     int xMap = tile.tileID % tilemaps[tile.textureID].x;
                     int yMap = tile.tileID / tilemaps[tile.textureID].x;
 

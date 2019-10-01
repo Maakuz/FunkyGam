@@ -10,8 +10,8 @@ public:
         bomb = 0
     };
 
-    ParticleHandler() {};
-    ~ParticleHandler() {};
+    ParticleHandler();
+    ~ParticleHandler();
 
     void update(float dt);
 
@@ -22,6 +22,6 @@ public:
 private:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-    static std::vector<Emitter> activeEmitters;
+    static std::vector<Emitter*> activeEmitters;
     static std::vector<Emitter> emitterTemplates;
 };

@@ -1,4 +1,5 @@
 #include "Emitter.h"
+#include "Lighting/LightQueue.h"
 
 Emitter::Emitter(sf::Vector2f pos, sf::Vector2f particleSize, sf::Color color, float spawnRate, float particleSpeed, float particleLife, float emitterLife, int initialParticles, int particlesPerSpawn, int startAngle, int spread)
 {
@@ -13,33 +14,77 @@ Emitter::Emitter(sf::Vector2f pos, sf::Vector2f particleSize, sf::Color color, f
     this->emitterAngle = startAngle;
     this->emitterCone = spread;
 
-    this->immortalParticles = false;
-    this->immortalEmitter = false;
     this->affectedByGravity = false;
 
     this->setEmitterLifeSpan(emitterLife);
     this->setParticleLifeSpan(particleLife);
     this->reset();
+
+    emitterLight = new Light(pos, 100);
+}
+
+Emitter::Emitter(const Emitter& other)
+{
+    *this = other;
+}
+
+Emitter& Emitter::operator=(const Emitter& other)
+{
+    this->affectedByGravity = other.affectedByGravity;
+    this->color = other.color;
+    this->emitterAngle = other.emitterAngle;
+    this->emitterCone = other.emitterCone;
+    this->emitterDead = other.emitterDead;
+    this->immortalEmitter = other.immortalEmitter;
+    this->immortalParticles = other.immortalParticles;
+    this->initialParticles = other.initialParticles;
+    this->lifespan = other.lifespan;
+    this->lifespanCounter = 0;
+    this->particleLifespan = other.particleLifespan;
+    this->particles = other.particles;
+    this->particlesPerSpawn = other.particlesPerSpawn;
+    this->pos = other.pos;
+    this->size = other.size;
+    this->spawnCounter = 0;
+    this->spawnRate = other.spawnRate;
+    this->speed = other.speed;
+    this->vertexArray = other.vertexArray;
+
+    this->emitterLight = new Light(other.emitterLight->pos, other.emitterLight->radius, other.emitterLight->color);
+    return *this;
+}
+
+Emitter::~Emitter()
+{
+    delete this->emitterLight;
 }
 
 void Emitter::update(float dt)
 {
+    LightQueue::get().queue(emitterLight);
+
     this->lifespanCounter += dt;
     if (this->lifespanCounter > this->lifespan)
-        this->emitterdead = true;
+    {
+        this->emitterDead = true;
+        emitterLight->color.x *= 0.95f;
+        emitterLight->color.y *= 0.95f;
+        emitterLight->color.z *= 0.95f;
+    }
 
     this->spawnCounter += dt;
-    if (this->spawnCounter > this->spawnRate && !this->emitterdead)
+    if (this->spawnCounter > this->spawnRate && !this->emitterDead)
     {
         this->spawnCounter = 0;
 
         for (int i = 0; i < particlesPerSpawn; i++)
             this->addParticle();
+
     }
 
     for (size_t i = 0; i < particles.size(); i++)
     {
-        int p = i * 4;
+        int p = (int)i * 4;
         Particle* particle = &particles[i];
 
         if (!this->immortalParticles)
@@ -56,7 +101,7 @@ void Emitter::update(float dt)
         else
         {
             if (this->affectedByGravity)
-                particle->velocity.y += 0.01 * dt;
+                particle->velocity.y += 0.01f * dt;
 
             for (size_t j = 0; j < 4; j++)
             {
@@ -68,6 +113,7 @@ void Emitter::update(float dt)
 
 void Emitter::setParticleLifeSpan(float lifespan)
 {
+    this->immortalParticles = false;
     this->particleLifespan = lifespan;
     if (this->particleLifespan <= 0.00023) //perfect number
     {
@@ -78,6 +124,7 @@ void Emitter::setParticleLifeSpan(float lifespan)
 
 void Emitter::setEmitterLifeSpan(float lifespan)
 {
+    this->immortalEmitter = false;
     this->lifespan = lifespan;
     if (this->lifespan <= 0.00023) //perfect number
     {
@@ -86,11 +133,22 @@ void Emitter::setEmitterLifeSpan(float lifespan)
     }
 }
 
+void Emitter::setEmitterPos(sf::Vector2f pos) 
+{ 
+    this->pos = pos; 
+    this->emitterLight->pos = pos;
+}
+
+bool Emitter::isVeryDead() const
+{
+    return this->emitterDead && particles.empty();
+}
+
 void Emitter::reset()
 {
     this->spawnCounter = 0;
     this->lifespanCounter = 0;
-    this->emitterdead = false;
+    this->emitterDead = false;
 
     this->particles.clear();
     this->vertexArray.clear();
@@ -161,6 +219,9 @@ std::istream& operator>>(std::istream& in, Emitter& emitter)
     in >> color[0] >> color[1] >> color[2] >> color[3];
     emitter.color = sf::Color(color[0], color[1], color[2], color[3]);
     in >> emitter.affectedByGravity;
+
+    emitter.setEmitterLifeSpan(emitter.lifespan);
+    emitter.setParticleLifeSpan(emitter.particleLifespan);
 
     return in;
 }

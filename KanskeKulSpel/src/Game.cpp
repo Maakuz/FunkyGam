@@ -56,40 +56,41 @@ void Game::update(float dt)
     
     KEYBOARD::KeyboardState::updateKeys();
     
-    static Light light(player->getPosition(), 200, sf::Vector3f(1, 1, 1));
+    static Light light(player->getPosition() + sf::Vector2f(15, 30), 200, sf::Vector3f(0.5f, 0.5f, 0.1f));
     light.pos = player->getPosition();
-    LightQueue::get().queue(light);
+    LightQueue::get().queue(&light);
 
-    static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1, 0.3, 0.3));
-    LightQueue::get().queue(light2);
+    static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1.f, 0.3f, 0.3f));
+    LightQueue::get().queue(&light2);
 
-    static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.5, 0.5, 0));
-    LightQueue::get().queue(light3);
+    static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.5f, 0.5f, 0.f));
+    LightQueue::get().queue(&light3);
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
         this->running = !this->running;
 
-    PROFILER_START("projectileUpdate")
+    PROFILER_START("projectileUpdate");
     this->projectileHandler.update(dt);
-    PROFILER_STOP
+    PROFILER_STOP;
 
-    PROFILER_START("particleUpdate")
+    PROFILER_START("particleUpdate");
     this->particleHandler.update(dt);
-    PROFILER_STOP
+    PROFILER_STOP;
     
-    PROFILER_START("PlayerUpdate")
+    PROFILER_START("PlayerUpdate");
     if (this->running)
         this->player->update(dt);
-    PROFILER_STOP
+    PROFILER_STOP;
 
-    PROFILER_START("LevelUpdate")
+    PROFILER_START("LevelUpdate");
     this->levelHandler.updateLevel(dt);
-    PROFILER_STOP
+    PROFILER_STOP;
 
-    PROFILER_START("Collision")
+    PROFILER_START("Collision");
+    this->projectileHandler.queueColliders();
     this->collisionHandler.queueCollider(this->player);
     this->collisionHandler.processQueue();
-    PROFILER_STOP
+    PROFILER_STOP;
     
 }
 
@@ -102,9 +103,9 @@ void Game::draw()
     this->renderTargets[0].display();
 
     this->fullscreenboi.setTexture(&this->renderTargets[0].getTexture());
-    PROFILER_STOP
+    PROFILER_STOP;
 
-    PROFILER_START("Blur")
+    PROFILER_START("Blur");
     for (int i = 0; i < 2; i++)
     {
         this->renderTargets[i + 1].clear(sf::Color::Transparent);
@@ -113,7 +114,7 @@ void Game::draw()
 
         this->fullscreenboi.setTexture(&this->renderTargets[i + 1].getTexture());
     }
-    PROFILER_STOP
+    PROFILER_STOP;
 
     LightQueue::get().clear();
 

@@ -378,10 +378,10 @@ ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openL
     sf::Vector2f dir;
 
     if (lengthSquared((*min)->p1 - pos) < lengthSquared((*min)->p2 - pos))
-        dir = interpolateCorner((*min)->p1, (*min)->p2, 0.05) - pos;
+        dir = interpolateCorner((*min)->p1, (*min)->p2, 0.05f) - pos;
 
     else
-        dir = interpolateCorner((*min)->p2, (*min)->p1, 0.05) - pos;
+        dir = interpolateCorner((*min)->p2, (*min)->p1, 0.05f) - pos;
 
     normalize(dir);
 
@@ -395,10 +395,10 @@ ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openL
     while (iterator != openList.end())
     {
         if (lengthSquared((*iterator)->p1 - pos) < lengthSquared((*iterator)->p2 - pos))
-            dir = interpolateCorner((*iterator)->p1, (*iterator)->p2, 0.05) - pos;
+            dir = interpolateCorner((*iterator)->p1, (*iterator)->p2, 0.05f) - pos;
 
         else
-            dir = interpolateCorner((*iterator)->p2, (*iterator)->p1, 0.05) - pos;
+            dir = interpolateCorner((*iterator)->p2, (*iterator)->p1, 0.05f) - pos;
 
         normalize(dir);
 
