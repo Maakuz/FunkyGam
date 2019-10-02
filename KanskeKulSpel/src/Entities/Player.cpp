@@ -40,14 +40,18 @@ void Player::update(float dt)
     
     //imgui test
 #if TESTING
+    static int frame = 0;
     ImGui::Begin("turbotest");
     ImGui::SetWindowSize(sf::Vector2f(300, 300));
     ImGui::SliderFloat("Walkkk", &this->walkSpeed, 0, 5);
     ImGui::SliderFloat("floor res", &this->floorRes, 0, 1);
     ImGui::SliderFloat("jump", &this->jumpHeight, 0, 10);
     ImGui::SliderFloat("weight", &this->mass, 0, 5);
+    ImGui::SliderInt("frame", &frame, 0, 6);
     if (ImGui::Button("Reset player pos")) setPosition(0, 0);
     ImGui::End();
+
+    //setAnimationFrame(sf::Vector2u(frame, 0));
 #endif
 
 
@@ -106,10 +110,22 @@ void Player::move(float dt)
     this->acceleration.y = 0;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
+    {
         this->acceleration.x = 1;
+        if (this->isFlippedHorizontally())
+        {
+            this->flipHorizontally();
+        }
+    }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
+    {
         acceleration.x = -1;
+        if (!this->isFlippedHorizontally())
+        {
+            this->flipHorizontally();
+        }
+    }
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         jump();

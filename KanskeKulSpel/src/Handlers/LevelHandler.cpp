@@ -9,6 +9,9 @@
 const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
 {"Level1.yay"};
 
+const std::string LEVEL_BG_NAMES[NR_OF_LEVELS] =
+{ "forestBG.png" };
+
 LevelHandler::LevelHandler()
 {
 }
@@ -20,6 +23,11 @@ bool LevelHandler::loadLevel()
     this->generateHitboxes(CollisionBox::colliderComponents::Platform);
     this->createSpites();
     this->generateShadowLines();
+
+    if (!this->backgroundTexture.loadFromFile(LEVEL_TEX_FOLDER + LEVEL_BG_NAMES[levels::forest]))
+        exit(-2);
+
+    this->backgroundSprite.setTexture(backgroundTexture);
 
     return true;
 }
@@ -35,10 +43,12 @@ void LevelHandler::updateLevel(float dt)
 
 void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
+    target.draw(this->backgroundSprite, states);
+
     //TODO: only draw stuff thats on the screen
     for (size_t i = 0; i < linearSprite.size(); i++)
     {
-        target.draw(linearSprite[i]);
+        target.draw(linearSprite[i], states);
     }
 }
 
@@ -262,50 +272,14 @@ void LevelHandler::generateShadowLines()
             this->shadowLines.push_back(left);
         }
     }
-
-
-    /*sf::Vector2i end = sf::Vector2i(hitboxData[0].size(), hitboxData.size());
-
-    std::vector<std::vector<bool>> open(end.y, std::vector<bool>(end.x, true));
-    std::vector<sf::Vector2i> corners;
-
-    for (int i = 0; i < end.y; i++)
-    {
-        for (int j = 0; j < end.x; j++)
-        {
-            if (hitboxData[i][j].tileID == hitBoxTypes::standard)
-            {
-                sf::Vector2f min = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y);
-                sf::Vector2f max = sf::Vector2f(hitboxData[i][j].x, hitboxData[i][j].y + TILE_SIZE);
-                corners.push_back(sf::Vector2i(i, j));
-
-                int k = 1;
-                while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID)
-                {
-                    k++;
-                    max.x += TILE_SIZE;
-                    corners.push_back(sf::Vector2i(i, j + k));
-
-                }
-
-                j += k;
-
-                Terrain ter(CollisionBox::AABB(min, max - min));
-                terrain.push_back(ter);
-            }
-        }
-    }*/
 }
 
 void LevelHandler::createSpites()
 {
-    spriteLayers.resize(LAYER_AMOUNT);
     for (size_t i = 0; i < layers.size(); i++)
     {
-        spriteLayers[i].resize(layers[i].size());
         for (size_t j = 0; j < layers[i].size(); j++)
         {
-            spriteLayers[i][j].resize(layers[i][j].size());
             for (size_t k = 0; k < layers[i][j].size(); k++)
             {
                 Tile tile = layers[i][j][k];

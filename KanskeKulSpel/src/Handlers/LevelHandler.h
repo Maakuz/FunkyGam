@@ -48,11 +48,11 @@ private:
     void createSpites();
 
     typedef std::vector<std::vector<Tile>> Layer;
-    typedef std::vector<std::vector<sf::Sprite>> SpriteLayer;
 
     std::vector<Layer> layers;
-    std::vector<SpriteLayer> spriteLayers;
     std::vector<sf::Sprite> linearSprite;
+    sf::Texture backgroundTexture;
+    sf::Sprite backgroundSprite;
     Layer hitboxData;
 
     std::vector<ShadowHandler::Line> shadowLines;

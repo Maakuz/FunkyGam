@@ -10,8 +10,7 @@ public:
     static const int NR_OF_MISC = 2;
     enum misc
     {
-        floorPiece = 0,
-        playerSprite = 1,
+        playerSprite = 0
     };
 
     static const int NR_OF_BOMBS = 1;
@@ -29,9 +28,6 @@ public:
 
     void loadTextures()
     {
-        if (!this->miscTextures[misc::floorPiece].loadFromFile(TEXTURE_PATH("floorPiece.png")))
-            exit(-2);
-
         if (!this->miscTextures[misc::playerSprite].loadFromFile(TEXTURE_PATH("smallCate.png")))
             exit(-2);
 

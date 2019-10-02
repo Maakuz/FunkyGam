@@ -14,6 +14,8 @@ public:
     //Uses textureRect to determinate bounds
     void addCollision();
 
+    virtual void flipHorizontally();
+
     ////ONLY USE THIS FROM THE OUTSIDE
     CollisionBox getCollisionBox() const { return this->collisionBox; };
 
@@ -21,8 +23,12 @@ public:
 
 protected:
     
+    bool isFlippedHorizontally() const { return flipped; };
     void updatePosition();
     
     CollisionBox collisionBox;
     sf::Vector2f pos;
+    
+private:
+    bool flipped;
 };

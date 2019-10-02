@@ -27,6 +27,8 @@ public:
     AnimatedEntity(AnimationData data, sf::Vector2f pos);
     virtual ~AnimatedEntity() {};
 
+    void flipHorizontally();
+
     void setAnimationData(AnimationData data);
 
 protected:
