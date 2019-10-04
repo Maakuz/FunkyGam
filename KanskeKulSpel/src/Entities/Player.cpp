@@ -6,7 +6,7 @@
 #include "Handlers/ProjectileHandler.h"
 
 #define TERMINALVELOCITY 10.f
-#define TESTING false
+#define TESTING true
 
 Player::Player(AnimationData data, sf::Vector2f pos)
 :AnimatedEntity(data, pos)
@@ -19,8 +19,8 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 
     this->walkSpeed = 0.05f;
     this->floorRes = 0.85f;
-    this->jumpHeight = 4.f;
-    this->mass = 0.22f;
+    this->jumpHeight = 4.3f;
+    this->mass = 0.166f;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
@@ -48,7 +48,7 @@ void Player::update(float dt)
     ImGui::SliderFloat("jump", &this->jumpHeight, 0, 10);
     ImGui::SliderFloat("weight", &this->mass, 0, 5);
     ImGui::SliderInt("frame", &frame, 0, 6);
-    if (ImGui::Button("Reset player pos")) setPosition(0, 0);
+    if (ImGui::Button("Reset player pos")) this->pos = sf::Vector2f(0, 0);
     ImGui::End();
 
     //setAnimationFrame(sf::Vector2u(frame, 0));
@@ -79,7 +79,7 @@ void Player::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.getPosition().x - getTextureRect().width;
+            this->pos.x = collider.getPosition().x - this->collisionBox.getAABB().size.x;
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
