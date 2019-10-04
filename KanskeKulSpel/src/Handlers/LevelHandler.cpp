@@ -43,7 +43,7 @@ void LevelHandler::updateLevel(float dt)
 
 void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(this->backgroundSprite, states);
+    //target.draw(this->backgroundSprite, states);
 
     //TODO: only draw stuff thats on the screen
     for (size_t i = 0; i < linearSprite.size(); i++)
@@ -74,7 +74,9 @@ bool LevelHandler::importLevel(levels level)
         in >> trash;
         int x = 0;
         int y = 0;
+        
         in >> y >> x;
+
         for (int i = 0; i < LAYER_AMOUNT; i++)
         {
             this->layers[i].resize(y);
@@ -293,6 +295,9 @@ void LevelHandler::createSpites()
 
                     sprite.setTextureRect(sf::IntRect(xMap * TILE_SIZE, yMap * TILE_SIZE, TILE_SIZE, TILE_SIZE));
                     linearSprite.push_back(sprite);
+
+                    this->dimensions.x = std::max(this->dimensions.x, (int)k * TILE_SIZE);
+                    this->dimensions.y = std::max(this->dimensions.y, (int)j * TILE_SIZE);
                 }
             }
         }

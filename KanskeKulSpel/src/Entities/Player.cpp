@@ -6,7 +6,7 @@
 #include "Handlers/ProjectileHandler.h"
 
 #define TERMINALVELOCITY 10.f
-#define TESTING true
+#define TESTING false
 
 Player::Player(AnimationData data, sf::Vector2f pos)
 :AnimatedEntity(data, pos)

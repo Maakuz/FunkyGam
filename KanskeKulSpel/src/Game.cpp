@@ -23,7 +23,6 @@ Game::Game(sf::RenderWindow* window)
 
     this->view.setSize(sf::Vector2f(window->getSize()) / 2.f);
 
-    this->view.setCenter(sf::Vector2f(window->getSize()) / 4.f);
 
     Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150);
 
@@ -56,7 +55,7 @@ void Game::update(float dt)
     
     KEYBOARD::KeyboardState::updateKeys();
     
-    static Light light(player->getPosition() + sf::Vector2f(15, 30), 200, sf::Vector3f(0.5f, 0.5f, 0.1f));
+    static Light light(player->getPosition() + sf::Vector2f(32, 30), 200, sf::Vector3f(0.5f, 0.5f, 0.1f));
     light.pos = player->getPosition();
     LightQueue::get().queue(&light);
 
@@ -91,11 +90,23 @@ void Game::update(float dt)
     this->collisionHandler.queueCollider(this->player);
     this->collisionHandler.processQueue();
     PROFILER_STOP;
+
+    sf::Vector2f center = this->player->getPosition();
+    center.x = std::max(center.x, view.getSize().x / 2.f);
+    center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / 2.f));
+    center.y = std::max(center.y, view.getSize().y / 2.f);
+    center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / 2.f));
+    this->view.setCenter(center);
+    this->window->setView(this->view);
     
 }
 
 void Game::draw()
 {
+
+
+
+
     //Shadow map
     PROFILER_START("Shoaduv");
     this->renderTargets[0].clear(sf::Color::Transparent);
