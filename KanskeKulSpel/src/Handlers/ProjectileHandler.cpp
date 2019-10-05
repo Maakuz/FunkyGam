@@ -14,7 +14,6 @@ void ProjectileHandler::update(float dt)
     {
         if (throwables[i].hasImpacted())
         {
-            //throwables.erase(throwables.begin() + i--);
             unordered_erase(throwables, throwables.begin() + i--);
         }
         else

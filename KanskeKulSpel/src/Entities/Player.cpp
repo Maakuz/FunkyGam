@@ -69,7 +69,7 @@ void Player::handleCollision(const Entity& collider)
     if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
     {
         //walking on ground
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
+        if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
             this->pos.y = collider.getPosition().y - this->size.y;
