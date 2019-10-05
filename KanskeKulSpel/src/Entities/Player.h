@@ -1,8 +1,7 @@
 #pragma once
-#include "AnimatedEntity.h"
-#include "Misc/Counter.h"
+#include "MovingEntity.h"
 
-class Player : public AnimatedEntity 
+class Player : public MovingEntity 
 {
 public:
     Player(AnimationData data, sf::Vector2f pos = sf::Vector2f(0, 0));
@@ -10,25 +9,11 @@ public:
 
     void update(float dt, sf::Vector2f mousePos);
 
-    virtual void handleCollision(const Entity&  collider);
+    //virtual void handleCollision(const Entity&  collider);
 
 private:
     void move(float dt);
     void debugMove(float dt);
-    void jump();
 
-    sf::Vector2i acceleration;
-    sf::Vector2f momentum;
-
-    float lightBounceFreq;
-    float lightBounceHeight;
-
-    float walkSpeed;
-    float floorRes;
-    float jumpHeight;
-    float mass;
-
-    bool grounded;
-    Counter platformPassingCounter;
 
 };
