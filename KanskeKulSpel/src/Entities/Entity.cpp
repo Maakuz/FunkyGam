@@ -5,6 +5,7 @@ Entity::Entity(sf::Vector2f pos, sf::Texture * texture)
 {
     flipped = false;
     this->pos = pos;
+    this->size = (sf::Vector2f)texture->getSize();
     setPosition(pos);
     setTexture(*texture, true);
     addCollision();
@@ -13,11 +14,11 @@ Entity::Entity(sf::Vector2f pos, sf::Texture * texture)
 void Entity::addCollision(CollisionBox::AABB aabb)
 {
     collisionBox.setAABB(aabb);
+    this->size = aabb.size;
 }
 
 void Entity::addCollision()
 {
-    //Change this to texture if this is not worinbg
     CollisionBox::AABB aabb(getPosition(), sf::Vector2f((float)getTextureRect().width, (float)getTextureRect().height));
 
     this->addCollision(aabb);

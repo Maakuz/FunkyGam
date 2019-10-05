@@ -1,9 +1,12 @@
 #include "Game.h"
 #include "Misc/KeyboardState.h"
+#include "Misc/MouseState.h"
 #include "Misc/Profiler.h"
 #include "Handlers/TextureHandler.h"
 
 #define DEBUG_MODE true
+
+const float ZOOM_LEVEL = 2.f;
 
 Game::Game(sf::RenderWindow* window)
 {
@@ -21,7 +24,7 @@ Game::Game(sf::RenderWindow* window)
     }
 
 
-    this->view.setSize(sf::Vector2f(window->getSize()) / 2.f);
+    this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
 
 
     Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150);
@@ -51,9 +54,12 @@ void Game::loadFiles()
 
 void Game::update(float dt)
 {
-    sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window);
+    sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window) / ZOOM_LEVEL;
+    mousePos.x += this->view.getCenter().x - (view.getSize().x / ZOOM_LEVEL);
+    mousePos.y += this->view.getCenter().y - (view.getSize().y / ZOOM_LEVEL);
     
     KEYBOARD::KeyboardState::updateKeys();
+    MOUSE::MouseState::updateButtons();
     
     static Light light(player->getPosition() + sf::Vector2f(32, 30), 200, sf::Vector3f(0.5f, 0.5f, 0.1f));
     light.pos = player->getPosition();
@@ -78,7 +84,7 @@ void Game::update(float dt)
     
     PROFILER_START("PlayerUpdate");
     if (this->running)
-        this->player->update(dt);
+        this->player->update(dt, mousePos);
     PROFILER_STOP;
 
     PROFILER_START("LevelUpdate");
@@ -92,10 +98,10 @@ void Game::update(float dt)
     PROFILER_STOP;
 
     sf::Vector2f center = this->player->getPosition();
-    center.x = std::max(center.x, view.getSize().x / 2.f);
-    center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / 2.f));
-    center.y = std::max(center.y, view.getSize().y / 2.f);
-    center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / 2.f));
+    center.x = std::max(center.x, view.getSize().x / ZOOM_LEVEL);
+    center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / ZOOM_LEVEL));
+    center.y = std::max(center.y, view.getSize().y / ZOOM_LEVEL);
+    center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / ZOOM_LEVEL));
     this->view.setCenter(center);
     this->window->setView(this->view);
     

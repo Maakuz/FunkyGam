@@ -34,6 +34,6 @@ void Throwable::handleCollision(const Entity& collider)
     if (isArmed)
     {
         this->impacted = true;
-        ParticleHandler::addEmitter(ParticleHandler::emitterTypes::bomb, this->pos);
+        ParticleHandler::addEmitter(ParticleHandler::emitterTypes::bomb, this->pos + (this->size / 2.f));
     }
 }

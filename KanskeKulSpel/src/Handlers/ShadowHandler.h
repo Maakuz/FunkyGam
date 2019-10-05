@@ -68,23 +68,4 @@ private:
     Line* findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos);
 
     sf::Vector2f interpolateCorner(sf::Vector2f corner, sf::Vector2f otherPoint, float value);
-
-    //These might get their own file later
-    float lengthSquared(sf::Vector2f vec) const
-    {
-        return abs(vec.x * vec.x) + abs(vec.y * vec.y);
-    }
-
-    float length(sf::Vector2f vec) const
-    {
-        return sqrt(lengthSquared(vec));
-    }
-
-    void normalize(sf::Vector2f& vec)
-    {
-        float l = length(vec);
-        vec.x = vec.x / l;
-        vec.y = vec.y / l;
-    }
-
 };

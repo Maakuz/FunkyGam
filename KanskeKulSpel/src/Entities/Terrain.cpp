@@ -5,6 +5,6 @@ Terrain::Terrain(CollisionBox::AABB aabb, CollisionBox::colliderComponents type)
 {
     collisionBox.addComponent(CollisionBox::colliderComponents::Static);
     collisionBox.addComponent(type);
-    collisionBox.setAABB(aabb);
+    addCollision(aabb);
     setPosition(aabb.pos);
 }

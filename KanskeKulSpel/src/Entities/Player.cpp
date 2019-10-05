@@ -1,6 +1,8 @@
 #include "Player.h"
 #include "Misc/Definitions.h"
 #include "Misc/KeyboardState.h"
+#include "Misc/MouseState.h"
+#include "Misc/VectorFunctions.h"
 #include "Lighting/LightQueue.h"
 #include "Imgui/imgui.h"
 #include "Handlers/ProjectileHandler.h"
@@ -26,16 +28,21 @@ Player::Player(AnimationData data, sf::Vector2f pos)
     platformPassingCounter.counter = platformPassingCounter.stopValue;
 }
 
-void Player::update(float dt)
+void Player::update(float dt, sf::Vector2f mousePos)
 {
     this->move(dt);
     this->updatePosition();
 
     this->updateAnimation(dt);
 
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Num1))
+    if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Left))
     {
-        ProjectileHandler::addThrowable(TextureHandler::throwables::onlyBomb, this->pos, sf::Vector2f(5, -10));
+        sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
+        normalize(direction);
+        direction.x *= 8;
+        direction.y *= 10;
+
+        ProjectileHandler::addThrowable(TextureHandler::throwables::onlyBomb, this->pos, direction);
     }
     
     //imgui test
@@ -65,7 +72,7 @@ void Player::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.getPosition().y - getTextureRect().height;
+            this->pos.y = collider.getPosition().y - this->size.y;
             grounded = true;
         }
         
@@ -73,19 +80,19 @@ void Player::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.getPosition().y + collider.getCollisionBox().getAABB().size.y;
+            this->pos.y = collider.getPosition().y + collider.getSize().y;
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.getPosition().x - this->collisionBox.getAABB().size.x;
+            this->pos.x = collider.getPosition().x - this->size.x;
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.getPosition().x + collider.getCollisionBox().getAABB().size.x;
+            this->pos.x = collider.getPosition().x + collider.getSize().x;
         }
     }
 
@@ -97,7 +104,7 @@ void Player::handleCollision(const Entity& collider)
             if (platformPassingCounter.isTimeUp())
             {
                 this->momentum.y = 0;
-                this->pos.y = collider.getPosition().y - getTextureRect().height;
+                this->pos.y = collider.getPosition().y - this->size.y;
                 grounded = true;
             }
         }

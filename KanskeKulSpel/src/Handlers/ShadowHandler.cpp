@@ -3,6 +3,7 @@
 #include "Handlers/ShaderHandler.h"
 #include "Imgui/imgui.h"
 #include "Misc/Profiler.h"
+#include "Misc/VectorFunctions.h"
 
 std::vector<ShadowHandler::Line> ShadowHandler::ShadowHandler::lines;
 
