@@ -1,5 +1,4 @@
 #include "Player.h"
-#include "Misc/Definitions.h"
 #include "Misc/KeyboardState.h"
 #include "Misc/MouseState.h"
 #include "Misc/VectorFunctions.h"
@@ -7,19 +6,16 @@
 #include "Imgui/imgui.h"
 #include "Handlers/ProjectileHandler.h"
 
-#define TERMINALVELOCITY 10.f
 #define TESTING false
 
 Player::Player(AnimationData data, sf::Vector2f pos)
 :MovingEntity(data, pos)
 {
-    this->acceleration = sf::Vector2i(0, 0);
-    this->momentum = sf::Vector2f(0, 0);
-
     this->walkSpeed = 0.05f;
     this->floorRes = 0.85f;
     this->jumpHeight = 4.3f;
     this->mass = 0.166f;
+    this->grounded = false;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
@@ -28,9 +24,8 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 void Player::update(float dt, sf::Vector2f mousePos)
 {
     this->move(dt);
-    this->updatePosition();
 
-    this->updateAnimation(dt);
+    MovingEntity::update(dt);
 
     if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Left))
     {
@@ -54,10 +49,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
     ImGui::SliderInt("frame", &frame, 0, 6);
     if (ImGui::Button("Reset player pos")) this->pos = sf::Vector2f(0, 0);
     ImGui::End();
-
-    //setAnimationFrame(sf::Vector2u(frame, 0));
 #endif
-
 
 }
 
@@ -92,13 +84,7 @@ void Player::move(float dt)
 
     platformPassingCounter.update(dt);
 
-    momentum.x += acceleration.x * walkSpeed * dt;
-    momentum.x *= floorRes;
-   
-    momentum.y += GRAVITY * dt * this->mass;
-    momentum.y = std::min(TERMINALVELOCITY, momentum.y);
 
-    this->pos += momentum;
 
 }
 
@@ -124,9 +110,6 @@ void Player::debugMove(float dt)
     momentum.y += acceleration.y * walkSpeed * dt;
     momentum.x *= floorRes;
     momentum.y *= floorRes;
-
-    //momentum.y += GRAVITY * dt * this->mass;
-    //momentum.y = std::min(TERMINALVELOCITY, momentum.y);
 
     this->pos = momentum;
 }

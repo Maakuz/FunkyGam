@@ -3,6 +3,7 @@
 #define EPSYLONE 0.0001
 
 #define GRAVITY 0.1f
+#define TERMINALVELOCITY 10.f
 
 #define TILE_SIZE 32
 #define WIN_HEIGHT 1080

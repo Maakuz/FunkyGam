@@ -1,9 +1,28 @@
 #include "MovingEntity.h"
+#include "Misc/Definitions.h"
 
 MovingEntity::MovingEntity(AnimationData data, sf::Vector2f pos)
     :AnimatedEntity(data, pos)
 {
+    this->walkSpeed = 0.05f;
+    this->floorRes = 0.85f;
+    this->jumpHeight = 4.3f;
+    this->mass = 0.166f;
+    this->grounded = false;
+}
 
+void MovingEntity::update(float dt)
+{
+    momentum.x += acceleration.x * walkSpeed * dt;
+    momentum.x *= floorRes;
+
+    momentum.y += GRAVITY * dt * this->mass;
+    momentum.y = std::min(TERMINALVELOCITY, momentum.y);
+
+    this->pos += momentum;
+
+    this->updatePosition();
+    this->updateAnimation(dt);
 }
 
 

@@ -26,18 +26,14 @@ Game::Game(sf::RenderWindow* window)
 
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
 
-
-    Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150);
-
-    this->player = new Player(data, sf::Vector2f(0, 0));
-    this->player->setAnimationData(data);
-
     levelHandler.loadLevel();
+    charHandler.initialize();
+    charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
+    charHandler.spawnEnemies();
 }
 
 Game::~Game()
 {
-    delete player;
 }
 
 void Game::loadFiles()
@@ -61,8 +57,8 @@ void Game::update(float dt)
     KEYBOARD::KeyboardState::updateKeys();
     MOUSE::MouseState::updateButtons();
     
-    static Light light(player->getPosition() + sf::Vector2f(32, 30), 200, sf::Vector3f(0.5f, 0.5f, 0.1f));
-    light.pos = player->getPosition();
+    static Light light(this->charHandler.getPlayer().getPosition() + sf::Vector2f(32, 30), 200, sf::Vector3f(0.5f, 0.5f, 0.1f));
+    light.pos = this->charHandler.getPlayer().getPosition();
     LightQueue::get().queue(&light);
 
     static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1.f, 0.3f, 0.3f));
@@ -82,9 +78,9 @@ void Game::update(float dt)
     this->particleHandler.update(dt);
     PROFILER_STOP;
     
-    PROFILER_START("PlayerUpdate");
+    PROFILER_START("CharUpdate");
     if (this->running)
-        this->player->update(dt, mousePos);
+        this->charHandler.update(dt, mousePos);
     PROFILER_STOP;
 
     PROFILER_START("LevelUpdate");
@@ -93,11 +89,11 @@ void Game::update(float dt)
 
     PROFILER_START("Collision");
     this->projectileHandler.queueColliders();
-    this->collisionHandler.queueCollider(this->player);
+    this->charHandler.queueColliders();
     this->collisionHandler.processQueue();
     PROFILER_STOP;
 
-    sf::Vector2f center = this->player->getPosition();
+    sf::Vector2f center = this->charHandler.getPlayer().getPosition();
     center.x = std::max(center.x, view.getSize().x / ZOOM_LEVEL);
     center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / ZOOM_LEVEL));
     center.y = std::max(center.y, view.getSize().y / ZOOM_LEVEL);
@@ -179,7 +175,7 @@ void Game::draw()
         this->window->draw(this->levelHandler);
 
 
-    this->window->draw(*player);
+    this->window->draw(this->charHandler);
     this->window->draw(this->projectileHandler);
     this->window->draw(this->particleHandler);
 
@@ -200,7 +196,7 @@ void Game::draw()
     if (drawHitbaxes)
     {
         levelHandler.drawCollision(*window, sf::RenderStates::Default);
-        window->draw(player->getCollisionBox());
+        charHandler.drawCollision(*window, sf::RenderStates::Default);
     }
 #else
     this->window->draw(this->levelHandler);

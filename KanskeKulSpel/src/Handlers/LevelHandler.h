@@ -38,6 +38,7 @@ public:
     void updateLevel(float dt);
     sf::Vector2i getDimensions() const { return this->dimensions; }
 
+    std::vector<sf::Vector2f> generateSpawnPoints();
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     void drawCollision(sf::RenderWindow& window, sf::RenderStates states) const;
 
@@ -54,8 +55,9 @@ private:
     std::vector<sf::Sprite> linearSprite;
     sf::Texture backgroundTexture;
     sf::Sprite backgroundSprite;
-    Layer hitboxData;
     sf::Vector2i dimensions;
+
+    Layer hitboxData;
 
     std::vector<ShadowHandler::Line> shadowLines;
 
