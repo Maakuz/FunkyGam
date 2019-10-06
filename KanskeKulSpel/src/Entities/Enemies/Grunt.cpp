@@ -8,7 +8,6 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
 
 void Grunt::update(float dt)
 {
-
     
     MovingEntity::update(dt);
 }
