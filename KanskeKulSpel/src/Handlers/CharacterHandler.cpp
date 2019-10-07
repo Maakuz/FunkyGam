@@ -18,7 +18,7 @@ CharacterHandler::~CharacterHandler()
 
 void CharacterHandler::initialize()
 {
-    Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150);
+    Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150, sf::Vector2u(1, 0));
 
     this->player = new Player(data, sf::Vector2f(0, 0));
     this->player->setAnimationData(data);
@@ -26,7 +26,7 @@ void CharacterHandler::initialize()
 
 void CharacterHandler::spawnEnemies()
 {
-    Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150);
+    Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150, sf::Vector2u(1, 0));
     Grunt* grunt = new Grunt(data, spawnPoints[0] + sf::Vector2f(0, -50));
     grunt->setColor(sf::Color(255, 50, 50, 255));
     enemies.push_back(grunt);

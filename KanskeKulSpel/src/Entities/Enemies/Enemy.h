@@ -11,8 +11,15 @@ public:
     virtual void update(float dt);
 
 protected:
+    enum class State
+    {
+        idle,
+        chasing,
+        returning
+    };
+
     float roamDistance;
-    Counter roamDecisionCounter;
+    State state;
 
     void desicionTimeOver();
     bool isDesicionTime() const { return this->decisionTime; }
@@ -20,6 +27,7 @@ protected:
     sf::Vector2f getStartPoint() const { return this->startPoint; }
 
 private:
+    Counter roamDecisionCounter;
     bool decisionTime;
     sf::Vector2f startPoint;
 };

@@ -22,6 +22,13 @@ void MovingEntity::update(float dt)
     this->pos += momentum;
     
     this->updatePosition();
+
+    if (abs(momentum.x) < this->walkSpeed * 0.75f && !isIdle())
+        pauseAnimation();
+
+    else if (abs(momentum.x) > this->walkSpeed * 0.75f)
+        resumeAnimation();
+
     this->updateAnimation(dt);
 }
 

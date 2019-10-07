@@ -10,12 +10,14 @@ public:
         sf::Texture * spriteSheet;
         sf::Vector2u frameCount;
         float animationSpeed;
+        sf::Vector2u idleFrame;
 
-        AnimationData(sf::Texture * spriteSheet, sf::Vector2u frameCount, float animationSpeed)
+        AnimationData(sf::Texture * spriteSheet, sf::Vector2u frameCount, float animationSpeed, sf::Vector2u idleFrame = sf::Vector2u(0, 0))
         {
             this->spriteSheet = spriteSheet;
             this->frameCount = frameCount;
             this->animationSpeed = animationSpeed;
+            this->idleFrame = idleFrame;
         }
         AnimationData() 
         {
@@ -32,12 +34,16 @@ public:
     void setAnimationData(AnimationData data);
 
 protected:
+    void pauseAnimation();
+    void resumeAnimation() { this->idle = false; };
     void updateAnimation(float dt);
+
     void setAnimationFrame(sf::Vector2u frame) { this->currentFrame = frame; };
 
+    bool isIdle() const { return this->idle; }
 private:
     sf::Vector2u currentFrame;
-
+    bool idle;
     float timer;
 
     sf::IntRect texRect;

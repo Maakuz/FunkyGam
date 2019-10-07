@@ -4,7 +4,6 @@
 Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     :Enemy(data, pos)
 {
-    this->roamDecisionCounter = Counter(3000);
     this->roamDistance = 64;
     this->walkSpeed = 0.005;
 
@@ -15,7 +14,6 @@ void Grunt::update(float dt)
     if (isDesicionTime())
     {
         int r = rand() % 3;
-        printf("%d\n", r);
         switch (r)
         {
         case 0:

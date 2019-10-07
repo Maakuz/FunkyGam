@@ -5,6 +5,7 @@ AnimatedEntity::AnimatedEntity(AnimationData data, sf::Vector2f pos)
 {
     setAnimationData(data);
     this->addCollision();
+    this->idle = false;
 }
 
 void AnimatedEntity::flipHorizontally()
@@ -39,8 +40,30 @@ void AnimatedEntity::setAnimationData(AnimationData data)
     setTextureRect(texRect);
 }
 
+void AnimatedEntity::pauseAnimation()
+{
+    currentFrame = data.idleFrame;
+
+    texRect.width = abs(texRect.width);
+    texRect.height = abs(texRect.height);
+    texRect.left = currentFrame.x * texRect.width;
+    texRect.top = currentFrame.y * texRect.height;
+
+    if (isFlippedHorizontally())
+    {
+        texRect.left += texRect.width;
+        texRect.width = -texRect.width;
+    }
+    setTextureRect(texRect);
+
+    this->idle = true;
+}
+
 void AnimatedEntity::updateAnimation(float dt)
 {
+    if (idle)
+        return;
+
     timer += dt;
 
     if (timer > data.animationSpeed)
