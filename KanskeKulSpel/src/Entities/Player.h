@@ -1,5 +1,6 @@
 #pragma once
 #include "MovingEntity.h"
+#include "Misc/Counter.h"
 
 class Player : public MovingEntity 
 {
@@ -9,9 +10,11 @@ public:
 
     void update(float dt, sf::Vector2f mousePos);
 
-    //virtual void handleCollision(const Entity&  collider);
+    virtual void handleCollision(const Entity&  collider);
 
 private:
+    Counter platformPassingCounter;
+    
     void move(float dt);
     void debugMove(float dt);
 

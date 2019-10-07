@@ -1,6 +1,5 @@
 #pragma once
 #include "AnimatedEntity.h"
-#include "Misc/Counter.h"
 
 class MovingEntity : public AnimatedEntity
 {
@@ -23,6 +22,5 @@ protected:
     float mass;
 
     bool grounded;
-    Counter platformPassingCounter;
 
 };

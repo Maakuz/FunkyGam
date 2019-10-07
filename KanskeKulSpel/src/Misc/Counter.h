@@ -17,6 +17,9 @@ public:
 
     bool update(int increment)
     {
+        if (counter > stopValue)
+            return true;
+
         counter += increment;
         return counter > stopValue;
     }

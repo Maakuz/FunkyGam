@@ -142,6 +142,7 @@
     <ClCompile Include="src\Collision\CollisionHandler.cpp" />
     <ClCompile Include="src\Entities\AnimatedEntity.cpp" />
     <ClCompile Include="src\Collision\CollisionBox.cpp" />
+    <ClCompile Include="src\Entities\Enemies\Enemy.cpp" />
     <ClCompile Include="src\Entities\Enemies\Grunt.cpp" />
     <ClCompile Include="src\Entities\Entity.cpp" />
     <ClCompile Include="src\Entities\MovingEntity.cpp" />
@@ -162,6 +163,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Collision\CollisionHandler.h" />
+    <ClInclude Include="src\Entities\Enemies\Enemy.h" />
     <ClInclude Include="src\Entities\Enemies\Grunt.h" />
     <ClInclude Include="src\Entities\MovingEntity.h" />
     <ClInclude Include="src\Entities\Throwable.h" />

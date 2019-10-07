@@ -1,5 +1,5 @@
 #pragma once
-#include "Entities/Enemies/Grunt.h"
+#include "Entities/Enemies/Enemy.h"
 #include "Entities/Player.h"
 #include <vector>
 
@@ -21,7 +21,7 @@ public:
     void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     std::vector<sf::Vector2f> spawnPoints;
-    std::vector<MovingEntity*> enemies;
+    std::vector<Enemy*> enemies;
     Player* player;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

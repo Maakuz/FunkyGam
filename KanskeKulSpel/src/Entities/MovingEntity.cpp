@@ -20,7 +20,7 @@ void MovingEntity::update(float dt)
     momentum.y = std::min(TERMINALVELOCITY, momentum.y);
 
     this->pos += momentum;
-
+    
     this->updatePosition();
     this->updateAnimation(dt);
 }
@@ -68,17 +68,5 @@ void MovingEntity::handleCollision(const Entity& collider)
         }
     }
 
-    else if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
-    {
-        //walking on ground
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
-        {
-            if (platformPassingCounter.isTimeUp())
-            {
-                this->momentum.y = 0;
-                this->pos.y = collider.getPosition().y - this->size.y;
-                grounded = true;
-            }
-        }
-    }
+    
 }

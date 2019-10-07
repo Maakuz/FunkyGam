@@ -1,6 +1,7 @@
 #include "CharacterHandler.h"
 #include "Collision/CollisionHandler.h"
 #include "TextureHandler.h"
+#include "Entities/Enemies/Grunt.h"
 
 CharacterHandler::CharacterHandler()
 {
@@ -26,8 +27,9 @@ void CharacterHandler::initialize()
 void CharacterHandler::spawnEnemies()
 {
     Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150);
-
-    enemies.push_back(new Grunt(data, spawnPoints[0] + sf::Vector2f(0, -50)));
+    Grunt* grunt = new Grunt(data, spawnPoints[0] + sf::Vector2f(0, -50));
+    grunt->setColor(sf::Color(255, 50, 50, 255));
+    enemies.push_back(grunt);
 }
 
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
@@ -53,6 +55,9 @@ void CharacterHandler::queueColliders()
 void CharacterHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(player->getCollisionBox(), states);
+
+    for (MovingEntity* enemy : enemies)
+        target.draw(enemy->getCollisionBox(), states);
 }
 
 void CharacterHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const

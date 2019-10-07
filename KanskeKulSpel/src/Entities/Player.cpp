@@ -53,6 +53,25 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
 }
 
+void Player::handleCollision(const Entity& collider)
+{
+    if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
+    {
+        //walking on ground
+        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
+        {
+            if (platformPassingCounter.isTimeUp())
+            {
+                this->momentum.y = 0;
+                this->pos.y = collider.getPosition().y - this->size.y;
+                grounded = true;
+            }
+        }
+    }
+
+    MovingEntity::handleCollision(collider);
+}
+
 void Player::move(float dt)
 {
     this->acceleration.x = 0;
@@ -61,19 +80,17 @@ void Player::move(float dt)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
         this->acceleration.x = 1;
+
         if (this->isFlippedHorizontally())
-        {
             this->flipHorizontally();
-        }
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
         acceleration.x = -1;
+
         if (!this->isFlippedHorizontally())
-        {
             this->flipHorizontally();
-        }
     }
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
