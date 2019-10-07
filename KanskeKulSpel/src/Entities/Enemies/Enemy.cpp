@@ -5,7 +5,7 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos)
 {
     this->roamDistance = 0;
     this->decisionTime = true;
-    this->origin = pos;
+    this->startPoint = pos;
 }
 
 void Enemy::update(float dt)
@@ -17,4 +17,10 @@ void Enemy::update(float dt)
     }
 
     MovingEntity::update(dt);
+}
+
+void Enemy::desicionTimeOver() 
+{ 
+    this->decisionTime = false;
+    this->roamDecisionCounter.reset();
 }

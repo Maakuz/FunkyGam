@@ -14,10 +14,12 @@ protected:
     float roamDistance;
     Counter roamDecisionCounter;
 
+    void desicionTimeOver();
     bool isDesicionTime() const { return this->decisionTime; }
-    void desicionTimeOver() { this->decisionTime = false; }
+
+    sf::Vector2f getStartPoint() const { return this->startPoint; }
 
 private:
     bool decisionTime;
-    sf::Vector2f origin;
+    sf::Vector2f startPoint;
 };

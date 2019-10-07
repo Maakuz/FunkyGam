@@ -1,4 +1,5 @@
 #include "Grunt.h"
+#include "Misc/VectorFunctions.h"
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     :Enemy(data, pos)
@@ -14,6 +15,7 @@ void Grunt::update(float dt)
     if (isDesicionTime())
     {
         int r = rand() % 3;
+        printf("%d\n", r);
         switch (r)
         {
         case 0:
@@ -37,6 +39,13 @@ void Grunt::update(float dt)
             break;
         }
 
+        desicionTimeOver();
+    }
+
+    if (length(this->pos - this->getStartPoint()) > this->roamDistance)
+    {
+        acceleration.x = 0;
+        momentum.x *= -1;
         desicionTimeOver();
     }
 
