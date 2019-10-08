@@ -27,7 +27,7 @@ Game::Game(sf::RenderWindow* window)
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
 
     levelHandler.loadLevel();
-    charHandler.initialize();
+    charHandler.initialize(levelHandler.getShadowLinePtr());
     charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
     charHandler.spawnEnemies();
 }

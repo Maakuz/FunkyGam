@@ -5,7 +5,7 @@
 #include "Misc/Profiler.h"
 #include "Misc/VectorFunctions.h"
 
-std::vector<ShadowHandler::Line> ShadowHandler::ShadowHandler::lines;
+std::vector<Line> ShadowHandler::lines;
 
 
 ShadowHandler::ShadowHandler()
@@ -372,7 +372,7 @@ bool ShadowHandler::lineVSaabbTest(sf::FloatRect bounds, sf::Vector2f p1, sf::Ve
 }
 
 //might crash if only one wall
-ShadowHandler::Line* ShadowHandler::findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos)
+Line* ShadowHandler::findClosestLine(const std::set<Line*>& openList, sf::Vector2f pos)
 {
     auto iterator = openList.begin();
     auto min = iterator;

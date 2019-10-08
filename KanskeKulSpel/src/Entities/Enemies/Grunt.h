@@ -12,5 +12,10 @@ public:
     virtual void handleCollision(const Entity& collider);
 
 private:
+    int boundReached;
 
+
+    void updateIdle(float dt);
+    void updateChasing(float dt);
+    void updateReturning(float dt);
 };

@@ -1,25 +1,13 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Lighting/LightQueue.h"
+#include "Misc/Line.h"
 #include <vector>
 #include <set>
 
 class ShadowHandler
 {
 public:
-    struct Line
-    {
-        sf::Vector2f p1;
-        sf::Vector2f p2;
-
-
-        Line(sf::Vector2f p1, sf::Vector2f p2)
-        {
-            this->p1 = p1;
-            this->p2 = p2;
-        }
-    };
-
     ShadowHandler();
     ~ShadowHandler() {};
 
@@ -34,10 +22,10 @@ private:
     struct PointOnLine
     {
         sf::Vector2f p;
-        ShadowHandler::Line* parent;
+        Line* parent;
         float angle;
 
-        PointOnLine(sf::Vector2f p, ShadowHandler::Line* parent)
+        PointOnLine(sf::Vector2f p, Line* parent)
         {
             this->p = p;
             this->parent = parent;

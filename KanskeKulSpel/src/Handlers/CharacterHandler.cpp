@@ -16,10 +16,10 @@ CharacterHandler::~CharacterHandler()
         delete enemy;
 }
 
-void CharacterHandler::initialize()
+void CharacterHandler::initialize(const std::vector<Line>* occluders)
 {
+    this->occluders = occluders;
     Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150, sf::Vector2u(1, 0));
-
     this->player = new Player(data, sf::Vector2f(0, 0));
     this->player->setAnimationData(data);
 }

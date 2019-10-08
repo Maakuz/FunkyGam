@@ -185,6 +185,7 @@
     <ClInclude Include="src\Lighting\LightQueue.h" />
     <ClInclude Include="src\Entities\Player.h" />
     <ClInclude Include="src\Handlers\ShaderHandler.h" />
+    <ClInclude Include="src\Misc\Line.h" />
     <ClInclude Include="src\Misc\MouseState.h" />
     <ClInclude Include="src\Misc\Profiler.h" />
     <ClInclude Include="src\Misc\UnorderedErase.h" />

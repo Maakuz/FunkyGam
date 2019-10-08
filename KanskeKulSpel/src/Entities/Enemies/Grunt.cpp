@@ -6,14 +6,38 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
 {
     this->roamDistance = 64;
     this->walkSpeed = 0.005;
+    this->state = State::idle;
 
+    this->boundReached = 0;
 }
 
 void Grunt::update(float dt)
 {
-    if (isDesicionTime())
+    switch (state)
+    {
+    case Enemy::State::idle:
+        updateIdle(dt);
+        break;
+
+    case Enemy::State::chasing:
+        updateChasing(dt);
+        break;
+
+    case Enemy::State::returning:
+        updateReturning(dt);
+        break;
+    }
+
+    Enemy::update(dt);
+}
+
+
+void Grunt::updateIdle(float dt)
+{
+    if (isDesicionTime() && boundReached == 0)
     {
         int r = rand() % 3;
+        printf("%d\n", r);
         switch (r)
         {
         case 0:
@@ -40,14 +64,32 @@ void Grunt::update(float dt)
         desicionTimeOver();
     }
 
+    else if (isDesicionTime())
+    {
+        acceleration.x = -boundReached;
+        boundReached = 0;
+        this->flipHorizontally();
+        desicionTimeOver();
+    }
+
     if (length(this->pos - this->getStartPoint()) > this->roamDistance)
     {
+        this->boundReached = acceleration.x;
         acceleration.x = 0;
         momentum.x *= -1;
         desicionTimeOver();
     }
 
-    Enemy::update(dt);
+    //Search for player
+
+}
+
+void Grunt::updateChasing(float dt)
+{
+}
+
+void Grunt::updateReturning(float dt)
+{
 }
 
 void Grunt::handleCollision(const Entity& collider)

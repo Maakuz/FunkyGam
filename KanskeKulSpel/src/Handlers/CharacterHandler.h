@@ -1,6 +1,7 @@
 #pragma once
 #include "Entities/Enemies/Enemy.h"
 #include "Entities/Player.h"
+#include "Misc/Line.h"
 #include <vector>
 
 class CharacterHandler : public sf::Drawable
@@ -9,7 +10,7 @@ public:
     CharacterHandler();
     ~CharacterHandler();
 
-    void initialize();
+    void initialize(const std::vector<Line>* occluders);
 
     void spawnEnemies();
     void update(float dt, sf::Vector2f mousePos);
@@ -20,9 +21,13 @@ public:
 
     void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
+    const std::vector<Line>* occluders;
     std::vector<sf::Vector2f> spawnPoints;
     std::vector<Enemy*> enemies;
     Player* player;
+
+    void updateEnemyLineOfSight();
+
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 

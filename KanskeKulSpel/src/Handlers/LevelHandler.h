@@ -39,9 +39,8 @@ public:
     sf::Vector2i getDimensions() const { return this->dimensions; }
 
     std::vector<sf::Vector2f> generateSpawnPoints();
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
     void drawCollision(sf::RenderWindow& window, sf::RenderStates states) const;
-
+    const std::vector<Line>* getShadowLinePtr() const { return &this->shadowLines; }
 private:
 
     bool importLevel(levels level);
@@ -49,6 +48,8 @@ private:
     void generateShadowLines();
     void createSpites();
 
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    
     typedef std::vector<std::vector<Tile>> Layer;
 
     std::vector<Layer> layers;
@@ -59,7 +60,7 @@ private:
 
     Layer hitboxData;
 
-    std::vector<ShadowHandler::Line> shadowLines;
+    std::vector<Line> shadowLines;
 
     std::vector<Terrain> terrain;
 
