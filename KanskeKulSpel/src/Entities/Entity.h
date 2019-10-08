@@ -19,6 +19,7 @@ public:
     ////ONLY USE THIS FROM THE OUTSIDE
     CollisionBox getCollisionBox() const { return this->collisionBox; };
     sf::Vector2f getSize() const { return this->size; };
+    sf::Vector2f getCenterPos() const;
 
     virtual void handleCollision(const Entity& collider) = 0;
 

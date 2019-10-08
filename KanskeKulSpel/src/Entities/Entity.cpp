@@ -32,6 +32,14 @@ void Entity::flipHorizontally()
     flipped = !flipped;
 }
 
+sf::Vector2f Entity::getCenterPos() const
+{
+    sf::Vector2f center;
+    center.x = this->pos.x + (this->size.x / 2);
+    center.y = this->pos.y + (this->size.y / 2);
+    return center;
+}
+
 void Entity::updatePosition() 
 {
     this->setPosition(pos); 

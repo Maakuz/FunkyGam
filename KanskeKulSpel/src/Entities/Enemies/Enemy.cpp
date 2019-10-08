@@ -7,7 +7,11 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos)
     this->roamDistance = 0;
     this->decisionTime = true;
     this->startPoint = pos;
+    this->lastKnownPlayerPos = pos;
     this->state = State::idle;
+    this->facingDir = Direction::none;
+    this->eyeLevel.x = data.spriteSheet->getSize().x / data.frameCount.x / 2.f;
+    this->eyeLevel.y = data.spriteSheet->getSize().y / data.frameCount.y * 0.2;
 }
 
 void Enemy::update(float dt)
@@ -19,6 +23,17 @@ void Enemy::update(float dt)
     }
 
     MovingEntity::update(dt);
+}
+
+void Enemy::notifyEnemy(sf::Vector2f playerPos)
+{
+    this->lastKnownPlayerPos = playerPos;
+    this->state = State::chasing;
+}
+
+sf::Vector2f Enemy::getEyePos() const
+{
+    return this->pos + this->eyeLevel;
 }
 
 void Enemy::desicionTimeOver() 

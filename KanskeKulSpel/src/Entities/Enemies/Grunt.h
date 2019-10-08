@@ -13,6 +13,8 @@ public:
 
 private:
     int boundReached;
+    float chaseSpeed;
+    float idleSpeed;
 
 
     void updateIdle(float dt);

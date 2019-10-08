@@ -143,14 +143,8 @@ void Game::draw()
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F3))
         swap = 2;
 
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F9))
-        swap = 8;
-
     switch (swap)
     {
-    case 0:
-        break;
-
     case 1:
         this->fullscreenboi.setTexture(&renderTargets[0].getTexture());
         break;
@@ -158,17 +152,10 @@ void Game::draw()
     case 2:
         this->fullscreenboi.setTexture(&renderTargets[1].getTexture());
         break;
-
-    case 8:
-        
-        break;
-
-    default:
-        break;
     }
 
     static bool drawGeometry = true;
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F7))
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F4))
         drawGeometry = !drawGeometry;
 
     if (drawGeometry)
@@ -198,6 +185,13 @@ void Game::draw()
         levelHandler.drawCollision(*window, sf::RenderStates::Default);
         charHandler.drawCollision(*window, sf::RenderStates::Default);
     }
+
+    static bool drawSightLines = false;
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F7))
+        drawSightLines = !drawSightLines;
+
+    if (drawSightLines)
+        charHandler.drawSightLines(*window, sf::RenderStates::Default);
 #else
     this->window->draw(this->levelHandler);
     this->window->draw(this->projectileHandler);

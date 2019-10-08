@@ -155,7 +155,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
                     normalize(dir);
 
                     float closestContender = length(contenderOffset - light->pos);
-                    float currentClosest = this->findIntersectionPoint(light->pos, dir, closest->p1, closest->p2);
+                    float currentClosest = findIntersectionPoint(light->pos, dir, closest->p1, closest->p2);
 
                     if (closestContender < currentClosest && currentClosest >= 0)
                     {
@@ -282,44 +282,18 @@ sf::Vector2f ShadowHandler::getCenterPoint(sf::Vector2f p1, sf::Vector2f p2)
     return (p1 + p2) / 2.f;
 }
 
-float ShadowHandler::findIntersectionPoint(sf::Vector2f pos, sf::Vector2f dir, sf::Vector2f p1, sf::Vector2f p2)
-{
-    sf::Vector2f v1 = pos - p1;
-    sf::Vector2f v2 = p2 - p1;
-    sf::Vector2f v3 = sf::Vector2f(-dir.y, dir.x);
-    float dot = (v2.x * v3.x) + (v2.y * v3.y);
-
-    float t1 = -1;
-    float t2 = -1;
-
-    if (abs(dot) > EPSYLONE)
-    {
-        //crioss
-        t1 = ((v2.x * v1.y) - (v2.y * v1.x)) / dot;
-        //dot
-        t2 = ((v1.x * v3.x) + (v1.y * v3.y)) / dot;
-
-        if (t1 < 0.f || (t2 + EPSYLONE < 0.f || t2 > 1.f + EPSYLONE))
-        {
-            t1 = -1;
-        }
-    }
-
-    return t1;
-}
-
 float ShadowHandler::findClosestIntersectionDistance(const std::set<Line*>& openList, sf::Vector2f pos, sf::Vector2f dir)
 {
 
     auto iterator = openList.begin();
     auto min = iterator;
-    float tMin = this->findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
+    float tMin = findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
 
     iterator++; //might crash if only one wall
     while (iterator != openList.end())
     {
 
-        float t = this->findIntersectionPoint(pos, dir, (*iterator)->p1, (*iterator)->p2);
+        float t = findIntersectionPoint(pos, dir, (*iterator)->p1, (*iterator)->p2);
 
         if (abs(t + 1) > EPSYLONE)
             if (t < tMin)
@@ -386,7 +360,7 @@ Line* ShadowHandler::findClosestLine(const std::set<Line*>& openList, sf::Vector
 
     normalize(dir);
 
-    float tMin = this->findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
+    float tMin = findIntersectionPoint(pos, dir, (*min)->p1, (*min)->p2);
 
     iterator++;
     
@@ -403,7 +377,7 @@ Line* ShadowHandler::findClosestLine(const std::set<Line*>& openList, sf::Vector
 
         normalize(dir);
 
-        float t = this->findIntersectionPoint(pos, dir, (*iterator)->p1, (*iterator)->p2);
+        float t = findIntersectionPoint(pos, dir, (*iterator)->p1, (*iterator)->p2);
 
         if (abs(t + 1) > EPSYLONE)
             if (t < tMin)

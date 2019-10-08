@@ -20,13 +20,14 @@ public:
     const Player& getPlayer() const { return *this->player; };
 
     void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
+    void drawSightLines(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     const std::vector<Line>* occluders;
     std::vector<sf::Vector2f> spawnPoints;
     std::vector<Enemy*> enemies;
     Player* player;
 
-    void updateEnemyLineOfSight();
+    void updateEnemyLineOfSight(Enemy* enemy);
 
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

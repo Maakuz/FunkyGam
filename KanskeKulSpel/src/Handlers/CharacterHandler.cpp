@@ -2,6 +2,7 @@
 #include "Collision/CollisionHandler.h"
 #include "TextureHandler.h"
 #include "Entities/Enemies/Grunt.h"
+#include "Misc/VectorFunctions.h"
 
 CharacterHandler::CharacterHandler()
 {
@@ -12,7 +13,7 @@ CharacterHandler::~CharacterHandler()
 {
     delete player;
 
-    for (MovingEntity* enemy : enemies)
+    for (Enemy* enemy : enemies)
         delete enemy;
 }
 
@@ -36,8 +37,10 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 {
     this->player->update(dt, mousePos);
     
-    for (MovingEntity* enemy : enemies)
+    for (Enemy* enemy : enemies)
     {
+        this->updateEnemyLineOfSight(enemy);
+
         Grunt* g = dynamic_cast<Grunt*>(enemy);
         if (g)
             g->update(dt);
@@ -48,7 +51,7 @@ void CharacterHandler::queueColliders()
 {
     CollisionHandler::queueCollider(this->player);
 
-    for (MovingEntity* enemy : enemies)
+    for (Enemy* enemy : enemies)
         CollisionHandler::queueCollider(enemy);
 }
 
@@ -56,14 +59,64 @@ void CharacterHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates 
 {
     target.draw(player->getCollisionBox(), states);
 
-    for (MovingEntity* enemy : enemies)
+    for (Enemy* enemy : enemies)
         target.draw(enemy->getCollisionBox(), states);
+}
+
+void CharacterHandler::drawSightLines(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    sf::VertexArray arr(sf::PrimitiveType::Lines);
+    for (Enemy* enemy : enemies)
+    {
+        sf::Vertex v;
+        switch (enemy->getState())
+        {
+        case Enemy::State::chasing:
+            v.color = sf::Color::Red;
+            break;
+        default:
+            v.color = sf::Color::Blue;
+            break;
+        }
+
+        v.position = enemy->getEyePos();
+        arr.append(v);
+
+        v.position = this->player->getCenterPos();
+        arr.append(v);
+    }
+
+    target.draw(arr, states);
+}
+
+void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
+{
+    sf::Vector2f pos = enemy->getEyePos();
+    if (    (enemy->getFacingDir() == Enemy::Direction::left  && pos.x >  player->getPosition().x)
+        ||  (enemy->getFacingDir() == Enemy::Direction::right && pos.x <= player->getPosition().x))
+    {
+        bool playerHidden = false;
+        sf::Vector2f dir = this->player->getCenterPos() - pos;
+        float distance = lengthSquared(dir);
+        normalize(dir);
+        for (size_t i = 0; i < occluders->size() && !playerHidden; i++)
+        {
+            float t = findIntersectionPoint(pos, dir, occluders->at(i).p1, occluders->at(i).p2);
+            if (abs(t + 1) > EPSYLONE && t * t < distance)
+            {
+                playerHidden = true;
+            }
+        }
+
+        if (!playerHidden)
+            enemy->notifyEnemy(player->getPosition());
+    }
 }
 
 void CharacterHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(*player, states);
 
-    for (MovingEntity* enemy : enemies)
+    for (Enemy* enemy : enemies)
         target.draw(*enemy, states);
 }

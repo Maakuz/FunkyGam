@@ -276,19 +276,19 @@ void LevelHandler::generateShadowLines()
     {
         if (ter.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
         {
-            ShadowHandler::Line top(
+            Line top(
                 ter.getPosition(),
                 sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y));
 
-            ShadowHandler::Line right(
+            Line right(
                 sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y),
                 sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
 
-            ShadowHandler::Line bottom(
+            Line bottom(
                 sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
                 sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
 
-            ShadowHandler::Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
+            Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
                 ter.getPosition());
 
             this->shadowLines.push_back(top);

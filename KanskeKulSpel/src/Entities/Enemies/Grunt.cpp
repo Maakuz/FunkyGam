@@ -5,7 +5,9 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     :Enemy(data, pos)
 {
     this->roamDistance = 64;
-    this->walkSpeed = 0.005;
+    this->idleSpeed = 0.005;
+    this->walkSpeed = idleSpeed;
+    this->chaseSpeed = 0.01;
     this->state = State::idle;
 
     this->boundReached = 0;
@@ -13,13 +15,16 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
 
 void Grunt::update(float dt)
 {
+
     switch (state)
     {
     case Enemy::State::idle:
+        this->walkSpeed = idleSpeed;
         updateIdle(dt);
         break;
 
     case Enemy::State::chasing:
+        this->walkSpeed = chaseSpeed;
         updateChasing(dt);
         break;
 
@@ -34,30 +39,32 @@ void Grunt::update(float dt)
 
 void Grunt::updateIdle(float dt)
 {
-    if (isDesicionTime() && boundReached == 0)
+    if (isDesicionTime() && this->boundReached == 0)
     {
         int r = rand() % 3;
         printf("%d\n", r);
         switch (r)
         {
         case 0:
-            acceleration.x = 0;
+            this->acceleration.x = 0;
             break;
 
         case 1:
-            acceleration.x = -1;
+            this->acceleration.x = -1;
+            this->facingDir = Direction::left;
             if (!this->isFlippedHorizontally())
                 this->flipHorizontally();
             break;
 
         case 2:
-            acceleration.x = 1;
+            this->acceleration.x = 1;
             if (this->isFlippedHorizontally())
                 this->flipHorizontally();
+            this->facingDir = Direction::right;
             break;
 
         default:
-            acceleration.x = 0;
+            this->acceleration.x = 0;
             break;
         }
 
@@ -66,26 +73,47 @@ void Grunt::updateIdle(float dt)
 
     else if (isDesicionTime())
     {
-        acceleration.x = -boundReached;
-        boundReached = 0;
+        printf("End\n");
+        if (this->facingDir == Direction::left)
+            this->facingDir = Direction::right;
+
+        else
+            this->facingDir = Direction::left;
+
+        this->acceleration.x = -boundReached;
+        this->boundReached = 0;
         this->flipHorizontally();
-        desicionTimeOver();
+        this->desicionTimeOver();
     }
 
-    if (length(this->pos - this->getStartPoint()) > this->roamDistance)
+    if (length(this->pos - this->getStartPoint()) > this->roamDistance && this->boundReached == 0)
     {
         this->boundReached = acceleration.x;
-        acceleration.x = 0;
-        momentum.x *= -1;
-        desicionTimeOver();
+        this->acceleration.x = 0;
+        this->momentum.x *= -1;
+        this->desicionTimeOver();
     }
-
-    //Search for player
 
 }
 
 void Grunt::updateChasing(float dt)
 {
+    printf("!");
+    if (this->getLastKnownPos().x < this->pos.x)
+    {
+        this->facingDir = Direction::left;
+        if (!this->isFlippedHorizontally())
+            this->flipHorizontally();
+        this->acceleration.x = -1;
+    }
+
+    else if (this->getLastKnownPos().x >= this->pos.x)
+    {
+        if (this->isFlippedHorizontally())
+            this->flipHorizontally();
+        this->facingDir = Direction::right;
+        this->acceleration.x = 1;
+    }
 }
 
 void Grunt::updateReturning(float dt)
