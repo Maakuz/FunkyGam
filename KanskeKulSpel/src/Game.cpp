@@ -61,10 +61,10 @@ void Game::update(float dt)
     light.pos = this->charHandler.getPlayer().getPosition();
     LightQueue::get().queue(&light);
 
-    static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(1.f, 0.3f, 0.3f));
+    static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(0.5f, 0.05f, 0.05f));
     LightQueue::get().queue(&light2);
 
-    static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.5f, 0.5f, 0.f));
+    static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.1f, 0.1f, 0.f));
     LightQueue::get().queue(&light3);
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))

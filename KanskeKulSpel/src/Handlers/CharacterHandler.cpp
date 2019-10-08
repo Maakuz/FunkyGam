@@ -93,7 +93,8 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 {
     sf::Vector2f pos = enemy->getEyePos();
     if (    (enemy->getFacingDir() == Enemy::Direction::left  && pos.x >  player->getPosition().x)
-        ||  (enemy->getFacingDir() == Enemy::Direction::right && pos.x <= player->getPosition().x))
+        ||  (enemy->getFacingDir() == Enemy::Direction::right && pos.x <= player->getPosition().x)
+        ||  enemy->getState()      == Enemy::State::chasing)
     {
         bool playerHidden = false;
         sf::Vector2f dir = this->player->getCenterPos() - pos;
