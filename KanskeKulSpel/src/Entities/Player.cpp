@@ -12,8 +12,7 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 :MovingEntity(data, pos)
 {
     this->walkSpeed = 0.05f;
-    this->floorRes = 0.85f;
-    this->jumpHeight = 4.3f;
+    this->jumpHeight = 5.3f;
     this->mass = 0.166f;
     this->grounded = false;
 
@@ -43,7 +42,6 @@ void Player::update(float dt, sf::Vector2f mousePos)
     ImGui::Begin("turbotest");
     ImGui::SetWindowSize(sf::Vector2f(300, 300));
     ImGui::SliderFloat("Walkkk", &this->walkSpeed, 0, 5);
-    ImGui::SliderFloat("floor res", &this->floorRes, 0, 1);
     ImGui::SliderFloat("jump", &this->jumpHeight, 0, 10);
     ImGui::SliderFloat("weight", &this->mass, 0, 5);
     ImGui::SliderInt("frame", &frame, 0, 6);
@@ -121,13 +119,5 @@ void Player::debugMove(float dt)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
         acceleration.y = 1;
-
-
-    momentum.x += acceleration.x * walkSpeed * dt;
-    momentum.y += acceleration.y * walkSpeed * dt;
-    momentum.x *= floorRes;
-    momentum.y *= floorRes;
-
-    this->pos = momentum;
 }
 

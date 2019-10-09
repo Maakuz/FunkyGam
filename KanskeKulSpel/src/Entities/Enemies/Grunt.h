@@ -15,9 +15,12 @@ private:
     int boundReached;
     float chaseSpeed;
     float idleSpeed;
+    float attackRange;
+    Counter attackChargeTimer;
 
 
     void updateIdle(float dt);
     void updateChasing(float dt);
     void updateReturning(float dt);
+    void updateAttack(float dt);
 };

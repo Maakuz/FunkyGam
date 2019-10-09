@@ -138,6 +138,7 @@
     <ClCompile Include="..\External\Include\Imgui\imgui.cpp" />
     <ClCompile Include="..\External\Include\Imgui\imgui_draw.cpp" />
     <ClCompile Include="..\External\Include\Imgui\imgui_widgets.cpp" />
+    <ClCompile Include="..\External\Include\Imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="..\External\Include\Imgui\SFML-imgui\imgui-SFML.cpp" />
     <ClCompile Include="src\Collision\CollisionHandler.cpp" />
     <ClCompile Include="src\Entities\AnimatedEntity.cpp" />
@@ -171,6 +172,10 @@
     <ClInclude Include="src\Handlers\ParticleHandler.h" />
     <ClInclude Include="src\Handlers\ProjectileHandler.h" />
     <ClInclude Include="src\Handlers\TextureHandler.h" />
+    <ClInclude Include="src\Misc\ConsoleWindow.h" />
+    <ClInclude Include="src\Misc\ConsoleWindowExample.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="src\Misc\Counter.h" />
     <ClInclude Include="src\Misc\Definitions.h" />
     <ClInclude Include="src\Entities\AnimatedEntity.h" />

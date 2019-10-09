@@ -39,7 +39,8 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
     
     for (Enemy* enemy : enemies)
     {
-        this->updateEnemyLineOfSight(enemy);
+        if (enemy->getState() == Enemy::State::idle || enemy->getState() == Enemy::State::chasing)
+            this->updateEnemyLineOfSight(enemy);
 
         Grunt* g = dynamic_cast<Grunt*>(enemy);
         if (g)

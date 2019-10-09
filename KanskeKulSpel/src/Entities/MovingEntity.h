@@ -17,10 +17,14 @@ protected:
     sf::Vector2f momentum;
 
     float walkSpeed;
-    float floorRes;
     float jumpHeight;
     float mass;
 
     bool grounded;
 
+private:
+    float floorRes;
+    float airRes;
+    float airMobility;
+    
 };

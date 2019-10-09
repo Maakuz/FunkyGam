@@ -6,6 +6,8 @@ MovingEntity::MovingEntity(AnimationData data, sf::Vector2f pos)
 {
     this->walkSpeed = 0.05f;
     this->floorRes = 0.85f;
+    this->airRes = 0.99f;
+    this->airMobility = 0.2f;
     this->jumpHeight = 4.3f;
     this->mass = 0.166f;
     this->grounded = false;
@@ -13,11 +15,20 @@ MovingEntity::MovingEntity(AnimationData data, sf::Vector2f pos)
 
 void MovingEntity::update(float dt)
 {
-    momentum.x += acceleration.x * walkSpeed * dt;
-    momentum.x *= floorRes;
+
+    if (grounded)
+    {
+        momentum.x += acceleration.x * walkSpeed * dt;
+        momentum.x *= floorRes;
+    }
+    else
+    {
+        momentum.x += acceleration.x * walkSpeed * dt * airMobility;
+        momentum.x *= airRes;
+    }
 
     momentum.y += GRAVITY * dt * this->mass;
-    momentum.y = std::min(TERMINALVELOCITY, momentum.y);
+    momentum.y *= airRes;
 
     this->pos += momentum;
     

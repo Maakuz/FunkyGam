@@ -33,7 +33,7 @@ private:
     ProjectileHandler projectileHandler;
     ParticleHandler particleHandler;
     CharacterHandler charHandler;
-
+    
     sf::RenderWindow* window;
 
 

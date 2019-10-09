@@ -11,6 +11,8 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     this->state = State::idle;
 
     this->boundReached = 0;
+    this->attackRange = 64;
+    attackChargeTimer = Counter(1000);
 }
 
 void Grunt::update(float dt)
@@ -26,6 +28,10 @@ void Grunt::update(float dt)
     case Enemy::State::chasing:
         this->walkSpeed = chaseSpeed;
         updateChasing(dt);
+        break;
+
+    case Enemy::State::attacking:
+        updateAttack(dt);
         break;
 
     case Enemy::State::returning:
@@ -113,10 +119,34 @@ void Grunt::updateChasing(float dt)
         this->facingDir = Direction::right;
         this->acceleration.x = 1;
     }
+
+
+    if (lengthSquared(pos - getLastKnownPos()) < this->attackRange * this->attackRange)
+    {
+        state = State::attacking;
+        this->attackChargeTimer.reset();
+    }
 }
 
 void Grunt::updateReturning(float dt)
 {
+}
+
+void Grunt::updateAttack(float dt)
+{
+    this->acceleration.x = 0;
+    if (attackChargeTimer.update(dt))
+    {
+        if (facingDir == Direction::left)
+            this->momentum = sf::Vector2f(-10, -5);
+
+        else
+            this->momentum = sf::Vector2f(10, -5);
+
+        this->grounded = false;
+        state = State::stunned;
+    }
+    printf("OmegaAttackj!\n");
 }
 
 void Grunt::handleCollision(const Entity& collider)

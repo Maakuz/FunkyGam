@@ -16,7 +16,9 @@ public:
     {
         idle,
         chasing,
-        returning
+        attacking,
+        returning,
+        stunned
     };
 
     Enemy(AnimationData data, sf::Vector2f pos);

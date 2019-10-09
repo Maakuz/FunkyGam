@@ -3,6 +3,8 @@
 #include "Misc/MouseState.h"
 #include "Misc/Profiler.h"
 #include "Handlers/TextureHandler.h"
+#include "Misc/ConsoleWindow.h"
+#include "Misc/ConsoleWindowExample.h"
 
 #define DEBUG_MODE true
 
@@ -30,6 +32,12 @@ Game::Game(sf::RenderWindow* window)
     charHandler.initialize(levelHandler.getShadowLinePtr());
     charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
     charHandler.spawnEnemies();
+
+
+    ConsoleWindow::get().addCommand("test", [&](std::vector<std::string> args)->std::string
+        {
+            return args[0];
+        });
 }
 
 Game::~Game()
@@ -101,6 +109,11 @@ void Game::update(float dt)
     this->view.setCenter(center);
     this->window->setView(this->view);
     
+    ConsoleWindow::get().update();
+
+    static ConsoleWindowExample t;
+    static bool yes = true;
+    t.Draw("rfef", &yes);
 }
 
 void Game::draw()
@@ -167,11 +180,27 @@ void Game::draw()
     this->window->draw(this->particleHandler);
 
     static bool skip = false;
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F5))
-        skip = !skip;
+    static bool turboSkip = false;
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F11))
+    {
+        skip = true;
+        turboSkip = false;
+    }
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F10))
+    {
+        skip = false;
+        turboSkip = true;
+    }
 
-    if (!skip)
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F9))
+    {
+        skip = false;
+        turboSkip = false;
+    }
+    if (!skip && !turboSkip)
         this->window->draw(fullscreenboi, sf::BlendMultiply);
+
+    else if (turboSkip) {}
 
     else
         this->window->draw(fullscreenboi);
