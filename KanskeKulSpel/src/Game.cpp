@@ -114,7 +114,11 @@ void Game::update(float dt)
         ProfilerActive = !ProfilerActive;
 
     if (debugActive)
+    {
+        PROFILER_START("Console");
         ConsoleWindow::get().update(!debugActiveP);
+        PROFILER_STOP;
+    }
 
     if (ProfilerActive)
         Profiler::get().updateProfiler(dt);

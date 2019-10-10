@@ -13,7 +13,8 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
 
     this->boundReached = 0;
     this->attackRange = 64;
-    attackChargeTimer = Counter(1000);
+    this->attackChargeTimer = Counter(1000);
+    this->stunCounter = Counter(500);
 
     ConsoleWindow::get().addCommand("setState", [&](Arguments args)->std::string 
         {
@@ -54,7 +55,6 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
 
 void Grunt::update(float dt)
 {
-    
     switch (state)
     {
     case Enemy::State::idle:
@@ -73,6 +73,14 @@ void Grunt::update(float dt)
 
     case Enemy::State::returning:
         updateReturning(dt);
+        break;
+
+    case Enemy::State::stunned:
+        if (this->stunCounter.update(dt))
+        {
+            this->stunCounter.reset();
+            this->state = State::chasing;
+        }
         break;
     }
 
@@ -116,7 +124,7 @@ void Grunt::updateIdle(float dt)
 
     else if (isDesicionTime())
     {
-        printf("End\n");
+        printCon("End");
         if (this->facingDir == Direction::left)
             this->facingDir = Direction::right;
 
@@ -183,7 +191,6 @@ void Grunt::updateAttack(float dt)
         this->grounded = false;
         state = State::stunned;
     }
-    ConsoleWindow::get().printText("OmegaAttack");
 }
 
 void Grunt::handleCollision(const Entity& collider)

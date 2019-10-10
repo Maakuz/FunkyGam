@@ -17,6 +17,7 @@ private:
     float idleSpeed;
     float attackRange;
     Counter attackChargeTimer;
+    Counter stunCounter;
 
 
     void updateIdle(float dt);

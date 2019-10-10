@@ -47,10 +47,10 @@ public:
 
 
                 ImGui::BeginChild("log", sf::Vector2i(0, -footer_height_to_reserve), false);
-                for (const LogEntry& entry : log)
+                for (int i = 0; i < log.size(); i++)
                 {
-                    ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, entry.color);
-                    ImGui::Text("%s\n", entry.text.c_str());
+                    ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, log[i].color);
+                    ImGui::Text("%d: %s\n", i, log[i].text.c_str());
                     ImGui::PopStyleColor();
                 }
 
@@ -128,6 +128,8 @@ private:
     std::vector<LogEntry> log;
     std::vector<std::string> history;
     int historyPos;
+
+    const int LOG_MAX = 3000;
 
     Colors colors;
 
@@ -298,6 +300,11 @@ private:
 
     void addLog(std::string string, sf::Color color = sf::Color::White)
     {
+        if (log.size() >= LOG_MAX)
+        {
+            log.erase(log.begin());
+        }
+
         this->log.push_back(LogEntry(color, string));
     }
 
