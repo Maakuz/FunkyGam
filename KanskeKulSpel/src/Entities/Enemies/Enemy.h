@@ -32,6 +32,7 @@ public:
     State getState() const { return this->state; }
 
     sf::Vector2f getEyePos() const;
+    sf::Vector2f getLastKnownPos() const { return this->lastKnownPlayerPos; };
 
 protected:
     float roamDistance;
@@ -45,7 +46,6 @@ protected:
 
     sf::Vector2f getStartPoint() const { return this->startPoint; }
     void setStartPoint(sf::Vector2f point) { this->startPoint = point; }
-    sf::Vector2f getLastKnownPos() const { return this->lastKnownPlayerPos; };
 private:
     Counter roamDecisionCounter;
     bool decisionTime;

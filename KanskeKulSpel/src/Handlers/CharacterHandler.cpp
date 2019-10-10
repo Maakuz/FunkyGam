@@ -97,7 +97,7 @@ void CharacterHandler::drawSightLines(sf::RenderTarget& target, sf::RenderStates
         v.position = enemy->getEyePos();
         arr.append(v);
 
-        v.position = this->player->getCenterPos();
+        v.position = enemy->getLastKnownPos() + (player->getSize() / 2.f);
         arr.append(v);
     }
 
