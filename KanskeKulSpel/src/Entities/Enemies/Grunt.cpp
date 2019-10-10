@@ -1,5 +1,6 @@
 #include "Grunt.h"
 #include "Misc/VectorFunctions.h"
+#include "Misc/ConsoleWindow.h"
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     :Enemy(data, pos)
@@ -13,11 +14,47 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     this->boundReached = 0;
     this->attackRange = 64;
     attackChargeTimer = Counter(1000);
+
+    ConsoleWindow::get().addCommand("setState", [&](Arguments args)->std::string 
+        {
+            if (args.empty())
+                return "Missing argument: 0 = idle, 1 = chasing, 2 = attack\n3 = returning, 4 = stunned";
+
+            int val = std::stoi(args[0]);
+
+            switch (val)
+            {
+            case 0:
+                state = State::idle;
+                break;
+
+            case 1:
+                state = State::chasing;
+                break;
+
+            case 2:
+                state = State::attacking;
+                break;
+
+            case 3:
+                state = State::returning;
+                break;
+
+            case 4:
+                state = State::stunned;
+                break;
+            default:
+                return "Not a valid argument: 0 = idle, 1 = chasing, 2 = attack\n3 = returning, 4 = stunned";
+                break;
+            }
+
+            return "We did it!";
+        });
 }
 
 void Grunt::update(float dt)
 {
-
+    
     switch (state)
     {
     case Enemy::State::idle:

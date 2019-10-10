@@ -6,6 +6,7 @@
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
 
+typedef std::vector<std::string> Arguments;
 class ConsoleWindow
 {
 public:
@@ -17,7 +18,7 @@ public:
     }
 
 
-    void addCommand(std::string command, std::function<std::string(std::vector<std::string> args)> func)
+    void addCommand(std::string command, std::function<std::string(Arguments args)> func)
     {
         //Todo: assert dupes
         commands.push_back(Command(command, func));
@@ -28,12 +29,12 @@ public:
         this->log.push_back(LogEntry(color, string));
     }
 
-    void update()
+    void update(bool setFocusOnTextbox)
     {
         const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
         
         ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_WindowBg, colors.windowColor);
-        ImGui::Begin("TurboConsole", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize);
+        ImGui::Begin("Turbosole", 0, ImGuiWindowFlags_::ImGuiWindowFlags_NoResize);
         ImGui::SetWindowSize(sf::Vector2f(500, 600));
         sf::Vector2i windowPos = ImGui::GetWindowPos();
 
@@ -53,6 +54,9 @@ public:
 
                 ImGui::EndChild();
                 ImGui::Separator();
+
+                if (setFocusOnTextbox)
+                    ImGui::SetKeyboardFocusHere();
 
                 this->updateInputBox();
 
@@ -79,16 +83,16 @@ public:
 private:
     struct Command
     {
-        std::string command;
-        std::function<std::string(std::vector<std::string> args)> func;
+        std::string string;
+        std::function<std::string(Arguments args)> func;
 
-        Command(std::string s, std::function<std::string(std::vector<std::string> args)> f)
+        Command(std::string s, std::function<std::string(Arguments args)> f)
         {
-            this->command = s;
+            this->string = s;
             this->func = f;
         }
 
-        std::string operator()(std::vector<std::string> args)
+        std::string operator()(Arguments args)
         {
             return func(args);
         }
@@ -125,15 +129,21 @@ private:
     {
         historyPos = -1;
 
-        addCommand("clearLog", [&](std::vector<std::string> args)->std::string {
+        addCommand("clearLog", [&](Arguments args)->std::string {
             clearLog();
             return "Log cleared!"; });
+
+        addCommand("listAll", [&](Arguments args)->std::string {
+            listAllCommands();
+            return "That's all folks!"; });
 
 
         colors.commandColor = sf::Color(70, 255, 70);
         colors.errorColor = sf::Color(255, 50, 50);
         colors.infoColor = sf::Color::White;
         colors.windowColor = sf::Color(0, 0, 0, 200);
+
+        addLog("Use command \"listAll\" for a list of all commands.", colors.infoColor);
     }
 
     void updateInputBox()
@@ -212,8 +222,8 @@ private:
 
             for (const Command& command : commands)
             {
-                if (command.command.compare(0, comp.size(), comp) == 0)
-                    possibilities.push_back(command.command);
+                if (command.string.compare(0, comp.size(), comp) == 0)
+                    possibilities.push_back(command.string);
             }
 
             if (possibilities.empty())
@@ -256,7 +266,7 @@ private:
         int found = -1;
         for (size_t i = 0; i < commands.size() && found == -1; i++)
         {
-            if (actualCommand == commands[i].command)
+            if (actualCommand == commands[i].string)
                 found = i;
         }
 
@@ -283,6 +293,13 @@ private:
     void clearLog()
     {
         this->log.clear();
+    }
+
+    void listAllCommands()
+    {
+        addLog("Listing all commands:", colors.infoColor);
+        for (const Command& command : commands)
+            addLog("- " + command.string, colors.infoColor);
     }
 
     static bool sortByLength(const std::string& a, const std::string& b)

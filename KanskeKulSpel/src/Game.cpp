@@ -104,11 +104,21 @@ void Game::update(float dt)
     
 #if DEBUG_MODE true
     static bool debugActive = false;
+    static bool debugActiveP = false;
+    debugActiveP = debugActive;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(53))) //Tilde in sweden
         debugActive = !debugActive;
 
+    static bool ProfilerActive = false;
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::P)) //Tilde in sweden
+        ProfilerActive = !ProfilerActive;
+
     if (debugActive)
-        ConsoleWindow::get().update();
+        ConsoleWindow::get().update(!debugActiveP);
+
+    if (ProfilerActive)
+        Profiler::get().updateProfiler(dt);
+
 #endif
 }
 

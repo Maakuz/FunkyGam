@@ -17,7 +17,7 @@ public:
     }
     ~Profiler() {};
 
-    void drawGUI(float deltaTime = 0)
+    void updateProfiler(float deltaTime = 0)
     {
         std::string text ="Profolio, MicSec!";
         ImGui::Begin(text.c_str(), NULL, sf::Vector2f(500, 500));
