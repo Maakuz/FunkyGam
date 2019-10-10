@@ -4,7 +4,6 @@
 #include "Misc/Profiler.h"
 #include "Handlers/TextureHandler.h"
 #include "Misc/ConsoleWindow.h"
-#include "Misc/ConsoleWindowExample.h"
 
 #define DEBUG_MODE true
 
@@ -32,12 +31,6 @@ Game::Game(sf::RenderWindow* window)
     charHandler.initialize(levelHandler.getShadowLinePtr());
     charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
     charHandler.spawnEnemies();
-
-
-    ConsoleWindow::get().addCommand("test", [&](std::vector<std::string> args)->std::string
-        {
-            return args[0];
-        });
 }
 
 Game::~Game()
@@ -109,11 +102,14 @@ void Game::update(float dt)
     this->view.setCenter(center);
     this->window->setView(this->view);
     
-    ConsoleWindow::get().update();
+#if DEBUG_MODE true
+    static bool debugActive = false;
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(53))) //Tilde in sweden
+        debugActive = !debugActive;
 
-    static ConsoleWindowExample t;
-    static bool yes = true;
-    t.Draw("rfef", &yes);
+    if (debugActive)
+        ConsoleWindow::get().update();
+#endif
 }
 
 void Game::draw()

@@ -182,9 +182,6 @@
     <ClInclude Include="src\Misc\Line.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Misc\ConsoleWindowExample.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Misc\ConsoleWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>

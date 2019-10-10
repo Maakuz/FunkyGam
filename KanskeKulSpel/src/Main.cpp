@@ -46,6 +46,9 @@ int main()
                 wandow.close();
 
             ImGui::SFML::ProcessEvent(event);
+
+           // if (event.type == sf::Event::KeyPressed)
+             //   printf("%d\n", event.key.code);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
