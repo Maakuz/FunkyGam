@@ -85,7 +85,7 @@ void Grunt::updateIdle(float dt)
     if (isDesicionTime() && this->boundReached == 0)
     {
         int r = rand() % 3;
-        printf("%d\n", r);
+        printCon(std::to_string(r));
         switch (r)
         {
         case 0:
@@ -175,15 +175,15 @@ void Grunt::updateAttack(float dt)
     if (attackChargeTimer.update(dt))
     {
         if (facingDir == Direction::left)
-            this->momentum = sf::Vector2f(-10, -5);
+            this->momentum = sf::Vector2f(-5, -5);
 
         else
-            this->momentum = sf::Vector2f(10, -5);
+            this->momentum = sf::Vector2f(5, -5);
 
         this->grounded = false;
         state = State::stunned;
     }
-    printf("OmegaAttackj!\n");
+    ConsoleWindow::get().printText("OmegaAttack");
 }
 
 void Grunt::handleCollision(const Entity& collider)

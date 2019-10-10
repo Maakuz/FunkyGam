@@ -6,6 +6,8 @@
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
 
+#define printCon(x) ConsoleWindow::get().printText(std::string(x))
+
 typedef std::vector<std::string> Arguments;
 class ConsoleWindow
 {
@@ -24,9 +26,9 @@ public:
         commands.push_back(Command(command, func));
     }
 
-    void addLog(std::string string, sf::Color color = sf::Color::White)
+    void printText(std::string text)
     {
-        this->log.push_back(LogEntry(color, string));
+        addLog(text, colors.fromOutsideColor);
     }
 
     void update(bool setFocusOnTextbox)
@@ -51,6 +53,9 @@ public:
                     ImGui::Text("%s\n", entry.text.c_str());
                     ImGui::PopStyleColor();
                 }
+
+                if (ImGui::GetScrollY() >= ImGui::GetScrollMaxY())
+                    ImGui::SetScrollHereY(1.f);
 
                 ImGui::EndChild();
                 ImGui::Separator();
@@ -115,6 +120,7 @@ private:
         sf::Color errorColor;
         sf::Color commandColor;
         sf::Color infoColor;
+        sf::Color fromOutsideColor;
         sf::Color windowColor;
     };
 
@@ -141,8 +147,8 @@ private:
         colors.commandColor = sf::Color(70, 255, 70);
         colors.errorColor = sf::Color(255, 50, 50);
         colors.infoColor = sf::Color::White;
+        colors.fromOutsideColor = sf::Color(255, 0, 255);
         colors.windowColor = sf::Color(0, 0, 0, 200);
-
         addLog("Use command \"listAll\" for a list of all commands.", colors.infoColor);
     }
 
@@ -288,6 +294,11 @@ private:
         {
             addLog( "Command \"" + actualCommand +"\" not found.", colors.errorColor);
         }
+    }
+
+    void addLog(std::string string, sf::Color color = sf::Color::White)
+    {
+        this->log.push_back(LogEntry(color, string));
     }
 
     void clearLog()

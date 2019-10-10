@@ -3,10 +3,19 @@
 #include "TextureHandler.h"
 #include "Entities/Enemies/Grunt.h"
 #include "Misc/VectorFunctions.h"
+#include "Misc/ConsoleWindow.h"
 
 CharacterHandler::CharacterHandler()
 {
-   
+    player = nullptr;
+    occluders = nullptr;
+
+    ConsoleWindow::get().addCommand("resetEnemies", [&](Arguments args)->std::string {
+        enemies.clear();
+        spawnEnemies();
+
+        return "Enemies has been reset.";
+        });
 }
 
 CharacterHandler::~CharacterHandler()
