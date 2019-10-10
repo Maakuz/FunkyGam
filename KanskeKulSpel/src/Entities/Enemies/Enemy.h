@@ -38,11 +38,13 @@ protected:
     State state;
     Direction facingDir;
     sf::Vector2f eyeLevel;
+    Counter timeSincePlayerSeen;
 
     void desicionTimeOver();
     bool isDesicionTime() const { return this->decisionTime; }
 
     sf::Vector2f getStartPoint() const { return this->startPoint; }
+    void setStartPoint(sf::Vector2f point) { this->startPoint = point; }
     sf::Vector2f getLastKnownPos() const { return this->lastKnownPlayerPos; };
 private:
     Counter roamDecisionCounter;

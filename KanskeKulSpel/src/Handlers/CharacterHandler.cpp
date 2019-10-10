@@ -37,9 +37,13 @@ void CharacterHandler::initialize(const std::vector<Line>* occluders)
 void CharacterHandler::spawnEnemies()
 {
     Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150, sf::Vector2u(1, 0));
-    Grunt* grunt = new Grunt(data, spawnPoints[0] + sf::Vector2f(0, -50));
-    grunt->setColor(sf::Color(255, 50, 50, 255));
-    enemies.push_back(grunt);
+
+    for (const sf::Vector2f& point : spawnPoints)
+    {
+        Grunt* grunt = new Grunt(data, point + sf::Vector2f(0, -50));
+        grunt->setColor(sf::Color(255, 50, 50, 255));
+        enemies.push_back(grunt);
+    }
 }
 
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
@@ -82,6 +86,7 @@ void CharacterHandler::drawSightLines(sf::RenderTarget& target, sf::RenderStates
         switch (enemy->getState())
         {
         case Enemy::State::chasing:
+        case Enemy::State::attacking:
             v.color = sf::Color::Red;
             break;
         default:

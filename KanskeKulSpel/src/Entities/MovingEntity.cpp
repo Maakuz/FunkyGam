@@ -8,7 +8,7 @@ MovingEntity::MovingEntity(AnimationData data, sf::Vector2f pos)
     this->floorRes = 0.85f;
     this->airRes = 0.985f;
     this->airMobility = 0.1f;
-    this->jumpHeight = 4.3f;
+    this->jumpHeight = 5.3f;
     this->mass = 0.166f;
     this->grounded = false;
 }

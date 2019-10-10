@@ -15,42 +15,6 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     this->attackRange = 64;
     this->attackChargeTimer = Counter(1000);
     this->stunCounter = Counter(500);
-
-    ConsoleWindow::get().addCommand("setState", [&](Arguments args)->std::string 
-        {
-            if (args.empty())
-                return "Missing argument: 0 = idle, 1 = chasing, 2 = attack\n3 = returning, 4 = stunned";
-
-            int val = std::stoi(args[0]);
-
-            switch (val)
-            {
-            case 0:
-                state = State::idle;
-                break;
-
-            case 1:
-                state = State::chasing;
-                break;
-
-            case 2:
-                state = State::attacking;
-                break;
-
-            case 3:
-                state = State::returning;
-                break;
-
-            case 4:
-                state = State::stunned;
-                break;
-            default:
-                return "Not a valid argument: 0 = idle, 1 = chasing, 2 = attack\n3 = returning, 4 = stunned";
-                break;
-            }
-
-            return "We did it!";
-        });
 }
 
 void Grunt::update(float dt)
@@ -149,6 +113,9 @@ void Grunt::updateIdle(float dt)
 
 void Grunt::updateChasing(float dt)
 {
+    if (timeSincePlayerSeen.isTimeUp()) //will sort of mitigating stuck enemies looking silly
+        state = State::idle;
+
     if (this->getLastKnownPos().x < this->pos.x)
     {
         this->facingDir = Direction::left;
@@ -168,8 +135,17 @@ void Grunt::updateChasing(float dt)
 
     if (lengthSquared(pos - getLastKnownPos()) < this->attackRange * this->attackRange)
     {
-        state = State::attacking;
-        this->attackChargeTimer.reset();
+        if (timeSincePlayerSeen < 200)
+        {
+            state = State::attacking;
+            this->attackChargeTimer.reset();
+        }
+        else
+        {
+            state = State::idle;
+            setStartPoint(getLastKnownPos());
+        }
+
     }
 }
 

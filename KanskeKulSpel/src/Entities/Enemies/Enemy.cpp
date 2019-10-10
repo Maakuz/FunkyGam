@@ -3,7 +3,8 @@
 Enemy::Enemy(AnimationData data, sf::Vector2f pos)
     :MovingEntity(data, pos)
 {
-    this->roamDecisionCounter = Counter(3000);
+    this->roamDecisionCounter = Counter(2500 + rand() % 1000);
+    this->timeSincePlayerSeen = Counter(10000);
     this->roamDistance = 0;
     this->decisionTime = true;
     this->startPoint = pos;
@@ -21,7 +22,7 @@ void Enemy::update(float dt)
         this->decisionTime = true;
         this->roamDecisionCounter.reset();
     }
-
+    timeSincePlayerSeen.update(dt);
     MovingEntity::update(dt);
 }
 
@@ -29,6 +30,7 @@ void Enemy::notifyEnemy(sf::Vector2f playerPos)
 {
     this->lastKnownPlayerPos = playerPos;
     this->state = State::chasing;
+    this->timeSincePlayerSeen.reset();
 }
 
 sf::Vector2f Enemy::getEyePos() const
