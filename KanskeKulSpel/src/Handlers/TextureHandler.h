@@ -13,10 +13,12 @@ public:
         playerSprite = 0
     };
 
-    static const int NR_OF_BOMBS = 1;
+    static const int NR_OF_BOMBS = 3;
     enum throwables 
     {
-        onlyBomb = 0
+        bomb = 0,
+        rock = 1,
+        flare = 2
     };
 
     static TextureHandler& get()
@@ -31,7 +33,13 @@ public:
         if (!this->miscTextures[misc::playerSprite].loadFromFile(TEXTURE_PATH("smallCate.png")))
             exit(-2);
 
-        if (!this->bombsTextures[throwables::onlyBomb].loadFromFile(TEXTURE_PATH("bamb.png")))
+        if (!this->projectileTextures[throwables::bomb].loadFromFile(TEXTURE_PATH("bamb.png")))
+            exit(-2);
+
+        if (!this->projectileTextures[throwables::rock].loadFromFile(TEXTURE_PATH("rock.png")))
+            exit(-2);
+
+        if (!this->projectileTextures[throwables::flare].loadFromFile(TEXTURE_PATH("flare.png")))
             exit(-2);
     }
 
@@ -42,10 +50,10 @@ public:
 
     sf::Texture* getTexture(throwables tex)
     {
-        return &this->bombsTextures[tex];
+        return &this->projectileTextures[tex];
     }
 
 private:
     sf::Texture miscTextures[NR_OF_MISC];
-    sf::Texture bombsTextures[NR_OF_BOMBS];
+    sf::Texture projectileTextures[NR_OF_BOMBS];
 };

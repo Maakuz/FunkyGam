@@ -3,7 +3,7 @@
 #include "Handlers/ParticleHandler.h"
 
 //in MilSec
-#define ARMING_TIME 500 
+#define ARMING_TIME 50
 
 Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture)
     :Entity(pos, texture)

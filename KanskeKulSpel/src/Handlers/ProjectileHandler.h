@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "Entities/Throwable.h"
+#include "Entities/Throwables/Throwable.h"
 #include "Handlers/TextureHandler.h"
 
 class ProjectileHandler : public sf::Drawable

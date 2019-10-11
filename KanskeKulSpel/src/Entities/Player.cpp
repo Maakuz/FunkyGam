@@ -33,7 +33,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
         direction.x *= 8;
         direction.y *= 10;
 
-        ProjectileHandler::addThrowable(TextureHandler::throwables::onlyBomb, this->pos, direction);
+        ProjectileHandler::addThrowable(TextureHandler::throwables::rock, this->pos, direction);
     }
     
     //imgui test

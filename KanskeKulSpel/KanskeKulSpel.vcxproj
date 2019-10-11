@@ -148,7 +148,7 @@
     <ClCompile Include="src\Entities\Entity.cpp" />
     <ClCompile Include="src\Entities\MovingEntity.cpp" />
     <ClCompile Include="src\Entities\Terrain.cpp" />
-    <ClCompile Include="src\Entities\Throwable.cpp" />
+    <ClCompile Include="src\Entities\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Handlers\CharacterHandler.cpp" />
     <ClCompile Include="src\Handlers\LevelHandler.cpp" />
@@ -167,7 +167,7 @@
     <ClInclude Include="src\Entities\Enemies\Enemy.h" />
     <ClInclude Include="src\Entities\Enemies\Grunt.h" />
     <ClInclude Include="src\Entities\MovingEntity.h" />
-    <ClInclude Include="src\Entities\Throwable.h" />
+    <ClInclude Include="src\Entities\Throwables\Throwable.h" />
     <ClInclude Include="src\Handlers\CharacterHandler.h" />
     <ClInclude Include="src\Handlers\ParticleHandler.h" />
     <ClInclude Include="src\Handlers\ProjectileHandler.h" />
