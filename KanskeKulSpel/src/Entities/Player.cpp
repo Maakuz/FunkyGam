@@ -5,6 +5,7 @@
 #include "Lighting/LightQueue.h"
 #include "Imgui/imgui.h"
 #include "Handlers/ProjectileHandler.h"
+#include "Misc/ConsoleWindow.h"
 
 #define TESTING false
 
@@ -18,6 +19,34 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
+    
+    static sf::Vector2f* posP = &this->pos; //testing
+    ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
+        {
+            if (args.size() >= 2)
+            {
+                try
+                {
+                    int x = std::stoi(args[0]);
+                    int y = std::stoi(args[1]);
+
+                    posP->x = x;
+                    posP->y = y;
+                }
+                catch (const std::exception & e)
+                {
+                    std::string ret = "Not valid coordinates. ";
+                    ret.append(e.what());
+                    return ret;
+                }
+            }
+
+            else
+                return "missing argument int x, int y";
+
+
+            return "Position set";
+        });
 }
 
 void Player::update(float dt, sf::Vector2f mousePos)

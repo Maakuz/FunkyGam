@@ -152,7 +152,6 @@ void Game::draw()
     }
     PROFILER_STOP;
 
-    LightQueue::get().clear();
 
 #if DEBUG_MODE
     static int swap = 0;
@@ -215,7 +214,41 @@ void Game::draw()
     else
         this->window->draw(fullscreenboi);
 
+    PROFILER_START("No shadow lights render");
+    renderTargets[0].clear(sf::Color::Black);
+    for (size_t i = 0; i < LightQueueNoShadow::get().getQueue().size(); i++)
+    {
+        Light_NoShadow* light = LightQueueNoShadow::get().getQueue()[i];
+        ShaderHandler::getShader(SHADER::lightingNoShadow).setUniform("pos", light->pos);
+        ShaderHandler::getShader(SHADER::lightingNoShadow).setUniform("radius", light->radius);
+        ShaderHandler::getShader(SHADER::lightingNoShadow).setUniform("color", light->color);
 
+        sf::RenderStates state;
+        state.shader = &ShaderHandler::getShader(SHADER::lightingNoShadow);
+        state.blendMode = sf::BlendAdd;
+
+        sf::RectangleShape sprite(sf::Vector2f(light->radius * 2, light->radius * 2));
+        sprite.setPosition(light->pos - (sf::Vector2f(sprite.getSize() / 2.f)));
+        renderTargets[0].draw(sprite, state);
+    }
+    renderTargets[0].display();
+
+    fullscreenboi.setTexture(&renderTargets[0].getTexture());
+
+    for (int i = 0; i < 2; i++)
+    {
+        renderTargets[i + 1].clear(sf::Color::Transparent);
+        renderTargets[i + 1].draw(fullscreenboi, &shaders[shaders.BLUR_PASS[i]]);
+        renderTargets[i + 1].display();
+
+        fullscreenboi.setTexture(&renderTargets[i + 1].getTexture());
+    }
+
+    window->draw(fullscreenboi, sf::BlendAdd);
+    PROFILER_STOP;
+
+    LightQueue::get().clear();
+    LightQueueNoShadow::get().clear();
 
     static bool drawHitbaxes = false;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F6))
