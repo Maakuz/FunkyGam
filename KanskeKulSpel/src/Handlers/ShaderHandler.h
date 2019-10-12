@@ -12,7 +12,6 @@ namespace SHADER
     enum shaders
     {
         lighting = 0,
-        shadowMap = 1,
         gaussVertical = 2,
         gaussHorizontal = 3
     };

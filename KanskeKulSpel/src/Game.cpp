@@ -215,6 +215,8 @@ void Game::draw()
     else
         this->window->draw(fullscreenboi);
 
+
+
     static bool drawHitbaxes = false;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F6))
         drawHitbaxes = !drawHitbaxes;

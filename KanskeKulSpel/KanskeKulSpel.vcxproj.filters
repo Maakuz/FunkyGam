@@ -190,7 +190,7 @@
     <None Include="..\Shaders\GaussianVert.frag" />
     <None Include="..\Shaders\Lighting.frag" />
     <None Include="..\Shaders\GaussianHor.frag" />
-    <None Include="..\Shaders\shadowMapGenerator.frag" />
+    <None Include="..\Shaders\LightingNoShadow.frag" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Lighting\big think.txt" />
