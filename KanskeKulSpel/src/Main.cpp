@@ -4,6 +4,7 @@
 #include "Imgui/imgui.h"
 #include "Imgui/SFML-imgui/imgui-SFML.h"
 #include "Misc/Profiler.h"
+#include "Misc/ConsoleWindow.h"
 
 int main()
 {
@@ -14,10 +15,12 @@ int main()
     //_CrtSetBreakAlloc(689); // Comment or un-comment on need basis
 #endif
 
-    float x = 300, y = 400;
-    float r = 300;
-
-
+    bool printscreen = false;
+    ConsoleWindow::get().addCommand("printScreen", [&](Arguments args)->std::string 
+        {
+            printscreen = true;
+            return "screenshot saved";
+        });
 
     srand((int)time(0));
 
@@ -61,12 +64,23 @@ int main()
         game.update((float)deltaTime.asMilliseconds());
 
         wandow.clear(sf::Color(0, 100, 155));
-        game.draw();
-
+        game.draw(wandow);
 
         ImGui::SFML::Render(wandow);
         wandow.display();
 
+        if (printscreen)
+        {
+            sf::RenderTexture tex;
+            tex.create(WIN_WIDTH, WIN_HEIGHT);
+            tex.clear(sf::Color::Blue);
+            game.draw(tex);
+            tex.display();
+            
+            tex.getTexture().copyToImage().saveToFile("test.png");
+
+            printscreen = false;
+        }
         //printf("%d\n", 1000 / deltaTime.asMilliseconds());
     }
 

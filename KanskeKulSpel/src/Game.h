@@ -23,7 +23,7 @@ public:
     void loadFiles();
 
     void update(float dt);
-    void draw();
+    void draw(sf::RenderTarget& target);
     
 private:
     bool running;

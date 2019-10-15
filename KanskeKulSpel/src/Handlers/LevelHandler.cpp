@@ -53,11 +53,11 @@ void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
     }
 }
 
-void LevelHandler::drawCollision(sf::RenderWindow & window, sf::RenderStates states) const
+void LevelHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates states) const
 {
     for (size_t i = 0; i < terrain.size(); i++)
     {
-        window.draw(terrain[i].getCollisionBox());
+        target.draw(terrain[i].getCollisionBox());
     }
 }
 

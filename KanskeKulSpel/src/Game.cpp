@@ -51,6 +51,10 @@ void Game::loadFiles()
 
 void Game::update(float dt)
 {
+    LightQueue::get().clear();
+    LightQueueNoShadow::get().clear();
+
+
     sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window) / ZOOM_LEVEL;
     mousePos.x += this->view.getCenter().x - (view.getSize().x / ZOOM_LEVEL);
     mousePos.y += this->view.getCenter().y - (view.getSize().y / ZOOM_LEVEL);
@@ -100,7 +104,6 @@ void Game::update(float dt)
     center.y = std::max(center.y, view.getSize().y / ZOOM_LEVEL);
     center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / ZOOM_LEVEL));
     this->view.setCenter(center);
-    this->window->setView(this->view);
     
 #if DEBUG_MODE true
     static bool debugActive = false;
@@ -126,11 +129,9 @@ void Game::update(float dt)
 #endif
 }
 
-void Game::draw()
+void Game::draw(sf::RenderTarget& target)
 {
-
-
-
+    target.setView(this->view);
 
     //Shadow map
     PROFILER_START("Shoaduv");
@@ -181,12 +182,12 @@ void Game::draw()
         drawGeometry = !drawGeometry;
 
     if (drawGeometry)
-        this->window->draw(this->levelHandler);
+        target.draw(this->levelHandler);
 
 
-    this->window->draw(this->charHandler);
-    this->window->draw(this->projectileHandler);
-    this->window->draw(this->particleHandler);
+    target.draw(this->charHandler);
+    target.draw(this->projectileHandler);
+    target.draw(this->particleHandler);
 
     static bool skip = false;
     static bool turboSkip = false;
@@ -207,12 +208,12 @@ void Game::draw()
         turboSkip = false;
     }
     if (!skip && !turboSkip)
-        this->window->draw(fullscreenboi, sf::BlendMultiply);
+        target.draw(fullscreenboi, sf::BlendMultiply);
 
     else if (turboSkip) {}
 
     else
-        this->window->draw(fullscreenboi);
+        target.draw(fullscreenboi);
 
     PROFILER_START("No shadow lights render");
     renderTargets[0].clear(sf::Color::Black);
@@ -244,11 +245,8 @@ void Game::draw()
         fullscreenboi.setTexture(&renderTargets[i + 1].getTexture());
     }
 
-    window->draw(fullscreenboi, sf::BlendAdd);
+    target.draw(fullscreenboi, sf::BlendAdd);
     PROFILER_STOP;
-
-    LightQueue::get().clear();
-    LightQueueNoShadow::get().clear();
 
     static bool drawHitbaxes = false;
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::F6))
@@ -266,11 +264,6 @@ void Game::draw()
 
     if (drawSightLines)
         charHandler.drawSightLines(*window, sf::RenderStates::Default);
-#else
-    this->window->draw(this->levelHandler);
-    this->window->draw(this->projectileHandler);
-    this->window->draw(*player);
-    this->window->draw(fullscreenboi);
 #endif
 
 
