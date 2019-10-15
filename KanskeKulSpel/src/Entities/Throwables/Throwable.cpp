@@ -32,7 +32,7 @@ void Throwable::update(float dt)
     if (armed || (detonateOnImpact && impacted))
     {
         detonated = true;
-        ParticleHandler::addEmitter(ParticleHandler::emitterTypes::bomb, this->pos + (this->size / 2.f));
+        ParticleHandler::addEmitter(ParticleHandler::emitterTypes::flash, this->pos + (this->size / 2.f));
     }
 
     momentum.y += GRAVITY * dt * this->mass;

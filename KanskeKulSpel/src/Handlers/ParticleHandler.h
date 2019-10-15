@@ -7,7 +7,10 @@ class ParticleHandler : public sf::Drawable
 public:
     enum emitterTypes 
     {
-        bomb = 0
+        bomb = 0,
+        fire = 1,
+        flash = 2,
+        flare = 3
     };
 
     ParticleHandler();

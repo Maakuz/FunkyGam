@@ -6,8 +6,8 @@
 #define PARTICLE_FOLDER "../Particles/"
 #define PARTICLE_PATH(x) PARTICLE_FOLDER x
 
-const int NR_OF_PARTICLES = 1;
-const std::string PATHS[NR_OF_PARTICLES] = {PARTICLE_PATH("flash.part")};
+const int NR_OF_PARTICLES = 4;
+const std::string PARTICLES[NR_OF_PARTICLES] = {"bomb.part", "fire.part", "flash.part", "flare.part"};
 
 std::vector<Emitter*> ParticleHandler::activeEmitters;
 std::vector<Emitter> ParticleHandler::emitterTemplates;
@@ -44,7 +44,7 @@ void ParticleHandler::loadEmitters()
 {
     for (int i = 0; i < NR_OF_PARTICLES; i++)
     {
-        std::ifstream file(PATHS[i]);
+        std::ifstream file(PARTICLE_PATH(+ PARTICLES[i]));
         if (file.is_open())
         {
             Emitter emitter;
@@ -61,6 +61,7 @@ void ParticleHandler::addEmitter(emitterTypes type, sf::Vector2f pos)
 {
     Emitter* emitter = new Emitter(emitterTemplates[type]);
     emitter->setEmitterPos(pos);
+    emitter->reset();
     activeEmitters.push_back(emitter);
 }
 
