@@ -16,6 +16,7 @@ Player::Player(AnimationData data, sf::Vector2f pos)
     this->jumpHeight = 5.3f;
     this->mass = 0.166f;
     this->grounded = false;
+    this->debugMode = false;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
@@ -47,11 +48,46 @@ Player::Player(AnimationData data, sf::Vector2f pos)
 
             return "Position set";
         });
+
+    ConsoleWindow::get().addCommand("godmode", [&](Arguments args)->std::string
+        {
+            if (args.size() >= 1)
+            {
+                try
+                {
+                    int x = std::stoi(args[0]);
+
+                    debugMode = x;
+
+                    if (debugMode)
+                        mass = 0;
+
+                    else
+                        mass = 0.166f;
+                }
+                catch (const std::exception & e)
+                {
+                    std::string ret = "Not valid argument 0 or 1.";
+                    return ret;
+                }
+            }
+
+            else
+                return "missing argument 0 or 1";
+
+
+            return "woosh";
+        });
+
 }
 
 void Player::update(float dt, sf::Vector2f mousePos)
 {
-    this->move(dt);
+    if (!debugMode)
+        this->move(dt);
+
+    else
+        this->debugMove(dt);
 
     MovingEntity::update(dt);
 
@@ -82,21 +118,24 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
 void Player::handleCollision(const Entity& collider)
 {
-    if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
+    if (!debugMode)
     {
-        //walking on ground
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
+        if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
         {
-            if (platformPassingCounter.isTimeUp())
+            //walking on ground
+            if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
             {
-                this->momentum.y = 0;
-                this->pos.y = collider.getPosition().y - this->size.y;
-                grounded = true;
+                if (platformPassingCounter.isTimeUp())
+                {
+                    this->momentum.y = 0;
+                    this->pos.y = collider.getPosition().y - this->size.y;
+                    grounded = true;
+                }
             }
         }
-    }
 
-    MovingEntity::handleCollision(collider);
+        MovingEntity::handleCollision(collider);
+    }
 }
 
 void Player::move(float dt)
@@ -148,5 +187,8 @@ void Player::debugMove(float dt)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
         acceleration.y = 1;
+
+    momentum.y = acceleration.y * dt;
+    momentum.y *= 0.97;
 }
 

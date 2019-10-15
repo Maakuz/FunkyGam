@@ -18,5 +18,5 @@ private:
     void move(float dt);
     void debugMove(float dt);
 
-
+    bool debugMode;
 };
