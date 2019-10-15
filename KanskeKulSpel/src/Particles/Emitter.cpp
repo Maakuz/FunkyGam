@@ -125,8 +125,16 @@ void Emitter::update(float dt)
         Particle* particle = particles[i];
 
         if (!this->immortalParticles)
+        {
             particle->lifespan -= dt;
 
+            if (particlesHasLight && particle->lifespan / particleLifespan < 0.1)
+            {
+                particle->light->color.x *= 0.90f;
+                particle->light->color.y *= 0.90f;
+                particle->light->color.z *= 0.90f;
+            }
+        }
         //remove
         if (particle->lifespan < 0)
         {

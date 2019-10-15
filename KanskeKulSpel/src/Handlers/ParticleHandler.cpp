@@ -7,7 +7,7 @@
 #define PARTICLE_PATH(x) PARTICLE_FOLDER x
 
 const int NR_OF_PARTICLES = 1;
-const std::string PATHS[NR_OF_PARTICLES] = {PARTICLE_PATH("bombDyr.part")};
+const std::string PATHS[NR_OF_PARTICLES] = {PARTICLE_PATH("flash.part")};
 
 std::vector<Emitter*> ParticleHandler::activeEmitters;
 std::vector<Emitter> ParticleHandler::emitterTemplates;
