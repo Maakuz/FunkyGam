@@ -9,17 +9,22 @@ public:
 
     void update(float dt);
 
-    bool hasImpacted() const { return impacted; };
+    bool hasDetonated() const { return detonated; };
 
     virtual void handleCollision(const Entity& collider);
 private:
-
 
     float mass;
     sf::Vector2f acceleration;
     sf::Vector2f momentum;
 
+
+    float armingTime;
     float armingCounter;
+    float bounce;
+    float collisionDelayTimer;
     bool impacted;
-    bool isArmed;
+    bool armed;
+    bool detonateOnImpact;
+    bool detonated;
 };

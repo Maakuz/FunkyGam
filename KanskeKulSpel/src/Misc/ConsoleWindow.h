@@ -246,9 +246,22 @@ private:
             for (std::string& possibility : possibilities)
                 this->addLog("- " + possibility);
 
-            
+            bool death = false;
+            std::string completion = "";
+            for (size_t i = 0; i < possibilities[0].size() && !death; i++)
+            {
+                completion += possibilities[0][i];
+                for (size_t j = 1; j < possibilities.size() && !death; j++)
+                {
+                    if (possibilities[j].compare(0, completion.size(), completion) != 0)
+                        death = true;
+                }
+            }
 
-            int length = snprintf(data->Buf, size_t(data->BufSize), "%s", possibilities[0].c_str());
+            if (death)
+                completion.erase(completion.end() - 1);
+
+            int length = snprintf(data->Buf, size_t(data->BufSize), "%s", completion.c_str());
 
             data->BufTextLen = length;
             data->SelectionEnd = length;

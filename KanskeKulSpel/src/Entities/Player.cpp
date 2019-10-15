@@ -91,7 +91,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
     MovingEntity::update(dt);
 
-    if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Left))
+    if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Right))
     {
         sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
         normalize(direction);

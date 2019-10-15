@@ -12,7 +12,7 @@ void ProjectileHandler::update(float dt)
 {
     for (int i = 0; i < throwables.size(); i++)
     {
-        if (throwables[i].hasImpacted())
+        if (throwables[i].hasDetonated())
         {
             unordered_erase(throwables, throwables.begin() + i--);
         }

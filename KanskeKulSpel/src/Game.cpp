@@ -62,11 +62,11 @@ void Game::update(float dt)
     light.pos = this->charHandler.getPlayer().getPosition();
     LightQueue::get().queue(&light);
 
-   /* static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(0.5f, 0.05f, 0.05f));
+    static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(0.5f, 0.05f, 0.05f));
     LightQueue::get().queue(&light2);
 
     static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.1f, 0.1f, 0.f));
-    LightQueue::get().queue(&light3);*/
+    LightQueue::get().queue(&light3);
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
         this->running = !this->running;
@@ -134,7 +134,7 @@ void Game::draw()
 
     //Shadow map
     PROFILER_START("Shoaduv");
-    this->renderTargets[0].clear(sf::Color::Transparent);
+    this->renderTargets[0].clear(sf::Color::Black);
     this->shadowHandler.generateShadowMap(this->renderTargets[0]);
     this->renderTargets[0].display();
 

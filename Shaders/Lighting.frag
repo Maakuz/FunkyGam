@@ -24,7 +24,7 @@ void main()
 
     float shadowAlpha = texture2DLod(shadowMap, gl_TexCoord[0].xy, 0).r;
     
-    alpha = alpha * (clamp(shadowAlpha + 0.4, 0, 1));
+    alpha = alpha - (clamp((1 - shadowAlpha) * 0.5, 0, 1));
 
     clamp(alpha, 0, 1);
 

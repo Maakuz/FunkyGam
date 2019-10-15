@@ -29,6 +29,8 @@ public:
 
     sf::Shader& operator[](int i);
 
+    bool reloadShaders();
+
     const int BLUR_PASS[2] = {SHADER::shaders::gaussVertical, SHADER::shaders::gaussHorizontal};
 
 private:
