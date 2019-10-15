@@ -205,7 +205,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             ImGui::Text(std::string(std::to_string(light->pos.x) + ", " + std::to_string(light->pos.y)).c_str());
             ImGui::Text(std::string(std::to_string(light->radius)).c_str());
             ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
-            ImGui::SliderFloat("radians", &stopVal, -3, 3);
             ImGui::End();
         }
 
