@@ -41,9 +41,25 @@ void AnimatedEntity::setAnimationData(AnimationData data)
 
 void AnimatedEntity::setAnimation(int animation) 
 {
+    if (data.currentAnimation == animation)
+        return;
+
     data.currentAnimation = animation;
     currentFrame = data.animations[animation].startFrame;
     timer = 0;
+
+    texRect.width = abs(texRect.width);
+    texRect.height = abs(texRect.height);
+    texRect.left = currentFrame.x * texRect.width;
+    texRect.top = currentFrame.y * texRect.height;
+
+    if (isFlippedHorizontally())
+    {
+        texRect.left += texRect.width;
+        texRect.width = -texRect.width;
+    }
+    setTextureRect(texRect);
+
 }
 
 void AnimatedEntity::pauseAnimation()

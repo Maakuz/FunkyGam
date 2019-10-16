@@ -44,7 +44,7 @@ void MovingEntity::update(float dt)
 }
 
 
-void MovingEntity::jump() // om släppa knapp trycka ner spelar lite jappjapp
+void MovingEntity::jump()
 {
     if (this->grounded)
     {
@@ -62,7 +62,7 @@ void MovingEntity::handleCollision(const Entity& collider)
         if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.getPosition().y - this->getSize().y;
+            this->pos.y = collider.up() - this->height();
             grounded = true;
         }
 
@@ -70,19 +70,19 @@ void MovingEntity::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.getPosition().y + collider.getSize().y;
+            this->pos.y = collider.down();
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.getPosition().x - this->getSize().x;
+            this->pos.x = collider.left() - this->width();
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.getPosition().x + collider.getSize().x;
+            this->pos.x = collider.right();
         }
     }
 

@@ -4,7 +4,6 @@
 #include "Entities/Enemies/Grunt.h"
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
-#include <fstream>
 
 #define ENEMY_PATH "src/Entities/Enemies/"
 
@@ -87,23 +86,26 @@ void CharacterHandler::initialize(const std::vector<Line>* occluders)
         file >> trash >> size.x >> size.y;
         file >> trash >> offset.x >> offset.y;
 
-        file.close();
         Grunt* grunt = new Grunt(data, sf::Vector2f(0, 0));
         grunt->setSize(size);
+        grunt->setEyeLevel(sf::Vector2f(size.x * 0.5f, size.y * 0.2f));
         grunt->moveSpriteOffset(offset);
 
+        file >> *grunt;
+
+        file.close();
         enemyTemplates.push_back(grunt);
     }
 }
 
 void CharacterHandler::spawnEnemies()
 {
-    for (const sf::Vector2f& point : spawnPoints)
-    {
+    //for (const sf::Vector2f& point : spawnPoints)
+    //{
         Grunt* grunt = new Grunt(*(Grunt*)enemyTemplates[enemy::grunt]);
-        grunt->setPosition(point + sf::Vector2f(0, -300));
+        grunt->spawn(spawnPoints[0] - sf::Vector2f(0, grunt->getSize().y));
         enemies.push_back(grunt);
-    }
+    //}
 }
 
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
@@ -157,7 +159,7 @@ void CharacterHandler::drawSightLines(sf::RenderTarget& target, sf::RenderStates
         v.position = enemy->getEyePos();
         arr.append(v);
 
-        v.position = enemy->getLastKnownPos() + (player->getSize() / 2.f);
+        v.position = enemy->getLastKnownPos();
         arr.append(v);
     }
 
@@ -185,7 +187,7 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
         }
 
         if (!playerHidden)
-            enemy->notifyEnemy(player->getPosition());
+            enemy->notifyEnemy(player->getPosition() + (player->getSize() / 2.f));
     }
 }
 

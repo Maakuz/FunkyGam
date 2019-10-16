@@ -128,7 +128,7 @@ void Player::handleCollision(const Entity& collider)
                 if (platformPassingCounter.isTimeUp())
                 {
                     this->momentum.y = 0;
-                    this->pos.y = collider.getPosition().y - this->getSize().y;
+                    this->pos.y = collider.up() - this->height();
                     grounded = true;
                 }
             }

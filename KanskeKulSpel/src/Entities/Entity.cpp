@@ -35,7 +35,7 @@ void Entity::flipHorizontally()
 void Entity::setSize(sf::Vector2f size)
 {
     this->size = size;
-    this->spriteOffset.y = -size.y;
+    this->spriteOffset.y = -(abs(sprite.getTextureRect().height)-size.y);
     collisionBox.setSize(size);
 }
 

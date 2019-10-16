@@ -1,6 +1,7 @@
 #include "Grunt.h"
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
+#include <string>
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     :Enemy(data, pos)
@@ -10,9 +11,10 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     this->walkSpeed = idleSpeed;
     this->chaseSpeed = 0.01;
     this->state = State::idle;
+    this->flying = false;
 
     this->boundReached = 0;
-    this->attackRange = 64;
+    this->attackDistance = 64;
     this->attackChargeTimer = Counter(1000);
     this->stunCounter = Counter(500);
 }
@@ -44,6 +46,7 @@ void Grunt::update(float dt)
         {
             this->stunCounter.reset();
             this->state = State::chasing;
+            setAnimation(0);
         }
         break;
     }
@@ -133,12 +136,13 @@ void Grunt::updateChasing(float dt)
     }
 
 
-    if (lengthSquared(pos - getLastKnownPos()) < this->attackRange * this->attackRange)
+    if (lengthSquared(pos + eyeLevel - getLastKnownPos()) < this->attackDistance * this->attackDistance)
     {
         if (timeSincePlayerSeen < 200)
         {
             state = State::attacking;
             this->attackChargeTimer.reset();
+            setAnimation(1);
         }
         else
         {
@@ -156,24 +160,46 @@ void Grunt::updateReturning(float dt)
 void Grunt::updateAttack(float dt)
 {
     this->acceleration.x = 0;
-    if (attackChargeTimer.update(dt))
+    if (attackChargeTimer.update(dt) && !flying)
     {
         if (facingDir == Direction::left)
-            this->momentum = sf::Vector2f(-5, -5);
+            this->momentum = sf::Vector2f(-attackMomentum.x, -attackMomentum.y);
 
         else
-            this->momentum = sf::Vector2f(5, -5);
+            this->momentum = sf::Vector2f(attackMomentum.x, -attackMomentum.y);
 
         this->grounded = false;
-        state = State::stunned;
+        this->flying = true;
+        setAnimation(2);
     }
+}
+
+std::istream& Grunt::readSpecific(std::istream& in)
+{
+    std::string trash;
+    in >> trash;
+    in >> trash >> chaseSpeed;
+    in >> trash >> idleSpeed;
+    in >> trash >> attackMomentum.x >> attackMomentum.y;
+    in >> trash >> attackDistance;
+    in >> trash >> attackChargeTimer.stopValue;
+    in >> trash >> stunCounter.stopValue;
+
+    return in;
 }
 
 void Grunt::handleCollision(const Entity& collider)
 {
+    if (flying)
+    {
+        this->flying = false;
+        this->state = State::stunned;
+        setAnimation(3);
+    }
+
     if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
     {
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
+        if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
             this->pos.y = collider.up() - this->height();

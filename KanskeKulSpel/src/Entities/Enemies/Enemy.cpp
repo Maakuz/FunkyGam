@@ -1,4 +1,5 @@
 #include "Enemy.h"
+#include <string>
 
 Enemy::Enemy(AnimationData data, sf::Vector2f pos)
     :MovingEntity(data, pos)
@@ -33,6 +34,15 @@ void Enemy::notifyEnemy(sf::Vector2f playerPos)
     this->timeSincePlayerSeen.reset();
 }
 
+void Enemy::spawn(sf::Vector2f pos)
+{
+    this->pos = pos;
+    this->startPoint = pos;
+    this->lastKnownPlayerPos = pos;
+    this->state = State::idle;
+    this->facingDir = Direction::none;
+}
+
 sf::Vector2f Enemy::getEyePos() const
 {
     return this->pos + this->eyeLevel;
@@ -42,4 +52,19 @@ void Enemy::desicionTimeOver()
 { 
     this->decisionTime = false;
     this->roamDecisionCounter.reset();
+}
+
+std::istream& operator>>(std::istream& in, Enemy& enemy)
+{
+    std::string trash;
+
+    while (trash != "[EnemyData]")
+        in >> trash;
+
+
+    in >> trash >> enemy.roamDistance;
+
+
+    enemy.readSpecific(in);
+    return in;
 }

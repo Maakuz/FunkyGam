@@ -1,12 +1,37 @@
 [AnimationData]
 Texture: 1
 Frames: 3 2
-AnimationCount: 1
+AnimationCount: 4
 [Animation1]
 Start: 0 0
 Stop: 2 0
 Idle: 1 0
 Animationspeed: 50
+[Animation2]
+Start: 2 1
+Stop: 2 1
+Idle: 2 1
+Animationspeed: 1000
+[Animation3]
+Start: 1 1
+Stop: 1 1
+Idle: 1 1
+Animationspeed: 1000
+[Animation4]
+Start: 0 1
+Stop: 0 1
+Idle: 0 1
+Animationspeed: 1000
 [CollisionData]
-Size: 64 64
-Offset -32 0
+Size: 64 72
+Offset: -32 0
+
+[EnemyData]
+Roamlength: 64
+[SpecificData]
+ChaseSpeed: 0.01
+IdleSpeed: 0.005
+AttackRange: 5 5
+DistanceToStartAttacking: 128
+AttackChargeDuration: 1000
+StunDuration: 500
