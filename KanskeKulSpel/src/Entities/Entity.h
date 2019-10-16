@@ -2,7 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "Collision/CollisionBox.h"
 
-class Entity : public sf::Sprite
+class Entity : public sf::Drawable
 {
 public:
     Entity(sf::Vector2f pos, sf::Texture * texture);
@@ -19,19 +19,37 @@ public:
     ////ONLY USE THIS FROM THE OUTSIDE
     CollisionBox getCollisionBox() const { return this->collisionBox; };
     sf::Vector2f getSize() const { return this->size; };
+    void setSize(sf::Vector2f size);
+    void setPosition(sf::Vector2f pos);
+    sf::Vector2f getPosition() const { return this->pos; };
+    void setSpriteOffset(sf::Vector2f offset);
+    sf::Vector2f getSpriteOffset() const { return this->spriteOffset; };
+    void moveSpriteOffset(sf::Vector2f distance);
     sf::Vector2f getCenterPos() const;
+
+    float left() const;
+    float right() const;
+    float down() const;
+    float up() const;
+    float width() const;
+    float height() const;
 
     virtual void handleCollision(const Entity& collider) = 0;
 
 protected:
     
     bool isFlippedHorizontally() const { return flipped; };
+    void setTextureRect(sf::IntRect rect) { sprite.setTextureRect(rect); };
     void updatePosition();
     
     CollisionBox collisionBox;
     sf::Vector2f pos;
-    sf::Vector2f size;
     
 private:
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
+    sf::Vector2f spriteOffset;
+    sf::Vector2f size;
     bool flipped;
+    sf::Sprite sprite;
 };

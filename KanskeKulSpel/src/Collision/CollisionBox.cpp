@@ -62,6 +62,11 @@ void CollisionBox::setPosition(sf::Vector2f pos)
     this->setAABB(AABB(pos, box.size));
 }
 
+void CollisionBox::setSize(sf::Vector2f size)
+{
+    this->setAABB(AABB(box.pos, size));
+}
+
 void CollisionBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     sf::RectangleShape rect(box.size);

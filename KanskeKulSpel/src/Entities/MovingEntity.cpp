@@ -62,7 +62,7 @@ void MovingEntity::handleCollision(const Entity& collider)
         if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.getPosition().y - this->size.y;
+            this->pos.y = collider.getPosition().y - this->getSize().y;
             grounded = true;
         }
 
@@ -76,7 +76,7 @@ void MovingEntity::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.getPosition().x - this->size.x;
+            this->pos.x = collider.getPosition().x - this->getSize().x;
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))

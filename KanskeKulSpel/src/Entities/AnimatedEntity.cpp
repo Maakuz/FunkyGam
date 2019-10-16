@@ -24,7 +24,6 @@ void AnimatedEntity::flipHorizontally()
 void AnimatedEntity::setAnimationData(AnimationData data)
 {
     this->data = data;
-    setTexture(*this->data.spriteSheet);
 
     this->texRect.width = this->data.spriteSheet->getSize().x / this->data.frameCount.x;
     this->texRect.height = this->data.spriteSheet->getSize().y / this->data.frameCount.y;
@@ -40,9 +39,16 @@ void AnimatedEntity::setAnimationData(AnimationData data)
     setTextureRect(texRect);
 }
 
+void AnimatedEntity::setAnimation(int animation) 
+{
+    data.currentAnimation = animation;
+    currentFrame = data.animations[animation].startFrame;
+    timer = 0;
+}
+
 void AnimatedEntity::pauseAnimation()
 {
-    currentFrame = data.idleFrame;
+    currentFrame = data.animations[data.currentAnimation].idleFrame;
 
     texRect.width = abs(texRect.width);
     texRect.height = abs(texRect.height);
@@ -66,19 +72,19 @@ void AnimatedEntity::updateAnimation(float dt)
 
     timer += dt;
 
-    if (timer > data.animationSpeed)
+    if (timer > data.animations[data.currentAnimation].animationSpeed)
     {
         timer = 0;
         currentFrame.x++;
 
-        if (currentFrame.x >= data.frameCount.x)
+        if (currentFrame.x > data.animations[data.currentAnimation].stopFrame.x)
         {
             currentFrame.x = 0;
             currentFrame.y++;
 
-            if (currentFrame.y >= data.frameCount.y)
+            if (currentFrame.y > data.animations[data.currentAnimation].stopFrame.y)
             {
-                currentFrame.y = 0;
+                currentFrame = data.animations[data.currentAnimation].startFrame;
             }
         }
         

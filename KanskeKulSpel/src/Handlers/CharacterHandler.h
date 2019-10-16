@@ -7,6 +7,13 @@
 class CharacterHandler : public sf::Drawable
 {
 public:
+    static const int ENEMY_TEMPLATE_COUNT = 1;
+    const std::string ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.nm" };
+    enum enemy
+    {
+        grunt = 0
+    };
+
     CharacterHandler();
     ~CharacterHandler();
 
@@ -15,7 +22,7 @@ public:
     void spawnEnemies();
     void update(float dt, sf::Vector2f mousePos);
     void queueColliders();
-    
+
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
     const Player& getPlayer() const { return *this->player; };
 
@@ -27,6 +34,7 @@ private:
     std::vector<Enemy*> enemies;
     Player* player;
 
+    std::vector<Enemy*> enemyTemplates;
     void updateEnemyLineOfSight(Enemy* enemy);
 
 

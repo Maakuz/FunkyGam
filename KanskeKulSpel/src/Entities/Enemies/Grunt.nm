@@ -1,0 +1,12 @@
+[AnimationData]
+Texture: 1
+Frames: 3 2
+AnimationCount: 1
+[Animation1]
+Start: 0 0
+Stop: 2 0
+Idle: 1 0
+Animationspeed: 50
+[CollisionData]
+Size: 64 64
+Offset -32 0

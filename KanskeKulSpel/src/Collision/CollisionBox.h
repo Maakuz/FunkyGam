@@ -54,6 +54,7 @@ public:
     AABB getAABB() const { return this->box; };
     void setAABB(AABB box);
     void setPosition(sf::Vector2f pos);
+    void setSize(sf::Vector2f size);
 
     CollisionBox::AABB getUp() const { return this->up; };
     CollisionBox::AABB getDown() const { return this->down; };

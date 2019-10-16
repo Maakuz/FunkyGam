@@ -176,7 +176,7 @@ void Grunt::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.getPosition().y - this->size.y;
+            this->pos.y = collider.up() - this->height();
             grounded = true;
         }
     }
@@ -187,7 +187,7 @@ void Grunt::handleCollision(const Entity& collider)
         if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.getPosition().y - this->size.y;
+            this->pos.y = collider.up() - this->height();
             grounded = true;
         }
 
@@ -195,20 +195,20 @@ void Grunt::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.getPosition().y + collider.getSize().y;
+            this->pos.y = collider.down();
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.getPosition().x - this->size.x;
+            this->pos.x = collider.left() - this->width();
             this->jump();
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.getPosition().x + collider.getSize().x;
+            this->pos.x = collider.right();
             this->jump();
         }
     }

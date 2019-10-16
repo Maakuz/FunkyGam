@@ -5,24 +5,39 @@
 class AnimatedEntity : public Entity
 {
 public:
+    struct Animation 
+    {
+        sf::Vector2u idleFrame;
+        sf::Vector2u startFrame;
+        sf::Vector2u stopFrame;
+        float animationSpeed;
+
+        Animation(sf::Vector2u startFrame, sf::Vector2u stopFrame, float animationSpeed, sf::Vector2u idleFrame = sf::Vector2u(0, 0))
+        {
+            this->animationSpeed = animationSpeed;
+            this->idleFrame = idleFrame;
+            this->startFrame = startFrame;
+            this->stopFrame = stopFrame;
+        }
+    };
     struct AnimationData
     {
-        sf::Texture * spriteSheet;
+        sf::Texture* spriteSheet;
         sf::Vector2u frameCount;
-        float animationSpeed;
-        sf::Vector2u idleFrame;
+        std::vector<Animation> animations;
+        int currentAnimation;
 
-        AnimationData(sf::Texture * spriteSheet, sf::Vector2u frameCount, float animationSpeed, sf::Vector2u idleFrame = sf::Vector2u(0, 0))
+        AnimationData(sf::Texture * spriteSheet, sf::Vector2u frameCount, std::vector<Animation> animations)
         {
             this->spriteSheet = spriteSheet;
             this->frameCount = frameCount;
-            this->animationSpeed = animationSpeed;
-            this->idleFrame = idleFrame;
+            this->animations = animations;
+            this->currentAnimation = 0;
         }
         AnimationData() 
         {
-            this->animationSpeed = 0;
             this->spriteSheet = nullptr;
+            this->currentAnimation = 0;
         };
     };
 
@@ -34,6 +49,7 @@ public:
     void setAnimationData(AnimationData data);
 
 protected:
+    void setAnimation(int animation);
     void pauseAnimation();
     void resumeAnimation() { this->idle = false; };
     void updateAnimation(float dt);

@@ -4,6 +4,11 @@
 #include "Entities/Enemies/Grunt.h"
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
+#include <fstream>
+
+#define ENEMY_PATH "src/Entities/Enemies/"
+
+
 
 CharacterHandler::CharacterHandler()
 {
@@ -24,24 +29,79 @@ CharacterHandler::~CharacterHandler()
 
     for (Enemy* enemy : enemies)
         delete enemy;
+
+    for (Enemy* enemy : enemyTemplates)
+        delete enemy;
 }
 
 void CharacterHandler::initialize(const std::vector<Line>* occluders)
 {
     this->occluders = occluders;
-    Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150, sf::Vector2u(1, 0));
-    this->player = new Player(data, sf::Vector2f(0, 0));
-    this->player->setAnimationData(data);
+    std::vector< Player::Animation> anim;
+    anim.push_back(Player::Animation(sf::Vector2u(0, 0), sf::Vector2u(5, 0), 150, sf::Vector2u(1, 0)));
+    
+    Player::AnimationData playerData(TextureHandler::get().getTexture(TextureHandler::misc::player), 
+        sf::Vector2u(6, 1), anim);
+    this->player = new Player(playerData, sf::Vector2f(0, 0));
+
+    for (int i = 0; i < ENEMY_TEMPLATE_COUNT; i++)
+    {
+        std::ifstream file(ENEMY_PATH + ENEMIES[i]);
+        std::string trash;
+
+        if (!file.is_open())
+            exit(-55);
+
+        int textureID;
+        sf::Vector2u frameCount;
+        int animCount;
+        std::vector<MovingEntity::Animation> animations;
+
+        file >> trash;
+        file >> trash >> textureID;
+        file >> trash >> frameCount.x >> frameCount.y;
+        file >> trash >> animCount;
+
+        for (int i = 0; i < animCount; i++)
+        {
+            sf::Vector2u start;
+            sf::Vector2u stop;
+            sf::Vector2u idle;
+            float speed;
+
+            file >> trash;
+            file >> trash >> start.x >> start.y;
+            file >> trash >> stop.x >> stop.y;
+            file >> trash >> idle.x >> idle.y;
+            file >> trash >> speed;
+
+            animations.push_back(MovingEntity::Animation(start, stop, speed, idle));
+        }
+
+        MovingEntity::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc(textureID)), frameCount, animations);
+
+        sf::Vector2f size;
+        sf::Vector2f offset;
+
+        file >> trash;
+        file >> trash >> size.x >> size.y;
+        file >> trash >> offset.x >> offset.y;
+
+        file.close();
+        Grunt* grunt = new Grunt(data, sf::Vector2f(0, 0));
+        grunt->setSize(size);
+        grunt->moveSpriteOffset(offset);
+
+        enemyTemplates.push_back(grunt);
+    }
 }
 
 void CharacterHandler::spawnEnemies()
 {
-    Player::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc::playerSprite), sf::Vector2u(6, 1), 150, sf::Vector2u(1, 0));
-
     for (const sf::Vector2f& point : spawnPoints)
     {
-        Grunt* grunt = new Grunt(data, point + sf::Vector2f(0, -50));
-        grunt->setColor(sf::Color(255, 50, 50, 255));
+        Grunt* grunt = new Grunt(*(Grunt*)enemyTemplates[enemy::grunt]);
+        grunt->setPosition(point + sf::Vector2f(0, -300));
         enemies.push_back(grunt);
     }
 }

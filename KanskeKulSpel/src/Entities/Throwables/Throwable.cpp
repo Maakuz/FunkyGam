@@ -32,7 +32,7 @@ void Throwable::update(float dt)
     if (armed || (detonateOnImpact && impacted))
     {
         detonated = true;
-        ParticleHandler::addEmitter(ParticleHandler::emitterTypes::flash, this->pos + (this->size / 2.f));
+        ParticleHandler::addEmitter(ParticleHandler::emitterTypes::flash, this->pos + (this->getSize() / 2.f));
     }
 
     momentum.y += GRAVITY * dt * this->mass;
@@ -53,7 +53,7 @@ void Throwable::handleCollision(const Entity& collider)
         {
             this->momentum.y *= -bounce;
             this->momentum.x *= 0.96;
-            this->pos.y = collider.getPosition().y - this->size.y;
+            this->pos.y = collider.getPosition().y - this->getSize().y;
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
@@ -65,7 +65,7 @@ void Throwable::handleCollision(const Entity& collider)
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
             this->momentum.x *= -bounce;
-            this->pos.x = collider.getPosition().x - this->size.x;
+            this->pos.x = collider.getPosition().x - this->getSize().x;
         }
 
         if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))

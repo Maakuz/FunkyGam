@@ -185,12 +185,16 @@
     <ClInclude Include="src\Entities\Throwables\Throwable.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Handlers\UIHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GaussianVert.frag" />
     <None Include="..\Shaders\Lighting.frag" />
     <None Include="..\Shaders\GaussianHor.frag" />
     <None Include="..\Shaders\LightingNoShadow.frag" />
+    <None Include="src\Entities\Enemies\Grunt.nm" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Lighting\big think.txt" />

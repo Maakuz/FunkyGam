@@ -172,6 +172,7 @@
     <ClInclude Include="src\Handlers\ParticleHandler.h" />
     <ClInclude Include="src\Handlers\ProjectileHandler.h" />
     <ClInclude Include="src\Handlers\TextureHandler.h" />
+    <ClInclude Include="src\Handlers\UIHandler.h" />
     <ClInclude Include="src\Misc\ConsoleWindow.h" />
     <ClInclude Include="src\Misc\Counter.h" />
     <ClInclude Include="src\Misc\Definitions.h" />
@@ -199,6 +200,7 @@
     <None Include="..\Shaders\GaussianVert.frag" />
     <None Include="..\Shaders\Lighting.frag" />
     <None Include="..\Shaders\LightingNoShadow.frag" />
+    <None Include="src\Entities\Enemies\Grunt.nm" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Lighting\big think.txt" />
