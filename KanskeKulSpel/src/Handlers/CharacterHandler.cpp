@@ -33,15 +33,15 @@ CharacterHandler::~CharacterHandler()
         delete enemy;
 }
 
-void CharacterHandler::initialize(const std::vector<Line>* occluders)
+void CharacterHandler::initialize(const std::vector<Line>* occluders, UIHandler* uiHandler)
 {
     this->occluders = occluders;
     std::vector< Player::Animation> anim;
     anim.push_back(Player::Animation(sf::Vector2u(0, 0), sf::Vector2u(5, 0), 150, sf::Vector2u(1, 0)));
     
-    Player::AnimationData playerData(TextureHandler::get().getTexture(TextureHandler::misc::player), 
+    Player::AnimationData playerData(TextureHandler::get().getTexture(TextureHandler::characters::player), 
         sf::Vector2u(6, 1), anim);
-    this->player = new Player(playerData, sf::Vector2f(0, 0));
+    this->player = new Player(playerData, uiHandler, sf::Vector2f(0, 0));
 
     for (int i = 0; i < ENEMY_TEMPLATE_COUNT; i++)
     {
@@ -77,7 +77,7 @@ void CharacterHandler::initialize(const std::vector<Line>* occluders)
             animations.push_back(MovingEntity::Animation(start, stop, speed, idle));
         }
 
-        MovingEntity::AnimationData data(TextureHandler::get().getTexture(TextureHandler::misc(textureID)), frameCount, animations);
+        MovingEntity::AnimationData data(TextureHandler::get().getTexture(TextureHandler::characters(textureID)), frameCount, animations);
 
         sf::Vector2f size;
         sf::Vector2f offset;

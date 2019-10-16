@@ -9,7 +9,7 @@
 
 #define TESTING false
 
-Player::Player(AnimationData data, sf::Vector2f pos)
+Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
 :MovingEntity(data, pos)
 {
     this->walkSpeed = 0.05f;
@@ -17,6 +17,8 @@ Player::Player(AnimationData data, sf::Vector2f pos)
     this->mass = 0.166f;
     this->grounded = false;
     this->debugMode = false;
+    this->ui = uiHandler;
+    this->selectedItemBarItem = 0;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
@@ -98,21 +100,17 @@ void Player::update(float dt, sf::Vector2f mousePos)
         direction.x *= 8;
         direction.y *= 10;
 
-        ProjectileHandler::addThrowable(TextureHandler::throwables::rock, this->pos, direction);
+        ProjectileHandler::addThrowable(selectedItemBarItem, this->pos, direction);
     }
-    
-    //imgui test
-#if TESTING
-    static int frame = 0;
-    ImGui::Begin("turbotest");
-    ImGui::SetWindowSize(sf::Vector2f(300, 300));
-    ImGui::SliderFloat("Walkkk", &this->walkSpeed, 0, 5);
-    ImGui::SliderFloat("jump", &this->jumpHeight, 0, 10);
-    ImGui::SliderFloat("weight", &this->mass, 0, 5);
-    ImGui::SliderInt("frame", &frame, 0, 6);
-    if (ImGui::Button("Reset player pos")) this->pos = sf::Vector2f(0, 0);
-    ImGui::End();
-#endif
+
+    for (int i = 0; i < 5; i++)
+    {
+        if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(27 + i))) //keys 1 to 5
+        {
+            selectedItemBarItem = i;
+            ui->setSelectedItem(i);
+        }
+    }
 
 }
 

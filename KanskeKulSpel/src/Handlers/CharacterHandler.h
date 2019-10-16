@@ -17,7 +17,7 @@ public:
     CharacterHandler();
     ~CharacterHandler();
 
-    void initialize(const std::vector<Line>* occluders);
+    void initialize(const std::vector<Line>* occluders, UIHandler* uiHandler);
 
     void spawnEnemies();
     void update(float dt, sf::Vector2f mousePos);

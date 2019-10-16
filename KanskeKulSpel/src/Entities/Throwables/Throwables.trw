@@ -1,0 +1,37 @@
+[ThrowableData]
+ThrowableItemCount: 4
+[Texture]
+TextureID: 2
+[Throwable]
+Mass: 0.3
+Armingtime: 1000
+Bouncyness: 0.4
+DetonateonImpact: 0
+ParticleEffectID: 2
+
+[Texture]
+TextureID: 0
+[Throwable]
+Mass: 0.5
+Armingtime: 1000
+Bouncyness: 0.4
+DetonateonImpact: 0
+ParticleEffectID: 1
+
+[Texture]
+TextureID: 2
+[Throwable]
+Mass: 0.2
+Armingtime: 1500
+Bouncyness: 0.4
+DetonateonImpact: 1
+ParticleEffectID: 0
+
+[Texture]
+TextureID: 1
+[Throwable]
+Mass: 0.3
+Armingtime: 1000
+Bouncyness: 0.4
+DetonateonImpact: 1
+ParticleEffectID: 3

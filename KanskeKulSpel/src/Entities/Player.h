@@ -1,11 +1,12 @@
 #pragma once
 #include "MovingEntity.h"
 #include "Misc/Counter.h"
+#include "Handlers/UIHandler.h"
 
 class Player : public MovingEntity 
 {
 public:
-    Player(AnimationData data, sf::Vector2f pos = sf::Vector2f(0, 0));
+    Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos = sf::Vector2f(0, 0));
     ~Player() {};
 
     void update(float dt, sf::Vector2f mousePos);
@@ -14,9 +15,11 @@ public:
 
 private:
     Counter platformPassingCounter;
-    
+    UIHandler* ui;
+    bool debugMode;
+    int selectedItemBarItem;
+
     void move(float dt);
     void debugMove(float dt);
 
-    bool debugMode;
 };

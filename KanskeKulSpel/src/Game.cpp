@@ -26,9 +26,10 @@ Game::Game(sf::RenderWindow* window)
 
 
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
-
+    uiHandler.initialize();
     levelHandler.loadLevel();
-    charHandler.initialize(levelHandler.getShadowLinePtr());
+    projectileHandler.loadTemplates();
+    charHandler.initialize(levelHandler.getShadowLinePtr(), &uiHandler);
     charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
     charHandler.spawnEnemies();
 }
@@ -264,6 +265,9 @@ void Game::draw(sf::RenderTarget& target)
 
     if (drawSightLines)
         charHandler.drawSightLines(*window, sf::RenderStates::Default);
+
+    target.setView(uiHandler.getView());
+    target.draw(uiHandler);
 #endif
 
 

@@ -93,6 +93,9 @@
     <ClCompile Include="src\Entities\Throwables\Throwable.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Handlers\UIHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -188,6 +191,9 @@
     <ClInclude Include="src\Handlers\UIHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Entities\Item.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GaussianVert.frag" />
@@ -195,6 +201,7 @@
     <None Include="..\Shaders\GaussianHor.frag" />
     <None Include="..\Shaders\LightingNoShadow.frag" />
     <None Include="src\Entities\Enemies\Grunt.nm" />
+    <None Include="src\Entities\Throwables\Throwables.trw" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Lighting\big think.txt" />

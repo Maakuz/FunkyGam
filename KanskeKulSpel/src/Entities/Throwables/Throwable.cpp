@@ -1,6 +1,7 @@
 #include "Throwable.h"
 #include "Misc/Definitions.h"
 #include "Handlers/ParticleHandler.h"
+#include <string>
 
 #define IMPACT_DELAY 50
 
@@ -18,6 +19,7 @@ Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* textu
     this->detonateOnImpact = false;
     this->detonated = false;
     this->collisionDelayTimer = 0;
+    this->particleEffectID = 0;
 }
 
 void Throwable::update(float dt)
@@ -77,4 +79,20 @@ void Throwable::handleCollision(const Entity& collider)
 
     
     this->impacted = true;
+}
+
+std::istream& operator>>(std::istream& in, Throwable& throwable)
+{
+    std::string trash;
+    
+    
+    in >> trash;
+
+    in >> trash >> throwable.mass;
+    in >> trash >> throwable.armingTime;
+    in >> trash >> throwable.bounce;
+    in >> trash >> throwable.detonateOnImpact;
+    in >> trash >> throwable.particleEffectID;
+
+    return in;
 }

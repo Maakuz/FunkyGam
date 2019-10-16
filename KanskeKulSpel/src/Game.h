@@ -8,6 +8,7 @@
 #include "Handlers/LevelHandler.h"
 #include "Handlers/ProjectileHandler.h"
 #include "Handlers/ParticleHandler.h"
+#include "Handlers/UIHandler.h"
 
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3
@@ -33,6 +34,7 @@ private:
     ProjectileHandler projectileHandler;
     ParticleHandler particleHandler;
     CharacterHandler charHandler;
+    UIHandler uiHandler;
     
     sf::RenderWindow* window;
 
