@@ -23,7 +23,8 @@ Game::Game(sf::RenderWindow* window)
     {
         this->renderTargets[i].create(window->getSize().x, window->getSize().y);
     }
-
+    this->playerIllumination.create(1, 1);
+    this->illuminationView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
 
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
     levelHandler.loadLevel();
@@ -52,6 +53,10 @@ void Game::loadFiles()
 
 void Game::update(float dt)
 {
+    PROFILER_START("CalcLightLevel");
+    charHandler.calculatePlayerIllumination(&this->playerIllumination.getTexture());
+    this->illuminationView.setCenter(charHandler.getPlayer().getCenterPos());
+    PROFILER_STOP;
     LightQueue::get().clear();
     LightQueueNoShadow::get().clear();
 
@@ -215,6 +220,10 @@ void Game::draw(sf::RenderTarget& target)
 
     else
         target.draw(fullscreenboi);
+
+    //Skeptical but hey
+    playerIllumination.setView(illuminationView);
+    playerIllumination.draw(fullscreenboi);
 
     PROFILER_START("No shadow lights render");
     renderTargets[0].clear(sf::Color::Black);

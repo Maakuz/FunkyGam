@@ -5,6 +5,7 @@
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
 #include "Misc/UnorderedErase.h"
+#include "Lighting/LightQueue.h"
 
 #define ENEMY_PATH "src/Data/"
 
@@ -136,8 +137,6 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 {
     this->player->update(dt, mousePos);
 
-    //Calculate how visible player is
-    
     for (auto it = enemies.begin(); it < enemies.end(); it++)
     {
         if ((*it)->isAlive())
@@ -166,6 +165,15 @@ void CharacterHandler::queueColliders()
 
     for (Enemy* enemy : enemies)
         CollisionHandler::queueCollider(enemy);
+}
+
+void CharacterHandler::calculatePlayerIllumination(const sf::Texture* illuminationTexture)
+{
+    sf::Image image = illuminationTexture->copyToImage();
+    sf::Color lightLevel = image.getPixel(0, 0);
+    float illumination = lightLevel.r + lightLevel.g + lightLevel.b;
+    illumination /= 255.f;
+    printCon(std::to_string(illumination));
 }
 
 void CharacterHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates states) const

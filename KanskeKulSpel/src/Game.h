@@ -48,4 +48,7 @@ private:
 
     sf::RenderTexture renderTargets[NR_OF_RENDER_TARGETS];
     sf::RectangleShape fullscreenboi;
+
+    sf::RenderTexture playerIllumination;
+    sf::View illuminationView;
 };

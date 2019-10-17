@@ -25,6 +25,7 @@ public:
 
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
     const Player& getPlayer() const { return *this->player; };
+    void calculatePlayerIllumination(const sf::Texture* illuminationTexture);
 
     void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
     void drawSightLines(sf::RenderTarget& target, sf::RenderStates states) const;
