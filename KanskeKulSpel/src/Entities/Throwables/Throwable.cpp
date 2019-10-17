@@ -20,6 +20,7 @@ Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* textu
     this->detonated = false;
     this->collisionDelayTimer = 0;
     this->particleEffectID = 0;
+    this->damage = 0;
 }
 
 void Throwable::update(float dt)
@@ -34,7 +35,8 @@ void Throwable::update(float dt)
     if (armed || (detonateOnImpact && impacted))
     {
         detonated = true;
-        ParticleHandler::addEmitter(ParticleHandler::emitterTypes(this->particleEffectID), this->pos + (this->getSize() / 2.f));
+        this->explosionData.center = getCenterPos();
+        ParticleHandler::addEmitter(this->particleEffectID, this->pos + (this->getSize() / 2.f));
     }
 
     momentum.y += GRAVITY * dt * this->mass;
@@ -42,6 +44,12 @@ void Throwable::update(float dt)
     this->pos += momentum;
 
     this->updatePosition();
+}
+
+void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum)
+{
+    this->pos = pos;
+    this->momentum = momentum;
 }
 
 void Throwable::handleCollision(const Entity& collider)
@@ -84,15 +92,29 @@ void Throwable::handleCollision(const Entity& collider)
 std::istream& operator>>(std::istream& in, Throwable& throwable)
 {
     std::string trash;
-    
-    
-    in >> trash;
+    int stackable;
+
+    in >> trash >> trash;
+    throwable.setName(trash);
+    in >> trash >>  stackable;
+    throwable.setStackable(stackable);
 
     in >> trash >> throwable.mass;
     in >> trash >> throwable.armingTime;
     in >> trash >> throwable.bounce;
     in >> trash >> throwable.detonateOnImpact;
+    in >> trash >> throwable.damage;
     in >> trash >> throwable.particleEffectID;
+
+    int explosionType;
+
+    in >> trash;
+    in >> trash >> explosionType;
+    throwable.explosionData.type = ExplosionType(explosionType);
+    in >> trash >> throwable.explosionData.radius;
+    in >> trash >> throwable.explosionData.falloff;
+    in >> trash >> throwable.explosionData.damage;
+
 
     return in;
 }

@@ -26,9 +26,9 @@ Game::Game(sf::RenderWindow* window)
 
 
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
-    uiHandler.initialize();
     levelHandler.loadLevel();
-    projectileHandler.loadTemplates();
+    itemHandler.loadTemplates();
+    uiHandler.initialize();
     charHandler.initialize(levelHandler.getShadowLinePtr(), &uiHandler);
     charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
     charHandler.spawnEnemies();
@@ -77,7 +77,7 @@ void Game::update(float dt)
         this->running = !this->running;
 
     PROFILER_START("projectileUpdate");
-    this->projectileHandler.update(dt);
+    this->itemHandler.update(dt);
     PROFILER_STOP;
 
     PROFILER_START("particleUpdate");
@@ -94,7 +94,7 @@ void Game::update(float dt)
     PROFILER_STOP;
 
     PROFILER_START("Collision");
-    this->projectileHandler.queueColliders();
+    this->itemHandler.queueColliders();
     this->charHandler.queueColliders();
     this->collisionHandler.processQueue();
     PROFILER_STOP;
@@ -187,7 +187,7 @@ void Game::draw(sf::RenderTarget& target)
 
 
     target.draw(this->charHandler);
-    target.draw(this->projectileHandler);
+    target.draw(this->itemHandler);
     target.draw(this->particleHandler);
 
     static bool skip = false;

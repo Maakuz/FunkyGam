@@ -3,12 +3,6 @@
 #include <fstream>
 #include "Misc/UnorderedErase.h"
 
-#define PARTICLE_FOLDER "../Particles/"
-#define PARTICLE_PATH(x) PARTICLE_FOLDER x
-
-const int NR_OF_PARTICLES = 4;
-const std::string PARTICLES[NR_OF_PARTICLES] = {"bomb.part", "fire.part", "flash.part", "flare.part"};
-
 std::vector<Emitter*> ParticleHandler::activeEmitters;
 std::vector<Emitter> ParticleHandler::emitterTemplates;
 
@@ -42,9 +36,28 @@ void ParticleHandler::update(float dt)
 
 void ParticleHandler::loadEmitters()
 {
-    for (int i = 0; i < NR_OF_PARTICLES; i++)
+    std::ifstream loadlist("src/Data/LoadList.mop");
+
+    if (!loadlist.is_open())
+        exit(-49);
+
+    std::string trash;
+    int particleCount;
+    std::string folder;
+
+    while (trash != "[Particles]")
+        loadlist >> trash;
+
+    loadlist >> trash >> folder;
+    loadlist >> trash >> particleCount;
+
+
+    for (int i = 0; i < particleCount; i++)
     {
-        std::ifstream file(PARTICLE_PATH(+ PARTICLES[i]));
+        std::string fileName;
+        loadlist >> trash >> fileName;
+
+        std::ifstream file(folder + fileName);
         if (file.is_open())
         {
             Emitter emitter;
@@ -54,12 +67,17 @@ void ParticleHandler::loadEmitters()
 
             emitterTemplates.push_back(emitter);
         }
+
+        else
+            printf("Particle with ID: %d could not be loaded.\n", i);
     }
+
+    loadlist.close();
 }
 
-void ParticleHandler::addEmitter(emitterTypes type, sf::Vector2f pos)
+void ParticleHandler::addEmitter(int emitterID, sf::Vector2f pos)
 {
-    Emitter* emitter = new Emitter(emitterTemplates[type]);
+    Emitter* emitter = new Emitter(emitterTemplates[emitterID]);
     emitter->setEmitterPos(pos);
     emitter->reset();
     activeEmitters.push_back(emitter);

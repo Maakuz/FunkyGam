@@ -6,7 +6,7 @@
 #include "Lighting/LightQueue.h"
 #include "Collision/CollisionHandler.h"
 #include "Handlers/LevelHandler.h"
-#include "Handlers/ProjectileHandler.h"
+#include "Handlers/ItemHandler.h"
 #include "Handlers/ParticleHandler.h"
 #include "Handlers/UIHandler.h"
 
@@ -31,7 +31,7 @@ private:
 
     CollisionHandler collisionHandler;
     LevelHandler levelHandler;
-    ProjectileHandler projectileHandler;
+    ItemHandler itemHandler;
     ParticleHandler particleHandler;
     CharacterHandler charHandler;
     UIHandler uiHandler;

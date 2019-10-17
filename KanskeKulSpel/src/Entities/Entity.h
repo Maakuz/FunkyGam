@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Collision/CollisionBox.h"
+#include "Collision/Explosion.h"
 
 class Entity : public sf::Drawable
 {
@@ -26,6 +27,7 @@ public:
     sf::Vector2f getSpriteOffset() const { return this->spriteOffset; };
     void moveSpriteOffset(sf::Vector2f distance);
     sf::Vector2f getCenterPos() const;
+    const sf::Texture* getTexture() const { return this->sprite.getTexture(); };
 
     float left() const;
     float right() const;
@@ -35,6 +37,7 @@ public:
     float height() const;
 
     virtual void handleCollision(const Entity& collider) = 0;
+    virtual void handleExplosion(const Explosion& explosion) = 0;
 
 protected:
     

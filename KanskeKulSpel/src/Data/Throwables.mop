@@ -1,0 +1,66 @@
+[ThrowableData]
+ThrowableItemCount: 4
+
+[Throwable]
+TextureID: 4
+Name: FlashBomb
+stackable: 1
+Mass: 0.3
+Armingtime: 1000
+Bouncyness: 0.4
+DetonateonImpact: 0
+Damage: 3
+ParticleEffectID: 2
+[Explosion]
+Type: 1
+Radius: 200
+Falloff: 0
+Damage: 3
+
+[Throwable]
+TextureID: 2
+Name: Bomb
+stackable: 1
+Mass: 0.5
+Armingtime: 1000
+Bouncyness: 0.4
+DetonateonImpact: 0
+Damage: 3
+ParticleEffectID: 0
+[Explosion]
+Type: 0
+Radius: 100
+Falloff: 0.5
+Damage: 100
+
+[Throwable]
+TextureID: 4
+Name: Flare
+stackable: 1
+Mass: 0.2
+Armingtime: 1500
+Bouncyness: 0.4
+DetonateonImpact: 1
+Damage: 3
+ParticleEffectID: 3
+[Explosion]
+Type: 2
+Radius: 200
+Falloff: 0
+Damage: 0
+
+[Throwable]
+TextureID: 3
+Name: Rock
+stackable: 1
+Mass: 0.3
+Armingtime: 1000
+Bouncyness: 0.4
+DetonateonImpact: 1
+Damage: 3
+ParticleEffectID: 4
+[Explosion]
+Type: 2
+Radius: 200
+Falloff: 0
+Damage: 0

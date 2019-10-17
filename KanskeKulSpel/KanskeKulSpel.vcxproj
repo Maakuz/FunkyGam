@@ -153,8 +153,9 @@
     <ClCompile Include="src\Handlers\CharacterHandler.cpp" />
     <ClCompile Include="src\Handlers\LevelHandler.cpp" />
     <ClCompile Include="src\Handlers\ParticleHandler.cpp" />
-    <ClCompile Include="src\Handlers\ProjectileHandler.cpp" />
+    <ClCompile Include="src\Handlers\ItemHandler.cpp" />
     <ClCompile Include="src\Handlers\ShadowHandler.cpp" />
+    <ClCompile Include="src\Handlers\TextureHandler.cpp" />
     <ClCompile Include="src\Handlers\UIHandler.cpp" />
     <ClCompile Include="src\Misc\KeyboardState.cpp" />
     <ClCompile Include="src\Main.cpp" />
@@ -165,6 +166,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Collision\CollisionHandler.h" />
+    <ClInclude Include="src\Collision\Explosion.h" />
     <ClInclude Include="src\Entities\Enemies\Enemy.h" />
     <ClInclude Include="src\Entities\Enemies\Grunt.h" />
     <ClInclude Include="src\Entities\Item.h" />
@@ -172,7 +174,7 @@
     <ClInclude Include="src\Entities\Throwables\Throwable.h" />
     <ClInclude Include="src\Handlers\CharacterHandler.h" />
     <ClInclude Include="src\Handlers\ParticleHandler.h" />
-    <ClInclude Include="src\Handlers\ProjectileHandler.h" />
+    <ClInclude Include="src\Handlers\ItemHandler.h" />
     <ClInclude Include="src\Handlers\TextureHandler.h" />
     <ClInclude Include="src\Handlers\UIHandler.h" />
     <ClInclude Include="src\Misc\ConsoleWindow.h" />
@@ -202,8 +204,9 @@
     <None Include="..\Shaders\GaussianVert.frag" />
     <None Include="..\Shaders\Lighting.frag" />
     <None Include="..\Shaders\LightingNoShadow.frag" />
-    <None Include="src\Entities\Enemies\Grunt.nm" />
-    <None Include="src\Entities\Throwables\Throwables.trw" />
+    <None Include="src\Data\Grunt.mop" />
+    <None Include="src\Data\Throwables.mop" />
+    <None Include="src\Data\LoadList.mop" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Lighting\big think.txt" />

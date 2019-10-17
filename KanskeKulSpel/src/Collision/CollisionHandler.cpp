@@ -1,7 +1,9 @@
 #include "CollisionHandler.h"
+#include "Misc/VectorFunctions.h"
 
 std::vector<Entity*> CollisionHandler::colliders;
 std::vector<Entity*> CollisionHandler::staticColliders;
+std::vector<Explosion> CollisionHandler::explosions;
 
 void CollisionHandler::processQueue()
 {
@@ -29,10 +31,17 @@ void CollisionHandler::processQueue()
         }
     }
 
+    for (int i = 0; i < explosions.size(); i++)
+    {
+        for (int j = 0; j < colliders.size(); j++)
+        {
+            if (lengthSquared(explosions[i].center - colliders[j]->getCenterPos()) < explosions[i].radius * explosions[i].radius)
+                colliders[j]->handleExplosion(explosions[i]);
+        }
+    }
 
+    CollisionHandler::explosions.clear();
     CollisionHandler::colliders.clear();
-
-    //WHO WHY WHAT
     CollisionHandler::staticColliders.clear();
 }
 
@@ -44,4 +53,9 @@ void CollisionHandler::queueCollider(Entity* causer)
 void CollisionHandler::queueStaticCollider(Entity* causer)
 {
     CollisionHandler::staticColliders.push_back(causer);
+}
+
+void CollisionHandler::queueExplosion(Explosion explosion)
+{
+    CollisionHandler::explosions.push_back(explosion);
 }

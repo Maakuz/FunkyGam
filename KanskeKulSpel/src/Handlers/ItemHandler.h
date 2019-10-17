@@ -2,7 +2,7 @@
 #include <vector>
 #include "Entities/Throwables/Throwable.h"
 
-class ProjectileHandler : public sf::Drawable
+class ItemHandler : public sf::Drawable
 {
 public:
     enum throwType
@@ -10,8 +10,8 @@ public:
         bomb = 0
     };
 
-    ProjectileHandler();
-    ~ProjectileHandler() {};
+    ItemHandler();
+    ~ItemHandler() {};
 
     void loadTemplates();
 
@@ -20,6 +20,7 @@ public:
     void queueColliders();
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum);
+    static const Throwable& getTemplate(int itemID);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:

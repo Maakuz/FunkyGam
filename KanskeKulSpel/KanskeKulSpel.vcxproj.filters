@@ -63,9 +63,6 @@
     <ClCompile Include="..\External\Include\Imgui\SFML-imgui\imgui-SFML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Handlers\ProjectileHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Particles\Emitter.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -94,6 +91,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Handlers\UIHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Handlers\ItemHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Handlers\TextureHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -141,9 +144,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Misc\Profiler.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Handlers\ProjectileHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Handlers\TextureHandler.h">
@@ -194,14 +194,21 @@
     <ClInclude Include="src\Entities\Item.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Handlers\ItemHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Collision\Explosion.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GaussianVert.frag" />
     <None Include="..\Shaders\Lighting.frag" />
     <None Include="..\Shaders\GaussianHor.frag" />
     <None Include="..\Shaders\LightingNoShadow.frag" />
-    <None Include="src\Entities\Enemies\Grunt.nm" />
-    <None Include="src\Entities\Throwables\Throwables.trw" />
+    <None Include="src\Data\LoadList.mop" />
+    <None Include="src\Data\Throwables.mop" />
+    <None Include="src\Data\Grunt.mop" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Lighting\big think.txt" />

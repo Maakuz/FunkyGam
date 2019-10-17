@@ -1,20 +1,20 @@
-#include "ProjectileHandler.h"
+#include "ItemHandler.h"
 #include "Collision/CollisionHandler.h"
 #include "Handlers/TextureHandler.h"
 #include "Misc/UnorderedErase.h"
 
-std::vector<Throwable> ProjectileHandler::throwables;
-std::vector<Throwable> ProjectileHandler::throwableTemplates;
+std::vector<Throwable> ItemHandler::throwables;
+std::vector<Throwable> ItemHandler::throwableTemplates;
 
-ProjectileHandler::ProjectileHandler()
+ItemHandler::ItemHandler()
 {
 }
 
-void ProjectileHandler::loadTemplates()
+void ItemHandler::loadTemplates()
 {
     throwableTemplates.clear();
 
-    std::ifstream file("src/Entities/Throwables/Throwables.trw");
+    std::ifstream file("src/Data/Throwables.mop");
     if (!file.is_open())
         exit(-44);
 
@@ -29,7 +29,7 @@ void ProjectileHandler::loadTemplates()
         int textureID;
         file >> trash;
         file >> trash >> textureID;
-        Throwable throwable(sf::Vector2f(), sf::Vector2f(), TextureHandler::get().getTexture(TextureHandler::throwables(textureID)));
+        Throwable throwable(sf::Vector2f(), sf::Vector2f(), TextureHandler::get().getTexture(textureID));
         
         file >> throwable;
 
@@ -42,12 +42,13 @@ void ProjectileHandler::loadTemplates()
 
 }
 
-void ProjectileHandler::update(float dt)
+void ItemHandler::update(float dt)
 {
     for (int i = 0; i < throwables.size(); i++)
     {
         if (throwables[i].hasDetonated())
         {
+            CollisionHandler::queueExplosion(throwables[i].getExplosion());
             unordered_erase(throwables, throwables.begin() + i--);
         }
         else
@@ -57,18 +58,25 @@ void ProjectileHandler::update(float dt)
     }
 }
 
-void ProjectileHandler::queueColliders()
+void ItemHandler::queueColliders()
 {
     for (auto& proj : throwables)
         CollisionHandler::queueCollider(&proj);
 }
 
-void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum)
+void ItemHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum)
 {
-    throwables.push_back(throwableTemplates[id]);
+    Throwable item(throwableTemplates[id]);
+    item.throwItem(pos, momentum);
+    throwables.push_back(item);
 }
 
-void ProjectileHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
+const Throwable& ItemHandler::getTemplate(int itemID)
+{
+    return throwableTemplates[itemID];
+}
+
+void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
     for (auto const & throwable : this->throwables)
         target.draw(throwable, states);

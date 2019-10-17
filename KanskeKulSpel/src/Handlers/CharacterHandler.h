@@ -8,7 +8,7 @@ class CharacterHandler : public sf::Drawable
 {
 public:
     static const int ENEMY_TEMPLATE_COUNT = 1;
-    const std::string ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.nm" };
+    const std::string ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop" };
     enum enemy
     {
         grunt = 0
@@ -25,6 +25,8 @@ public:
 
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
     const Player& getPlayer() const { return *this->player; };
+
+    static void addExplosion(sf::Vector2f center, float radius);
 
     void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
     void drawSightLines(sf::RenderTarget& target, sf::RenderStates states) const;

@@ -10,6 +10,7 @@ public:
     void update(float dt);
 
     virtual void handleCollision(const Entity& collider);
+    virtual void handleExplosion(const Explosion& explosion);
 
 private:
     int boundReached;
@@ -22,6 +23,8 @@ private:
     bool flying;
 
 
+    void moveLeft();
+    void moveRight();
     void updateIdle(float dt);
     void updateChasing(float dt);
     void updateReturning(float dt);

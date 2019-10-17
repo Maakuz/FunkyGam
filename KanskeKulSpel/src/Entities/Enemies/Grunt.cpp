@@ -55,6 +55,22 @@ void Grunt::update(float dt)
 }
 
 
+void Grunt::moveLeft()
+{
+    this->acceleration.x = -1;
+    this->facingDir = Direction::left;
+    if (!this->isFlippedHorizontally())
+        this->flipHorizontally();
+}
+
+void Grunt::moveRight()
+{
+    this->acceleration.x = 1;
+    if (this->isFlippedHorizontally())
+        this->flipHorizontally();
+    this->facingDir = Direction::right;
+}
+
 void Grunt::updateIdle(float dt)
 {
     if (isDesicionTime() && this->boundReached == 0)
@@ -68,17 +84,11 @@ void Grunt::updateIdle(float dt)
             break;
 
         case 1:
-            this->acceleration.x = -1;
-            this->facingDir = Direction::left;
-            if (!this->isFlippedHorizontally())
-                this->flipHorizontally();
+            moveLeft();
             break;
 
         case 2:
-            this->acceleration.x = 1;
-            if (this->isFlippedHorizontally())
-                this->flipHorizontally();
-            this->facingDir = Direction::right;
+            moveRight();
             break;
 
         default:
@@ -93,14 +103,14 @@ void Grunt::updateIdle(float dt)
     {
         printCon("End");
         if (this->facingDir == Direction::left)
-            this->facingDir = Direction::right;
+            moveRight();
 
         else
-            this->facingDir = Direction::left;
+            moveLeft();
 
         this->acceleration.x = -boundReached;
         this->boundReached = 0;
-        this->flipHorizontally();
+
         this->desicionTimeOver();
     }
 
@@ -121,18 +131,12 @@ void Grunt::updateChasing(float dt)
 
     if (this->getLastKnownPos().x < this->pos.x)
     {
-        this->facingDir = Direction::left;
-        if (!this->isFlippedHorizontally())
-            this->flipHorizontally();
-        this->acceleration.x = -1;
+        moveLeft();
     }
 
     else if (this->getLastKnownPos().x >= this->pos.x)
     {
-        if (this->isFlippedHorizontally())
-            this->flipHorizontally();
-        this->facingDir = Direction::right;
-        this->acceleration.x = 1;
+        moveRight();
     }
 
 
@@ -237,5 +241,22 @@ void Grunt::handleCollision(const Entity& collider)
             this->pos.x = collider.right();
             this->jump();
         }
+    }
+}
+
+void Grunt::handleExplosion(const Explosion& explosion)
+{
+    switch (explosion.type)
+    {
+    case ExplosionType::damage:
+        break;
+
+    case ExplosionType::flash:
+        break;
+
+    case ExplosionType::sound:
+        break;
+    default:
+        break;
     }
 }

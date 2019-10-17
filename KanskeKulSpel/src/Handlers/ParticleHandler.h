@@ -5,13 +5,6 @@
 class ParticleHandler : public sf::Drawable
 {
 public:
-    enum emitterTypes 
-    {
-        bomb = 0,
-        fire = 1,
-        flash = 2,
-        flare = 3
-    };
 
     ParticleHandler();
     ~ParticleHandler();
@@ -20,7 +13,7 @@ public:
 
     void loadEmitters();
 
-    static void addEmitter(emitterTypes type, sf::Vector2f pos);
+    static void addEmitter(int emitterID, sf::Vector2f pos);
 
 private:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;

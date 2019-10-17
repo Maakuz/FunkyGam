@@ -5,7 +5,7 @@
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
 
-#define ENEMY_PATH "src/Entities/Enemies/"
+#define ENEMY_PATH "src/Data/"
 
 
 
@@ -39,7 +39,7 @@ void CharacterHandler::initialize(const std::vector<Line>* occluders, UIHandler*
     std::vector< Player::Animation> anim;
     anim.push_back(Player::Animation(sf::Vector2u(0, 0), sf::Vector2u(5, 0), 150, sf::Vector2u(1, 0)));
     
-    Player::AnimationData playerData(TextureHandler::get().getTexture(TextureHandler::characters::player), 
+    Player::AnimationData playerData(TextureHandler::get().getTexture(0), 
         sf::Vector2u(6, 1), anim);
     this->player = new Player(playerData, uiHandler, sf::Vector2f(0, 0));
 
@@ -77,7 +77,7 @@ void CharacterHandler::initialize(const std::vector<Line>* occluders, UIHandler*
             animations.push_back(MovingEntity::Animation(start, stop, speed, idle));
         }
 
-        MovingEntity::AnimationData data(TextureHandler::get().getTexture(TextureHandler::characters(textureID)), frameCount, animations);
+        MovingEntity::AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
 
         sf::Vector2f size;
         sf::Vector2f offset;

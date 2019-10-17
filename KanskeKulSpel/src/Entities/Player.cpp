@@ -4,7 +4,7 @@
 #include "Misc/VectorFunctions.h"
 #include "Lighting/LightQueue.h"
 #include "Imgui/imgui.h"
-#include "Handlers/ProjectileHandler.h"
+#include "Handlers/ItemHandler.h"
 #include "Misc/ConsoleWindow.h"
 
 #define TESTING false
@@ -22,6 +22,17 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
+
+    this->inventory.quckslotItems[0] = 3;
+    this->inventory.quckslotItems[1] = 0;
+    this->inventory.quckslotItems[2] = 1;
+    this->inventory.quckslotItems[3] = 2;
+    this->inventory.quckslotItems[4] = -1;
+
+    for (int i = 0; i < 5; i++)
+    {
+        ui->setItemSlot(i, this->inventory.quckslotItems[i]);
+    }
     
     static sf::Vector2f* posP = &this->pos; //testing
     ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
@@ -100,7 +111,8 @@ void Player::update(float dt, sf::Vector2f mousePos)
         direction.x *= 8;
         direction.y *= 10;
 
-        ProjectileHandler::addThrowable(selectedItemBarItem, this->pos, direction);
+        if (this->inventory.quckslotItems[selectedItemBarItem] != -1)
+            ItemHandler::addThrowable(this->inventory.quckslotItems[selectedItemBarItem], this->pos, direction);
     }
 
     for (int i = 0; i < 5; i++)

@@ -1,6 +1,7 @@
 #pragma once
 #include "Entities/Entity.h"
 #include "Entities/Item.h"
+#include "Collision/Explosion.h"
 #include <fstream>
 
 class Throwable : public Entity, public Item
@@ -14,13 +15,18 @@ public:
     void update(float dt);
 
     bool hasDetonated() const { return detonated; };
+    void throwItem(sf::Vector2f pos, sf::Vector2f momentum);
+
+    Explosion getExplosion() const { return explosionData; };
 
     virtual void handleCollision(const Entity& collider);
+    virtual void handleExplosion(const Explosion& explosion) {};
 private:
 
     float mass;
     sf::Vector2f acceleration;
     sf::Vector2f momentum;
+    Explosion explosionData;
 
 
     float armingTime;
@@ -31,6 +37,7 @@ private:
     bool armed;
     bool detonateOnImpact;
     bool detonated;
+    int damage;
 
     int particleEffectID;
 };
