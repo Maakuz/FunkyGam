@@ -13,13 +13,14 @@ public:
     virtual void handleExplosion(const Explosion& explosion);
 
 private:
-    int boundReached;
+    Direction forcedDirection;
     float chaseSpeed;
     float idleSpeed;
     float attackDistance;
     sf::Vector2f attackMomentum;
     Counter attackChargeTimer;
     Counter stunCounter;
+    Counter searchCounter;
     bool flying;
 
 

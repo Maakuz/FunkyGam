@@ -20,6 +20,11 @@ public:
         return counter < value;
     }
 
+    bool operator>(int value)
+    {
+        return counter > value;
+    }
+
     bool update(int increment)
     {
         if (counter > stopValue)

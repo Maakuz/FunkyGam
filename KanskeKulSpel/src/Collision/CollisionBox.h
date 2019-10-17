@@ -13,7 +13,8 @@ public:
         Platform = 502,
         Player = 1,
         Static = 2,
-        Bomb = 3
+        throwable = 3,
+        character = 4
     };
 
     struct AABB

@@ -27,7 +27,8 @@ Size: 64 72
 Offset: -32 0
 
 [EnemyData]
-Roamlength: 64
+Roamlength: 128
+Health: 100
 [SpecificData]
 ChaseSpeed: 0.01
 IdleSpeed: 0.005
@@ -35,3 +36,4 @@ AttackRange: 5 5
 DistanceToStartAttacking: 128
 AttackChargeDuration: 1000
 StunDuration: 500
+SearchingDuration: 10000 

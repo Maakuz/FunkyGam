@@ -12,6 +12,8 @@
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
 :MovingEntity(data, pos)
 {
+    this->collisionBox.addComponent(CollisionBox::colliderComponents::Player);
+    this->collisionBox.addComponent(CollisionBox::colliderComponents::character);
     this->walkSpeed = 0.05f;
     this->jumpHeight = 5.3f;
     this->mass = 0.166f;
@@ -112,7 +114,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
         direction.y *= 10;
 
         if (this->inventory.quckslotItems[selectedItemBarItem] != -1)
-            ItemHandler::addThrowable(this->inventory.quckslotItems[selectedItemBarItem], this->pos, direction);
+            ItemHandler::addThrowable(this->inventory.quckslotItems[selectedItemBarItem], this->pos, direction, this);
     }
 
     for (int i = 0; i < 5; i++)

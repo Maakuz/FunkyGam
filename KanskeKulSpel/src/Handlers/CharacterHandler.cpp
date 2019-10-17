@@ -4,6 +4,7 @@
 #include "Entities/Enemies/Grunt.h"
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
+#include "Misc/UnorderedErase.h"
 
 #define ENEMY_PATH "src/Data/"
 
@@ -100,26 +101,34 @@ void CharacterHandler::initialize(const std::vector<Line>* occluders, UIHandler*
 
 void CharacterHandler::spawnEnemies()
 {
-    //for (const sf::Vector2f& point : spawnPoints)
-    //{
+    for (const sf::Vector2f& point : spawnPoints)
+    {
         Grunt* grunt = new Grunt(*(Grunt*)enemyTemplates[enemy::grunt]);
-        grunt->spawn(spawnPoints[0] - sf::Vector2f(0, grunt->getSize().y));
+        grunt->spawn(point - sf::Vector2f(0, grunt->getSize().y));
         enemies.push_back(grunt);
-    //}
+    }
 }
 
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 {
     this->player->update(dt, mousePos);
     
-    for (Enemy* enemy : enemies)
+    for (auto it = enemies.begin(); it < enemies.end(); it++)
     {
-        if (enemy->getState() == Enemy::State::idle || enemy->getState() == Enemy::State::chasing)
-            this->updateEnemyLineOfSight(enemy);
+        if ((*it)->isAlive())
+        {
+            if ((*it)->getState() == Enemy::State::idle || (*it)->getState() == Enemy::State::chasing)
+                this->updateEnemyLineOfSight((*it));
 
-        Grunt* g = dynamic_cast<Grunt*>(enemy);
-        if (g)
-            g->update(dt);
+            Grunt* g = dynamic_cast<Grunt*>((*it));
+            if (g)
+                g->update(dt);
+        }
+
+        else
+        {
+            unordered_erase(enemies, it--);
+        }
     }
 }
 

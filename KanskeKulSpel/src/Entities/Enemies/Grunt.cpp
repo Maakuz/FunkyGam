@@ -2,6 +2,7 @@
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
 #include <string>
+#include "Entities/Throwables/Throwable.h"
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     :Enemy(data, pos)
@@ -12,8 +13,8 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     this->chaseSpeed = 0.01;
     this->state = State::idle;
     this->flying = false;
+    this->forcedDirection = Direction::none;
 
-    this->boundReached = 0;
     this->attackDistance = 64;
     this->attackChargeTimer = Counter(1000);
     this->stunCounter = Counter(500);
@@ -35,6 +36,15 @@ void Grunt::update(float dt)
 
     case Enemy::State::attacking:
         updateAttack(dt);
+        break;
+
+    case Enemy::State::searching:
+        updateIdle(dt);
+        if (searchCounter.update(dt))
+        {
+            this->currentRoamPoint = getStartPoint();
+            this->state = State::returning;
+        }
         break;
 
     case Enemy::State::returning:
@@ -73,7 +83,7 @@ void Grunt::moveRight()
 
 void Grunt::updateIdle(float dt)
 {
-    if (isDesicionTime() && this->boundReached == 0)
+    if (isDesicionTime() && this->forcedDirection == Direction::none)
     {
         int r = rand() % 3;
         printCon(std::to_string(r));
@@ -102,32 +112,38 @@ void Grunt::updateIdle(float dt)
     else if (isDesicionTime())
     {
         printCon("End");
-        if (this->facingDir == Direction::left)
+        if (this->forcedDirection == Direction::right)
             moveRight();
 
         else
             moveLeft();
 
-        this->acceleration.x = -boundReached;
-        this->boundReached = 0;
+        this->forcedDirection = Direction::none;
 
         this->desicionTimeOver();
     }
 
-    if (length(this->pos - this->getStartPoint()) > this->roamDistance && this->boundReached == 0)
+    sf::Vector2f roampointToPos = this->pos - this->currentRoamPoint;
+    if (length(this->pos - this->currentRoamPoint) > this->roamDistance)
     {
-        this->boundReached = acceleration.x;
-        this->acceleration.x = 0;
-        this->momentum.x *= -1;
-        this->desicionTimeOver();
+        if (roampointToPos.x > 0)
+            forcedDirection = Direction::left;
+
+        else
+            forcedDirection = Direction::right;
     }
+
 
 }
 
 void Grunt::updateChasing(float dt)
 {
     if (timeSincePlayerSeen.isTimeUp()) //will sort of mitigating stuck enemies looking silly
-        state = State::idle;
+    {
+        state = State::searching;
+        this->currentRoamPoint = getLastKnownPos();
+        this->searchCounter.reset();
+    }
 
     if (this->getLastKnownPos().x < this->pos.x)
     {
@@ -148,17 +164,33 @@ void Grunt::updateChasing(float dt)
             this->attackChargeTimer.reset();
             setAnimation(1);
         }
-        else
-        {
-            state = State::idle;
-            setStartPoint(getLastKnownPos());
-        }
+    }
 
+    if(timeSincePlayerSeen > 200 && abs(pos.x - getLastKnownPos().x) < 10)
+    {
+        jump();
+        state = State::searching;
+        this->currentRoamPoint = getLastKnownPos();
+        this->searchCounter.reset();
     }
 }
 
 void Grunt::updateReturning(float dt)
 {
+    if (this->currentRoamPoint.x < this->pos.x)
+    {
+        moveLeft();
+    }
+
+    else if (this->currentRoamPoint.x >= this->pos.x)
+    {
+        moveRight();
+    }
+
+    if (abs(pos.x - currentRoamPoint.x) < 10)
+    {
+        state = State::idle;
+    }
 }
 
 void Grunt::updateAttack(float dt)
@@ -188,6 +220,7 @@ std::istream& Grunt::readSpecific(std::istream& in)
     in >> trash >> attackDistance;
     in >> trash >> attackChargeTimer.stopValue;
     in >> trash >> stunCounter.stopValue;
+    in >> trash >> searchCounter.stopValue;
 
     return in;
 }
@@ -211,7 +244,7 @@ void Grunt::handleCollision(const Entity& collider)
         }
     }
 
-    if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
+    else if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
     {
         //walking on ground
         if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
@@ -242,15 +275,26 @@ void Grunt::handleCollision(const Entity& collider)
             this->jump();
         }
     }
+
+    else if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::throwable))
+    {
+        Throwable* throwable = (Throwable*)&collider;
+        if (lengthSquared( throwable->getMomentum()) > 5)
+            this->health -= throwable->getDamage();
+    }
 }
 
 void Grunt::handleExplosion(const Explosion& explosion)
 {
+    if (explosion.damage > 0)
+    {
+        int damage = (explosion.damage - (explosion.damage * std::min(std::max((length(explosion.center - pos) / explosion.radius) - explosion.falloff, 0.f), 1.f)));
+        this->health -= damage;
+        printCon(std::to_string(damage));
+    }
+
     switch (explosion.type)
     {
-    case ExplosionType::damage:
-        break;
-
     case ExplosionType::flash:
         break;
 

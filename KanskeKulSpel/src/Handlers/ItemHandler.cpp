@@ -64,10 +64,10 @@ void ItemHandler::queueColliders()
         CollisionHandler::queueCollider(&proj);
 }
 
-void ItemHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum)
+void ItemHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower)
 {
     Throwable item(throwableTemplates[id]);
-    item.throwItem(pos, momentum);
+    item.throwItem(pos, momentum, thrower);
     throwables.push_back(item);
 }
 

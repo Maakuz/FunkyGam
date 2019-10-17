@@ -19,6 +19,7 @@ public:
         idle,
         chasing,
         attacking,
+        searching,
         returning,
         stunned
     };
@@ -31,6 +32,8 @@ public:
     virtual void update(float dt);
     void notifyEnemy(sf::Vector2f playerPos);
     void spawn(sf::Vector2f pos);
+
+    bool isAlive();
 
     Direction getFacingDir() const { return this->facingDir; }
     State getState() const { return this->state; }
@@ -45,6 +48,8 @@ protected:
     Direction facingDir;
     sf::Vector2f eyeLevel;
     Counter timeSincePlayerSeen;
+    sf::Vector2f currentRoamPoint;
+    int health;
 
     void desicionTimeOver();
     bool isDesicionTime() const { return this->decisionTime; }

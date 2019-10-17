@@ -19,7 +19,7 @@ public:
 
     void queueColliders();
 
-    static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum);
+    static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);
     static const Throwable& getTemplate(int itemID);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

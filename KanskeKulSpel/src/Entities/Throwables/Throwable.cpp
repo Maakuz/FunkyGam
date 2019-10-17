@@ -3,11 +3,10 @@
 #include "Handlers/ParticleHandler.h"
 #include <string>
 
-#define IMPACT_DELAY 50
-
 Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture)
     :Entity(pos, texture)
 {
+    this->collisionBox.addComponent(CollisionBox::colliderComponents::throwable);
     this->mass = 0.3f;
     this->armingCounter = 0;
     this->armingTime = 1000;
@@ -18,14 +17,13 @@ Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* textu
     this->armed = false;
     this->detonateOnImpact = false;
     this->detonated = false;
-    this->collisionDelayTimer = 0;
     this->particleEffectID = 0;
     this->damage = 0;
+    this->thrower = nullptr;
 }
 
 void Throwable::update(float dt)
 {
-    this->collisionDelayTimer += dt;
 
     this->armingCounter += dt;
     if (this->armingTime < this->armingCounter)
@@ -46,46 +44,44 @@ void Throwable::update(float dt)
     this->updatePosition();
 }
 
-void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum)
+void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Entity* thrower)
 {
     this->pos = pos;
     this->momentum = momentum;
+    this->thrower = thrower;
 }
 
 void Throwable::handleCollision(const Entity& collider)
 {
-    if (collisionDelayTimer < IMPACT_DELAY)
+    if (&collider == thrower) //Projectile is immune to thrower
         return;
 
-    if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
+    if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
     {
-        if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
-        {
-            this->momentum.y *= -bounce;
-            this->momentum.x *= 0.96;
-            this->pos.y = collider.getPosition().y - this->getSize().y;
-        }
-
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
-        {
-            this->momentum.y *= bounce;
-            this->pos.y = collider.getPosition().y + collider.getSize().y;
-        }
-
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
-        {
-            this->momentum.x *= -bounce;
-            this->pos.x = collider.getPosition().x - this->getSize().x;
-        }
-
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
-        {
-            this->momentum.x *= -bounce;
-            this->pos.x = collider.getPosition().x + collider.getSize().x;
-        }
+        this->momentum.y *= -bounce;
+        this->momentum.x *= 0.96;
+        this->pos.y = collider.getPosition().y - this->getSize().y;
     }
 
+    if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
+    {
+        this->momentum.y *= bounce;
+        this->pos.y = collider.getPosition().y + collider.getSize().y;
+    }
+
+    if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
+    {
+        this->momentum.x *= -bounce;
+        this->pos.x = collider.getPosition().x - this->getSize().x;
+    }
+
+    if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
+    {
+        this->momentum.x *= -bounce;
+        this->pos.x = collider.getPosition().x + collider.getSize().x;
+    }
     
+
     this->impacted = true;
 }
 
