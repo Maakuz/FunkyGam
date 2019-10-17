@@ -2,12 +2,19 @@
 #include "Collision/CollisionHandler.h"
 #include "Handlers/TextureHandler.h"
 #include "Misc/UnorderedErase.h"
+#include "Misc/ConsoleWindow.h"
 
 std::vector<Throwable> ItemHandler::throwables;
 std::vector<Throwable> ItemHandler::throwableTemplates;
 
 ItemHandler::ItemHandler()
 {
+    ConsoleWindow::get().addCommand("reloadItems", [&](Arguments args)->std::string 
+        {
+            loadTemplates();
+
+            return "Items reloaded";
+        });
 }
 
 void ItemHandler::loadTemplates()

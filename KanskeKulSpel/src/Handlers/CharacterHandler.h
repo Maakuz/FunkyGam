@@ -18,15 +18,13 @@ public:
     ~CharacterHandler();
 
     void initialize(const std::vector<Line>* occluders, UIHandler* uiHandler);
-
+    void loadEnemies();
     void spawnEnemies();
     void update(float dt, sf::Vector2f mousePos);
     void queueColliders();
 
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
     const Player& getPlayer() const { return *this->player; };
-
-    static void addExplosion(sf::Vector2f center, float radius);
 
     void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
     void drawSightLines(sf::RenderTarget& target, sf::RenderStates states) const;

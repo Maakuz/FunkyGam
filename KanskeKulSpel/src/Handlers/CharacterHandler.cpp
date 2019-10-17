@@ -21,6 +21,13 @@ CharacterHandler::CharacterHandler()
 
         return "Enemies has been reset.";
         });
+
+    ConsoleWindow::get().addCommand("reloadEnemies", [&](Arguments args)->std::string {
+        loadEnemies();
+        spawnEnemies();
+
+        return "Enemies has been reloaded.";
+        });
 }
 
 CharacterHandler::~CharacterHandler()
@@ -43,6 +50,17 @@ void CharacterHandler::initialize(const std::vector<Line>* occluders, UIHandler*
     Player::AnimationData playerData(TextureHandler::get().getTexture(0), 
         sf::Vector2u(6, 1), anim);
     this->player = new Player(playerData, uiHandler, sf::Vector2f(0, 0));
+
+    loadEnemies();
+   
+}
+
+void CharacterHandler::loadEnemies()
+{
+    for (Enemy* enemy : enemyTemplates)
+        delete enemy;
+
+    enemyTemplates.clear();
 
     for (int i = 0; i < ENEMY_TEMPLATE_COUNT; i++)
     {
@@ -101,6 +119,11 @@ void CharacterHandler::initialize(const std::vector<Line>* occluders, UIHandler*
 
 void CharacterHandler::spawnEnemies()
 {
+    for (Enemy* enemy : enemies)
+        delete enemy;
+
+    enemies.clear();
+
     for (const sf::Vector2f& point : spawnPoints)
     {
         Grunt* grunt = new Grunt(*(Grunt*)enemyTemplates[enemy::grunt]);
@@ -112,12 +135,17 @@ void CharacterHandler::spawnEnemies()
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 {
     this->player->update(dt, mousePos);
+
+    //Calculate how visible player is
     
     for (auto it = enemies.begin(); it < enemies.end(); it++)
     {
         if ((*it)->isAlive())
         {
-            if ((*it)->getState() == Enemy::State::idle || (*it)->getState() == Enemy::State::chasing)
+            if ((*it)->getState() == Enemy::State::idle || 
+                (*it)->getState() == Enemy::State::chasing ||
+                (*it)->getState() == Enemy::State::searching ||
+                (*it)->getState() == Enemy::State::returning)
                 this->updateEnemyLineOfSight((*it));
 
             Grunt* g = dynamic_cast<Grunt*>((*it));

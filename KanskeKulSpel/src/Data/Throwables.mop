@@ -13,7 +13,7 @@ Damage: 3
 ParticleEffectID: 2
 [Explosion]
 Type: 1
-Radius: 200
+Radius: 300
 Falloff: 0
 Damage: 3
 
@@ -23,14 +23,14 @@ Name: Bomb
 stackable: 1
 Mass: 0.5
 Armingtime: 1000
-Bouncyness: 0.4
+Bouncyness: 0.3
 DetonateonImpact: 0
 Damage: 3
 ParticleEffectID: 0
 [Explosion]
 Type: 0
-Radius: 100
-Falloff: 0.5
+Radius: 300
+Falloff: 1
 Damage: 100
 
 [Throwable]
@@ -61,6 +61,6 @@ Damage: 3
 ParticleEffectID: 4
 [Explosion]
 Type: 2
-Radius: 200
+Radius: 500
 Falloff: 0
 Damage: 0

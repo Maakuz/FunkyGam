@@ -25,20 +25,28 @@ void Grunt::update(float dt)
     switch (state)
     {
     case Enemy::State::idle:
+        setAnimation(0);
         this->walkSpeed = idleSpeed;
         updateIdle(dt);
         break;
 
     case Enemy::State::chasing:
+        setAnimation(0);
         this->walkSpeed = chaseSpeed;
         updateChasing(dt);
         break;
 
     case Enemy::State::attacking:
+        if (flying)
+            setAnimation(2);
+
+        else
+            setAnimation(1);
         updateAttack(dt);
         break;
 
     case Enemy::State::searching:
+        setAnimation(0);
         updateIdle(dt);
         if (searchCounter.update(dt))
         {
@@ -48,15 +56,26 @@ void Grunt::update(float dt)
         break;
 
     case Enemy::State::returning:
+        setAnimation(0);
         updateReturning(dt);
         break;
 
     case Enemy::State::stunned:
+        setAnimation(3);
+        this->acceleration.x = 0;
         if (this->stunCounter.update(dt))
         {
             this->stunCounter.reset();
-            this->state = State::chasing;
-            setAnimation(0);
+
+            if (!timeSincePlayerSeen.isTimeUp())
+                this->state = State::chasing;
+
+            else
+            {
+                this->state = State::searching;
+                this->currentRoamPoint = getLastKnownPos();
+                this->searchCounter.reset();
+            }
         }
         break;
     }
@@ -162,7 +181,6 @@ void Grunt::updateChasing(float dt)
         {
             state = State::attacking;
             this->attackChargeTimer.reset();
-            setAnimation(1);
         }
     }
 
@@ -206,7 +224,6 @@ void Grunt::updateAttack(float dt)
 
         this->grounded = false;
         this->flying = true;
-        setAnimation(2);
     }
 }
 
@@ -231,7 +248,6 @@ void Grunt::handleCollision(const Entity& collider)
     {
         this->flying = false;
         this->state = State::stunned;
-        setAnimation(3);
     }
 
     if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
@@ -296,9 +312,17 @@ void Grunt::handleExplosion(const Explosion& explosion)
     switch (explosion.type)
     {
     case ExplosionType::flash:
+        state = State::stunned;
+        stunCounter.reset();
         break;
 
     case ExplosionType::sound:
+        if (state != State::stunned && state != State::chasing && state != State::attacking)
+        {
+            this->currentRoamPoint = explosion.center;
+            this->state = State::searching;
+            searchCounter.reset();
+        }
         break;
     default:
         break;

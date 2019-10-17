@@ -16,6 +16,9 @@ public:
 
     void update(float dt, sf::Vector2f mousePos);
 
+    void setIllumination(float illumination) { this->illumination = illumination; };
+    float getIllumination() const { return illumination; };
+
     virtual void handleCollision(const Entity& collider);
     virtual void handleExplosion(const Explosion& explosion) {};
 
@@ -25,6 +28,7 @@ private:
     bool debugMode;
     int selectedItemBarItem;
     inventory inventory;
+    float illumination;
 
     void move(float dt);
     void debugMove(float dt);
