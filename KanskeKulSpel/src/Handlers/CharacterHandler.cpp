@@ -154,6 +154,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 
         else
         {
+            delete *it;
             unordered_erase(enemies, it--);
         }
     }

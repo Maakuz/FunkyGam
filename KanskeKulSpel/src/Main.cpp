@@ -34,7 +34,8 @@ int main()
     
     sf::Clock deltaTimer;
     sf::Time deltaTime;
-    
+    bool ProfilerActive = false;
+
     ImGui::SFML::Init(wandow);
 
     Game game(&wandow);
@@ -50,8 +51,11 @@ int main()
 
             ImGui::SFML::ProcessEvent(event);
 
-           // if (event.type == sf::Event::KeyPressed)
-             //   printf("%d\n", event.key.code);
+            // if (event.type == sf::Event::KeyPressed)
+              //   printf("%d\n", event.key.code);
+
+            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
+                ProfilerActive = !ProfilerActive;
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -61,13 +65,24 @@ int main()
 
         ImGui::SFML::Update(wandow, deltaTime);
 
+        PROFILER_START("Update");
         game.update((float)deltaTime.asMilliseconds());
+        PROFILER_STOP;
 
         wandow.clear(sf::Color(0, 100, 155));
+        PROFILER_START("Draw");
         game.draw(wandow);
+        PROFILER_STOP;
+
+        if (ProfilerActive)
+            Profiler::get().updateProfiler(deltaTime.asMilliseconds());
 
         ImGui::SFML::Render(wandow);
         wandow.display();
+
+
+
+
 
         if (printscreen)
         {

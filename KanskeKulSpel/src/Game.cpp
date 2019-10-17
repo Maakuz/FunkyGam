@@ -118,9 +118,7 @@ void Game::update(float dt)
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(53))) //Tilde in sweden
         debugActive = !debugActive;
 
-    static bool ProfilerActive = false;
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::P)) //Tilde in sweden
-        ProfilerActive = !ProfilerActive;
+
 
     if (debugActive)
     {
@@ -129,8 +127,7 @@ void Game::update(float dt)
         PROFILER_STOP;
     }
 
-    if (ProfilerActive)
-        Profiler::get().updateProfiler(dt);
+
 
 #endif
 }

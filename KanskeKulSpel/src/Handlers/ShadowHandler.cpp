@@ -132,6 +132,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             tri.setPoint(1, p1);
             firstPos = p1;
         }
+        PROFILER_START("Loop");
 
         std::vector<ShadowHandler::PointOnLine>::iterator point = points.begin();
         PointOnLine* closestPoint = nullptr;
@@ -198,6 +199,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
         //End case
         tri.setPoint(2, firstPos);
         triangles.push_back(tri);
+
+        PROFILER_STOP;
 
         if (debugShadows)
         {
