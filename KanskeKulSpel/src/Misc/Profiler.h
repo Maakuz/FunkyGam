@@ -42,10 +42,11 @@ public:
             {
                 sf::Vector2f pos = ImGui::GetCursorPos();
                 pos.x += scroll;
+                int i = 0;
                 for (auto& it : head->entries)
                 {
-                    recursivelyBuildList(it.second, pos);
-                    pos.x += it.second->getTime() / zoom + (spacingX * it.second->entries.size() + spacingX);
+                    recursivelyBuildList(it.second, pos, baseColors[i++]);
+                    pos.x += it.second->getTime() / zoom;
                     ImGui::SetCursorPos(pos);
                 }
                 ImGui::EndChild();
@@ -144,6 +145,7 @@ private:
     float counter;
     int iterations;
     float scroll;
+    sf::Color baseColors[2];
 
     Profiler()
     {
@@ -160,18 +162,27 @@ private:
         counter = 0;
         iterations = 0;
         scroll = 0;
+        baseColors[0] = sf::Color(50, 255, 50);
+        baseColors[1] = sf::Color(255, 50, 50);
     }
 
-    void recursivelyBuildList(Entry* entry, sf::Vector2f pos)
+    void recursivelyBuildList(Entry* entry, sf::Vector2f pos, sf::Color col)
     {
         std::string text;
         float time = entry->getTime();
         if (time > 0.0001)
         {
-            sf::Vector2f size(time / zoom + (spacingX * entry->entries.size()), 20);
+            col.r *= 0.8;
+            col.g *= 0.8;
+            col.b *= 0.8;
+            ImGui::PushStyleColor(ImGuiCol_Button, col);
+
+            sf::Vector2f size(time / zoom, 20);
             text = entry->name + ", " + std::to_string(time);
             ImGui::SetCursorPos(pos);
             ImGui::Button(text.c_str(), size);
+            ImGui::PopStyleColor();
+
             if (ImGui::IsItemHovered())
                 ImGui::SetTooltip("%s", text.c_str());
             pos.y += size.y;
@@ -179,8 +190,8 @@ private:
 
         for (auto& next : entry->entries)
         {
-            recursivelyBuildList(next.second, pos);
-            pos.x += next.second->getTime() / zoom + spacingX;
+            recursivelyBuildList(next.second, pos, col);
+            pos.x += next.second->getTime() / zoom;
         }
     }
 

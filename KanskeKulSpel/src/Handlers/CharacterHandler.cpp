@@ -6,6 +6,7 @@
 #include "Misc/ConsoleWindow.h"
 #include "Misc/UnorderedErase.h"
 #include "Lighting/LightQueue.h"
+#include "Misc/Profiler.h"
 
 #define ENEMY_PATH "src/Data/"
 
@@ -125,12 +126,12 @@ void CharacterHandler::spawnEnemies()
 
     enemies.clear();
 
-    for (const sf::Vector2f& point : spawnPoints)
-    {
+    //for (const sf::Vector2f& point : spawnPoints)
+    //{
         Grunt* grunt = new Grunt(*(Grunt*)enemyTemplates[enemy::grunt]);
-        grunt->spawn(point - sf::Vector2f(0, grunt->getSize().y));
+        grunt->spawn(spawnPoints[0] - sf::Vector2f(0, grunt->getSize().y));
         enemies.push_back(grunt);
-    }
+    //}
 }
 
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
@@ -168,15 +169,54 @@ void CharacterHandler::queueColliders()
         CollisionHandler::queueCollider(enemy);
 }
 
+//Shadows are not considered at all and that might be a good thing
 void CharacterHandler::calculatePlayerIllumination(const sf::Texture* illuminationTexture)
 {
+    /*PROFILER_START("Copy"); //Into the hall of shame with you
     sf::Image image = illuminationTexture->copyToImage();
     sf::Color lightLevel = image.getPixel(0, 0);
-    float illumination = lightLevel.r + lightLevel.g + lightLevel.b;
-    illumination /= 255.f;
-    printCon(std::to_string(illumination));
+    float oldIllumination = lightLevel.r + lightLevel.g + lightLevel.b;
+    oldIllumination *= 0.33f / 2.55f;
+    PROFILER_STOP*/;
 
-    player->setIllumination(illumination);
+    PROFILER_START("Calculate");
+    sf::Vector3f illumination(0, 0, 0);
+    for (int i = 0; i < LightQueue::get().getQueue().size(); i++)
+    {
+        Light* light = LightQueue::get().getQueue()[i];
+        bool playerOccluded = false;
+        sf::Vector2f dir = this->player->getCenterPos() - light->pos;
+        float distance = length(dir);
+        normalize(dir);
+        if (light->radius < distance)
+            playerOccluded = true;
+
+        for (size_t j = 0; j < occluders->size() && !playerOccluded; j++)
+        {
+            float t = findIntersectionPoint(light->pos, dir, occluders->at(j).p1, occluders->at(j).p2);
+            if (abs(t + 1) > EPSYLONE && t < distance)
+            {
+                playerOccluded = true;
+            }
+        }
+
+        if (!playerOccluded)
+        {
+            float percentage = 1 - (distance / light->radius);
+            illumination.x += (percentage * light->color.x);
+            illumination.y += (percentage * light->color.y);
+            illumination.z += (percentage * light->color.z);
+        }
+    }
+    illumination.x = std::min(illumination.x, 1.f);
+    illumination.y = std::min(illumination.y, 1.f);
+    illumination.z = std::min(illumination.z, 1.f);
+
+    float finalIllumination = illumination.x + illumination.y + illumination.z;
+    finalIllumination *= 0.33 * 100;
+    PROFILER_STOP;
+    
+    player->setIllumination(finalIllumination);
 }
 
 void CharacterHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates states) const
@@ -192,26 +232,39 @@ void CharacterHandler::drawSightLines(sf::RenderTarget& target, sf::RenderStates
     sf::VertexArray arr(sf::PrimitiveType::Lines);
     for (Enemy* enemy : enemies)
     {
+        sf::Color color;
         sf::Vertex v;
         switch (enemy->getState())
         {
         case Enemy::State::chasing:
         case Enemy::State::attacking:
-            v.color = sf::Color::Red;
+            color = sf::Color::Red;
             break;
         default:
-            v.color = sf::Color::Blue;
+            color = sf::Color::Blue;
             break;
         }
-
+        v.color = color;
         v.position = enemy->getEyePos();
         arr.append(v);
 
         v.position = enemy->getLastKnownPos();
         arr.append(v);
+
+        sf::CircleShape sightradius;
+        sightradius.setFillColor(sf::Color::Transparent);
+        sightradius.setOutlineColor(color);
+        sightradius.setOutlineThickness(1);
+        
+        sightradius.setRadius(enemy->getSightRadius());
+        sightradius.setPosition(enemy->getCenterPos() - sf::Vector2f(sightradius.getRadius(), sightradius.getRadius()));
+
+        target.draw(sightradius, states);
     }
 
     target.draw(arr, states);
+
+
 }
 
 void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
@@ -225,6 +278,13 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
         sf::Vector2f dir = this->player->getCenterPos() - pos;
         float distance = length(dir);
         normalize(dir);
+
+        if (enemy->getSightRadius() < distance)
+            playerHidden = true;
+
+        else if (enemy->getVisionRatingAt(distance) + player->getIllumination() < 100)
+            playerHidden = true;
+
         for (size_t i = 0; i < occluders->size() && !playerHidden; i++)
         {
             float t = findIntersectionPoint(pos, dir, occluders->at(i).p1, occluders->at(i).p2);

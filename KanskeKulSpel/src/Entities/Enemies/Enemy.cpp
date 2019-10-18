@@ -55,7 +55,12 @@ bool Enemy::isAlive()
 
 float Enemy::getVisionRatingAt(float distance) const
 {
-    return 0.0f;
+    //I plotted this graph, it looks nice
+    float x = distance;
+    float a = 100;
+    float b = sightMultiplier;
+    float h = sightRadius;
+    return (a * b * std::pow(x - h, 2)) / std::pow(h, 2);
 }
 
 sf::Vector2f Enemy::getEyePos() const

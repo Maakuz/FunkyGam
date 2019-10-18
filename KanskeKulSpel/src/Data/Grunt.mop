@@ -30,7 +30,7 @@ Offset: -32 0
 Roamlength: 128
 Health: 100
 SightRadius: 500
-Nightvision: 2
+Nightvision: 1.1
 [SpecificData]
 ChaseSpeed: 0.01
 IdleSpeed: 0.005

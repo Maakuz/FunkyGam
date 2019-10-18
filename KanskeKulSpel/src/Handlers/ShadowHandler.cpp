@@ -41,6 +41,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 {
     for (size_t k = 0; k < LightQueue::get().getQueue().size(); k++)
     {
+        PROFILER_START("Prep " + std::to_string(k));
         Light* light = LightQueue::get().getQueue()[k];
 
         std::vector<Line> currentLines = this->lines;
@@ -132,7 +133,8 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             tri.setPoint(1, p1);
             firstPos = p1;
         }
-        PROFILER_START("Loop");
+        PROFILER_STOP;
+        PROFILER_START("Loop " + std::to_string(k));
 
         std::vector<ShadowHandler::PointOnLine>::iterator point = points.begin();
         PointOnLine* closestPoint = nullptr;
@@ -211,9 +213,13 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
             ImGui::End();
         }
 
+        PROFILER_START("DrawMap " + std::to_string(k));
         drawShadowMap(light);
+        PROFILER_STOP;
 
         triangles.clear();
+
+        PROFILER_START("SetupLight " + std::to_string(k));
 
         ShaderHandler::getShader(SHADER::lighting).setUniform("pos", light->pos);
         ShaderHandler::getShader(SHADER::lighting).setUniform("radius", light->radius);
@@ -225,11 +231,18 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
         sf::Sprite sprite(light->shadowMap.getTexture());
         sprite.setPosition(light->pos - (sf::Vector2f(light->shadowMap.getSize()) / 2.f));
+        
+        PROFILER_STOP;
+
+        PROFILER_START("DrawLight " + std::to_string(k));
         target.draw(sprite, state);
 
 
         if (debugShadows)
             target.draw(sprite);
+
+        PROFILER_STOP;
+
     }
     lines.clear();
     //We done bois
