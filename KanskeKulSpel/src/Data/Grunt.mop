@@ -29,6 +29,8 @@ Offset: -32 0
 [EnemyData]
 Roamlength: 128
 Health: 100
+SightRadius: 500
+Nightvision: 2
 [SpecificData]
 ChaseSpeed: 0.01
 IdleSpeed: 0.005

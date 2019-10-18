@@ -172,6 +172,8 @@ private:
             text = entry->name + ", " + std::to_string(time);
             ImGui::SetCursorPos(pos);
             ImGui::Button(text.c_str(), size);
+            if (ImGui::IsItemHovered())
+                ImGui::SetTooltip("%s", text.c_str());
             pos.y += size.y;
         }
 

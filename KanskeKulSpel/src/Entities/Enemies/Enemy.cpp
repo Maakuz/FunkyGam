@@ -16,6 +16,8 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos)
     this->eyeLevel.x = data.spriteSheet->getSize().x / data.frameCount.x / 2.f;
     this->eyeLevel.y = data.spriteSheet->getSize().y / data.frameCount.y * 0.2;
     this->health = 0;
+    this->sightMultiplier = 0;
+    this->sightRadius = 0;
 }
 
 void Enemy::update(float dt)
@@ -51,6 +53,11 @@ bool Enemy::isAlive()
     return this->health > 0;
 }
 
+float Enemy::getVisionRatingAt(float distance) const
+{
+    return 0.0f;
+}
+
 sf::Vector2f Enemy::getEyePos() const
 {
     return this->pos + this->eyeLevel;
@@ -72,6 +79,8 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
 
     in >> trash >> enemy.roamDistance;
     in >> trash >> enemy.health;
+    in >> trash >> enemy.sightRadius;
+    in >> trash >> enemy.sightMultiplier;
 
 
     enemy.readSpecific(in);

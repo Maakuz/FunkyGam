@@ -68,11 +68,11 @@ void Game::update(float dt)
     KEYBOARD::KeyboardState::updateKeys();
     MOUSE::MouseState::updateButtons();
     
-    static Light light(this->charHandler.getPlayer().getPosition() + sf::Vector2f(32, 30), 200, sf::Vector3f(0.5f, 0.5f, 0.1f));
+    static Light light(this->charHandler.getPlayer().getPosition() + sf::Vector2f(32, 30), 200, sf::Vector3f(0.1f, 0.1f, 0.05f));
     light.pos = this->charHandler.getPlayer().getPosition();
     LightQueue::get().queue(&light);
 
-    static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(0.5f, 0.05f, 0.05f));
+    static Light light2(sf::Vector2f(0, 0), 2000, sf::Vector3f(0.05f, 0.05f, 0.05f));
     LightQueue::get().queue(&light2);
 
     static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.1f, 0.1f, 0.f));

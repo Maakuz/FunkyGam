@@ -175,6 +175,8 @@ void CharacterHandler::calculatePlayerIllumination(const sf::Texture* illuminati
     float illumination = lightLevel.r + lightLevel.g + lightLevel.b;
     illumination /= 255.f;
     printCon(std::to_string(illumination));
+
+    player->setIllumination(illumination);
 }
 
 void CharacterHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates states) const
@@ -215,25 +217,27 @@ void CharacterHandler::drawSightLines(sf::RenderTarget& target, sf::RenderStates
 void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 {
     sf::Vector2f pos = enemy->getEyePos();
-    if (    (enemy->getFacingDir() == Enemy::Direction::left  && pos.x >  player->getPosition().x)
-        ||  (enemy->getFacingDir() == Enemy::Direction::right && pos.x <= player->getPosition().x)
-        ||  enemy->getState()      == Enemy::State::chasing)
+    if ((enemy->getFacingDir() == Enemy::Direction::left && pos.x > player->getPosition().x)
+        || (enemy->getFacingDir() == Enemy::Direction::right && pos.x <= player->getPosition().x)
+        || enemy->getState() == Enemy::State::chasing)
     {
         bool playerHidden = false;
         sf::Vector2f dir = this->player->getCenterPos() - pos;
-        float distance = lengthSquared(dir);
+        float distance = length(dir);
         normalize(dir);
         for (size_t i = 0; i < occluders->size() && !playerHidden; i++)
         {
             float t = findIntersectionPoint(pos, dir, occluders->at(i).p1, occluders->at(i).p2);
-            if (abs(t + 1) > EPSYLONE && t * t < distance)
+            if (abs(t + 1) > EPSYLONE&& t < distance)
             {
                 playerHidden = true;
             }
         }
 
         if (!playerHidden)
+        {
             enemy->notifyEnemy(player->getPosition() + (player->getSize() / 2.f));
+        }
     }
 }
 

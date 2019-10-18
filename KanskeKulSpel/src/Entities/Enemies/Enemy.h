@@ -37,6 +37,8 @@ public:
 
     Direction getFacingDir() const { return this->facingDir; }
     State getState() const { return this->state; }
+    float getSightRadius() const { return this->sightRadius; }
+    float getVisionRatingAt(float distance) const;
 
     sf::Vector2f getEyePos() const;
     void setEyeLevel(sf::Vector2f eyeLevel) { this->eyeLevel = eyeLevel; };
@@ -50,6 +52,8 @@ protected:
     Counter timeSincePlayerSeen;
     sf::Vector2f currentRoamPoint;
     int health;
+    float sightRadius;
+    float sightMultiplier; //How well enemy sees in the dark
 
     void desicionTimeOver();
     bool isDesicionTime() const { return this->decisionTime; }
