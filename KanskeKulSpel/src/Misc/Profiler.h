@@ -24,21 +24,36 @@ public:
     {
         assert(currentEntry == head); //missing stop
 
+        if (counter > updateFrequency)
+            counter = 0;
+
+        counter += deltaTime;
+        iterations++;
+
         if (show == nullptr || *show)
         {
             std::string text = "Profolio, MicSec!";
-            ImGui::Begin(text.c_str(), NULL, sf::Vector2f(500, 500));
+            ImGui::Begin(text.c_str(), show, sf::Vector2f(500, 500));
             text = "Framratio: " + std::to_string(1000 / deltaTime);
             ImGui::Text(text.c_str());
 
-            sf::Vector2f pos = ImGui::GetCursorPos();
-            for (auto& it : head->entries)
+            const float footer_height_to_reserve = ImGui::GetStyle().ItemSpacing.y + ImGui::GetFrameHeightWithSpacing();
+            if (ImGui::BeginChild(ImGui::GetID("Child"), sf::Vector2f(0, -footer_height_to_reserve * 3)))
             {
-                recursivelyBuildList(it.second, pos);
-                pos.x += it.second->getTime() / 50 + (spacingX * it.second->entries.size() + spacingX);
-                ImGui::SetCursorPos(pos);
-            }
+                sf::Vector2f pos = ImGui::GetCursorPos();
+                pos.x += scroll;
+                for (auto& it : head->entries)
+                {
+                    recursivelyBuildList(it.second, pos);
+                    pos.x += it.second->getTime() / zoom + (spacingX * it.second->entries.size() + spacingX);
+                    ImGui::SetCursorPos(pos);
+                }
+                ImGui::EndChild();
 
+                ImGui::DragFloat("Scroll", &scroll, 1, -100000, 100000);
+                ImGui::DragFloat("Zoom", &zoom, 0.1, 0.01, 100);
+                ImGui::DragFloat("Update freq", &updateFrequency, 10, 0, 10000);
+            }
             ImGui::End();
         }
 
@@ -46,35 +61,40 @@ public:
 
     void start(std::string title)
     {
-        if (currentEntry->entries.count(title) > 0)
+        if (counter > updateFrequency || iterations < SAVED_TIMES)
         {
-            currentEntry = currentEntry->entries[title];
-            currentEntry->timer.restart();
-        }
+            if (currentEntry->entries.count(title) > 0)
+            {
+                currentEntry = currentEntry->entries[title];
+                currentEntry->timer.restart();
+            }
 
-        else
-        {
-            Entry* entry = new Entry();
-            entry->name = title;
-            entry->prev = currentEntry;
-            entry->timer.restart();
-            currentEntry->entries.insert({ title, entry });
-            currentEntry = entry;
+            else
+            {
+                Entry* entry = new Entry();
+                entry->name = title;
+                entry->prev = currentEntry;
+                entry->timer.restart();
+                currentEntry->entries.insert({ title, entry });
+                currentEntry = entry;
+            }
         }
-       
             
     }
 
     void stop()
     {
-        assert(currentEntry != head); //Missing start
+        if (counter > updateFrequency || iterations < SAVED_TIMES)
+        {
+            assert(currentEntry != head); //Missing start
 
-        currentEntry->times[currentEntry->i++] = (float)currentEntry->timer.getElapsedTime().asMicroseconds();
-        
-        if (currentEntry->i >= SAVED_TIMES)
-            currentEntry->i = 0;
+            currentEntry->times[currentEntry->i++] = (float)currentEntry->timer.getElapsedTime().asMicroseconds();
 
-        currentEntry = currentEntry->prev;
+            if (currentEntry->i >= SAVED_TIMES)
+                currentEntry->i = 0;
+
+            currentEntry = currentEntry->prev;
+        }
     }
 
 private:
@@ -118,32 +138,47 @@ private:
     Entry* head;
     Entry* currentEntry;
     float spacingX;
+    float minSizeX;
+    float zoom;
+    float updateFrequency;
+    float counter;
+    int iterations;
+    float scroll;
 
     Profiler()
     {
         this->currentEntry = nullptr;
         spacingX = 2;
+        minSizeX = 30;
         this->head = new Entry();
         this->head->name = "Head";
         this->head->prev = nullptr;
 
         this->currentEntry = head;
+        zoom = 10;
+        updateFrequency = 1000;
+        counter = 0;
+        iterations = 0;
+        scroll = 0;
     }
 
     void recursivelyBuildList(Entry* entry, sf::Vector2f pos)
     {
         std::string text;
         float time = entry->getTime();
-        sf::Vector2f size(time / 50 + (spacingX * entry->entries.size()), 20);
-        text = entry->name + ", " + std::to_string(time);
-        ImGui::SetCursorPos(pos);
-        ImGui::Button(text.c_str(), size);
+        if (time > 0.0001)
+        {
+            sf::Vector2f size(time / zoom + (spacingX * entry->entries.size()), 20);
+            text = entry->name + ", " + std::to_string(time);
+            ImGui::SetCursorPos(pos);
+            ImGui::Button(text.c_str(), size);
+            pos.y += size.y;
+        }
 
-        pos.y += size.y;
         for (auto& next : entry->entries)
         {
             recursivelyBuildList(next.second, pos);
-            pos.x += next.second->getTime() / 50 + spacingX;
+            pos.x += next.second->getTime() / zoom + spacingX;
         }
     }
 

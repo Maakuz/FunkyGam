@@ -74,8 +74,7 @@ int main()
         game.draw(wandow);
         PROFILER_STOP;
 
-        if (ProfilerActive)
-            Profiler::get().updateProfiler(deltaTime.asMilliseconds());
+        Profiler::get().updateProfiler(deltaTime.asMilliseconds(), &ProfilerActive);
 
         ImGui::SFML::Render(wandow);
         wandow.display();
