@@ -288,7 +288,7 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
         for (size_t i = 0; i < occluders->size() && !playerHidden; i++)
         {
             float t = findIntersectionPoint(pos, dir, occluders->at(i).p1, occluders->at(i).p2);
-            if (abs(t + 1) > EPSYLONE&& t < distance)
+            if (abs(t + 1) > EPSYLONE && t < distance)
             {
                 playerHidden = true;
             }

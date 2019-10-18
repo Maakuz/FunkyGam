@@ -21,6 +21,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->debugMode = false;
     this->ui = uiHandler;
     this->selectedItemBarItem = 0;
+    this->health = 100;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;

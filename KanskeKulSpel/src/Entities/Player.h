@@ -29,6 +29,7 @@ private:
     int selectedItemBarItem;
     inventory inventory;
     float illumination;
+    int health;
 
     void move(float dt);
     void debugMove(float dt);
