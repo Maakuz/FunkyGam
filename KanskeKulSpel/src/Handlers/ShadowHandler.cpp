@@ -37,7 +37,7 @@ ShadowHandler::ShadowHandler()
 }
 
 //Please don't look here
-void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
+void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f viewOffset)
 {
     for (size_t k = 0; k < LightQueue::get().getQueue().size(); k++)
     {
@@ -221,7 +221,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target)
 
         PROFILER_START("SetupLight " + std::to_string(k));
 
-        ShaderHandler::getShader(SHADER::lighting).setUniform("pos", light->pos);
+        ShaderHandler::getShader(SHADER::lighting).setUniform("pos", light->pos - viewOffset);
         ShaderHandler::getShader(SHADER::lighting).setUniform("radius", light->radius);
         ShaderHandler::getShader(SHADER::lighting).setUniform("color", light->color);
 

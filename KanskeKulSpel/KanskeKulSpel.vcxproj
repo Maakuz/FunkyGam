@@ -173,6 +173,7 @@
     <ClInclude Include="src\Entities\MovingEntity.h" />
     <ClInclude Include="src\Entities\Throwables\Throwable.h" />
     <ClInclude Include="src\Handlers\CharacterHandler.h" />
+    <ClInclude Include="src\Handlers\HubHandler.h" />
     <ClInclude Include="src\Handlers\ParticleHandler.h" />
     <ClInclude Include="src\Handlers\ItemHandler.h" />
     <ClInclude Include="src\Handlers\TextureHandler.h" />
@@ -205,6 +206,7 @@
     <None Include="..\Shaders\Lighting.frag" />
     <None Include="..\Shaders\LightingNoShadow.frag" />
     <None Include="src\Data\Grunt.mop" />
+    <None Include="src\Data\Player.mop" />
     <None Include="src\Data\Throwables.mop" />
     <None Include="src\Data\LoadList.mop" />
   </ItemGroup>

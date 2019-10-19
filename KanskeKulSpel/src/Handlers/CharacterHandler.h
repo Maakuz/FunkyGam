@@ -18,6 +18,7 @@ public:
     ~CharacterHandler();
 
     void initialize(const std::vector<Line>* occluders, UIHandler* uiHandler);
+    void loadPlayer();
     void loadEnemies();
     void spawnEnemies();
     void update(float dt, sf::Vector2f mousePos);
@@ -25,7 +26,7 @@ public:
 
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
     const Player& getPlayer() const { return *this->player; };
-    void calculatePlayerIllumination(const sf::Texture* illuminationTexture);
+    void calculatePlayerIllumination();
 
     void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
     void drawSightLines(sf::RenderTarget& target, sf::RenderStates states) const;
@@ -34,6 +35,7 @@ private:
     std::vector<sf::Vector2f> spawnPoints;
     std::vector<Enemy*> enemies;
     Player* player;
+    UIHandler* ui;
 
     std::vector<Enemy*> enemyTemplates;
     void updateEnemyLineOfSight(Enemy* enemy);

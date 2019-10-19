@@ -1,0 +1,16 @@
+[AnimationData]
+Texture: 0
+Frames: 6 1
+AnimationCount: 1
+
+[Animation1]
+Start: 0 0
+Stop: 5 0
+Idle: 1 0
+Animationspeed: 150
+
+[PlayerData]
+Walkspeed: 0.07
+JumpHeight: 10.840
+Mass: 0.246
+Health: 100

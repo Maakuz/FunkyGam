@@ -8,7 +8,7 @@
 #include "Lighting/LightQueue.h"
 #include "Misc/Profiler.h"
 
-#define ENEMY_PATH "src/Data/"
+#define DATA_PATH "src/Data/"
 
 
 
@@ -16,6 +16,7 @@ CharacterHandler::CharacterHandler()
 {
     player = nullptr;
     occluders = nullptr;
+    ui = nullptr;
 
     ConsoleWindow::get().addCommand("resetEnemies", [&](Arguments args)->std::string {
         enemies.clear();
@@ -46,15 +47,57 @@ CharacterHandler::~CharacterHandler()
 void CharacterHandler::initialize(const std::vector<Line>* occluders, UIHandler* uiHandler)
 {
     this->occluders = occluders;
-    std::vector< Player::Animation> anim;
-    anim.push_back(Player::Animation(sf::Vector2u(0, 0), sf::Vector2u(5, 0), 150, sf::Vector2u(1, 0)));
-    
-    Player::AnimationData playerData(TextureHandler::get().getTexture(0), 
-        sf::Vector2u(6, 1), anim);
-    this->player = new Player(playerData, uiHandler, sf::Vector2f(0, 0));
+    this->ui = uiHandler;
 
+    loadPlayer();
     loadEnemies();
-   
+}
+
+void CharacterHandler::loadPlayer()
+{
+    if (player)
+        delete player;
+
+    std::ifstream file(DATA_PATH "Player.mop");
+    std::string trash;
+
+    if (!file.is_open())
+        exit(-55);
+
+    int textureID;
+    sf::Vector2u frameCount;
+    int animCount;
+    std::vector<MovingEntity::Animation> animations;
+
+    file >> trash;
+    file >> trash >> textureID;
+    file >> trash >> frameCount.x >> frameCount.y;
+    file >> trash >> animCount;
+
+    for (int i = 0; i < animCount; i++)
+    {
+        sf::Vector2u start;
+        sf::Vector2u stop;
+        sf::Vector2u idle;
+        float speed;
+
+        file >> trash;
+        file >> trash >> start.x >> start.y;
+        file >> trash >> stop.x >> stop.y;
+        file >> trash >> idle.x >> idle.y;
+        file >> trash >> speed;
+
+        animations.push_back(MovingEntity::Animation(start, stop, speed, idle));
+    }
+
+    MovingEntity::AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
+
+
+    this->player = new Player(data, ui, sf::Vector2f(0, 0));
+
+    file >> *this->player;
+
+    file.close();
 }
 
 void CharacterHandler::loadEnemies()
@@ -66,7 +109,7 @@ void CharacterHandler::loadEnemies()
 
     for (int i = 0; i < ENEMY_TEMPLATE_COUNT; i++)
     {
-        std::ifstream file(ENEMY_PATH + ENEMIES[i]);
+        std::ifstream file(DATA_PATH + ENEMIES[i]);
         std::string trash;
 
         if (!file.is_open())
@@ -170,7 +213,7 @@ void CharacterHandler::queueColliders()
 }
 
 //Shadows are not considered at all and that might be a good thing
-void CharacterHandler::calculatePlayerIllumination(const sf::Texture* illuminationTexture)
+void CharacterHandler::calculatePlayerIllumination()
 {
     /*PROFILER_START("Copy"); //Into the hall of shame with you
     sf::Image image = illuminationTexture->copyToImage();

@@ -1,7 +1,7 @@
 [Textures]
 Folder: ../Sprites/
 TextureCount: 6
-0: smallCate.png
+0: cateSheetM.png
 1: fish.png
 2: bamb.png
 3: rock.png

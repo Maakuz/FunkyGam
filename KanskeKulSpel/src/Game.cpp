@@ -7,7 +7,7 @@
 
 #define DEBUG_MODE true
 
-const float ZOOM_LEVEL = 2.f;
+const float ZOOM_LEVEL = 1.f;
 
 Game::Game(sf::RenderWindow* window)
 {
@@ -23,8 +23,6 @@ Game::Game(sf::RenderWindow* window)
     {
         this->renderTargets[i].create(window->getSize().x, window->getSize().y);
     }
-    this->playerIllumination.create(1, 1);
-    this->illuminationView = sf::View(sf::Vector2f(0, 0), sf::Vector2f(1, 1));
 
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
     levelHandler.loadLevel();
@@ -54,16 +52,15 @@ void Game::loadFiles()
 void Game::update(float dt)
 {
     PROFILER_START("CalcLightLevel");
-    charHandler.calculatePlayerIllumination(&this->playerIllumination.getTexture());
-    this->illuminationView.setCenter(charHandler.getPlayer().getCenterPos());
+    charHandler.calculatePlayerIllumination();
     PROFILER_STOP;
     LightQueue::get().clear();
     LightQueueNoShadow::get().clear();
 
 
     sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window) / ZOOM_LEVEL;
-    mousePos.x += this->view.getCenter().x - (view.getSize().x / ZOOM_LEVEL);
-    mousePos.y += this->view.getCenter().y - (view.getSize().y / ZOOM_LEVEL);
+    mousePos.x += this->view.getCenter().x - (view.getSize().x / 2);
+    mousePos.y += this->view.getCenter().y - (view.getSize().y / 2);
     
     KEYBOARD::KeyboardState::updateKeys();
     MOUSE::MouseState::updateButtons();
@@ -78,7 +75,7 @@ void Game::update(float dt)
     static Light light3(sf::Vector2f(1000, 0), 2000, sf::Vector3f(0.1f, 0.1f, 0.f));
     LightQueue::get().queue(&light3);
     
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::BackSpace))
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Home))
         this->running = !this->running;
 
     PROFILER_START("projectileUpdate");
@@ -105,10 +102,10 @@ void Game::update(float dt)
     PROFILER_STOP;
 
     sf::Vector2f center = this->charHandler.getPlayer().getPosition();
-    center.x = std::max(center.x, view.getSize().x / ZOOM_LEVEL);
-    center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / ZOOM_LEVEL));
-    center.y = std::max(center.y, view.getSize().y / ZOOM_LEVEL);
-    center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / ZOOM_LEVEL));
+    center.x = std::max(center.x, view.getSize().x / 2);
+    center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / 2));
+    center.y = std::max(center.y, view.getSize().y / 2);
+    center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / 2));
     this->view.setCenter(center);
     
 #if DEBUG_MODE true
@@ -135,11 +132,13 @@ void Game::update(float dt)
 void Game::draw(sf::RenderTarget& target)
 {
     target.setView(this->view);
-
+    this->fullscreenboi.setPosition(view.getCenter() - (view.getSize() / 2.f));
+    sf::Vector2f offset = view.getCenter() - (view.getSize() / 2.f);
     //Shadow map
     PROFILER_START("Shoaduv");
     this->renderTargets[0].clear(sf::Color::Black);
-    this->shadowHandler.generateShadowMap(this->renderTargets[0]);
+    this->renderTargets[0].setView(view);
+    this->shadowHandler.generateShadowMap(this->renderTargets[0], offset);
     this->renderTargets[0].display();
 
     this->fullscreenboi.setTexture(&this->renderTargets[0].getTexture());
@@ -148,6 +147,7 @@ void Game::draw(sf::RenderTarget& target)
     PROFILER_START("Blur");
     for (int i = 0; i < 2; i++)
     {
+        this->renderTargets[i + 1].setView(view);
         this->renderTargets[i + 1].clear(sf::Color::Transparent);
         this->renderTargets[i + 1].draw(this->fullscreenboi, &shaders[shaders.BLUR_PASS[i]]);
         this->renderTargets[i + 1].display();
@@ -155,7 +155,6 @@ void Game::draw(sf::RenderTarget& target)
         this->fullscreenboi.setTexture(&this->renderTargets[i + 1].getTexture());
     }
     PROFILER_STOP;
-
 
 #if DEBUG_MODE
     static int swap = 0;
@@ -218,22 +217,19 @@ void Game::draw(sf::RenderTarget& target)
     else
         target.draw(fullscreenboi);
 
-    //Skeptical but hey
-    playerIllumination.setView(illuminationView);
-    playerIllumination.draw(fullscreenboi);
-
     PROFILER_START("No shadow lights render");
     renderTargets[0].clear(sf::Color::Black);
     for (size_t i = 0; i < LightQueueNoShadow::get().getQueue().size(); i++)
     {
         Light_NoShadow* light = LightQueueNoShadow::get().getQueue()[i];
-        ShaderHandler::getShader(SHADER::lightingNoShadow).setUniform("pos", light->pos);
+        ShaderHandler::getShader(SHADER::lightingNoShadow).setUniform("pos", light->pos - offset);
         ShaderHandler::getShader(SHADER::lightingNoShadow).setUniform("radius", light->radius);
         ShaderHandler::getShader(SHADER::lightingNoShadow).setUniform("color", light->color);
 
         sf::RenderStates state;
         state.shader = &ShaderHandler::getShader(SHADER::lightingNoShadow);
         state.blendMode = sf::BlendAdd;
+        
 
         sf::RectangleShape sprite(sf::Vector2f(light->radius * 2, light->radius * 2));
         sprite.setPosition(light->pos - (sf::Vector2f(sprite.getSize() / 2.f)));

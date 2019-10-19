@@ -11,8 +11,7 @@ public:
     ShadowHandler();
     ~ShadowHandler() {};
 
-    //There is a case where perpendicular lines lets light through that will be fixed one day
-    void generateShadowMap(sf::RenderTarget& target);
+    void generateShadowMap(sf::RenderTarget& target, sf::Vector2f viewOffset);
 
 
     static void queueLine(Line line);

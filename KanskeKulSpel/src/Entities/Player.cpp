@@ -19,9 +19,11 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->mass = 0.166f;
     this->grounded = false;
     this->debugMode = false;
+    this->noClip = false;
     this->ui = uiHandler;
     this->selectedItemBarItem = 0;
     this->health = 100;
+    this->illumination = 0;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
@@ -65,7 +67,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
             return "Position set";
         });
 
-    ConsoleWindow::get().addCommand("godmode", [&](Arguments args)->std::string
+    ConsoleWindow::get().addCommand("debugMode", [&](Arguments args)->std::string
         {
             if (args.size() >= 1)
             {
@@ -74,12 +76,6 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
                     int x = std::stoi(args[0]);
 
                     debugMode = x;
-
-                    if (debugMode)
-                        mass = 0;
-
-                    else
-                        mass = 0.166f;
                 }
                 catch (const std::exception & e)
                 {
@@ -92,14 +88,27 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
                 return "missing argument 0 or 1";
 
 
-            return "woosh";
+            return "The wondow is somewhere";
         });
 
 }
 
 void Player::update(float dt, sf::Vector2f mousePos)
 {
-    if (!debugMode)
+    if (debugMode)
+    {
+        ImGui::Begin("Player tweaker", &debugMode);
+
+        ImGui::DragFloat("Walk speed", &this->walkSpeed, 0.01, 0, 10000);
+        ImGui::DragFloat("Jump height", &this->jumpHeight, 0.01, 0, 10000);
+        ImGui::DragFloat("Mass", &this->mass, 0.01, 0, 10000);
+
+        ImGui::Checkbox("Noclip", &noClip);
+
+        ImGui::End();
+    }
+
+    if (!noClip)
         this->move(dt);
 
     else
@@ -131,7 +140,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
 void Player::handleCollision(const Entity& collider)
 {
-    if (!debugMode)
+    if (!noClip)
     {
         if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
         {
@@ -175,8 +184,11 @@ void Player::move(float dt)
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
         jump();
     
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         platformPassingCounter.reset();
+
+    if (KEYBOARD::KeyboardState::isKeyReleased(sf::Keyboard::Space))
+        printCon("test");
 
     platformPassingCounter.update(dt);
 
@@ -205,3 +217,16 @@ void Player::debugMove(float dt)
     momentum.y *= 0.97;
 }
 
+std::istream& operator>>(std::istream& in, Player& player)
+{
+    std::string trash;
+    while (trash != "[PlayerData]")
+        in >> trash;
+
+    in >> trash >> player.walkSpeed;
+    in >> trash >> player.jumpHeight;
+    in >> trash >> player.mass;
+    in >> trash >> player.health;
+
+    return in;
+}
