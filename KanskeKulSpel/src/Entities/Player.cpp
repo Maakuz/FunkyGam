@@ -24,6 +24,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->selectedItemBarItem = 0;
     this->health = 100;
     this->illumination = 0;
+    this->jumping = false;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
@@ -182,13 +183,25 @@ void Player::move(float dt)
     }
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+    {
         jump();
-    
+        this->jumping = true;
+    }
+
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         platformPassingCounter.reset();
 
-    if (KEYBOARD::KeyboardState::isKeyReleased(sf::Keyboard::Space))
-        printCon("test");
+    if (this->jumping)
+    {
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        {
+            this->jumping = false;
+            this->momentum.y *= 0.3;
+        }
+
+        if (this->momentum.y > 0)
+            jumping = false;
+    }
 
     platformPassingCounter.update(dt);
 

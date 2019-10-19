@@ -35,6 +35,7 @@ private:
 
     bool debugMode;
     bool noClip;
+    bool jumping;
 
     void move(float dt);
     void debugMove(float dt);
