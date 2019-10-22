@@ -1,13 +1,21 @@
 [AnimationData]
 Texture: 0
 Frames: 6 1
-AnimationCount: 1
+AnimationCount: 2
 
 [Animation1]
 Start: 0 0
 Stop: 5 0
 Idle: 1 0
 Animationspeed: 150
+StartIdle: 0
+
+[Animation2]
+Start: 0 0
+Stop: 0 0
+Idle: 0 0
+Animationspeed: 150
+StartIdle: 1
 
 [PlayerData]
 Walkspeed: 0.07

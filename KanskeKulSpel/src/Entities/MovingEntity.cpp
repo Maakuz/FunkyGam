@@ -15,6 +15,14 @@ MovingEntity::MovingEntity(AnimationData data, sf::Vector2f pos)
 
 void MovingEntity::update(float dt)
 {
+    if (momentum.y > 0)
+    {
+        if (this->jumping)
+            jumping = false;
+
+        grounded = false;
+    }
+
 
     if (grounded)
     {
@@ -50,6 +58,16 @@ void MovingEntity::jump()
     {
         momentum.y = -jumpHeight;
         this->grounded = false;
+        this->jumping = true;
+    }
+}
+
+void MovingEntity::stopJump(float haltForce)
+{
+    if (this->jumping)
+    {
+        this->jumping = false;
+        this->momentum.y *= haltForce;
     }
 }
 

@@ -46,6 +46,7 @@ void AnimatedEntity::setAnimation(int animation)
 
     data.currentAnimation = animation;
     currentFrame = data.animations[animation].startFrame;
+    idle = data.animations[animation].startIdle;
     timer = 0;
 
     texRect.width = abs(texRect.width);
@@ -59,6 +60,7 @@ void AnimatedEntity::setAnimation(int animation)
         texRect.width = -texRect.width;
     }
     setTextureRect(texRect);
+
 
 }
 

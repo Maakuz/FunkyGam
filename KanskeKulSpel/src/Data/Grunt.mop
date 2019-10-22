@@ -2,26 +2,35 @@
 Texture: 1
 Frames: 3 2
 AnimationCount: 4
+
 [Animation1]
 Start: 0 0
 Stop: 2 0
 Idle: 1 0
 Animationspeed: 50
+StartIdle: 1
+
 [Animation2]
 Start: 2 1
 Stop: 2 1
 Idle: 2 1
 Animationspeed: 1000
+StartIdle: 1
+
 [Animation3]
 Start: 1 1
 Stop: 1 1
 Idle: 1 1
 Animationspeed: 1000
+StartIdle: 1
+
 [Animation4]
 Start: 0 1
 Stop: 0 1
 Idle: 0 1
 Animationspeed: 1000
+StartIdle: 1
+
 [CollisionData]
 Size: 64 72
 Offset: -32 0

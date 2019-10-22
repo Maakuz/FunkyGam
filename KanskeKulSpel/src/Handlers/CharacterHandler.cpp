@@ -80,14 +80,16 @@ void CharacterHandler::loadPlayer()
         sf::Vector2u stop;
         sf::Vector2u idle;
         float speed;
+        bool startIdle;
 
         file >> trash;
         file >> trash >> start.x >> start.y;
         file >> trash >> stop.x >> stop.y;
         file >> trash >> idle.x >> idle.y;
         file >> trash >> speed;
+        file >> trash >> startIdle;
 
-        animations.push_back(MovingEntity::Animation(start, stop, speed, idle));
+        animations.push_back(MovingEntity::Animation(start, stop, speed, idle, startIdle));
     }
 
     MovingEntity::AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
@@ -131,14 +133,16 @@ void CharacterHandler::loadEnemies()
             sf::Vector2u stop;
             sf::Vector2u idle;
             float speed;
+            bool startIdle;
 
             file >> trash;
             file >> trash >> start.x >> start.y;
             file >> trash >> stop.x >> stop.y;
             file >> trash >> idle.x >> idle.y;
             file >> trash >> speed;
+            file >> trash >> startIdle;
 
-            animations.push_back(MovingEntity::Animation(start, stop, speed, idle));
+            animations.push_back(MovingEntity::Animation(start, stop, speed, idle, startIdle));
         }
 
         MovingEntity::AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);

@@ -1,6 +1,0 @@
-turbolowres shadow map att scalea upp
-
-om det läggs till ny closest, projicera triangelpunkten på gamla.
-
-om closest tas bort, rita triangelpunkten på closests punkt, projicera sedan den nya 
-triangeln på den nya closest

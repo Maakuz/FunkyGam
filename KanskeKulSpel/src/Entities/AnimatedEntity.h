@@ -11,13 +11,15 @@ public:
         sf::Vector2u startFrame;
         sf::Vector2u stopFrame;
         float animationSpeed;
+        bool startIdle;
 
-        Animation(sf::Vector2u startFrame, sf::Vector2u stopFrame, float animationSpeed, sf::Vector2u idleFrame = sf::Vector2u(0, 0))
+        Animation(sf::Vector2u startFrame, sf::Vector2u stopFrame, float animationSpeed, sf::Vector2u idleFrame = sf::Vector2u(0, 0), bool startIdle = 0)
         {
             this->animationSpeed = animationSpeed;
             this->idleFrame = idleFrame;
             this->startFrame = startFrame;
             this->stopFrame = stopFrame;
+            this->startIdle = startIdle;
         }
     };
     struct AnimationData

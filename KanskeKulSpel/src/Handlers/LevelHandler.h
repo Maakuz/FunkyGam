@@ -3,6 +3,7 @@
 #include "Collision/CollisionHandler.h"
 #include "Entities/Terrain.h"
 #include "ShadowHandler.h"
+#include "Lighting/Light.h"
 #include <vector>
 
 #define NR_OF_LEVELS 1
@@ -31,7 +32,7 @@ public:
     };
 
     LevelHandler();
-    virtual ~LevelHandler() {};
+    virtual ~LevelHandler();
 
     bool loadLevel();
 
@@ -54,6 +55,7 @@ private:
 
     std::vector<Layer> layers;
     std::vector<sf::Sprite> linearSprite;
+    std::vector<Light*> lights;
     sf::Texture backgroundTexture;
     sf::Sprite backgroundSprite;
     sf::Vector2i dimensions;

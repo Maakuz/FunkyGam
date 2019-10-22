@@ -115,6 +115,12 @@ void Player::update(float dt, sf::Vector2f mousePos)
     else
         this->debugMove(dt);
 
+    if (this->grounded)
+        setAnimation(0);
+
+    else
+        setAnimation(1);
+
     MovingEntity::update(dt);
 
     if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Right))
@@ -191,21 +197,11 @@ void Player::move(float dt)
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         platformPassingCounter.reset();
 
-    if (this->jumping)
-    {
-        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-        {
-            this->jumping = false;
-            this->momentum.y *= 0.3;
-        }
+    if (this->jumping && !sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        stopJump(0.3);
 
-        if (this->momentum.y > 0)
-            jumping = false;
-    }
 
     platformPassingCounter.update(dt);
-
-
 
 }
 

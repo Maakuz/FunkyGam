@@ -17,6 +17,12 @@ LevelHandler::LevelHandler()
 {
 }
 
+LevelHandler::~LevelHandler()
+{
+    for (Light* light : lights)
+        delete light;
+}
+
 bool LevelHandler::loadLevel()
 {
     this->importLevel(levels::forest);
@@ -40,6 +46,9 @@ void LevelHandler::updateLevel(float dt)
 
     for (auto & line : this->shadowLines)
         ShadowHandler::queueLine(line);
+
+    for (Light* light : lights)
+        LightQueue::get().queue(light);
 }
 
 void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -64,6 +73,11 @@ void LevelHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates stat
 bool LevelHandler::importLevel(levels level)
 {
     std::string trash = "";
+
+    for (Light* light : lights)
+        delete light;
+
+    lights.clear();
 
     layers.clear();
     tilemaps.clear();
@@ -120,6 +134,24 @@ bool LevelHandler::importLevel(levels level)
 
             if (!tilemaps[i].texture.loadFromFile(LEVEL_TEX_FOLDER + name))
                 exit(-4);
+        }
+
+
+        int lightCount = 0;
+        in >> lightCount;
+
+        for (int i = 0; i < lightCount; i++)
+        {
+            sf::Vector2f pos;
+            sf::Vector2f offset(336, 20);
+            float rad;
+            sf::Vector3f col;
+
+            in >> pos.x >> pos.y;
+            in >> rad;
+            in >> col.x >> col.y >> col.z;
+
+            lights.push_back(new Light(pos, rad, col));
         }
 
         in.close();
