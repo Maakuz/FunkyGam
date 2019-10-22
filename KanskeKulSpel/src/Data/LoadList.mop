@@ -1,12 +1,13 @@
 [Textures]
 Folder: ../Sprites/
-TextureCount: 6
+TextureCount: 7
 0: cateSheetM.png
 1: fish.png
 2: bamb.png
 3: rock.png
 4: flare.png
 5: ui_slot.png
+6: hub.png
 
 
 

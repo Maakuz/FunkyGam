@@ -5,6 +5,7 @@
 #include "Imgui/SFML-imgui/imgui-SFML.h"
 #include "Misc/Profiler.h"
 #include "Misc/ConsoleWindow.h"
+#include "Renderer.h"
 
 int main()
 {
@@ -39,6 +40,7 @@ int main()
     ImGui::SFML::Init(wandow);
 
     Game game(&wandow);
+    Renderer renderer(&wandow);
 
     while (wandow.isOpen())
     {
@@ -69,9 +71,10 @@ int main()
         game.update((float)deltaTime.asMilliseconds());
         PROFILER_STOP;
 
-        wandow.clear(sf::Color(0, 100, 155));
         PROFILER_START("Draw");
-        game.draw(wandow);
+        wandow.clear(sf::Color(0, 100, 155));
+        wandow.setView(game.getView());
+        renderer.render(wandow);
         PROFILER_STOP;
 
         Profiler::get().updateProfiler(deltaTime.asMilliseconds(), &ProfilerActive);
@@ -88,7 +91,8 @@ int main()
             sf::RenderTexture tex;
             tex.create(WIN_WIDTH, WIN_HEIGHT);
             tex.clear(sf::Color::Blue);
-            game.draw(tex);
+            tex.setView(game.getView());
+            renderer.render(tex);
             tex.display();
             
             tex.getTexture().copyToImage().saveToFile("test.png");

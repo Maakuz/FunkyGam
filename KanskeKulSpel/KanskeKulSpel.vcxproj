@@ -151,6 +151,7 @@
     <ClCompile Include="src\Entities\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\Handlers\CharacterHandler.cpp" />
+    <ClCompile Include="src\Handlers\HubHandler.cpp" />
     <ClCompile Include="src\Handlers\LevelHandler.cpp" />
     <ClCompile Include="src\Handlers\ParticleHandler.cpp" />
     <ClCompile Include="src\Handlers\ItemHandler.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="src\Handlers\ShaderHandler.cpp" />
     <ClCompile Include="src\Misc\MouseState.cpp" />
     <ClCompile Include="src\Particles\Emitter.cpp" />
+    <ClCompile Include="src\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Collision\CollisionHandler.h" />
@@ -199,6 +201,7 @@
     <ClInclude Include="src\Misc\UnorderedErase.h" />
     <ClInclude Include="src\Misc\VectorFunctions.h" />
     <ClInclude Include="src\Particles\Emitter.h" />
+    <ClInclude Include="src\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GaussianHor.frag" />

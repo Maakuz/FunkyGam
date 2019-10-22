@@ -17,6 +17,11 @@ ShaderHandler::ShaderHandler()
         }
     }
 
+
+    this->shaders[SHADER::lighting].setUniform("shadowMap", sf::Shader::CurrentTexture);
+    this->shaders[SHADER::gaussHorizontal].setUniform("texture", sf::Shader::CurrentTexture);
+    this->shaders[SHADER::gaussVertical].setUniform("texture", sf::Shader::CurrentTexture);
+
     ConsoleWindow::get().addCommand("reloadShaders", [&](Arguments args)->std::string 
         {
             if (reloadShaders())

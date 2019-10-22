@@ -4,6 +4,7 @@
 #include "Misc/Profiler.h"
 #include "Handlers/TextureHandler.h"
 #include "Misc/ConsoleWindow.h"
+#include "Renderer.h"
 
 #define DEBUG_MODE true
 
@@ -12,17 +13,10 @@ const float ZOOM_LEVEL = 1.f;
 Game::Game(sf::RenderWindow* window)
 {
     this->window = window;
-    this->running = true;
+    this->paused = false;
+    this->gameState = GameState::hub;
 
     this->loadFiles();
-
-    this->fullscreenboi = sf::RectangleShape(sf::Vector2f(window->getSize()));
-    this->fullscreenboi.setPosition(0, 0);
-
-    for (int i = 0; i < NR_OF_RENDER_TARGETS; i++)
-    {
-        this->renderTargets[i].create(window->getSize().x, window->getSize().y);
-    }
 
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
     levelHandler.loadLevel();
@@ -43,9 +37,7 @@ void Game::loadFiles()
     TextureHandler::get().loadTextures();
     particleHandler.loadEmitters();
 
-    this->shaders[SHADER::lighting].setUniform("shadowMap", sf::Shader::CurrentTexture);
-    this->shaders[SHADER::gaussHorizontal].setUniform("texture", sf::Shader::CurrentTexture);
-    this->shaders[SHADER::gaussVertical  ].setUniform("texture", sf::Shader::CurrentTexture);
+
 
 }
 
@@ -72,7 +64,7 @@ void Game::update(float dt)
 
     
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Home))
-        this->running = !this->running;
+        this->paused = !this->paused;
 
     PROFILER_START("projectileUpdate");
     this->itemHandler.update(dt);
@@ -83,7 +75,7 @@ void Game::update(float dt)
     PROFILER_STOP;
     
     PROFILER_START("CharUpdate");
-    if (this->running)
+    if (!this->paused)
         this->charHandler.update(dt, mousePos);
     PROFILER_STOP;
 
@@ -104,6 +96,12 @@ void Game::update(float dt)
     center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / 2));
     this->view.setCenter(center);
     
+    Renderer::queueDrawable(&this->levelHandler);
+    Renderer::queueDrawable(&this->charHandler);
+    Renderer::queueDrawable(&this->itemHandler);
+    Renderer::queueDrawable(&this->particleHandler);
+    Renderer::queueUI(&this->uiHandler);
+
 #if DEBUG_MODE true
     static bool debugActive = false;
     static bool debugActiveP = false;
@@ -111,20 +109,16 @@ void Game::update(float dt)
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(53))) //Tilde in sweden
         debugActive = !debugActive;
 
-
-
     if (debugActive)
     {
         PROFILER_START("Console");
         ConsoleWindow::get().update(!debugActiveP);
         PROFILER_STOP;
     }
-
-
-
 #endif
 }
 
+/*
 void Game::draw(sf::RenderTarget& target)
 {
     target.setView(this->view);
@@ -270,3 +264,4 @@ void Game::draw(sf::RenderTarget& target)
 
 
 }
+*/

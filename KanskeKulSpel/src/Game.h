@@ -1,9 +1,6 @@
 #pragma once
 #include "SFML/Window.hpp"
-#include "Handlers/ShaderHandler.h"
 #include "Handlers/CharacterHandler.h"
-#include "Handlers/ShadowHandler.h"
-#include "Lighting/LightQueue.h"
 #include "Collision/CollisionHandler.h"
 #include "Handlers/LevelHandler.h"
 #include "Handlers/ItemHandler.h"
@@ -13,7 +10,11 @@
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3
 
-
+enum class GameState 
+{
+    hub,
+    level
+};
 
 class Game
 {
@@ -24,10 +25,11 @@ public:
     void loadFiles();
 
     void update(float dt);
-    void draw(sf::RenderTarget& target);
+    const sf::View& getView() { return view; };
     
 private:
-    bool running;
+    bool paused;
+    GameState gameState;
 
     CollisionHandler collisionHandler;
     LevelHandler levelHandler;
@@ -38,14 +40,5 @@ private:
     
     sf::RenderWindow* window;
 
-
-    std::vector<Entity> enemoos;
     sf::View view;
-
-    ShaderHandler shaders;
-    ShadowHandler shadowHandler;
-
-
-    sf::RenderTexture renderTargets[NR_OF_RENDER_TARGETS];
-    sf::RectangleShape fullscreenboi;
 };

@@ -99,6 +99,12 @@
     <ClCompile Include="src\Handlers\TextureHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Handlers\HubHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game.h">
@@ -203,6 +209,9 @@
     <ClInclude Include="src\Handlers\HubHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Shaders\GaussianVert.frag" />
@@ -215,7 +224,6 @@
     <None Include="src\Data\Player.mop" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="src\Lighting\big think.txt" />
     <Text Include="src\Misc\Todo.txt" />
   </ItemGroup>
 </Project>
