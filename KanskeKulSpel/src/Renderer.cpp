@@ -90,6 +90,9 @@ void Renderer::render(sf::RenderTarget& target)
     target.draw(fullscreenboi, sf::BlendAdd);
     PROFILER_STOP;
 
+    LightQueue::get().clear();
+    LightQueueNoShadow::get().clear();
+
     //Render UI after all light nonsens
     sf::View temp = target.getView();
     target.setView(uiView);

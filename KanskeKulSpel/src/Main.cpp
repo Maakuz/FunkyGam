@@ -6,6 +6,7 @@
 #include "Misc/Profiler.h"
 #include "Misc/ConsoleWindow.h"
 #include "Renderer.h"
+#include "Handlers/TextureHandler.h"
 
 int main()
 {
@@ -39,6 +40,7 @@ int main()
 
     ImGui::SFML::Init(wandow);
 
+    TextureHandler::get().loadTextures();
     Game game(&wandow);
     Renderer renderer(&wandow);
 

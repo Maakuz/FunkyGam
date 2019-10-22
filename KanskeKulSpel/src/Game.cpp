@@ -16,9 +16,8 @@ Game::Game(sf::RenderWindow* window)
     this->paused = false;
     this->gameState = GameState::hub;
 
-    this->loadFiles();
-
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
+    particleHandler.loadEmitters();
     levelHandler.loadLevel();
     itemHandler.loadTemplates();
     uiHandler.initialize();
@@ -31,25 +30,8 @@ Game::~Game()
 {
 }
 
-void Game::loadFiles()
-{  
-
-    TextureHandler::get().loadTextures();
-    particleHandler.loadEmitters();
-
-
-
-}
-
 void Game::update(float dt)
 {
-    PROFILER_START("CalcLightLevel");
-    charHandler.calculatePlayerIllumination();
-    PROFILER_STOP;
-    LightQueue::get().clear();
-    LightQueueNoShadow::get().clear();
-
-
     sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window) / ZOOM_LEVEL;
     mousePos.x += this->view.getCenter().x - (view.getSize().x / 2);
     mousePos.y += this->view.getCenter().y - (view.getSize().y / 2);
@@ -62,45 +44,17 @@ void Game::update(float dt)
     LightQueue::get().queue(&light);
 
 
-    
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Home))
-        this->paused = !this->paused;
-
-    PROFILER_START("projectileUpdate");
-    this->itemHandler.update(dt);
-    PROFILER_STOP;
-
-    PROFILER_START("particleUpdate");
-    this->particleHandler.update(dt);
-    PROFILER_STOP;
-    
-    PROFILER_START("CharUpdate");
-    if (!this->paused)
-        this->charHandler.update(dt, mousePos);
-    PROFILER_STOP;
-
-    PROFILER_START("LevelUpdate");
-    this->levelHandler.updateLevel(dt);
-    PROFILER_STOP;
-
-    PROFILER_START("Collision");
-    this->itemHandler.queueColliders();
-    this->charHandler.queueColliders();
-    this->collisionHandler.processQueue();
-    PROFILER_STOP;
-
-    sf::Vector2f center = this->charHandler.getPlayer().getPosition();
-    center.x = std::max(center.x, view.getSize().x / 2);
-    center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / 2));
-    center.y = std::max(center.y, view.getSize().y / 2);
-    center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / 2));
-    this->view.setCenter(center);
-    
-    Renderer::queueDrawable(&this->levelHandler);
-    Renderer::queueDrawable(&this->charHandler);
-    Renderer::queueDrawable(&this->itemHandler);
-    Renderer::queueDrawable(&this->particleHandler);
-    Renderer::queueUI(&this->uiHandler);
+    switch (gameState)
+    {
+    case GameState::hub:
+        updateHub(dt, mousePos);
+        break;
+    case GameState::level:
+        updateLevel(dt, mousePos);
+        break;
+    default:
+        break;
+    }
 
 #if DEBUG_MODE true
     static bool debugActive = false;
@@ -116,6 +70,60 @@ void Game::update(float dt)
         PROFILER_STOP;
     }
 #endif
+}
+
+void Game::updateHub(float dt, sf::Vector2f mousePos)
+{
+    this->view.setCenter((sf::Vector2f)window->getSize() / 2.f);
+
+    Renderer::queueDrawable(&this->hubHandler);
+}
+
+void Game::updateLevel(float dt, sf::Vector2f mousePos)
+{
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Home))
+        this->paused = !this->paused;
+
+    sf::Vector2f center = this->charHandler.getPlayer().getPosition();
+    center.x = std::max(center.x, view.getSize().x / 2);
+    center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / 2));
+    center.y = std::max(center.y, view.getSize().y / 2);
+    center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / 2));
+    this->view.setCenter(center);
+
+    PROFILER_START("projectileUpdate");
+    this->itemHandler.update(dt);
+    PROFILER_STOP;
+
+    PROFILER_START("particleUpdate");
+    this->particleHandler.update(dt);
+    PROFILER_STOP;
+
+    PROFILER_START("CharUpdate");
+    if (!this->paused)
+        this->charHandler.update(dt, mousePos);
+    PROFILER_STOP;
+
+    PROFILER_START("LevelUpdate");
+    this->levelHandler.updateLevel(dt);
+    PROFILER_STOP;
+
+    PROFILER_START("Collision");
+    this->itemHandler.queueColliders();
+    this->charHandler.queueColliders();
+    this->collisionHandler.processQueue();
+    PROFILER_STOP;
+
+    PROFILER_START("CalcLightLevel");
+    charHandler.calculatePlayerIllumination();
+    PROFILER_STOP;
+
+
+    Renderer::queueDrawable(&this->levelHandler);
+    Renderer::queueDrawable(&this->charHandler);
+    Renderer::queueDrawable(&this->itemHandler);
+    Renderer::queueDrawable(&this->particleHandler);
+    Renderer::queueUI(&this->uiHandler);
 }
 
 /*

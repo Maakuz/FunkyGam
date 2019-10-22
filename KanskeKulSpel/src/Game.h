@@ -6,6 +6,7 @@
 #include "Handlers/ItemHandler.h"
 #include "Handlers/ParticleHandler.h"
 #include "Handlers/UIHandler.h"
+#include "Handlers/HubHandler.h"
 
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3
@@ -22,12 +23,13 @@ public:
     Game(sf::RenderWindow* window);
     ~Game();
 
-    void loadFiles();
-
     void update(float dt);
     const sf::View& getView() { return view; };
     
 private:
+    void updateHub(float dt, sf::Vector2f mousePos);
+    void updateLevel(float dt, sf::Vector2f mousePos);
+
     bool paused;
     GameState gameState;
 
@@ -37,6 +39,7 @@ private:
     ParticleHandler particleHandler;
     CharacterHandler charHandler;
     UIHandler uiHandler;
+    HubHandler hubHandler;
     
     sf::RenderWindow* window;
 
