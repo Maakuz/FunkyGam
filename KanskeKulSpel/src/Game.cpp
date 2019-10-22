@@ -38,11 +38,6 @@ void Game::update(float dt)
     
     KEYBOARD::KeyboardState::updateKeys();
     MOUSE::MouseState::updateButtons();
-    
-    static Light light(this->charHandler.getPlayer().getPosition() + sf::Vector2f(32, 30), 400, sf::Vector3f(0.1f, 0.1f, 0.05f));
-    light.pos = this->charHandler.getPlayer().getPosition();
-    LightQueue::get().queue(&light);
-
 
     switch (gameState)
     {
@@ -74,6 +69,9 @@ void Game::update(float dt)
 
 void Game::updateHub(float dt, sf::Vector2f mousePos)
 {
+    static Light light(sf::Vector2f(1300, 500), 800, sf::Vector3f(0.9f, 0.7f, 0.2f));
+    LightQueue::get().queue(&light);
+
     this->view.setCenter((sf::Vector2f)window->getSize() / 2.f);
 
     Renderer::queueDrawable(&this->hubHandler);
@@ -83,6 +81,10 @@ void Game::updateLevel(float dt, sf::Vector2f mousePos)
 {
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Home))
         this->paused = !this->paused;
+
+    static Light light(this->charHandler.getPlayer().getPosition() + sf::Vector2f(32, 30), 400, sf::Vector3f(0.1f, 0.1f, 0.05f));
+    light.pos = this->charHandler.getPlayer().getPosition();
+    LightQueue::get().queue(&light);
 
     sf::Vector2f center = this->charHandler.getPlayer().getPosition();
     center.x = std::max(center.x, view.getSize().x / 2);
