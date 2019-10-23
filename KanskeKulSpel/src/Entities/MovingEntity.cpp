@@ -1,5 +1,6 @@
 #include "MovingEntity.h"
 #include "Misc/Definitions.h"
+#include "Misc/VectorFunctions.h"
 
 MovingEntity::MovingEntity(AnimationData data, sf::Vector2f pos)
     :AnimatedEntity(data, pos)
@@ -11,10 +12,19 @@ MovingEntity::MovingEntity(AnimationData data, sf::Vector2f pos)
     this->jumpHeight = 5.3f;
     this->mass = 0.166f;
     this->grounded = false;
+    this->addedMomentum = false;
+    this->jumping = false;
 }
 
 void MovingEntity::update(float dt)
 {
+    if (addedMomentum)
+    {
+        this->momentum += collisionMomentum;
+
+        addedMomentum = false;
+    }
+
     if (momentum.y > 0)
     {
         if (this->jumping)
@@ -72,37 +82,46 @@ void MovingEntity::stopJump(float haltForce)
 }
 
 
-void MovingEntity::handleCollision(const Entity& collider)
+void MovingEntity::handleCollision(const Entity* collider)
 {
-    if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
+    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Ground))
     {
         //walking on ground
-        if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
+        if (this->momentum.y > 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.up() - this->height();
+            this->pos.y = collider->up() - this->height();
             grounded = true;
         }
 
         //smackin into roof
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
+        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getDown(), this->collisionBox.getUp()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider.down();
+            this->pos.y = collider->down();
         }
 
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
+        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getLeft(), this->collisionBox.getRight()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.left() - this->width();
+            this->pos.x = collider->left() - this->width();
         }
 
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
+        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getRight(), this->collisionBox.getLeft()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider.right();
+            this->pos.x = collider->right();
         }
     }
 
     
+}
+
+void MovingEntity::addCollisionMomentum(sf::Vector2f colliderMomentum, float colliderMass)
+{
+    float v1 = length(this->momentum);
+    float v2 = length(colliderMomentum);
+    float v1new = ((this->mass - colliderMass) / (this->mass + colliderMass) * v1) + (2 * colliderMass / (this->mass + colliderMass) * v2);
+    this->collisionMomentum = colliderMomentum;
+    this->addedMomentum = true;
 }

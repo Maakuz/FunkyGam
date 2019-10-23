@@ -22,7 +22,7 @@ public:
     void setIllumination(float illumination) { this->illumination = illumination; };
     float getIllumination() const { return illumination; };
 
-    virtual void handleCollision(const Entity& collider);
+    virtual void handleCollision(const Entity* collider);
     virtual void handleExplosion(const Explosion& explosion) {};
 
 private:

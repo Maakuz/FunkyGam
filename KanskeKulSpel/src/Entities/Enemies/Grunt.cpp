@@ -18,6 +18,7 @@ Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     this->attackDistance = 64;
     this->attackChargeTimer = Counter(1000);
     this->stunCounter = Counter(500);
+    this->collisionBox.addComponent(CollisionBox::ColliderKeys::grunt);
 }
 
 void Grunt::update(float dt)
@@ -236,64 +237,67 @@ std::istream& Grunt::readSpecific(std::istream& in)
     in >> trash >> jumpHeight;
     in >> trash >> attackMomentum.x >> attackMomentum.y;
     in >> trash >> attackDistance;
+    in >> trash >> damage;
     in >> trash >> attackChargeTimer.stopValue;
     in >> trash >> stunCounter.stopValue;
     in >> trash >> searchCounter.stopValue;
-
     return in;
 }
 
-void Grunt::handleCollision(const Entity& collider)
+void Grunt::handleCollision(const Entity* collider)
 {
-    if (flying)
+    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Ground) || collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Platform))
+    {
+        //walking on ground
+        if (this->momentum.y > 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
+        {
+            this->momentum.y = 0;
+            this->pos.y = collider->up() - this->height();
+            grounded = true;
+
+            if (flying)
+            {
+                state = State::chasing;
+                flying = false;
+            }
+        }
+
+        //smackin into roof
+        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getDown(), this->collisionBox.getUp()))
+        {
+            this->momentum.y = 0;
+            this->pos.y = collider->down();
+        }
+
+        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getLeft(), this->collisionBox.getRight()))
+        {
+            this->momentum.x *= -0.5f;
+            this->pos.x = collider->left() - this->width();
+            this->jump();
+        }
+
+        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getRight(), this->collisionBox.getLeft()))
+        {
+            this->momentum.x *= -0.5f;
+            this->pos.x = collider->right();
+            this->jump();
+        }
+    }
+
+    else if (flying && !collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Player))
     {
         this->flying = false;
         this->state = State::stunned;
     }
 
-    if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
+    else if (flying && collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Player))
     {
-        if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
-        {
-            this->momentum.y = 0;
-            this->pos.y = collider.up() - this->height();
-            grounded = true;
-        }
+        const MovingEntity* ptr = dynamic_cast<const MovingEntity*>(collider);
+        
+        this->addCollisionMomentum(ptr->getMomentum(), ptr->getMass());
     }
 
-    else if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
-    {
-        //walking on ground
-        if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
-        {
-            this->momentum.y = 0;
-            this->pos.y = collider.up() - this->height();
-            grounded = true;
-        }
-
-        //smackin into roof
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
-        {
-            this->momentum.y = 0;
-            this->pos.y = collider.down();
-        }
-
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
-        {
-            this->momentum.x *= -0.5f;
-            this->pos.x = collider.left() - this->width();
-            this->jump();
-        }
-
-        if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
-        {
-            this->momentum.x *= -0.5f;
-            this->pos.x = collider.right();
-            this->jump();
-        }
-    }
-
-    else if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::throwable))
+    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::throwable))
     {
         Throwable* throwable = (Throwable*)&collider;
         if (lengthSquared( throwable->getMomentum()) > 5)

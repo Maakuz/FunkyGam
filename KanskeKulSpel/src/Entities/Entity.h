@@ -36,7 +36,7 @@ public:
     float width() const;
     float height() const;
 
-    virtual void handleCollision(const Entity& collider) = 0;
+    virtual void handleCollision(const Entity* collider) = 0;
     virtual void handleExplosion(const Explosion& explosion) = 0;
 
 protected:

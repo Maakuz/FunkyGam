@@ -22,7 +22,7 @@ public:
     int getDamage() const { return this->damage; };
     sf::Vector2f getMomentum() const { return this->momentum; };
 
-    virtual void handleCollision(const Entity& collider);
+    virtual void handleCollision(const Entity* collider);
     virtual void handleExplosion(const Explosion& explosion) {};
 private:
 

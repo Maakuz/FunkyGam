@@ -4,7 +4,7 @@
 Enemy::Enemy(AnimationData data, sf::Vector2f pos)
     :MovingEntity(data, pos)
 {
-    this->collisionBox.addComponent(CollisionBox::colliderComponents::character);
+    this->collisionBox.addComponent(CollisionBox::ColliderKeys::character);
     this->roamDecisionCounter = Counter(2500 + rand() % 1000);
     this->timeSincePlayerSeen = Counter(10000);
     this->roamDistance = 0;
@@ -84,6 +84,7 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
 
     in >> trash >> enemy.roamDistance;
     in >> trash >> enemy.health;
+    in >> trash >> enemy.mass;
     in >> trash >> enemy.sightRadius;
     in >> trash >> enemy.sightMultiplier;
 

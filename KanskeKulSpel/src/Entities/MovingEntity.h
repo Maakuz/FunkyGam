@@ -8,15 +8,21 @@ public:
     ~MovingEntity() {};
 
     virtual void update(float dt);
+    sf::Vector2f getMomentum()const { return momentum; };
+    float getMass()const { return this->mass; };
 
 protected:
     void jump();
     //momentum.y = momentum.y * haltforce 
     void stopJump(float haltForce = 0);
-    virtual void handleCollision(const Entity& collider);
+    virtual void handleCollision(const Entity* collider);
+    void addCollisionMomentum(sf::Vector2f colliderMomentum, float colliderMass);
 
     sf::Vector2i acceleration;
     sf::Vector2f momentum;
+
+    bool addedMomentum;
+    sf::Vector2f collisionMomentum;
 
     float walkSpeed;
     float jumpHeight;

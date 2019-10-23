@@ -45,7 +45,7 @@ public:
 private:
 
     bool importLevel(Levels level);
-    bool generateHitboxes(CollisionBox::colliderComponents type);
+    bool generateHitboxes(CollisionBox::ColliderKeys type);
     void generateShadowLines();
     void createSpites();
 

@@ -9,14 +9,18 @@ public:
 
     void update(float dt);
 
-    virtual void handleCollision(const Entity& collider);
+    virtual void handleCollision(const Entity* collider);
     virtual void handleExplosion(const Explosion& explosion);
+
+    int getDamage()const { return this->damage; };
+    bool isAttacking()const { return this->state == State::attacking; };
 
 private:
     Direction forcedDirection;
     float chaseSpeed;
     float idleSpeed;
     float attackDistance;
+    int damage;
     sf::Vector2f attackMomentum;
     Counter attackChargeTimer;
     Counter stunCounter;

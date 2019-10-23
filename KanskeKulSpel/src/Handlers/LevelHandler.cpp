@@ -26,8 +26,8 @@ LevelHandler::~LevelHandler()
 bool LevelHandler::loadLevel(Levels level)
 {
     this->importLevel(level);
-    this->generateHitboxes(CollisionBox::colliderComponents::Ground);
-    this->generateHitboxes(CollisionBox::colliderComponents::Platform);
+    this->generateHitboxes(CollisionBox::ColliderKeys::Ground);
+    this->generateHitboxes(CollisionBox::ColliderKeys::Platform);
     this->createSpites();
     this->generateShadowLines();
 
@@ -165,7 +165,7 @@ bool LevelHandler::importLevel(Levels level)
     return false;
 }
 
-bool LevelHandler::generateHitboxes(CollisionBox::colliderComponents type)
+bool LevelHandler::generateHitboxes(CollisionBox::ColliderKeys type)
 {
     sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
 
@@ -236,7 +236,6 @@ bool LevelHandler::generateHitboxes(CollisionBox::colliderComponents type)
                     if (horExisits || (1 + i < end.y && hitboxData[i + 1][j].tileID != hitboxData[i][j].tileID))
                     {
                         Terrain ter(CollisionBox::AABB(min, max - min), type);
-                        ter.getCollisionBox().addComponent(type);
                         terrain.push_back(ter);
                         open[i][j] = false;
                     }
@@ -306,7 +305,7 @@ void LevelHandler::generateShadowLines()
 {
     for (auto& ter : terrain)
     {
-        if (ter.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Ground))
+        if (ter.getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Ground))
         {
             Line top(
                 ter.getPosition(),

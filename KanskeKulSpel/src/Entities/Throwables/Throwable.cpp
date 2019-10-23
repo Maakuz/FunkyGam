@@ -6,7 +6,7 @@
 Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture)
     :Entity(pos, texture)
 {
-    this->collisionBox.addComponent(CollisionBox::colliderComponents::throwable);
+    this->collisionBox.addComponent(CollisionBox::ColliderKeys::throwable);
     this->mass = 0.3f;
     this->armingCounter = 0;
     this->armingTime = 1000;
@@ -51,34 +51,34 @@ void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Entity*
     this->thrower = thrower;
 }
 
-void Throwable::handleCollision(const Entity& collider)
+void Throwable::handleCollision(const Entity* collider)
 {
-    if (&collider == thrower) //Projectile is immune to thrower
+    if (collider == thrower) //Projectile is immune to thrower NO, NOT THE OTHER WAY AROUND
         return;
 
-    if (this->momentum.y > 0 && collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
+    if (this->momentum.y > 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
     {
         this->momentum.y *= -bounce;
         this->momentum.x *= 0.96;
-        this->pos.y = collider.getPosition().y - this->getSize().y;
+        this->pos.y = collider->getPosition().y - this->getSize().y;
     }
 
-    if (collider.getCollisionBox().intersects(collider.getCollisionBox().getDown(), this->collisionBox.getUp()))
+    if (collider->getCollisionBox().intersects(collider->getCollisionBox().getDown(), this->collisionBox.getUp()))
     {
         this->momentum.y *= bounce;
-        this->pos.y = collider.getPosition().y + collider.getSize().y;
+        this->pos.y = collider->getPosition().y + collider->getSize().y;
     }
 
-    if (collider.getCollisionBox().intersects(collider.getCollisionBox().getLeft(), this->collisionBox.getRight()))
+    if (collider->getCollisionBox().intersects(collider->getCollisionBox().getLeft(), this->collisionBox.getRight()))
     {
         this->momentum.x *= -bounce;
-        this->pos.x = collider.getPosition().x - this->getSize().x;
+        this->pos.x = collider->getPosition().x - this->getSize().x;
     }
 
-    if (collider.getCollisionBox().intersects(collider.getCollisionBox().getRight(), this->collisionBox.getLeft()))
+    if (collider->getCollisionBox().intersects(collider->getCollisionBox().getRight(), this->collisionBox.getLeft()))
     {
         this->momentum.x *= -bounce;
-        this->pos.x = collider.getPosition().x + collider.getSize().x;
+        this->pos.x = collider->getPosition().x + collider->getSize().x;
     }
     
 

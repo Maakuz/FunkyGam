@@ -38,14 +38,16 @@ Offset: -32 0
 [EnemyData]
 Roamlength: 256
 Health: 100
+Mass: 0.4
 SightRadius: 750
 Nightvision: 1.2
 [SpecificData]
 ChaseSpeed: 0.02
 IdleSpeed: 0.01
-JumpHeight: 8
-AttackRange: 8 8
+JumpHeight: 12
+AttackRange: 10 10
 DistanceToStartAttacking: 256
+AttackDamage: 35
 AttackChargeDuration: 1000
-StunDuration: 500
+StunDuration: 2000
 SearchingDuration: 10000 

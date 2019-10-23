@@ -20,6 +20,10 @@ CollisionBox::CollisionBox(sf::Vector2f pos, sf::Vector2f size)
 {
 }
 
+CollisionBox::~CollisionBox()
+{
+}
+
 bool CollisionBox::intersects(const AABB & other) const
 {
     return (this->box.max().x >= other.min().x && this->box.max().y >= other.min().y &&
@@ -37,12 +41,12 @@ bool CollisionBox::intersects(const CollisionBox & other) const
     return this->intersects(other.getAABB());
 }
 
-void CollisionBox::addComponent(colliderComponents comp)
+void CollisionBox::addComponent(ColliderKeys key)
 {
-    this->components.insert(comp);
+    this->components.emplace(key);
 }
 
-bool CollisionBox::hasComponent(colliderComponents component) const
+bool CollisionBox::hasComponent(ColliderKeys component) const
 {
     if (this->components.count(component))
         return true;

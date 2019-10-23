@@ -13,8 +13,8 @@ void CollisionHandler::processQueue()
         {
             if (colliders[i]->getCollisionBox().intersects(colliders[j]->getCollisionBox()))
             {
-                colliders[i]->handleCollision(*colliders[j]);
-                colliders[j]->handleCollision(*colliders[i]);
+                colliders[i]->handleCollision(colliders[j]);
+                colliders[j]->handleCollision(colliders[i]);
             }
         }
     }
@@ -26,7 +26,7 @@ void CollisionHandler::processQueue()
         {
             if (staticColliders[i]->getCollisionBox().intersects(colliders[j]->getCollisionBox()))
             {
-                colliders[j]->handleCollision(*staticColliders[i]);
+                colliders[j]->handleCollision(staticColliders[i]);
             }
         }
     }

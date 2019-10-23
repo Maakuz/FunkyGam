@@ -12,8 +12,8 @@
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
 :MovingEntity(data, pos)
 {
-    this->collisionBox.addComponent(CollisionBox::colliderComponents::Player);
-    this->collisionBox.addComponent(CollisionBox::colliderComponents::character);
+    this->collisionBox.addComponent(CollisionBox::ColliderKeys::Player);
+    this->collisionBox.addComponent(CollisionBox::ColliderKeys::character);
     this->walkSpeed = 0.05f;
     this->jumpHeight = 5.3f;
     this->mass = 0.166f;
@@ -145,22 +145,28 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
 }
 
-void Player::handleCollision(const Entity& collider)
+void Player::handleCollision(const Entity* collider)
 {
     if (!noClip)
     {
-        if (collider.getCollisionBox().hasComponent(CollisionBox::colliderComponents::Platform))
+        if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Platform))
         {
             //walking on ground
-            if (collider.getCollisionBox().intersects(collider.getCollisionBox().getUp(), this->collisionBox.getDown()))
+            if (collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
             {
                 if (platformPassingCounter.isTimeUp())
                 {
                     this->momentum.y = 0;
-                    this->pos.y = collider.up() - this->height();
+                    this->pos.y = collider->up() - this->height();
                     grounded = true;
                 }
             }
+        }
+
+        else if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::grunt))
+        {
+            const MovingEntity* ptr = dynamic_cast<const MovingEntity*>(collider);
+            //addCollisionMomentum(ptr->getMomentum(), ptr->getMass());
         }
 
         MovingEntity::handleCollision(collider);

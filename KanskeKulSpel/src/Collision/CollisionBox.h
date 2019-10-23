@@ -7,14 +7,15 @@
 class CollisionBox : public sf::Drawable
 {
 public:
-    enum colliderComponents
+    enum ColliderKeys
     {
         Ground = 501,
         Platform = 502,
         Player = 1,
         Static = 2,
         throwable = 3,
-        character = 4
+        character = 4,
+        grunt = 5
     };
 
     struct AABB
@@ -42,15 +43,15 @@ public:
 
     CollisionBox(AABB collisionBox, bool enabled = true);
     CollisionBox(sf::Vector2f pos, sf::Vector2f size);
-    ~CollisionBox() {};
+    ~CollisionBox();
 
     bool intersects(const AABB& other) const;
     bool intersects(const AABB& a, const AABB& b) const;
     bool intersects(const CollisionBox& other) const;
 
-    void addComponent(colliderComponents comp);
+    void addComponent(ColliderKeys key);
 
-    bool hasComponent(colliderComponents component) const;
+    bool hasComponent(ColliderKeys key) const;
     
     AABB getAABB() const { return this->box; };
     void setAABB(AABB box);
@@ -77,5 +78,5 @@ private:
     CollisionBox::AABB left;
     CollisionBox::AABB right;
 
-    std::set<colliderComponents> components;
+    std::set<ColliderKeys> components;
 };
