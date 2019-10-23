@@ -20,7 +20,7 @@ void MovingEntity::update(float dt)
 {
     if (addedMomentum)
     {
-        this->momentum += collisionMomentum;
+        this->momentum = collisionMomentum;
 
         addedMomentum = false;
     }
@@ -117,11 +117,15 @@ void MovingEntity::handleCollision(const Entity* collider)
     
 }
 
-void MovingEntity::addCollisionMomentum(sf::Vector2f colliderMomentum, float colliderMass)
+void MovingEntity::addCollisionMomentum(sf::Vector2f colliderMomentum, sf::Vector2f colliderPos, float colliderMass)
 {
     float v1 = length(this->momentum);
     float v2 = length(colliderMomentum);
     float v1new = ((this->mass - colliderMass) / (this->mass + colliderMass) * v1) + (2 * colliderMass / (this->mass + colliderMass) * v2);
-    this->collisionMomentum = colliderMomentum;
+    sf::Vector2f dir = this->pos - colliderPos;
+    normalize(dir);
+    dir.x *= v1new;
+    dir.y *= v1new;
+    this->collisionMomentum = dir;
     this->addedMomentum = true;
 }

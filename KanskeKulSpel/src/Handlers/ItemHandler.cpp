@@ -3,6 +3,7 @@
 #include "Handlers/TextureHandler.h"
 #include "Misc/UnorderedErase.h"
 #include "Misc/ConsoleWindow.h"
+#include "Misc/Definitions.h"
 
 std::vector<Throwable> ItemHandler::throwables;
 std::vector<Throwable> ItemHandler::throwableTemplates;
@@ -21,9 +22,12 @@ void ItemHandler::loadTemplates()
 {
     throwableTemplates.clear();
 
-    std::ifstream file("src/Data/Throwables.mop");
+    std::ifstream file(DATA_PATH "Throwables.mop");
     if (!file.is_open())
+    {
+        system("Pause");
         exit(-44);
+    }
 
     std::string trash;
     int count;

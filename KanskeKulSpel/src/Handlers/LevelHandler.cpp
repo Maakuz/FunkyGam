@@ -32,7 +32,10 @@ bool LevelHandler::loadLevel(Levels level)
     this->generateShadowLines();
 
     if (!this->backgroundTexture.loadFromFile(LEVEL_TEX_FOLDER + LEVEL_BG_NAMES[level]))
-        exit(-2);
+    {
+        exit(-55);
+        system("Pause");
+    }
 
     this->backgroundSprite.setTexture(backgroundTexture);
 
@@ -133,7 +136,10 @@ bool LevelHandler::importLevel(Levels level)
             in >> tilemaps[i].x >> tilemaps[i].y;
 
             if (!tilemaps[i].texture.loadFromFile(LEVEL_TEX_FOLDER + name))
-                exit(-4);
+            {
+                system("Pause");
+                exit(-3);
+            }
         }
 
 

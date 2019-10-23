@@ -166,7 +166,7 @@ void Player::handleCollision(const Entity* collider)
         else if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::grunt))
         {
             const MovingEntity* ptr = dynamic_cast<const MovingEntity*>(collider);
-            //addCollisionMomentum(ptr->getMomentum(), ptr->getMass());
+            addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
         }
 
         MovingEntity::handleCollision(collider);

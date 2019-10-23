@@ -294,7 +294,7 @@ void Grunt::handleCollision(const Entity* collider)
     {
         const MovingEntity* ptr = dynamic_cast<const MovingEntity*>(collider);
         
-        this->addCollisionMomentum(ptr->getMomentum(), ptr->getMass());
+        this->addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
     }
 
     if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::throwable))

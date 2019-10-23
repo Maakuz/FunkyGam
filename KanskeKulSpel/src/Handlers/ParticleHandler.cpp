@@ -2,6 +2,7 @@
 #include <string>
 #include <fstream>
 #include "Misc/UnorderedErase.h"
+#include "Misc/Definitions.h"
 
 std::vector<Emitter*> ParticleHandler::activeEmitters;
 std::vector<Emitter> ParticleHandler::emitterTemplates;
@@ -36,10 +37,13 @@ void ParticleHandler::update(float dt)
 
 void ParticleHandler::loadEmitters()
 {
-    std::ifstream loadlist("src/Data/LoadList.mop");
+    std::ifstream loadlist(DATA_PATH "LoadList.mop");
 
     if (!loadlist.is_open())
+    {
+        system("Pause");
         exit(-49);
+    }
 
     std::string trash;
     int particleCount;

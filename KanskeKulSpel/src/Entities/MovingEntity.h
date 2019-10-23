@@ -16,7 +16,7 @@ protected:
     //momentum.y = momentum.y * haltforce 
     void stopJump(float haltForce = 0);
     virtual void handleCollision(const Entity* collider);
-    void addCollisionMomentum(sf::Vector2f colliderMomentum, float colliderMass);
+    void addCollisionMomentum(sf::Vector2f colliderMomentum, sf::Vector2f colliderPos, float colliderMass);
 
     sf::Vector2i acceleration;
     sf::Vector2f momentum;

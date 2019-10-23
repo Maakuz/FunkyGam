@@ -7,10 +7,7 @@
 #include "Misc/UnorderedErase.h"
 #include "Lighting/LightQueue.h"
 #include "Misc/Profiler.h"
-
-#define DATA_PATH "src/Data/"
-
-
+#include "Misc/Definitions.h"
 
 CharacterHandler::CharacterHandler()
 {
@@ -62,8 +59,10 @@ void CharacterHandler::loadPlayer()
     std::string trash;
 
     if (!file.is_open())
+    {
         exit(-55);
-
+        system("Pause");
+    }
     int textureID;
     sf::Vector2u frameCount;
     int animCount;

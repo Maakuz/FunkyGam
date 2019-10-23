@@ -1,13 +1,17 @@
 #include "TextureHandler.h"
+#include "Misc/Definitions.h"
 #include <fstream>
 #include <string>
 
 void TextureHandler::loadTextures()
 {
-    std::fstream file("src/Data/LoadList.mop");
+    std::fstream file(DATA_PATH "LoadList.mop");
 
     if (!file.is_open())
-        exit(-3);
+    {
+        system("Pause");
+        exit(-34);
+    }
 
     std::string trash;
     std::string folderName;
@@ -26,7 +30,10 @@ void TextureHandler::loadTextures()
 
         sf::Texture texture;
         if (!texture.loadFromFile(folderName + fileName))
-            exit(-4);
+        {
+            system("Pause");
+            exit(-65);
+        }
 
         this->textures.push_back(texture);
     }
@@ -37,7 +44,10 @@ void TextureHandler::loadTextures()
     file >> trash >> fontName;
 
     if (!font.loadFromFile(fontFolder + fontName))
+    {
+        system("Pause");
         exit(-19);
+    }
 
 
     file.close();
