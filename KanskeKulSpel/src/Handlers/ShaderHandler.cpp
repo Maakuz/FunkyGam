@@ -1,6 +1,10 @@
 #include "ShaderHandler.h"
 #include "Misc/ConsoleWindow.h"
 
+#define SHADER_FOLDER "../Resources/Shaders/"
+#define SHADER_PATH(x) SHADER_FOLDER x
+
+
 const std::string SHADER_NAMES[NR_OF_SHADERS] = {  "Lighting.frag", "LightingNoShadow.frag" , "GaussianVert.frag", "GaussianHor.frag" };
 sf::Shader ShaderHandler::shaders[NR_OF_SHADERS];
 

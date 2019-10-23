@@ -74,7 +74,7 @@ void Game::updateHub(float dt, sf::Vector2f mousePos)
 
     this->view.setCenter((sf::Vector2f)window->getSize() / 2.f);
 
-    Renderer::queueDrawable(&this->hubHandler);
+    Renderer::queueUI(&this->hubHandler);
 }
 
 void Game::updateLevel(float dt, sf::Vector2f mousePos)

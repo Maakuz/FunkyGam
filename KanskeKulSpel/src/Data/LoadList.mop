@@ -1,6 +1,6 @@
 [Textures]
-Folder: ../Sprites/
-TextureCount: 7
+Folder: ../Resources/Sprites/
+TextureCount: 8
 0: cateSheetM.png
 1: fish.png
 2: bamb.png
@@ -8,11 +8,15 @@ TextureCount: 7
 4: flare.png
 5: ui_slot.png
 6: hub.png
+7: ui_bubble.png
 
+[Fonts]
+Folder: ../Resources/Fonts/
+0: consola.ttf
 
 
 [Particles]
-Folder: ../Particles/
+Folder: ../Resources/Particles/
 ParticleCount: 5
 0: bomb.part
 1: fire.part

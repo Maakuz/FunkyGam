@@ -2,7 +2,7 @@
 #include <fstream>
 #include "Misc/Definitions.h"
 
-#define LEVEL_FOLDER "../Maps/"
+#define LEVEL_FOLDER "../Resources/Maps/"
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
 #define LAYER_AMOUNT 3
 #define ENEMY_SPAWN_POINT 503

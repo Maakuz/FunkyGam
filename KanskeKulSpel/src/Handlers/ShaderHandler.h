@@ -2,9 +2,6 @@
 #include "SFML/Graphics/Shader.hpp"
 #include <vector>
 
-
-#define SHADER_FOLDER "../Shaders/"
-#define SHADER_PATH(x) SHADER_FOLDER x
 #define NR_OF_SHADERS 4
 
 namespace SHADER

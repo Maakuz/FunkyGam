@@ -30,6 +30,15 @@ void TextureHandler::loadTextures()
 
         this->textures.push_back(texture);
     }
+    std::string fontName;
+    std::string fontFolder;
+    file >> trash;
+    file >> trash >> fontFolder;
+    file >> trash >> fontName;
+
+    if (!font.loadFromFile(fontFolder + fontName))
+        exit(-19);
+
 
     file.close();
 }

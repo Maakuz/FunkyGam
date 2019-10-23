@@ -158,6 +158,7 @@
     <ClCompile Include="src\Handlers\ShadowHandler.cpp" />
     <ClCompile Include="src\Handlers\TextureHandler.cpp" />
     <ClCompile Include="src\Handlers\UIHandler.cpp" />
+    <ClCompile Include="src\Interface\TextBubble.cpp" />
     <ClCompile Include="src\Misc\KeyboardState.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Entities\Player.cpp" />
@@ -180,6 +181,7 @@
     <ClInclude Include="src\Handlers\ItemHandler.h" />
     <ClInclude Include="src\Handlers\TextureHandler.h" />
     <ClInclude Include="src\Handlers\UIHandler.h" />
+    <ClInclude Include="src\Interface\TextBubble.h" />
     <ClInclude Include="src\Misc\ConsoleWindow.h" />
     <ClInclude Include="src\Misc\Counter.h" />
     <ClInclude Include="src\Misc\Definitions.h" />
