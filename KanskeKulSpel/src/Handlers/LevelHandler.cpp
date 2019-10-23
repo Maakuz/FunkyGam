@@ -23,15 +23,15 @@ LevelHandler::~LevelHandler()
         delete light;
 }
 
-bool LevelHandler::loadLevel()
+bool LevelHandler::loadLevel(Levels level)
 {
-    this->importLevel(levels::forest);
+    this->importLevel(level);
     this->generateHitboxes(CollisionBox::colliderComponents::Ground);
     this->generateHitboxes(CollisionBox::colliderComponents::Platform);
     this->createSpites();
     this->generateShadowLines();
 
-    if (!this->backgroundTexture.loadFromFile(LEVEL_TEX_FOLDER + LEVEL_BG_NAMES[levels::forest]))
+    if (!this->backgroundTexture.loadFromFile(LEVEL_TEX_FOLDER + LEVEL_BG_NAMES[level]))
         exit(-2);
 
     this->backgroundSprite.setTexture(backgroundTexture);
@@ -70,7 +70,7 @@ void LevelHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates stat
     }
 }
 
-bool LevelHandler::importLevel(levels level)
+bool LevelHandler::importLevel(Levels level)
 {
     std::string trash = "";
 

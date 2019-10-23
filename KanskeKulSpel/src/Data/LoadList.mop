@@ -1,6 +1,6 @@
 [Textures]
 Folder: ../Resources/Sprites/
-TextureCount: 8
+TextureCount: 10
 0: cateSheetM.png
 1: fish.png
 2: bamb.png
@@ -9,6 +9,8 @@ TextureCount: 8
 5: ui_slot.png
 6: hub.png
 7: ui_bubble.png
+8: ui_button_off.png
+9: ui_button_on.png
 
 [Fonts]
 Folder: ../Resources/Fonts/

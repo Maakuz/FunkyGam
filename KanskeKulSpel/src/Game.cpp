@@ -18,12 +18,8 @@ Game::Game(sf::RenderWindow* window)
 
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
     particleHandler.loadEmitters();
-    levelHandler.loadLevel();
     itemHandler.loadTemplates();
     uiHandler.initialize();
-    charHandler.initialize(levelHandler.getShadowLinePtr(), &uiHandler);
-    charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
-    charHandler.spawnEnemies();
 }
 
 Game::~Game()
@@ -73,6 +69,14 @@ void Game::updateHub(float dt, sf::Vector2f mousePos)
     LightQueue::get().queue(&light);
 
     this->view.setCenter((sf::Vector2f)window->getSize() / 2.f);
+
+    this->hubHandler.update(dt, mousePos);
+
+    if (this->hubHandler.getLevelSelected() != -1)
+    {
+        loadLevel(this->hubHandler.getLevelSelected());
+        this->gameState = GameState::level;
+    }
 
     Renderer::queueUI(&this->hubHandler);
 }
@@ -126,6 +130,14 @@ void Game::updateLevel(float dt, sf::Vector2f mousePos)
     Renderer::queueDrawable(&this->itemHandler);
     Renderer::queueDrawable(&this->particleHandler);
     Renderer::queueUI(&this->uiHandler);
+}
+
+void Game::loadLevel(int level)
+{
+    levelHandler.loadLevel(LevelHandler::Levels(level));
+    charHandler.initialize(levelHandler.getShadowLinePtr(), &uiHandler);
+    charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
+    charHandler.spawnEnemies();
 }
 
 /*

@@ -5,7 +5,7 @@ TextBubble::TextBubble(sf::Texture* texture)
     this->width = 0;
     this->height = 0;
 
-    setTexture(texture);
+    create(texture);
 }
 
 TextBubble::TextBubble()
@@ -15,7 +15,7 @@ TextBubble::TextBubble()
     this->texture = nullptr;
 }
 
-void TextBubble::setTexture(sf::Texture* texture)
+void TextBubble::create(sf::Texture* texture)
 {
     bubble.clear();
     bubble.setPrimitiveType(sf::Quads);
@@ -82,6 +82,8 @@ void TextBubble::setWidth(unsigned int width) //pure witchcraft
     bubble[22].position.x += width - this->width;
     bubble[33].position.x += width - this->width;
     bubble[34].position.x += width - this->width;
+
+    this->width = width;
 }
 
 void TextBubble::setHeight(unsigned int height)
@@ -96,6 +98,18 @@ void TextBubble::setHeight(unsigned int height)
     bubble[34].position.y += height - this->height;
     bubble[35].position.y += height - this->height;
 
+    this->height = height;
+}
+
+sf::Vector2u TextBubble::resizeToFit()
+{
+    int x = text.getLocalBounds().width;
+    int y = text.getLocalBounds().height;
+
+    setWidth(x);
+    setHeight(y);
+
+    return sf::Vector2u(x, y);
 }
 
 void TextBubble::setPos(sf::Vector2f pos)
@@ -125,6 +139,11 @@ void TextBubble::setText(std::string text)
 void TextBubble::appendText(std::string text)
 {
     this->text.setString(this->text.getString() + text);
+}
+
+sf::FloatRect TextBubble::getBounds()
+{
+    return sf::FloatRect(pos.x, pos.y, texture->getSize().x * 2 + width, texture->getSize().y * 2 + height);
 }
 
 void TextBubble::draw(sf::RenderTarget& target, sf::RenderStates states) const

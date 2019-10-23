@@ -29,6 +29,7 @@ public:
 private:
     void updateHub(float dt, sf::Vector2f mousePos);
     void updateLevel(float dt, sf::Vector2f mousePos);
+    void loadLevel(int level);
 
     bool paused;
     GameState gameState;

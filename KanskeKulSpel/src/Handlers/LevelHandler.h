@@ -11,7 +11,7 @@
 class LevelHandler : public sf::Drawable
 {
 public:
-    enum levels 
+    enum Levels 
     {
         forest = 0
     };
@@ -34,7 +34,7 @@ public:
     LevelHandler();
     virtual ~LevelHandler();
 
-    bool loadLevel();
+    bool loadLevel(Levels level);
 
     void updateLevel(float dt);
     sf::Vector2i getDimensions() const { return this->dimensions; }
@@ -44,7 +44,7 @@ public:
     const std::vector<Line>* getShadowLinePtr() const { return &this->shadowLines; }
 private:
 
-    bool importLevel(levels level);
+    bool importLevel(Levels level);
     bool generateHitboxes(CollisionBox::colliderComponents type);
     void generateShadowLines();
     void createSpites();
