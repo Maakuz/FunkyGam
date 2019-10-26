@@ -206,6 +206,10 @@
     <ClInclude Include="src\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Resources\Data\Grunt.mop" />
+    <None Include="..\Resources\Data\LoadList.mop" />
+    <None Include="..\Resources\Data\Player.mop" />
+    <None Include="..\Resources\Data\Throwables.mop" />
     <None Include="..\Shaders\GaussianHor.frag" />
     <None Include="..\Shaders\GaussianVert.frag" />
     <None Include="..\Shaders\Lighting.frag" />

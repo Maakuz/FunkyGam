@@ -106,8 +106,12 @@ void Game::updateLevel(float dt, sf::Vector2f mousePos)
     PROFILER_STOP;
 
     PROFILER_START("CharUpdate");
-    if (!this->paused)
-        this->charHandler.update(dt, mousePos);
+    this->charHandler.update(dt, mousePos);
+    if (!this->charHandler.getPlayer().isAlive())
+    {
+        this->gameState = GameState::hub;
+        this->hubHandler.reset();
+    }
     PROFILER_STOP;
 
     PROFILER_START("LevelUpdate");

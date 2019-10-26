@@ -7,7 +7,6 @@
 
 HubHandler::HubHandler()
 {
-    this->levelSelected = -1;
     this->background.setTexture(*TextureHandler::get().getTexture(6), true);
     this->background.setScale(2, 2);
     this->button.create(TextureHandler::get().getTexture(8));
@@ -16,6 +15,8 @@ HubHandler::HubHandler()
     this->button.setText("Play level 1");
     this->button.resizeToFit();
     this->button.setPos(sf::Vector2f(600, 100));
+
+    this->reset();
 }
 
 void HubHandler::update(float dt, sf::Vector2f mousePos)
@@ -32,6 +33,11 @@ void HubHandler::update(float dt, sf::Vector2f mousePos)
     else
         this->button.setTexture(TextureHandler::get().getTexture(OFF_TEX));
 
+}
+
+void HubHandler::reset()
+{
+    this->levelSelected = -1;
 }
 
 void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -6,6 +6,7 @@
 #include "Imgui/imgui.h"
 #include "Handlers/ItemHandler.h"
 #include "Misc/ConsoleWindow.h"
+#include "Enemies/Grunt.h"
 
 #define TESTING false
 
@@ -165,8 +166,12 @@ void Player::handleCollision(const Entity* collider)
 
         else if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::grunt))
         {
-            const MovingEntity* ptr = dynamic_cast<const MovingEntity*>(collider);
-            addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
+            const Grunt* ptr = dynamic_cast<const Grunt*>(collider);
+            if (ptr->isAttacking())
+            {
+                addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
+                health -= ptr->getDamage();
+            }
         }
 
         MovingEntity::handleCollision(collider);

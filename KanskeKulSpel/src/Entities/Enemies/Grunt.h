@@ -13,7 +13,7 @@ public:
     virtual void handleExplosion(const Explosion& explosion);
 
     int getDamage()const { return this->damage; };
-    bool isAttacking()const { return this->state == State::attacking; };
+    bool isAttacking()const { return this->flying; };
 
 private:
     Direction forcedDirection;

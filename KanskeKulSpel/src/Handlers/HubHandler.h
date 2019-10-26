@@ -11,6 +11,8 @@ public:
     void update(float dt, sf::Vector2f mousePos);
     int getLevelSelected()const { return levelSelected; };
 
+    void reset();
+
 private:
     sf::Sprite background;
     TextBubble button;
