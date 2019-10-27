@@ -1,10 +1,9 @@
 #pragma once
-#include "Entities/Entity.h"
 #include "Entities/Item.h"
 #include "Collision/Explosion.h"
 #include <fstream>
 
-class Throwable : public Entity, public Item
+class Throwable : public Item
 {
 public:
     Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture);

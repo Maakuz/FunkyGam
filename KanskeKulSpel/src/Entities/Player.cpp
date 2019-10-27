@@ -119,7 +119,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
         direction.x *= 8;
         direction.y *= 10;
 
-        int itemID = this->ui->getSelectedItem();
+        int itemID = this->ui->useSelectedItem();
         if (itemID != -1)
             ItemHandler::addThrowable(itemID, this->pos, direction, this);
     }
@@ -130,6 +130,15 @@ void Player::update(float dt, sf::Vector2f mousePos)
         {
             ui->setSelectedItem(i);
         }
+    }
+
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::I))
+    {
+        if (ui->isInventoryOpen())
+            ui->closeInventory();
+
+        else
+            ui->openInventory();
     }
 
 }

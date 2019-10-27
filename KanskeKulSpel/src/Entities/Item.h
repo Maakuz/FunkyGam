@@ -1,11 +1,12 @@
 #pragma once
 #include <string>
+#include "Entities/Entity.h"
 
-class Item
+class Item : public Entity
 {
 public:
-    Item();
-    ~Item() {};
+    Item(sf::Vector2f pos, sf::Texture* texture);
+    virtual ~Item() {};
 
     int getID() const{ return id; };
     void setID(int id) { this->id = id; };
@@ -13,23 +14,21 @@ public:
     std::string getName() const { return name; };
     void setName(std::string name) { this->name = name; };
 
-    bool isStackable() const { return stackable; };
-    void setStackable(bool stackable) { this->stackable = stackable; };
+    int getStackLimit() const { return stackLimit; };
+    void setStackLimit(int size) { this->stackLimit = size; };
 
-    int getStackSize() const { return stackSize; };
-    void setStackSize(int size) { this->stackSize = size; };
-
+    virtual void handleCollision(const Entity* collider) {};
+    virtual void handleExplosion(const Explosion& explosion) {};
 
 private:
     int id;
     std::string name;
-    bool stackable;
-    int stackSize;
+    int stackLimit;
 };
 
-inline Item::Item()
+inline Item::Item(sf::Vector2f pos, sf::Texture* texture) :
+    Entity(pos, texture)
 {
     id = 0;
-    stackable = false;
-    stackSize = 0;
+    stackLimit = 0;
 }

@@ -27,9 +27,12 @@ public:
     const sf::View& getView() { return view; };
     
 private:
-    void updateHub(float dt, sf::Vector2f mousePos);
-    void updateLevel(float dt, sf::Vector2f mousePos);
+    void updateHub(float dt);
+    void updateLevel(float dt);
     void loadLevel(int level);
+
+    sf::Vector2f mousePos;
+    sf::Vector2f mousePosWorld;
 
     bool paused;
     GameState gameState;

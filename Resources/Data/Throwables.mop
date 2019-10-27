@@ -4,7 +4,7 @@ ThrowableItemCount: 4
 [Throwable]
 TextureID: 4
 Name: FlashBomb
-stackable: 1
+stack: 5
 Mass: 0.3
 Armingtime: 1000
 Bouncyness: 0.4
@@ -20,7 +20,7 @@ Damage: 3
 [Throwable]
 TextureID: 2
 Name: Bomb
-stackable: 1
+stack: 3
 Mass: 0.5
 Armingtime: 1000
 Bouncyness: 0.3
@@ -36,7 +36,7 @@ Damage: 100
 [Throwable]
 TextureID: 4
 Name: Flare
-stackable: 1
+stack: 5
 Mass: 0.2
 Armingtime: 1500
 Bouncyness: 0.4
@@ -52,7 +52,7 @@ Damage: 0
 [Throwable]
 TextureID: 3
 Name: Rock
-stackable: 1
+stack: 20
 Mass: 0.3
 Armingtime: 1000
 Bouncyness: 0.4

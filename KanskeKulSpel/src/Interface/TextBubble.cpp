@@ -1,11 +1,12 @@
 #include "TextBubble.h"
+#include "Handlers/TextureHandler.h"
 
-TextBubble::TextBubble(sf::Texture* texture)
+TextBubble::TextBubble(sf::Texture* texture, sf::Font* font)
 {
     this->width = 0;
     this->height = 0;
 
-    create(texture);
+    create(texture, font);
 }
 
 TextBubble::TextBubble()
@@ -15,7 +16,7 @@ TextBubble::TextBubble()
     this->texture = nullptr;
 }
 
-void TextBubble::create(sf::Texture* texture)
+void TextBubble::create(sf::Texture* texture, sf::Font* font)
 {
     bubble.clear();
     bubble.setPrimitiveType(sf::Quads);
@@ -67,6 +68,7 @@ void TextBubble::create(sf::Texture* texture)
     
     this->texture = texture;
     text.setFillColor(sf::Color::Black);
+    text.setFont(*font);
 }
 
 void TextBubble::setWidth(unsigned int width) //pure witchcraft

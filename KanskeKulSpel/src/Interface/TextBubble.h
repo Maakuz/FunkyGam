@@ -4,11 +4,11 @@
 class TextBubble : public sf::Drawable
 {
 public:
-    TextBubble(sf::Texture* texture);
+    TextBubble(sf::Texture* texture, sf::Font* font);
     TextBubble();
     ~TextBubble() {};
 
-    void create(sf::Texture* texture);
+    void create(sf::Texture* texture, sf::Font* font);
     void setTexture(sf::Texture* texture) { this->texture = texture; };//this only works if the textures has the same dimensions. TAKE HEED
     void setWidth(unsigned int width);
     void setHeight(unsigned int height);

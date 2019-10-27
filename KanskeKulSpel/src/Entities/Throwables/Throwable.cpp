@@ -4,7 +4,7 @@
 #include <string>
 
 Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture)
-    :Entity(pos, texture)
+    :Item(pos, texture)
 {
     this->collisionBox.addComponent(CollisionBox::ColliderKeys::throwable);
     this->mass = 0.3f;
@@ -41,7 +41,7 @@ void Throwable::update(float dt)
 
     this->pos += momentum;
 
-    this->updatePosition();
+    this->updateSpritePosition();
 }
 
 void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Entity* thrower)
@@ -88,12 +88,12 @@ void Throwable::handleCollision(const Entity* collider)
 std::istream& operator>>(std::istream& in, Throwable& throwable)
 {
     std::string trash;
-    int stackable;
+    int limit;
 
     in >> trash >> trash;
     throwable.setName(trash);
-    in >> trash >>  stackable;
-    throwable.setStackable(stackable);
+    in >> trash >>  limit;
+    throwable.setStackLimit(limit);
 
     in >> trash >> throwable.mass;
     in >> trash >> throwable.armingTime;

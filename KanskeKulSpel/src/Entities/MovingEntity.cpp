@@ -50,7 +50,7 @@ void MovingEntity::update(float dt)
 
     this->pos += momentum;
     
-    this->updatePosition();
+    this->updateSpritePosition();
 
     if (abs(momentum.x) < this->walkSpeed * 0.75f && !isIdle())
         pauseAnimation();

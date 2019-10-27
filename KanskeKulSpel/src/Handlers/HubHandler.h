@@ -1,11 +1,12 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Interface/TextBubble.h"
+#include "Handlers/UIHandler.h"
 
 class HubHandler : public sf::Drawable
 {
 public:
-    HubHandler();
+    HubHandler(UIHandler* uiHandler);
     ~HubHandler() {};
 
     void update(float dt, sf::Vector2f mousePos);
@@ -14,9 +15,21 @@ public:
     void reset();
 
 private:
+    enum class State
+    {
+        main,
+        level,
+        inventory
+    };
+    State state;
+    static const int MAIN_BUTTON_COUNT = 2;
     sf::Sprite background;
-    TextBubble button;
+    TextBubble mainButtons[MAIN_BUTTON_COUNT];
+    TextBubble backButton;
     int levelSelected;
 
+    UIHandler* ui;
+
+    void updateMain(sf::Vector2f mousePos);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

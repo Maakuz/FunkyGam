@@ -42,6 +42,7 @@ void Entity::setSize(sf::Vector2f size)
 void Entity::setPosition(sf::Vector2f pos)
 {
     this->pos = pos;
+    updateSpritePosition();
 }
 
 void Entity::setSpriteOffset(sf::Vector2f offset)
@@ -92,7 +93,7 @@ float Entity::height() const
     return size.y;
 }
 
-void Entity::updatePosition() 
+void Entity::updateSpritePosition() 
 {
     this->sprite.setPosition(pos + spriteOffset); 
     this->collisionBox.setPosition(pos);

@@ -10,7 +10,8 @@
 
 const float ZOOM_LEVEL = 1.f;
 
-Game::Game(sf::RenderWindow* window)
+Game::Game(sf::RenderWindow* window) :
+    hubHandler(&this->uiHandler)
 {
     this->window = window;
     this->paused = false;
@@ -28,9 +29,10 @@ Game::~Game()
 
 void Game::update(float dt)
 {
-    sf::Vector2f mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window) / ZOOM_LEVEL;
-    mousePos.x += this->view.getCenter().x - (view.getSize().x / 2);
-    mousePos.y += this->view.getCenter().y - (view.getSize().y / 2);
+    this->mousePos = (sf::Vector2f)sf::Mouse::getPosition(*this->window);
+    this->mousePosWorld = this->mousePos / ZOOM_LEVEL;
+    this->mousePosWorld.x += this->view.getCenter().x - (view.getSize().x / 2);
+    this->mousePosWorld.y += this->view.getCenter().y - (view.getSize().y / 2);
     
     KEYBOARD::KeyboardState::updateKeys();
     MOUSE::MouseState::updateButtons();
@@ -38,10 +40,10 @@ void Game::update(float dt)
     switch (gameState)
     {
     case GameState::hub:
-        updateHub(dt, mousePos);
+        updateHub(dt);
         break;
     case GameState::level:
-        updateLevel(dt, mousePos);
+        updateLevel(dt);
         break;
     default:
         break;
@@ -63,14 +65,15 @@ void Game::update(float dt)
 #endif
 }
 
-void Game::updateHub(float dt, sf::Vector2f mousePos)
+void Game::updateHub(float dt)
 {
     static Light light(sf::Vector2f(1300, 500), 800, sf::Vector3f(0.9f, 0.7f, 0.2f));
     LightQueue::get().queue(&light);
 
     this->view.setCenter((sf::Vector2f)window->getSize() / 2.f);
 
-    this->hubHandler.update(dt, mousePos);
+    this->hubHandler.update(dt, this->mousePos);
+    this->uiHandler.update(dt, this->mousePos);
 
     if (this->hubHandler.getLevelSelected() != -1)
     {
@@ -79,9 +82,10 @@ void Game::updateHub(float dt, sf::Vector2f mousePos)
     }
 
     Renderer::queueUI(&this->hubHandler);
+    Renderer::queueUI(&this->uiHandler);
 }
 
-void Game::updateLevel(float dt, sf::Vector2f mousePos)
+void Game::updateLevel(float dt)
 {
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Home))
         this->paused = !this->paused;
@@ -106,12 +110,16 @@ void Game::updateLevel(float dt, sf::Vector2f mousePos)
     PROFILER_STOP;
 
     PROFILER_START("CharUpdate");
-    this->charHandler.update(dt, mousePos);
+    this->charHandler.update(dt, mousePosWorld);
     if (!this->charHandler.getPlayer().isAlive())
     {
         this->gameState = GameState::hub;
         this->hubHandler.reset();
     }
+    PROFILER_STOP;
+
+    PROFILER_START("UI_Update");
+    this->uiHandler.update(dt, this->mousePos);
     PROFILER_STOP;
 
     PROFILER_START("LevelUpdate");

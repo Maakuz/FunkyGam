@@ -43,7 +43,7 @@ protected:
     
     bool isFlippedHorizontally() const { return flipped; };
     void setTextureRect(sf::IntRect rect) { sprite.setTextureRect(rect); };
-    void updatePosition();
+    void updateSpritePosition();
     
     CollisionBox collisionBox;
     sf::Vector2f pos;
