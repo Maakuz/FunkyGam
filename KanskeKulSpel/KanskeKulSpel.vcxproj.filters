@@ -220,10 +220,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Shaders\GaussianVert.frag" />
-    <None Include="..\Shaders\Lighting.frag" />
-    <None Include="..\Shaders\GaussianHor.frag" />
-    <None Include="..\Shaders\LightingNoShadow.frag" />
     <None Include="src\Data\LoadList.mop" />
     <None Include="src\Data\Throwables.mop" />
     <None Include="src\Data\Grunt.mop" />
@@ -233,6 +229,10 @@
     <None Include="..\Resources\Data\Throwables.mop" />
     <None Include="..\Resources\Data\Grunt.mop" />
     <None Include="..\Resources\Data\StartItems.mop" />
+    <None Include="..\Resources\Shaders\GaussianVert.frag" />
+    <None Include="..\Resources\Shaders\Lighting.frag" />
+    <None Include="..\Resources\Shaders\LightingNoShadow.frag" />
+    <None Include="..\Resources\Shaders\GaussianHor.frag" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc\Todo.txt" />

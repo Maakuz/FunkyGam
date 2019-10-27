@@ -211,10 +211,10 @@
     <None Include="..\Resources\Data\Player.mop" />
     <None Include="..\Resources\Data\StartItems.mop" />
     <None Include="..\Resources\Data\Throwables.mop" />
-    <None Include="..\Shaders\GaussianHor.frag" />
-    <None Include="..\Shaders\GaussianVert.frag" />
-    <None Include="..\Shaders\Lighting.frag" />
-    <None Include="..\Shaders\LightingNoShadow.frag" />
+    <None Include="..\Resources\Shaders\GaussianHor.frag" />
+    <None Include="..\Resources\Shaders\GaussianVert.frag" />
+    <None Include="..\Resources\Shaders\Lighting.frag" />
+    <None Include="..\Resources\Shaders\LightingNoShadow.frag" />
     <None Include="src\Data\Grunt.mop" />
     <None Include="src\Data\Player.mop" />
     <None Include="src\Data\Throwables.mop" />
