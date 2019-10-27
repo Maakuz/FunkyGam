@@ -7,11 +7,7 @@
 class Player : public MovingEntity 
 {
 public:
-    struct inventory 
-    {
-        static const int QUICKSLOT_COUNT = 5;
-        int quckslotItems[QUICKSLOT_COUNT];
-    };
+
     Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos = sf::Vector2f(0, 0));
     ~Player() {};
 
@@ -29,8 +25,6 @@ public:
 private:
     Counter platformPassingCounter;
     UIHandler* ui;
-    int selectedItemBarItem;
-    inventory inventory;
     float illumination;
     int health;
 

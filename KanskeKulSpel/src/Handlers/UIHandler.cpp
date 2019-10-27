@@ -4,7 +4,15 @@
 #include "Handlers/ItemHandler.h";
 UIHandler::UIHandler()
 {
-    this->selectedItem = 0;
+    this->inventory.selectedItemBarItem = 0;
+
+    this->inventory.quickslotItems[0] = 3;
+    this->inventory.quickslotItems[1] = 0;
+    this->inventory.quickslotItems[2] = 1;
+    this->inventory.quickslotItems[3] = 2;
+    this->inventory.quickslotItems[4] = -1;
+
+    this->inventoryOpen = true;
 }
 
 void UIHandler::initialize()
@@ -14,7 +22,7 @@ void UIHandler::initialize()
     this->quickslotSize.x /= 2;
     this->quickslotPos.x = WIN_WIDTH / 2 - quickslotSize.x * 2.5;
 
-    for (int i = 0; i < QUICKSLOT_COUNT; i++)
+    for (int i = 0; i < Inventory::QUICKSLOT_COUNT; i++)
     {
         sf::Vertex v[4];
         v[0].position = sf::Vector2f(this->quickslotPos.x + (i * quickslotSize.x), 0);
@@ -32,10 +40,7 @@ void UIHandler::initialize()
             quickslotVertexArray.append(v[j]);
         }
 
-        quickSlotItems[i] = i;
-        quickSlotItems[4] = 3;//temp
-        quickSlotSprites[i].setPosition(this->quickslotPos.x + (i * quickslotSize.x), 0);
-        quickSlotSprites[i].setTexture(*ItemHandler::getTemplate(quickSlotItems[i]).getTexture(), true);
+        quickslotSprites[i].setPosition(this->quickslotPos.x + (i * quickslotSize.x), 0);
     }
 
     for (int i = 0; i < 4; i++)
@@ -43,13 +48,23 @@ void UIHandler::initialize()
         quickslotVertexArray[i].texCoords.x += quickslotSize.x;
     }
 
+    for (int i = 0; i < 5; i++)
+    {
+        setItemSlot(i, this->inventory.quickslotItems[i]);
+    }
+
+    for (int i = 0; i < Inventory::ITEM_SLOT_COUNT; i++)
+    {
+        inventory.itemSlots[i] = nullptr;
+    }
+
     view = sf::View(sf::FloatRect(0, 0, WIN_WIDTH, WIN_HEIGHT));
 }
 
 void UIHandler::setSelectedItem(int item)
 {
-    int prevSelected = this->selectedItem * 4;
-    this->selectedItem = item;
+    int prevSelected = this->inventory.selectedItemBarItem * 4;
+    this->inventory.selectedItemBarItem = item;
     item = item * 4;
 
     for (int i = 0; i < 4; i++)
@@ -59,11 +74,16 @@ void UIHandler::setSelectedItem(int item)
     }
 }
 
+int UIHandler::getSelectedItem() const 
+{ 
+    return inventory.quickslotItems[inventory.selectedItemBarItem];
+}
+
 void UIHandler::setItemSlot(int whatSlot, int itemID)
 {
-    quickSlotItems[whatSlot] = itemID;
+    inventory.quickslotItems[whatSlot] = itemID;
     if (itemID != -1)
-        quickSlotSprites[whatSlot].setTexture(*ItemHandler::getTemplate(itemID).getTexture(), true);
+        quickslotSprites[whatSlot].setTexture(*ItemHandler::getTemplate(itemID).getTexture(), true);
 }
 
 void UIHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -72,9 +92,19 @@ void UIHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
     target.draw(quickslotVertexArray, states);
     states.texture = nullptr;
-    for (int i = 0; i < QUICKSLOT_COUNT; i++)
+    for (int i = 0; i < Inventory::QUICKSLOT_COUNT; i++)
     {
-        if (quickSlotItems[i] != -1)
-            target.draw(quickSlotSprites[i], states);
+        if (inventory.quickslotItems[i] != -1)
+            target.draw(quickslotSprites[i], states);
+    }
+
+    if (inventoryOpen)
+    {
+        for (int i = 0; i < Inventory::ITEM_SLOT_COUNT; i++)
+        {
+            Entity* ptr = (Entity*)inventory.itemSlots[i];
+            if (ptr != nullptr)
+                target.draw(*ptr, states);
+        }
     }
 }

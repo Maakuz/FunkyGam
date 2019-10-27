@@ -5,11 +5,6 @@
 class ItemHandler : public sf::Drawable
 {
 public:
-    enum throwType
-    {
-        bomb = 0
-    };
-
     ItemHandler();
     ~ItemHandler() {};
 
