@@ -94,6 +94,8 @@ void Renderer::render(sf::RenderTarget& target)
     LightQueueNoShadow::get().clear();
 
     //Render UI after all light nonsens
+    PROFILER_START("UI draw");
+
     sf::View temp = target.getView();
     target.setView(uiView);
 
@@ -103,4 +105,6 @@ void Renderer::render(sf::RenderTarget& target)
     uiQueue.clear();
 
     target.setView(temp);
+    PROFILER_STOP;
+
 }

@@ -232,6 +232,7 @@
     <None Include="..\Resources\Data\Player.mop" />
     <None Include="..\Resources\Data\Throwables.mop" />
     <None Include="..\Resources\Data\Grunt.mop" />
+    <None Include="..\Resources\Data\StartItems.mop" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc\Todo.txt" />

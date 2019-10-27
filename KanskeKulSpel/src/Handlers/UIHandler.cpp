@@ -3,6 +3,7 @@
 #include "Misc/Definitions.h"
 #include "Handlers/ItemHandler.h";
 #include "Misc/ConsoleWindow.h"
+#include <fstream>
 
 UIHandler::UIHandler()
 {
@@ -44,7 +45,6 @@ UIHandler::~UIHandler()
 
 void UIHandler::initialize()
 {
-    this->quickslotVertexArray.setPrimitiveType(sf::Quads);
     this->slotTexture = TextureHandler::get().getTexture(5);
     this->slotSize = slotTexture->getSize();
     this->slotSize.x /= 2;
@@ -53,21 +53,10 @@ void UIHandler::initialize()
 
     for (int i = 0; i < Inventory::QUICKSLOT_COUNT; i++)
     {
-        sf::Vertex v[4];
-        v[0].position = sf::Vector2f(this->quickslotPos.x + (i * slotSize.x), 0);
-        v[1].position = sf::Vector2f(this->quickslotPos.x + ((i + 1) * slotSize.x), 0);
-        v[2].position = sf::Vector2f(this->quickslotPos.x + ((i + 1) * slotSize.x), slotSize.y);
-        v[3].position = sf::Vector2f(this->quickslotPos.x + (i * slotSize.x), slotSize.y);
-
-        v[0].texCoords = sf::Vector2f(0, 0);
-        v[1].texCoords = sf::Vector2f(this->slotSize.x, 0);
-        v[2].texCoords = sf::Vector2f(this->slotSize.x, this->slotSize.y);
-        v[3].texCoords = sf::Vector2f(0, this->slotSize.y);
-
-        for (int j = 0; j < 4; j++)
-        {
-            quickslotVertexArray.append(v[j]);
-        }
+        quickslots[i].setPosition(this->quickslotPos.x + i * slotSize.x, 0);
+        quickslots[i].setSize(sf::Vector2f(this->slotSize));
+        quickslots[i].setTexture(slotTexture);
+        quickslots[i].setTextureRect(sf::IntRect(0, 0, slotSize.x, slotSize.y));
 
         quickslotSprites[i].setPosition(this->quickslotPos.x + (i * slotSize.x), 0);
         this->quickslotStackText[i].setFont(*TextureHandler::get().getFont());
@@ -75,10 +64,7 @@ void UIHandler::initialize()
         this->quickslotStackText[i].setPosition(quickslotSprites[i].getPosition() + textPos);
     }
 
-    for (int i = 0; i < 4; i++)
-    {
-        quickslotVertexArray[i].texCoords.x += slotSize.x;
-    }
+    this->quickslots[0].setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
 
     updateQuickslotSprites();
 
@@ -114,16 +100,36 @@ void UIHandler::update(float dt, sf::Vector2f mousePos)
     }
 }
 
+void UIHandler::addStartItems()
+{
+    std::ifstream file(DATA_PATH "StartItems.mop");
+
+    if (!file.is_open())
+    {
+        printf("Cannot read StartItems.mop");
+        system("pause");
+        exit(-33);
+    }
+
+    int id;
+    int amount;
+
+    while (!file.eof())
+    {
+        file >> id >> amount;
+        addInventoryItem(id, amount);
+    }
+}
+
 void UIHandler::setSelectedItem(int item)
 {
-    int prevSelected = this->inventory.selectedItemBarItem * 4;
+    int prevSelected = this->inventory.selectedItemBarItem;
     this->inventory.selectedItemBarItem = item;
-    item = item * 4;
 
     for (int i = 0; i < 4; i++)
     {
-        quickslotVertexArray[item + i].texCoords.x += slotSize.x;
-        quickslotVertexArray[prevSelected + i].texCoords.x -= slotSize.x;
+        quickslots[item].setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
+        quickslots[prevSelected].setTextureRect(sf::IntRect(0, 0, this->slotSize.x, this->slotSize.y));
     }
 }
 
@@ -150,6 +156,7 @@ int UIHandler::useSelectedItem()
             inventory.itemSlots[inventory.selectedItemBarItem] = nullptr;
         }
 
+        updateQuickslotSprites();
     }
 
     return id;
@@ -157,6 +164,7 @@ int UIHandler::useSelectedItem()
 
 void UIHandler::addInventoryItem(int itemID, int amount)
 {
+    bool updateQuickslots = false;
     while (amount > 0)
     {
         int i = 0;
@@ -180,17 +188,23 @@ void UIHandler::addInventoryItem(int itemID, int amount)
             else
             {
                 inventory.itemSlots[i] = new Item(ItemHandler::getTemplate(itemID));
-                inventory.itemSlots[i]->setPosition(inventorySlots[i].getPosition());
+                inventory.itemSlots[i]->setPosition(inventorySlots[i].getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (inventory.itemSlots[i]->getSize() / 2.f));
                 int stack = std::min(amount, inventory.itemSlots[i]->getStackLimit() - inventory.stackSizes[i]);
                 inventory.stackSizes[i] += stack;
                 amount -= stack;
                 stackText[i].setString(std::to_string(inventory.stackSizes[i]));
             }
+
+            if (i < Inventory::QUICKSLOT_COUNT)
+                updateQuickslots = true;
         }
 
         else if (i > Inventory::ITEM_SLOT_COUNT)
             amount = 0;
     }
+    if (updateQuickslots)
+        updateQuickslotSprites();
+
 }
 
 void UIHandler::updateQuickslotSprites()
@@ -198,9 +212,12 @@ void UIHandler::updateQuickslotSprites()
     for (int i = 0; i < Inventory::QUICKSLOT_COUNT; i++)
     {
         if (inventory.itemSlots[i])
+        {
             quickslotSprites[i].setTexture(*inventory.itemSlots[i]->getTexture(), true);
+            quickslotSprites[i].setPosition(quickslots[i].getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (inventory.itemSlots[i]->getSize() / 2.f));
 
-        quickslotStackText[i].setString(stackText[i].getString());
+            quickslotStackText[i].setString(stackText[i].getString());
+        }
     }
 }
 
@@ -208,12 +225,9 @@ void UIHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (!quickslotsHidden)
     {
-        states.texture = TextureHandler::get().getTexture(5);
-
-        target.draw(quickslotVertexArray, states);
-        states.texture = nullptr;
         for (int i = 0; i < Inventory::QUICKSLOT_COUNT; i++)
         {
+            target.draw(quickslots[i], states);
             if (inventory.itemSlots[i])
             {
                 target.draw(quickslotSprites[i], states);

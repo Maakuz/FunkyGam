@@ -13,6 +13,8 @@ public:
 
     void update(float dt, sf::Vector2f mousePos);
 
+    void addStartItems();
+
     const sf::View& getView() const { return this->view; };
     void setSelectedItem(int item);
     int getSelectedItemID() const;
@@ -38,11 +40,11 @@ private:
     std::vector<Item*> stash;
     std::vector<sf::RectangleShape> stashSlots;
 
-    sf::VertexArray quickslotVertexArray;
-    sf::Vector2u slotSize;
-    sf::Vector2u quickslotPos;
-    sf::Sprite quickslotSprites[Inventory::QUICKSLOT_COUNT];
+    sf::RectangleShape quickslots[Inventory::QUICKSLOT_COUNT];
     sf::Text quickslotStackText[Inventory::QUICKSLOT_COUNT];
+    sf::Sprite quickslotSprites[Inventory::QUICKSLOT_COUNT];
+    sf::Vector2u quickslotPos;
+    sf::Vector2u slotSize;
     sf::RectangleShape inventorySlots[Inventory::ITEM_SLOT_COUNT];
     sf::Text stackText[Inventory::ITEM_SLOT_COUNT];
     const sf::Texture* slotTexture;

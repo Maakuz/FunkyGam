@@ -2,7 +2,6 @@
 #include "Misc/Definitions.h"
 #include "Handlers/ShaderHandler.h"
 #include "Imgui/imgui.h"
-#include "Misc/Profiler.h"
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
 
@@ -41,7 +40,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
 {
     for (size_t k = 0; k < LightQueue::get().getQueue().size(); k++)
     {
-        PROFILER_START("Prep " + std::to_string(k));
         Light* light = LightQueue::get().getQueue()[k];
 
         std::vector<Line> currentLines = this->lines;
@@ -133,8 +131,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
             tri.setPoint(1, p1);
             firstPos = p1;
         }
-        PROFILER_STOP;
-        PROFILER_START("Loop " + std::to_string(k));
 
         std::vector<ShadowHandler::PointOnLine>::iterator point = points.begin();
         PointOnLine* closestPoint = nullptr;
@@ -202,8 +198,6 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
         tri.setPoint(2, firstPos);
         triangles.push_back(tri);
 
-        PROFILER_STOP;
-
         if (debugShadows)
         {
             ImGui::Begin("LightData");
@@ -212,14 +206,10 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
             ImGui::Text(std::string("Triangles: " + std::to_string(triangles.size())).c_str());
             ImGui::End();
         }
-
-        PROFILER_START("DrawMap " + std::to_string(k));
         drawShadowMap(light);
-        PROFILER_STOP;
 
         triangles.clear();
 
-        PROFILER_START("SetupLight " + std::to_string(k));
 
         ShaderHandler::getShader(SHADER::lighting).setUniform("pos", light->pos - viewOffset);
         ShaderHandler::getShader(SHADER::lighting).setUniform("radius", light->radius);
@@ -232,16 +222,12 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
         sf::Sprite sprite(light->shadowMap.getTexture());
         sprite.setPosition(light->pos - (sf::Vector2f(light->shadowMap.getSize()) / 2.f));
         
-        PROFILER_STOP;
 
-        PROFILER_START("DrawLight " + std::to_string(k));
         target.draw(sprite, state);
 
 
         if (debugShadows)
             target.draw(sprite);
-
-        PROFILER_STOP;
 
     }
     lines.clear();

@@ -21,6 +21,8 @@ Game::Game(sf::RenderWindow* window) :
     particleHandler.loadEmitters();
     itemHandler.loadTemplates();
     uiHandler.initialize();
+
+    uiHandler.addStartItems();
 }
 
 Game::~Game()
