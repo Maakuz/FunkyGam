@@ -12,7 +12,7 @@ public:
     ~ShadowHandler() {};
 
     void generateShadowMap(sf::RenderTarget& target, sf::Vector2f viewOffset);
-
+    void clearLines();
 
     static void queueLine(Line line);
 

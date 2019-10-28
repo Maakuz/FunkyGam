@@ -16,15 +16,20 @@ public:
     void renderDebug(sf::RenderTarget& target);
 
     static void queueDrawable(sf::Drawable* drawable) { queue.push_back(drawable); };
+    static void queueDebug(sf::Drawable* drawable) { debugQueue.push_back(drawable); };
     static void queueUI(sf::Drawable* drawable) { uiQueue.push_back(drawable); };
 private:
     static std::vector<sf::Drawable*> uiQueue; 
     static std::vector<sf::Drawable*> queue;
+    static std::vector<sf::Drawable*> debugQueue;
     sf::RectangleShape fullscreenboi;
     sf::View uiView;
 
     ShaderHandler shaderHandler;
     ShadowHandler shadowHandler;
+
+    bool drawLights;
+    bool drawLightMap;
 
     sf::RenderTexture renderTargets[NR_OF_RENDER_TARGETS];
 };

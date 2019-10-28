@@ -230,8 +230,12 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
             target.draw(sprite);
 
     }
-    lines.clear();
     //We done bois
+}
+
+void ShadowHandler::clearLines()
+{
+    lines.clear();
 }
 
 void ShadowHandler::drawShadowMap(Light* light)

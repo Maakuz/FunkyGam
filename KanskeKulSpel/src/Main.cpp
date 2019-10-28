@@ -77,6 +77,7 @@ int main()
         wandow.clear(sf::Color(0, 100, 155));
         wandow.setView(game.getView());
         renderer.render(wandow);
+        renderer.renderDebug(wandow);
         PROFILER_STOP;
 
         Profiler::get().updateProfiler(deltaTime.asMilliseconds(), &ProfilerActive);
