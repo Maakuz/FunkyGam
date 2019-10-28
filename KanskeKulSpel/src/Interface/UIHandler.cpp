@@ -3,6 +3,7 @@
 #include "Misc/Definitions.h"
 #include "Handlers/ItemHandler.h";
 #include "Misc/MouseState.h"
+#include "GameState.h"
 #include <fstream>
 
 #define HEALTH_START_BOTTOM 15
@@ -61,7 +62,10 @@ void UIHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(inventory, states);
 
-    states.texture = healthTexture;
-    target.draw(&healthBar[0], 4, sf::PrimitiveType::Quads, states);
-    target.draw(healthBarOverlay, states);
+    if (GameState::getState() == GameState::States::level)
+    {
+        states.texture = healthTexture;
+        target.draw(&healthBar[0], 4, sf::PrimitiveType::Quads, states);
+        target.draw(healthBarOverlay, states);
+    }
 }

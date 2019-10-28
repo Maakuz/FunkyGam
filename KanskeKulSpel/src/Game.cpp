@@ -15,7 +15,7 @@ Game::Game(sf::RenderWindow* window) :
 {
     this->window = window;
     this->paused = false;
-    this->gameState = GameState::hub;
+    this->gameState = GameState::States::hub;
 
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
     particleHandler.loadEmitters();
@@ -37,12 +37,12 @@ void Game::update(float dt)
     KEYBOARD::KeyboardState::updateKeys();
     MOUSE::MouseState::updateButtons();
 
-    switch (gameState)
+    switch (gameState.getState())
     {
-    case GameState::hub:
+    case GameState::States::hub:
         updateHub(dt);
         break;
-    case GameState::level:
+    case GameState::States::level:
         updateLevel(dt);
         break;
     default:
@@ -78,7 +78,7 @@ void Game::updateHub(float dt)
     if (this->hubHandler.getLevelSelected() != -1)
     {
         loadLevel(this->hubHandler.getLevelSelected());
-        this->gameState = GameState::level;
+        this->gameState = GameState::States::level;
     }
 
     Renderer::queueUI(&this->hubHandler);
@@ -113,7 +113,7 @@ void Game::updateLevel(float dt)
     this->charHandler.update(dt, mousePosWorld);
     if (!this->charHandler.getPlayer().isAlive())
     {
-        this->gameState = GameState::hub;
+        this->gameState = GameState::States::hub;
         this->hubHandler.reset();
     }
     PROFILER_STOP;

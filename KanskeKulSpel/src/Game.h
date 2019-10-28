@@ -7,15 +7,12 @@
 #include "Handlers/ParticleHandler.h"
 #include "Interface/UIHandler.h"
 #include "Interface/HubHandler.h"
+#include "GameState.h"
 
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3
 
-enum class GameState 
-{
-    hub,
-    level
-};
+
 
 class Game
 {

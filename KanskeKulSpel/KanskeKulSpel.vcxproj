@@ -150,6 +150,7 @@
     <ClCompile Include="src\Entities\Terrain.cpp" />
     <ClCompile Include="src\Entities\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\GameState.cpp" />
     <ClCompile Include="src\Handlers\CharacterHandler.cpp" />
     <ClCompile Include="src\Interface\HubHandler.cpp" />
     <ClCompile Include="src\Handlers\LevelHandler.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="src\Entities\Item.h" />
     <ClInclude Include="src\Entities\MovingEntity.h" />
     <ClInclude Include="src\Entities\Throwables\Throwable.h" />
+    <ClInclude Include="src\GameState.h" />
     <ClInclude Include="src\Handlers\CharacterHandler.h" />
     <ClInclude Include="src\Interface\HubHandler.h" />
     <ClInclude Include="src\Handlers\ParticleHandler.h" />
