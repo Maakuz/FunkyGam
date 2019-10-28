@@ -4,7 +4,7 @@
 
 std::vector<sf::Drawable*> Renderer::queue;
 std::vector<sf::Drawable*> Renderer::uiQueue;
-std::vector<sf::Drawable*> Renderer::debugQueue;
+std::vector<DebugDrawable*> Renderer::debugQueue;
 
 Renderer::Renderer(sf::Window* window)
 {
@@ -149,8 +149,8 @@ void Renderer::render(sf::RenderTarget& target)
 
 void Renderer::renderDebug(sf::RenderTarget& target)
 {
-    for (sf::Drawable* drawable : debugQueue)
-        target.draw(*drawable);
+    for (DebugDrawable* drawable : debugQueue)
+        drawable->drawDebug(target, sf::RenderStates::Default);
 
     debugQueue.clear();
 }

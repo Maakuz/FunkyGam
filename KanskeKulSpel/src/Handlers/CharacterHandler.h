@@ -2,9 +2,10 @@
 #include "Entities/Enemies/Enemy.h"
 #include "Entities/Player.h"
 #include "Misc/Line.h"
+#include "Misc/DebugDrawable.h"
 #include <vector>
 
-class CharacterHandler : public sf::Drawable
+class CharacterHandler : public sf::Drawable, public DebugDrawable
 {
 public:
     static const int ENEMY_TEMPLATE_COUNT = 1;
@@ -28,14 +29,17 @@ public:
     const Player& getPlayer() const { return *this->player; };
     void calculatePlayerIllumination();
 
-    void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
-    void drawSightLines(sf::RenderTarget& target, sf::RenderStates states) const;
+    virtual void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     const std::vector<Line>* occluders;
     std::vector<sf::Vector2f> spawnPoints;
     std::vector<Enemy*> enemies;
     Player* player;
     UIHandler* ui;
+
+    bool drawHitboxes;
+    bool drawSightlines;
+   
 
     std::vector<Enemy*> enemyTemplates;
     void updateEnemyLineOfSight(Enemy* enemy);

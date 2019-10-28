@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "Handlers/ShadowHandler.h"
 #include "Handlers/ShaderHandler.h"
+#include "Misc/DebugDrawable.h"
 #include <vector>
 
 #define NR_OF_RENDER_TARGETS 3
@@ -16,12 +17,12 @@ public:
     void renderDebug(sf::RenderTarget& target);
 
     static void queueDrawable(sf::Drawable* drawable) { queue.push_back(drawable); };
-    static void queueDebug(sf::Drawable* drawable) { debugQueue.push_back(drawable); };
+    static void queueDebug(DebugDrawable* drawable) { debugQueue.push_back(drawable); };
     static void queueUI(sf::Drawable* drawable) { uiQueue.push_back(drawable); };
 private:
     static std::vector<sf::Drawable*> uiQueue; 
     static std::vector<sf::Drawable*> queue;
-    static std::vector<sf::Drawable*> debugQueue;
+    static std::vector<DebugDrawable*> debugQueue;
     sf::RectangleShape fullscreenboi;
     sf::View uiView;
 

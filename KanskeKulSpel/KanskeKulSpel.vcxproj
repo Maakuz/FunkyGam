@@ -184,6 +184,7 @@
     <ClInclude Include="src\Interface\TextBubble.h" />
     <ClInclude Include="src\Misc\ConsoleWindow.h" />
     <ClInclude Include="src\Misc\Counter.h" />
+    <ClInclude Include="src\Misc\DebugDrawable.h" />
     <ClInclude Include="src\Misc\Definitions.h" />
     <ClInclude Include="src\Entities\AnimatedEntity.h" />
     <ClInclude Include="src\Collision\CollisionBox.h" />

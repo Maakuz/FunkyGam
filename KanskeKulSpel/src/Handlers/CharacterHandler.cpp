@@ -14,19 +14,43 @@ CharacterHandler::CharacterHandler()
     player = nullptr;
     occluders = nullptr;
     ui = nullptr;
+    this->drawHitboxes = false;
+    this->drawSightlines = false;
 
-    ConsoleWindow::get().addCommand("resetEnemies", [&](Arguments args)->std::string {
+    ConsoleWindow::get().addCommand("charResetEnemies", [&](Arguments args)->std::string {
         enemies.clear();
         spawnEnemies();
 
         return "Enemies has been reset.";
         });
 
-    ConsoleWindow::get().addCommand("reloadEnemies", [&](Arguments args)->std::string {
+    ConsoleWindow::get().addCommand("charReloadEnemies", [&](Arguments args)->std::string {
         loadEnemies();
         spawnEnemies();
 
         return "Enemies has been reloaded.";
+        });
+
+    ConsoleWindow::get().addCommand("charShowHitboxes", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing argument 0 or 1";
+
+            drawHitboxes = std::stoi(args[0]);
+
+
+            return "Hitboxes on mby";
+        });
+
+    ConsoleWindow::get().addCommand("charShowSightlines", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing argument 0 or 1";
+
+            drawSightlines = std::stoi(args[0]);
+
+
+            return "Hitboxes on mby";
         });
 }
 
@@ -265,52 +289,54 @@ void CharacterHandler::calculatePlayerIllumination()
     player->setIllumination(finalIllumination);
 }
 
-void CharacterHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates states) const
+void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(player->getCollisionBox(), states);
-
-    for (Enemy* enemy : enemies)
-        target.draw(enemy->getCollisionBox(), states);
-}
-
-void CharacterHandler::drawSightLines(sf::RenderTarget& target, sf::RenderStates states) const
-{
-    sf::VertexArray arr(sf::PrimitiveType::Lines);
-    for (Enemy* enemy : enemies)
+    if (drawHitboxes)
     {
-        sf::Color color;
-        sf::Vertex v;
-        switch (enemy->getState())
-        {
-        case Enemy::State::chasing:
-        case Enemy::State::attacking:
-            color = sf::Color::Red;
-            break;
-        default:
-            color = sf::Color::Blue;
-            break;
-        }
-        v.color = color;
-        v.position = enemy->getEyePos();
-        arr.append(v);
+        target.draw(player->getCollisionBox(), states);
 
-        v.position = enemy->getLastKnownPos();
-        arr.append(v);
-
-        sf::CircleShape sightradius;
-        sightradius.setFillColor(sf::Color::Transparent);
-        sightradius.setOutlineColor(color);
-        sightradius.setOutlineThickness(1);
-        
-        sightradius.setRadius(enemy->getSightRadius());
-        sightradius.setPosition(enemy->getCenterPos() - sf::Vector2f(sightradius.getRadius(), sightradius.getRadius()));
-
-        target.draw(sightradius, states);
+        for (Enemy* enemy : enemies)
+            target.draw(enemy->getCollisionBox(), states);
     }
 
-    target.draw(arr, states);
+    if (drawSightlines)
+    {
+        sf::VertexArray arr(sf::PrimitiveType::Lines);
+        for (Enemy* enemy : enemies)
+        {
+            sf::Color color;
+            sf::Vertex v;
+            switch (enemy->getState())
+            {
+            case Enemy::State::chasing:
+            case Enemy::State::attacking:
+                color = sf::Color::Red;
+                break;
+            default:
+                color = sf::Color::Blue;
+                break;
+            }
+            v.color = color;
+            v.position = enemy->getEyePos();
+            arr.append(v);
 
+            v.position = enemy->getLastKnownPos();
+            arr.append(v);
 
+            sf::CircleShape sightradius;
+            sightradius.setFillColor(sf::Color::Transparent);
+            sightradius.setOutlineColor(color);
+            sightradius.setOutlineThickness(1);
+
+            sightradius.setRadius(enemy->getSightRadius());
+            sightradius.setPosition(enemy->getCenterPos() - sf::Vector2f(sightradius.getRadius(), sightradius.getRadius()));
+
+            target.draw(sightradius, states);
+        }
+
+        target.draw(arr, states);
+
+    }
 }
 
 void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)

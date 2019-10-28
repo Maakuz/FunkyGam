@@ -144,6 +144,8 @@ void Game::updateLevel(float dt)
     Renderer::queueDrawable(&this->itemHandler);
     Renderer::queueDrawable(&this->particleHandler);
     Renderer::queueUI(&this->uiHandler);
+
+    Renderer::queueDebug(&this->charHandler);
 }
 
 void Game::loadLevel(int level)
