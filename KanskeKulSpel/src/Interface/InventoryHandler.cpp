@@ -1,12 +1,11 @@
-#include "UIHandler.h"
-#include "Handlers/TextureHandler.h"
-#include "Misc/Definitions.h"
-#include "Handlers/ItemHandler.h";
+#include "InventoryHandler.h"
 #include "Misc/ConsoleWindow.h"
+#include "Handlers/TextureHandler.h"
+#include "Handlers/ItemHandler.h";
+#include "Misc/Definitions.h"
 #include "Misc/MouseState.h"
-#include <fstream>
 
-UIHandler::UIHandler()
+InventoryHandler::InventoryHandler()
 {
     this->inventory.selectedItemBarItem = 0;
     this->clickedItem = -1;
@@ -22,33 +21,33 @@ UIHandler::UIHandler()
         this->stackText[i].setCharacterSize(12);
     }
 
-    ConsoleWindow::get().addCommand("getItem", [&](Arguments args)->std::string 
+    ConsoleWindow::get().addCommand("getItem", [&](Arguments args)->std::string
         {
             if (args.empty())
                 return "You get nothing! (missing arg int itemID)";
-            
+
 
             if (args.size() >= 2)
-                addInventoryItem(std::stoi(args[0]), std::stoi(args[1]));
+                addItem(std::stoi(args[0]), std::stoi(args[1]));
 
             else
-                addInventoryItem(std::stoi(args[0]));
-            
+                addItem(std::stoi(args[0]));
+
             updateQuickslotSprites();
             return "You got " + ItemHandler::getTemplate(std::stoi(args[0])).getName() + "!";
         });
 }
 
-UIHandler::~UIHandler()
+InventoryHandler::~InventoryHandler()
 {
     for (Item* item : inventory.itemSlots)
         delete item;
 }
 
-void UIHandler::initialize()
+void InventoryHandler::initialize(const sf::Texture* texture)
 {
-    this->slotTexture = TextureHandler::get().getTexture(5);
-    this->slotSize = slotTexture->getSize();
+    this->slotTexture = texture;
+    this->slotSize = texture->getSize();
     this->slotSize.x /= 2;
     this->quickslotPos.x = WIN_WIDTH / 2 - slotSize.x * 2.5;
     sf::Vector2f textPos(slotSize.x - 16, slotSize.y - 16);
@@ -81,13 +80,12 @@ void UIHandler::initialize()
         inventorySlots[i].setTextureRect(sf::IntRect(0, 0, slotSize.x, slotSize.y));
 
         stackText[i].setPosition(x + textPos.x, y + textPos.y);
-
     }
 
-    view = sf::View(sf::FloatRect(0, 0, WIN_WIDTH, WIN_HEIGHT));
+    addStartItems();
 }
 
-void UIHandler::update(float dt, sf::Vector2f mousePos)
+void InventoryHandler::update(float dt, sf::Vector2f mousePos)
 {
     if (inventoryOpen)
     {
@@ -96,7 +94,7 @@ void UIHandler::update(float dt, sf::Vector2f mousePos)
             if (this->inventorySlots[i].getGlobalBounds().contains(mousePos))
             {
                 this->inventorySlots[i].setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
-                
+
                 if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && inventory.itemSlots[i] != nullptr && this->clickedItem == -1)
                 {
                     this->clickedItem = i;
@@ -118,7 +116,7 @@ void UIHandler::update(float dt, sf::Vector2f mousePos)
     }
 }
 
-void UIHandler::addStartItems()
+void InventoryHandler::addStartItems()
 {
     std::ifstream file(DATA_PATH "StartItems.mop");
 
@@ -135,11 +133,11 @@ void UIHandler::addStartItems()
     while (!file.eof())
     {
         file >> id >> amount;
-        addInventoryItem(id, amount);
+        addItem(id, amount);
     }
 }
 
-void UIHandler::setSelectedItem(int item)
+void InventoryHandler::setSelectedItem(int item)
 {
     int prevSelected = this->inventory.selectedItemBarItem;
     this->inventory.selectedItemBarItem = item;
@@ -151,8 +149,8 @@ void UIHandler::setSelectedItem(int item)
     }
 }
 
-int UIHandler::getSelectedItemID() const 
-{ 
+int InventoryHandler::getSelectedItemID() const
+{
     if (inventory.itemSlots[inventory.selectedItemBarItem])
         return inventory.itemSlots[inventory.selectedItemBarItem]->getID();
 
@@ -160,14 +158,14 @@ int UIHandler::getSelectedItemID() const
         return -1;
 }
 
-int UIHandler::useSelectedItem()
+int InventoryHandler::useSelectedItem()
 {
     int id = getSelectedItemID();
     if (id != -1)
     {
         inventory.stackSizes[inventory.selectedItemBarItem]--;
         stackText[inventory.selectedItemBarItem].setString(std::to_string(inventory.stackSizes[inventory.selectedItemBarItem]));
-        
+
         if (inventory.stackSizes[inventory.selectedItemBarItem] <= 0)
         {
             delete inventory.itemSlots[inventory.selectedItemBarItem];
@@ -180,15 +178,15 @@ int UIHandler::useSelectedItem()
     return id;
 }
 
-void UIHandler::addInventoryItem(int itemID, int amount)
+void InventoryHandler::addItem(int itemID, int amount)
 {
     bool updateQuickslots = false;
     while (amount > 0)
     {
         int i = 0;
-        while(  inventory.itemSlots[i] != nullptr &&
-                !(inventory.itemSlots[i]->getID() == itemID && inventory.itemSlots[i]->getStackLimit() > inventory.stackSizes[i]) &&
-                i < Inventory::ITEM_SLOT_COUNT)
+        while (i < Inventory::ITEM_SLOT_COUNT &&
+            inventory.itemSlots[i] != nullptr &&
+            !(inventory.itemSlots[i]->getID() == itemID && inventory.itemSlots[i]->getStackLimit() > inventory.stackSizes[i]))
         {
             i++;
         }
@@ -217,7 +215,7 @@ void UIHandler::addInventoryItem(int itemID, int amount)
                 updateQuickslots = true;
         }
 
-        else if (i > Inventory::ITEM_SLOT_COUNT)
+        else if (i >= Inventory::ITEM_SLOT_COUNT)
             amount = 0;
     }
     if (updateQuickslots)
@@ -225,7 +223,7 @@ void UIHandler::addInventoryItem(int itemID, int amount)
 
 }
 
-void UIHandler::swapItems(int a, int b)
+void InventoryHandler::swapItems(int a, int b)
 {
     if (inventory.itemSlots[a])
         inventory.itemSlots[a]->setPosition(inventorySlots[b].getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (inventory.itemSlots[a]->getSize() / 2.f));
@@ -244,7 +242,7 @@ void UIHandler::swapItems(int a, int b)
 
 }
 
-void UIHandler::updateQuickslotSprites()
+void InventoryHandler::updateQuickslotSprites()
 {
     for (int i = 0; i < Inventory::QUICKSLOT_COUNT; i++)
     {
@@ -258,7 +256,7 @@ void UIHandler::updateQuickslotSprites()
     }
 }
 
-void UIHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void InventoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (!quickslotsHidden)
     {

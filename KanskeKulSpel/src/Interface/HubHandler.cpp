@@ -1,5 +1,5 @@
 #include "HubHandler.h"
-#include "TextureHandler.h"
+#include "Handlers/TextureHandler.h"
 #include "Misc/MouseState.h"
 
 #define OFF_TEX 8
@@ -46,7 +46,7 @@ void HubHandler::update(float dt, sf::Vector2f mousePos)
             if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
             {
                 state = State::main;
-                ui->closeInventory();
+                ui->getInventory()->closeInventory();
             }
         }
 
@@ -64,7 +64,7 @@ void HubHandler::reset()
 {
     this->levelSelected = -1;
     this->state = State::main;
-    ui->setQuickslotHidden(true);
+    ui->getInventory()->setQuickslotHidden(true);
 }
 
 void HubHandler::updateMain(sf::Vector2f mousePos)
@@ -80,12 +80,12 @@ void HubHandler::updateMain(sf::Vector2f mousePos)
                 {
                 case 0:
                     levelSelected = 0;
-                    ui->setQuickslotHidden(false);
+                    ui->getInventory()->setQuickslotHidden(false);
                     break;
 
                 case 1:
                     this->state = State::inventory;
-                    ui->openInventory();
+                    ui->getInventory()->openInventory();
                     break;
                 default:
                     break;

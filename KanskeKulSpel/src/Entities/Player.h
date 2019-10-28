@@ -1,7 +1,7 @@
 #pragma once
 #include "MovingEntity.h"
 #include "Misc/Counter.h"
-#include "Handlers/UIHandler.h"
+#include "Interface/UIHandler.h"
 #include <istream>
 
 class Player : public MovingEntity 
@@ -27,6 +27,7 @@ private:
     UIHandler* ui;
     float illumination;
     int health;
+    int maxHealth;
 
     bool debugMode;
     bool noClip;

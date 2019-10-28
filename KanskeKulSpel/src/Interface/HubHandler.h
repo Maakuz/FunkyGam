@@ -1,7 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Interface/TextBubble.h"
-#include "Handlers/UIHandler.h"
+#include "Interface/UIHandler.h"
 
 class HubHandler : public sf::Drawable
 {

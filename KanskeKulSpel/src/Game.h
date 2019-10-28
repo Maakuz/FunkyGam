@@ -5,8 +5,8 @@
 #include "Handlers/LevelHandler.h"
 #include "Handlers/ItemHandler.h"
 #include "Handlers/ParticleHandler.h"
-#include "Handlers/UIHandler.h"
-#include "Handlers/HubHandler.h"
+#include "Interface/UIHandler.h"
+#include "Interface/HubHandler.h"
 
 #define MAX_LIGHTS 200
 #define NR_OF_RENDER_TARGETS 3

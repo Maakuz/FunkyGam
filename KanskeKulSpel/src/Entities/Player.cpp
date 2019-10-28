@@ -23,6 +23,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->noClip = false;
     this->ui = uiHandler;
     this->health = 100;
+    this->maxHealth = 100;
     this->illumination = 0;
     this->jumping = false;
 
@@ -81,6 +82,30 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
             return "The wondow is somewhere";
         });
 
+    ConsoleWindow::get().addCommand("setHealth", [&](Arguments args)->std::string
+        {
+            if (args.size() >= 1)
+            {
+                try
+                {
+                    int x = std::stoi(args[0]);
+
+                    health = x;
+                }
+                catch (const std::exception & e)
+                {
+                    std::string ret = "Not valid argument int.";
+                    return ret;
+                }
+            }
+
+            else
+                return "missing argument int health";
+
+
+            return "The life is liven";
+        });
+
 }
 
 void Player::update(float dt, sf::Vector2f mousePos)
@@ -119,7 +144,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
         direction.x *= 8;
         direction.y *= 10;
 
-        int itemID = this->ui->useSelectedItem();
+        int itemID = this->ui->getInventory()->useSelectedItem();
         if (itemID != -1)
             ItemHandler::addThrowable(itemID, this->pos, direction, this);
     }
@@ -128,19 +153,20 @@ void Player::update(float dt, sf::Vector2f mousePos)
     {
         if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(27 + i))) //keys 1 to 5
         {
-            ui->setSelectedItem(i);
+            ui->getInventory()->setSelectedItem(i);
         }
     }
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::I))
     {
-        if (ui->isInventoryOpen())
-            ui->closeInventory();
+        if (ui->getInventory()->isInventoryOpen())
+            ui->getInventory()->closeInventory();
 
         else
-            ui->openInventory();
+            ui->getInventory()->openInventory();
     }
 
+    ui->setHealthPercentage(this->health / float(this->maxHealth));
 }
 
 void Player::handleCollision(const Entity* collider)
@@ -244,6 +270,7 @@ std::istream& operator>>(std::istream& in, Player& player)
     in >> trash >> player.jumpHeight;
     in >> trash >> player.mass;
     in >> trash >> player.health;
+    player.maxHealth = player.health;
 
     return in;
 }

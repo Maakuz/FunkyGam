@@ -3,19 +3,19 @@
 #include "Entities/Item.h"
 #include <vector>
 
-class UIHandler : public sf::Drawable
+class InventoryHandler : public sf::Drawable
 {
 public:
-    UIHandler();
-    ~UIHandler();
+    InventoryHandler();
+    ~InventoryHandler();
 
-    void initialize();
+    void initialize(const sf::Texture* texture);
 
     void update(float dt, sf::Vector2f mousePos);
 
     void addStartItems();
 
-    const sf::View& getView() const { return this->view; };
+
     void setSelectedItem(int item);
     int getSelectedItemID() const;
     int useSelectedItem();
@@ -24,8 +24,7 @@ public:
     bool isInventoryOpen() const { return this->inventoryOpen; };
     void setQuickslotHidden(bool value) { this->quickslotsHidden = value; };
 
-    void addInventoryItem(int itemID, int amount = 1);
-
+    void addItem(int itemID, int amount = 1);
 private:
     struct Inventory
     {
@@ -37,20 +36,16 @@ private:
         int selectedItemBarItem;
     };
     Inventory inventory;
-    std::vector<Item*> stash;
-    std::vector<sf::RectangleShape> stashSlots;
-
+    
     sf::RectangleShape quickslots[Inventory::QUICKSLOT_COUNT];
     sf::Text quickslotStackText[Inventory::QUICKSLOT_COUNT];
     sf::Sprite quickslotSprites[Inventory::QUICKSLOT_COUNT];
     sf::Vector2u quickslotPos;
-    sf::Vector2u slotSize;
     sf::RectangleShape inventorySlots[Inventory::ITEM_SLOT_COUNT];
     sf::Text stackText[Inventory::ITEM_SLOT_COUNT];
+
+    sf::Vector2u slotSize;
     const sf::Texture* slotTexture;
-
-    sf::View view;
-
 
     bool inventoryOpen;
     bool quickslotsHidden;
