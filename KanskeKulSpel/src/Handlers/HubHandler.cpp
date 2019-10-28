@@ -44,7 +44,10 @@ void HubHandler::update(float dt, sf::Vector2f mousePos)
         {
             this->backButton.setTexture(TextureHandler::get().getTexture(ON_TEX));
             if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+            {
                 state = State::main;
+                ui->closeInventory();
+            }
         }
 
         else

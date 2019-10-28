@@ -3,11 +3,13 @@
 #include "Misc/Definitions.h"
 #include "Handlers/ItemHandler.h";
 #include "Misc/ConsoleWindow.h"
+#include "Misc/MouseState.h"
 #include <fstream>
 
 UIHandler::UIHandler()
 {
     this->inventory.selectedItemBarItem = 0;
+    this->clickedItem = -1;
 
     this->inventoryOpen = false;
     this->quickslotsHidden = true;
@@ -92,6 +94,22 @@ void UIHandler::update(float dt, sf::Vector2f mousePos)
         for (int i = 0; i < Inventory::ITEM_SLOT_COUNT; i++)
         {
             if (this->inventorySlots[i].getGlobalBounds().contains(mousePos))
+            {
+                this->inventorySlots[i].setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
+                
+                if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && inventory.itemSlots[i] != nullptr && this->clickedItem == -1)
+                {
+                    this->clickedItem = i;
+                }
+
+                else if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && this->clickedItem != -1)
+                {
+                    this->swapItems(i, this->clickedItem);
+                    this->clickedItem = -1;
+                }
+            }
+
+            else if (i == this->clickedItem)
                 this->inventorySlots[i].setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
 
             else
@@ -204,6 +222,25 @@ void UIHandler::addInventoryItem(int itemID, int amount)
     }
     if (updateQuickslots)
         updateQuickslotSprites();
+
+}
+
+void UIHandler::swapItems(int a, int b)
+{
+    if (inventory.itemSlots[a])
+        inventory.itemSlots[a]->setPosition(inventorySlots[b].getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (inventory.itemSlots[a]->getSize() / 2.f));
+
+    if (inventory.itemSlots[b])
+        inventory.itemSlots[b]->setPosition(inventorySlots[a].getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (inventory.itemSlots[b]->getSize() / 2.f));
+
+    std::swap(inventory.itemSlots[a], inventory.itemSlots[b]);
+    std::swap(inventory.stackSizes[a], inventory.stackSizes[b]);
+
+    stackText[a].setString(std::to_string(inventory.stackSizes[a]));
+    stackText[b].setString(std::to_string(inventory.stackSizes[b]));
+
+    if (a < Inventory::QUICKSLOT_COUNT || b < Inventory::QUICKSLOT_COUNT)
+        this->updateQuickslotSprites();
 
 }
 

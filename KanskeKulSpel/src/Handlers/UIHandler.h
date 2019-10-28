@@ -54,7 +54,9 @@ private:
 
     bool inventoryOpen;
     bool quickslotsHidden;
+    int clickedItem;
 
+    void swapItems(int a, int b);
     void updateQuickslotSprites();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

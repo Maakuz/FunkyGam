@@ -11,6 +11,7 @@ namespace MOUSE
         MouseState() {};
         ~MouseState() {};
         static std::map<sf::Mouse::Button, bool> prevButtonState;
+        static bool sameFrame;
 
     public:
         static bool isButtonClicked(sf::Mouse::Button button);
