@@ -181,99 +181,116 @@ private:
 
     int textEditCallback(ImGuiInputTextCallbackData* data)
     {
-        int prevPos = historyPos;
         switch (data->EventFlag)
         {
         case ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackHistory:
-
-            if (data->EventKey == ImGuiKey_::ImGuiKey_UpArrow)
-            {
-                historyPos++;
-                if (historyPos >= history.size())
-                    historyPos--;
-            }
-
-            else
-            {
-                historyPos--;
-                if (historyPos < 0)
-                    historyPos = -1;
-            }
-
-            if (prevPos != historyPos)
-            {
-                int length = 0;
-                if (historyPos == -1)
-                    length = snprintf(data->Buf, size_t(data->BufSize), "");
-
-                else
-                    length = snprintf(data->Buf, size_t(data->BufSize), "%s", history[historyPos].c_str());
-                
-                data->BufTextLen = length;
-                data->SelectionEnd = length;
-                data->SelectionStart = length;
-                data->CursorPos = length;
-                data->BufDirty = true;
-            }
+            textEditCallbackHistory(data);
+            
             break;
 
         case ImGuiInputTextFlags_::ImGuiInputTextFlags_CallbackCompletion:
-            std::string comp = data->Buf;
-
-            if (comp.empty())
-            {
-                this->addLog("The possibilities are endless!");
-                break;
-            }
-
-            std::vector<std::string> possibilities;
-
-            for (const Command& command : commands)
-            {
-                if (command.string.compare(0, comp.size(), comp) == 0)
-                    possibilities.push_back(command.string);
-            }
-
-            if (possibilities.empty())
-            {
-                this->addLog("No matches found :(");
-                break;
-            }
-
-            std::sort(possibilities.begin(), possibilities.end(), sortByLength);
-
-            this->addLog("Possibilities: ");
-            for (std::string& possibility : possibilities)
-                this->addLog("- " + possibility);
-
-            bool death = false;
-            std::string completion = "";
-            for (size_t i = 0; i < possibilities[0].size() && !death; i++)
-            {
-                completion += possibilities[0][i];
-                for (size_t j = 1; j < possibilities.size() && !death; j++)
-                {
-                    if (possibilities[j].compare(0, completion.size(), completion) != 0)
-                        death = true;
-                }
-            }
-
-            if (death)
-                completion.erase(completion.end() - 1);
-
-            int length = snprintf(data->Buf, size_t(data->BufSize), "%s", completion.c_str());
-
-            data->BufTextLen = length;
-            data->SelectionEnd = length;
-            data->SelectionStart = length;
-            data->CursorPos = length;
-            data->BufDirty = true;
+            textEditCallbackComplete(data);
             break;
         }
 
 
         return 0;
     }
+
+    int textEditCallbackHistory(ImGuiInputTextCallbackData* data)
+    {
+        int prevPos = historyPos;
+
+        if (data->EventKey == ImGuiKey_::ImGuiKey_UpArrow)
+        {
+            historyPos++;
+            if (historyPos >= history.size())
+                historyPos--;
+        }
+
+        else
+        {
+            historyPos--;
+            if (historyPos < 0)
+                historyPos = -1;
+        }
+
+        if (prevPos != historyPos)
+        {
+            int length = 0;
+            if (historyPos == -1)
+                length = snprintf(data->Buf, size_t(data->BufSize), "");
+
+            else
+                length = snprintf(data->Buf, size_t(data->BufSize), "%s", history[historyPos].c_str());
+
+            data->BufTextLen = length;
+            data->SelectionEnd = length;
+            data->SelectionStart = length;
+            data->CursorPos = length;
+            data->BufDirty = true;
+        }
+
+        return 0;
+    }
+
+    int textEditCallbackComplete(ImGuiInputTextCallbackData* data)
+    {
+        std::string comp = data->Buf;
+
+        if (comp.empty())
+        {
+            this->addLog("The possibilities are endless!");
+            this->addLog("Type 'listAll' for a list of all commands.");
+            return 0;
+        }
+
+        std::vector<std::string> possibilities;
+
+        for (const Command& command : commands)
+        {
+            if (lowercase(command.string).compare(0, comp.size(), lowercase(comp)) == 0)
+                possibilities.push_back(command.string);
+        }
+
+        if (possibilities.empty())
+        {
+            this->addLog("No matches found :(");
+            return 0;
+        }
+
+        std::sort(possibilities.begin(), possibilities.end(), sortByLength);
+
+        this->addLog("Possibilities: ");
+        for (std::string& possibility : possibilities)
+            this->addLog("- " + possibility);
+
+        bool death = false;
+        std::string completion = "";
+        for (size_t i = 0; i < possibilities[0].size() && !death; i++)
+        {
+            completion += possibilities[0][i];
+            for (size_t j = 1; j < possibilities.size() && !death; j++)
+            {
+                if (lowercase(possibilities[j]).compare(0, completion.size(), lowercase(completion)) != 0)
+                    death = true;
+            }
+        }
+
+        if (death)
+            completion.erase(completion.end() - 1);
+
+        int length = snprintf(data->Buf, completion.capacity() + 1, "%s", completion.c_str());
+
+        data->BufTextLen = length;
+        data->SelectionEnd = length;
+        data->SelectionStart = length;
+        data->CursorPos = length;
+        data->BufDirty = true;
+
+        return 0;
+    }
+
 
     void runCommand(std::string command)
     {
@@ -300,8 +317,20 @@ private:
                 args.push_back(temp);
             }
 
+            auto it = history.begin();
+            while ( it != history.end())
+            {
+                if (it->compare(command) == 0)
+                    it = history.erase(it);
+
+                else
+                    ++it;
+            }
+
             //Todo: limit maybe
-            history.push_back(command);
+            history.insert(history.begin(), command);
+
+
             addLog(commands[found](args), colors.commandColor);
         }
 
@@ -336,5 +365,17 @@ private:
     static bool sortByLength(const std::string& a, const std::string& b)
     {
         return a.size() < b.size();
+    }
+
+    std::string lowercase(std::string str)
+    {
+        std::string ret;
+
+        for (char& c : str)
+        {
+            ret += std::tolower(c);
+        }
+
+        return ret;
     }
 };
