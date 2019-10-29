@@ -11,8 +11,11 @@ InventoryHandler::InventoryHandler()
     this->clickedItem = -1;
 
     this->inventoryOpen = false;
+    this->currentToolTip = -1;
     this->quickslotsHidden = true;
     this->slotTexture = nullptr;
+    this->toolTip.create(TextureHandler::get().getTexture(7), TextureHandler::get().getFont());
+    this->toolTip.setCharacterSize(DEFAULT_TEXT_SIZE);
 
     for (int i = 0; i < Inventory::ITEM_SLOT_COUNT; i++)
     {
@@ -89,11 +92,17 @@ void InventoryHandler::update(float dt, sf::Vector2f mousePos)
 {
     if (inventoryOpen)
     {
+        int toolTipItem = -1;
         for (int i = 0; i < Inventory::ITEM_SLOT_COUNT; i++)
         {
             if (this->inventorySlots[i].getGlobalBounds().contains(mousePos))
             {
                 this->inventorySlots[i].setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
+
+                if (inventory.itemSlots[i] != nullptr)
+                {
+                    toolTipItem = i;
+                }
 
                 if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && inventory.itemSlots[i] != nullptr && this->clickedItem == -1)
                 {
@@ -113,6 +122,19 @@ void InventoryHandler::update(float dt, sf::Vector2f mousePos)
             else
                 this->inventorySlots[i].setTextureRect(sf::IntRect(0, 0, this->slotSize.x, this->slotSize.y));
         }
+
+        if (toolTipItem != -1)
+        {
+
+            this->currentToolTip = toolTipItem;
+            this->toolTip.setText(inventory.itemSlots[toolTipItem]->getName());
+            this->toolTip.resizeToFit();
+            
+            this->toolTip.setPos(mousePos);
+        }
+
+        else
+            this->currentToolTip = -1;
     }
 }
 
@@ -288,5 +310,8 @@ void InventoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) c
                 target.draw(stackText[i], states);
             }
         }
+
+        if (this->currentToolTip != -1)
+            target.draw(toolTip, states);
     }
 }

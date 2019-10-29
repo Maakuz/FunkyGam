@@ -10,3 +10,5 @@
 #define WIN_WIDTH 1920
 
 #define DATA_PATH "../Resources/Data/"
+
+#define DEFAULT_TEXT_SIZE 12

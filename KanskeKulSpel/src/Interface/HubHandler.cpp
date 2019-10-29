@@ -10,7 +10,7 @@ HubHandler::HubHandler(UIHandler* uiHandler)
     this->ui = uiHandler;
     this->background.setTexture(*TextureHandler::get().getTexture(6), true);
     this->background.setScale(2, 2);
-    std::string mainButtonText[MAIN_BUTTON_COUNT] = {"Play level 1", "Manage inventory"};
+    std::string mainButtonText[MAIN_BUTTON_COUNT] = {"Play level 1", "Manage inventory", "Visit alchemist"};
 
     for (int i = 0; i < MAIN_BUTTON_COUNT; i++)
     {
@@ -40,19 +40,11 @@ void HubHandler::update(float dt, sf::Vector2f mousePos)
         break;
 
     case State::inventory:
-        if (backButton.getBounds().contains(mousePos))
-        {
-            this->backButton.setTexture(TextureHandler::get().getTexture(ON_TEX));
-            if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
-            {
-                state = State::main;
-                ui->getInventory()->closeInventory();
-            }
-        }
+        updateBack(mousePos, State::main);
+        break;
 
-        else
-            this->backButton.setTexture(TextureHandler::get().getTexture(OFF_TEX));
-
+    case State::achemist:
+        updateBack(mousePos, State::main);
         break;
     default:
         break;
@@ -65,6 +57,23 @@ void HubHandler::reset()
     this->levelSelected = Level::none;
     this->state = State::main;
     ui->getInventory()->setQuickslotHidden(true);
+}
+
+void HubHandler::updateBack(sf::Vector2f mousePos, State backstate)
+{
+    if (backButton.getBounds().contains(mousePos))
+    {
+        this->backButton.setTexture(TextureHandler::get().getTexture(ON_TEX));
+        if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+        {
+            state = backstate;
+            ui->getInventory()->closeInventory();
+        }
+    }
+
+    else
+        this->backButton.setTexture(TextureHandler::get().getTexture(OFF_TEX));
+
 }
 
 void HubHandler::updateMain(sf::Vector2f mousePos)
@@ -86,6 +95,10 @@ void HubHandler::updateMain(sf::Vector2f mousePos)
                 case 1:
                     this->state = State::inventory;
                     ui->getInventory()->openInventory();
+                    break;
+
+                case 2:
+                    this->state = State::achemist;
                     break;
                 default:
                     break;
@@ -113,6 +126,7 @@ void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
     case HubHandler::State::level:
         break;
     case HubHandler::State::inventory:
+    case HubHandler::State::achemist:
         target.draw(backButton, states);
         break;
     default:

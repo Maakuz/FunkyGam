@@ -1,6 +1,7 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Entities/Items/Item.h"
+#include "Interface/TextBubble.h"
 #include <vector>
 
 class InventoryHandler : public sf::Drawable
@@ -46,6 +47,9 @@ private:
 
     sf::Vector2u slotSize;
     const sf::Texture* slotTexture;
+
+    int currentToolTip;
+    TextBubble toolTip;
 
     bool inventoryOpen;
     bool quickslotsHidden;

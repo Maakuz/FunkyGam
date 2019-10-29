@@ -20,10 +20,11 @@ private:
     {
         main,
         level,
-        inventory
+        inventory,
+        achemist
     };
     State state;
-    static const int MAIN_BUTTON_COUNT = 2;
+    static const int MAIN_BUTTON_COUNT = 3;
     sf::Sprite background;
     TextBubble mainButtons[MAIN_BUTTON_COUNT];
     TextBubble backButton;
@@ -31,6 +32,7 @@ private:
 
     UIHandler* ui;
 
+    void updateBack(sf::Vector2f mousePos, State backstate);
     void updateMain(sf::Vector2f mousePos);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
