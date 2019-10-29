@@ -172,9 +172,9 @@ private:
         float time = entry->getTime();
         if (time > 0.0001)
         {
-            col.r *= 0.8;
-            col.g *= 0.8;
-            col.b *= 0.8;
+            col.r *= 0.8f;
+            col.g *= 0.8f;
+            col.b *= 0.8f;
             ImGui::PushStyleColor(ImGuiCol_Button, col);
 
             sf::Vector2f size(time / zoom, 20);

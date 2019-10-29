@@ -32,6 +32,11 @@ void Entity::flipHorizontally()
     flipped = !flipped;
 }
 
+void Entity::addCollisionComponent(CollisionBox::ColliderKeys component)
+{
+    this->collisionBox.addComponent(component);
+}
+
 void Entity::setSize(sf::Vector2f size)
 {
     this->size = size;

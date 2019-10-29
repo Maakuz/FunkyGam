@@ -24,7 +24,7 @@ LevelHandler::~LevelHandler()
         delete light;
 }
 
-bool LevelHandler::loadLevel(Levels level)
+bool LevelHandler::loadLevel(Level level)
 {
     this->importLevel(level);
     this->generateHitboxes(CollisionBox::ColliderKeys::Ground);
@@ -74,7 +74,7 @@ void LevelHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates stat
     }
 }
 
-bool LevelHandler::importLevel(Levels level)
+bool LevelHandler::importLevel(Level level)
 {
     std::string trash = "";
 

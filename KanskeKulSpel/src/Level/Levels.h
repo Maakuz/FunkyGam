@@ -1,6 +1,6 @@
 #pragma once
 
-enum Levels
+enum Level
 {
     none = -1,
     forest = 0

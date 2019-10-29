@@ -62,7 +62,7 @@ void HubHandler::update(float dt, sf::Vector2f mousePos)
 
 void HubHandler::reset()
 {
-    this->levelSelected = Levels::none;
+    this->levelSelected = Level::none;
     this->state = State::main;
     ui->getInventory()->setQuickslotHidden(true);
 }
@@ -79,7 +79,7 @@ void HubHandler::updateMain(sf::Vector2f mousePos)
                 switch (i)
                 {
                 case 0:
-                    levelSelected = Levels::forest;
+                    levelSelected = Level::forest;
                     ui->getInventory()->setQuickslotHidden(false);
                     break;
 

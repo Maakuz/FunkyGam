@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include "Entities/Throwables/Throwable.h"
+#include "Entities/Items/Throwables/Throwable.h"
 #include "Level/Levels.h"
 
 class ItemHandler : public sf::Drawable
@@ -14,7 +14,7 @@ public:
 
     void update(float dt);
     void setGatherPoints(std::vector<sf::Vector2f> gatherPoints) { this->gatherPoints = gatherPoints; };
-    void spawnGatherables(Levels level);
+    void spawnGatherables(Level level);
     void queueColliders();
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);

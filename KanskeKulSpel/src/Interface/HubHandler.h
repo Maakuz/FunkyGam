@@ -11,7 +11,7 @@ public:
     ~HubHandler() {};
 
     void update(float dt, sf::Vector2f mousePos);
-    Levels getLevelSelected()const { return levelSelected; };
+    Level getLevelSelected()const { return levelSelected; };
 
     void reset();
 
@@ -27,7 +27,7 @@ private:
     sf::Sprite background;
     TextBubble mainButtons[MAIN_BUTTON_COUNT];
     TextBubble backButton;
-    Levels levelSelected;
+    Level levelSelected;
 
     UIHandler* ui;
 

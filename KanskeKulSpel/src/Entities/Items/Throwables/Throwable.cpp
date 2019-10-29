@@ -59,7 +59,7 @@ void Throwable::handleCollision(const Entity* collider)
     if (this->momentum.y > 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
     {
         this->momentum.y *= -bounce;
-        this->momentum.x *= 0.96;
+        this->momentum.x *= 0.96f;
         this->pos.y = collider->getPosition().y - this->getSize().y;
     }
 

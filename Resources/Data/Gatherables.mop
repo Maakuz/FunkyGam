@@ -5,7 +5,7 @@ ItemCount: 2
 TextureID: 13
 Name: Brightblossom
 Stack: 10
-Emitter: 1
+Emitter: 5
 Useable: 0
 
 [Item]

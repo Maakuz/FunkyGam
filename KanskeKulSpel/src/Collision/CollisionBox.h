@@ -15,7 +15,8 @@ public:
         Static = 2,
         throwable = 3,
         character = 4,
-        grunt = 5
+        grunt = 5,
+        gatherable = 6,
     };
 
     struct AABB

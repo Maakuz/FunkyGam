@@ -2,15 +2,15 @@
 #include "Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
 #include <string>
-#include "Entities/Throwables/Throwable.h"
+#include "Entities/Items/Throwables/Throwable.h"
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos)
     :Enemy(data, pos)
 {
     this->roamDistance = 64;
-    this->idleSpeed = 0.005;
+    this->idleSpeed = 0.005f;
     this->walkSpeed = idleSpeed;
-    this->chaseSpeed = 0.01;
+    this->chaseSpeed = 0.01f;
     this->state = State::idle;
     this->flying = false;
     this->forcedDirection = Direction::none;

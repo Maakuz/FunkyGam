@@ -4,9 +4,15 @@
 #include "Misc/UnorderedErase.h"
 #include "Misc/ConsoleWindow.h"
 #include "Misc/Definitions.h"
+#include "ParticleHandler.h"
+
+#define LEVEL1_ITEM_COUNT 2
+
+const int LEVEL1_ITEMS[LEVEL1_ITEM_COUNT] = {4, 5};
 
 std::vector<Throwable> ItemHandler::throwables;
 std::vector<Item*> ItemHandler::itemTemplates;
+
 
 ItemHandler::ItemHandler()
 {
@@ -79,6 +85,7 @@ void ItemHandler::loadTemplates()
 
         file >> *item;
         item->setID(id++);
+        item->addCollisionComponent(CollisionBox::ColliderKeys::gatherable);
 
         itemTemplates.push_back(item);
     }
@@ -102,13 +109,32 @@ void ItemHandler::update(float dt)
     }
 }
 
-void ItemHandler::spawnGatherables(Levels level)
+void ItemHandler::spawnGatherables(Level level)
 {
+    if (level == Level::forest)
+    {
+        for (sf::Vector2f& point : this->gatherPoints)
+        {
+            int i = rand() % LEVEL1_ITEM_COUNT;
+
+            Item item(*this->itemTemplates[LEVEL1_ITEMS[i]]);
+
+            sf::Vector2f pos = point;
+            pos.y += TILE_SIZE - item.getSize().y;
+
+            item.setPosition(pos);
+            if (item.getEmitterID() != -1)
+                ParticleHandler::addEmitter(item.getEmitterID(), pos);
+
+            this->gatherItems.push_back(item);
+            
+        }
+    }
 }
 
 void ItemHandler::queueColliders()
 {
-    for (auto& proj : throwables)
+    for (Throwable& proj : this->throwables)
         CollisionHandler::queueCollider(&proj);
 }
 
@@ -126,6 +152,9 @@ const Item* ItemHandler::getTemplate(int itemID)
 
 void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-    for (auto const & throwable : this->throwables)
+    for (const Throwable& throwable : this->throwables)
         target.draw(throwable, states);
+
+    for (const Item& item : this->gatherItems)
+        target.draw(item, states);
 }

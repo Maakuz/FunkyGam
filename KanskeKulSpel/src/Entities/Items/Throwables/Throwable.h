@@ -1,5 +1,5 @@
 #pragma once
-#include "Entities/Item.h"
+#include "Entities/Items/Item.h"
 #include "Collision/Explosion.h"
 
 class Throwable : public Item

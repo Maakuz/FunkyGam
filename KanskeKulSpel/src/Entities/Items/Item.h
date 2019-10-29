@@ -11,6 +11,8 @@ public:
 
     friend std::istream& operator>>(std::istream& in, Item& item);
 
+    bool pluck(); //I just wanted to name it like that it could have been called obtainItem or something like that but nonono
+
     int getID() const{ return id; };
     void setID(int id) { this->id = id; };
 
@@ -26,6 +28,11 @@ public:
     bool isUseable()const { return useable; };
     void setUseable(bool useable) { this->useable = useable; };
 
+    bool isObtainable()const { return obtainable; };
+    void setObtainable(bool obtainable) { this->obtainable = obtainable; };
+
+    bool isObtained() const { return obtained; };
+
     virtual void handleCollision(const Entity* collider) {};
     virtual void handleExplosion(const Explosion& explosion) {};
 
@@ -35,22 +42,7 @@ private:
     int stackLimit;
     int emitterID;
     bool useable;
+    bool obtainable;
+    bool obtained;
 };
 
-inline Item::Item(sf::Vector2f pos, sf::Texture* texture) :
-    Entity(pos, texture)
-{
-    id = 0;
-    stackLimit = 0;
-    emitterID = -1;
-    useable = false;
-}
-
-inline std::istream& operator>>(std::istream& in, Item& item)
-{
-    std::string trash;
-    in >> trash >> item.name;
-    in >> trash >> item.stackLimit;
-    in >> trash >> item.emitterID;
-    in >> trash >> item.useable;
-}

@@ -26,7 +26,7 @@ public:
 private:
     void updateHub(float dt);
     void updateLevel(float dt);
-    void loadLevel(Levels level);
+    void loadLevel(Level level);
 
     sf::Vector2f mousePos;
     sf::Vector2f mousePosWorld;

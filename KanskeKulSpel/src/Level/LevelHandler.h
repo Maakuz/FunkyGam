@@ -30,7 +30,7 @@ public:
     LevelHandler();
     virtual ~LevelHandler();
 
-    bool loadLevel(Levels level);
+    bool loadLevel(Level level);
 
     void updateLevel(float dt);
     sf::Vector2i getDimensions() const { return this->dimensions; }
@@ -41,7 +41,7 @@ public:
     const std::vector<Line>* getShadowLinePtr() const { return &this->shadowLines; }
 private:
 
-    bool importLevel(Levels level);
+    bool importLevel(Level level);
     bool generateHitboxes(CollisionBox::ColliderKeys type);
     void generateShadowLines();
     void createSpites();

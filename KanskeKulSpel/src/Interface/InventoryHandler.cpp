@@ -49,7 +49,7 @@ void InventoryHandler::initialize(const sf::Texture* texture)
     this->slotTexture = texture;
     this->slotSize = texture->getSize();
     this->slotSize.x /= 2;
-    this->quickslotPos.x = WIN_WIDTH / 2 - slotSize.x * 2.5;
+    this->quickslotPos.x = WIN_WIDTH / 2 - slotSize.x * 2.5f;
     sf::Vector2f textPos(slotSize.x - 16, slotSize.y - 16);
 
     for (int i = 0; i < Inventory::QUICKSLOT_COUNT; i++)

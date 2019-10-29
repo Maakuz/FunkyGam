@@ -1,6 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Entities/Item.h"
+#include "Entities/Items/Item.h"
 #include <vector>
 
 class InventoryHandler : public sf::Drawable
