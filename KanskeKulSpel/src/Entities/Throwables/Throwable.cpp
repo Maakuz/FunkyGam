@@ -89,11 +89,17 @@ std::istream& operator>>(std::istream& in, Throwable& throwable)
 {
     std::string trash;
     int limit;
+    int emitterID;
+    bool useable;
 
     in >> trash >> trash;
     throwable.setName(trash);
     in >> trash >>  limit;
     throwable.setStackLimit(limit);
+    in >> trash >> emitterID;
+    throwable.setEmitterID(emitterID);
+    in >> trash >> useable;
+    throwable.setUseable(useable);
 
     in >> trash >> throwable.mass;
     in >> trash >> throwable.armingTime;

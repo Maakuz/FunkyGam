@@ -6,6 +6,7 @@
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
 #define LAYER_AMOUNT 3
 #define ENEMY_SPAWN_POINT 503
+#define GATHER_POINT 504
 
 const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
 {"Level1.yay"};
@@ -305,6 +306,27 @@ std::vector<sf::Vector2f> LevelHandler::generateSpawnPoints()
 
 
     return spawnPoints;
+}
+
+std::vector<sf::Vector2f> LevelHandler::generateGatherPoints()
+{
+    std::vector<sf::Vector2f> gatherPoints;
+
+    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
+
+    for (int i = 0; i < end.y; i++)
+    {
+        for (int j = 0; j < end.x; j++)
+        {
+            if (hitboxData[i][j].tileID == GATHER_POINT)
+            {
+                gatherPoints.push_back(sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y));
+            }
+        }
+    }
+
+
+    return gatherPoints;
 }
 
 void LevelHandler::generateShadowLines()

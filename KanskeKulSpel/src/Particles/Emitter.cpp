@@ -62,7 +62,6 @@ Emitter& Emitter::operator=(const Emitter& other)
 
     affectedByGravity = other.affectedByGravity;
 
-    immortalParticles = other.immortalParticles;
     immortalEmitter = other.immortalEmitter;
 
     emitterDead = other.emitterDead;
@@ -96,19 +95,20 @@ void Emitter::update(float dt)
     for (EmitterLight& light : lights)
         LightQueue::get().queue(light.light);
 
-
-    this->lifespanCounter += dt;
-    if (this->lifespanCounter > this->lifespan)
+    if (!immortalEmitter)
     {
-        this->emitterDead = true;
-        for (EmitterLight& light : lights)
+        this->lifespanCounter += dt;
+        if (this->lifespanCounter > this->lifespan)
         {
-            light.light->color.x *= 0.95f;
-            light.light->color.y *= 0.95f;
-            light.light->color.z *= 0.95f;
+            this->emitterDead = true;
+            for (EmitterLight& light : lights)
+            {
+                light.light->color.x *= 0.95f;
+                light.light->color.y *= 0.95f;
+                light.light->color.z *= 0.95f;
+            }
         }
     }
-
     this->spawnCounter += dt;
     if (this->spawnCounter > this->spawnRate && !this->emitterDead)
     {
@@ -124,17 +124,15 @@ void Emitter::update(float dt)
         int p = (int)i * 4;
         Particle* particle = particles[i];
 
-        if (!this->immortalParticles)
-        {
-            particle->lifespan -= dt;
+        particle->lifespan -= dt;
 
-            if (particlesHasLight && particle->lifespan / particleLifespan < 0.1)
-            {
-                particle->light->color.x *= 0.90f;
-                particle->light->color.y *= 0.90f;
-                particle->light->color.z *= 0.90f;
-            }
+        if (particlesHasLight && particle->lifespan / particleLifespan < 0.1)
+        {
+            particle->light->color.x *= 0.90f;
+            particle->light->color.y *= 0.90f;
+            particle->light->color.z *= 0.90f;
         }
+
         //remove
         if (particle->lifespan < 0)
         {
@@ -180,12 +178,10 @@ void Emitter::update(float dt)
 
 void Emitter::setParticleLifeSpan(float lifespan)
 {
-    this->immortalParticles = false;
     this->particleLifespan = lifespan;
     if (this->particleLifespan <= 0.00023) //perfect number
     {
         this->particleLifespan = 0;
-        this->immortalParticles = true;
     }
 }
 
@@ -206,6 +202,12 @@ void Emitter::addLight(sf::Vector2f offset, float radius, sf::Vector3f color)
     lights.push_back(light);
 }
 
+
+void Emitter::kill()
+{
+    this->immortalEmitter = false;
+    this->lifespanCounter = this->lifespan + 1;
+}
 
 //USE RESPONSIBLY
 void Emitter::enableParticleLight() 

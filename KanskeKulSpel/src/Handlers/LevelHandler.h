@@ -40,6 +40,7 @@ public:
     sf::Vector2i getDimensions() const { return this->dimensions; }
 
     std::vector<sf::Vector2f> generateSpawnPoints();
+    std::vector<sf::Vector2f> generateGatherPoints();
     void drawCollision(sf::RenderTarget& target, sf::RenderStates states) const;
     const std::vector<Line>* getShadowLinePtr() const { return &this->shadowLines; }
 private:

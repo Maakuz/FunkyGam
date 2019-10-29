@@ -1,0 +1,16 @@
+[GatherableData]
+ItemCount: 2
+
+[Item]
+TextureID: 13
+Name: Brightblossom
+Stack: 10
+Emitter: 1
+Useable: 0
+
+[Item]
+TextureID: 12
+Name: Clamboo
+Stack: 10
+Emitter: -1
+Useable: 0

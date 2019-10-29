@@ -34,7 +34,7 @@ InventoryHandler::InventoryHandler()
                 addItem(std::stoi(args[0]));
 
             updateQuickslotSprites();
-            return "You got " + ItemHandler::getTemplate(std::stoi(args[0])).getName() + "!";
+            return "You got " + ItemHandler::getTemplate(std::stoi(args[0]))->getName() + "!";
         });
 }
 
@@ -203,7 +203,7 @@ void InventoryHandler::addItem(int itemID, int amount)
 
             else
             {
-                inventory.itemSlots[i] = new Item(ItemHandler::getTemplate(itemID));
+                inventory.itemSlots[i] = new Item(*ItemHandler::getTemplate(itemID));
                 inventory.itemSlots[i]->setPosition(inventorySlots[i].getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (inventory.itemSlots[i]->getSize() / 2.f));
                 int stack = std::min(amount, inventory.itemSlots[i]->getStackLimit() - inventory.stackSizes[i]);
                 inventory.stackSizes[i] += stack;

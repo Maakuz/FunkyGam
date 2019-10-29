@@ -101,6 +101,8 @@ public:
     void addLight(sf::Vector2f offset, float radius, sf::Vector3f color);
     std::vector<EmitterLight>* getLights() { return &this->lights; };
 
+    int getNrOfParticles() const { return particles.size(); };
+
     void setSpeed(float speed) { this->speed = speed; };
     void setSpawnRate(float spawnRate) { this->spawnRate = spawnRate; };
     void setInitialParticles(int amount) { this->initialParticles = amount; };
@@ -112,6 +114,7 @@ public:
     void setColorDeviation(sf::Color color) { this->colorDeviation = color; };
     void setFriction(float value) { this->frictionValue = value; };
     void setJitter(float value) { this->jitterAmount = value; };
+    void kill();
 
     //USE RESPONSIBLY
     void enableParticleLight();
@@ -159,7 +162,6 @@ private:
 
     bool affectedByGravity;
 
-    bool immortalParticles;
     bool immortalEmitter;
 
     bool emitterDead;

@@ -1,10 +1,12 @@
 [ThrowableData]
-ThrowableItemCount: 4
+ItemCount: 4
 
 [Throwable]
 TextureID: 4
 Name: FlashBomb
 stack: 5
+Emitter: -1
+Useable: 1
 Mass: 0.3
 Armingtime: 1000
 Bouncyness: 0.4
@@ -21,6 +23,8 @@ Damage: 3
 TextureID: 2
 Name: Bomb
 stack: 3
+Emitter: -1
+Useable: 1
 Mass: 0.5
 Armingtime: 1000
 Bouncyness: 0.3
@@ -37,6 +41,8 @@ Damage: 100
 TextureID: 4
 Name: Flare
 stack: 5
+Emitter: -1
+Useable: 1
 Mass: 0.2
 Armingtime: 1500
 Bouncyness: 0.4
@@ -53,6 +59,8 @@ Damage: 0
 TextureID: 3
 Name: Rock
 stack: 20
+Emitter: -1
+Useable: 1
 Mass: 0.3
 Armingtime: 1000
 Bouncyness: 0.4

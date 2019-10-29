@@ -1,7 +1,6 @@
 #pragma once
 #include "Entities/Item.h"
 #include "Collision/Explosion.h"
-#include <fstream>
 
 class Throwable : public Item
 {

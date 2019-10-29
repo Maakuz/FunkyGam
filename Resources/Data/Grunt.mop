@@ -40,7 +40,7 @@ Roamlength: 256
 Health: 100
 Mass: 0.4
 SightRadius: 750
-Nightvision: 1.2
+Nightvision: 1.5
 [SpecificData]
 ChaseSpeed: 0.02
 IdleSpeed: 0.01

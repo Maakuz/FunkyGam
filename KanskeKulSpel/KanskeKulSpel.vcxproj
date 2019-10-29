@@ -211,6 +211,7 @@
     <ClInclude Include="src\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Resources\Data\Gatherables.mop" />
     <None Include="..\Resources\Data\Grunt.mop" />
     <None Include="..\Resources\Data\LoadList.mop" />
     <None Include="..\Resources\Data\Player.mop" />
