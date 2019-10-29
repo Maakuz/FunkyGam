@@ -130,7 +130,7 @@ void ItemHandler::update(float dt, Player* player)
             if (it->emitter != nullptr)
                 it->emitter->kill();
 
-            it = gatherItems.erase(it);
+            unordered_erase(gatherItems, it);
         }
         else
         {
