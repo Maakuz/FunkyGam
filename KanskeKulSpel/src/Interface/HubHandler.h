@@ -2,6 +2,7 @@
 #include "SFML/Graphics.hpp"
 #include "Interface/TextBubble.h"
 #include "Interface/UIHandler.h"
+#include "Level/Levels.h"
 
 class HubHandler : public sf::Drawable
 {
@@ -10,7 +11,7 @@ public:
     ~HubHandler() {};
 
     void update(float dt, sf::Vector2f mousePos);
-    int getLevelSelected()const { return levelSelected; };
+    Levels getLevelSelected()const { return levelSelected; };
 
     void reset();
 
@@ -26,7 +27,7 @@ private:
     sf::Sprite background;
     TextBubble mainButtons[MAIN_BUTTON_COUNT];
     TextBubble backButton;
-    int levelSelected;
+    Levels levelSelected;
 
     UIHandler* ui;
 

@@ -102,6 +102,10 @@ void ItemHandler::update(float dt)
     }
 }
 
+void ItemHandler::spawnGatherables(Levels level)
+{
+}
+
 void ItemHandler::queueColliders()
 {
     for (auto& proj : throwables)

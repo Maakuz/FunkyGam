@@ -1,5 +1,5 @@
 #pragma once
-#include "Entity.h"
+#include "Entities/Entity.h"
 
 class Terrain : public Entity
 {

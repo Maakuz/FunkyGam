@@ -1,9 +1,10 @@
 #pragma once
 #include "SFML/Graphics.hpp"
 #include "Collision/CollisionHandler.h"
-#include "Entities/Terrain.h"
-#include "ShadowHandler.h"
+#include "Level/Terrain.h"
+#include "Handlers/ShadowHandler.h"
 #include "Lighting/Light.h"
+#include "Level/Levels.h"
 #include <vector>
 
 #define NR_OF_LEVELS 1
@@ -11,11 +12,6 @@
 class LevelHandler : public sf::Drawable
 {
 public:
-    enum Levels 
-    {
-        forest = 0
-    };
-
     struct Tilemap
     {
         sf::Texture texture;

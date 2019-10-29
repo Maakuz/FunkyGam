@@ -75,7 +75,7 @@ void Game::updateHub(float dt)
     this->hubHandler.update(dt, this->mousePos);
     this->uiHandler.update(dt, this->mousePos);
 
-    if (this->hubHandler.getLevelSelected() != -1)
+    if (this->hubHandler.getLevelSelected() != Levels::none)
     {
         loadLevel(this->hubHandler.getLevelSelected());
         this->gameState = GameState::States::level;
@@ -146,9 +146,9 @@ void Game::updateLevel(float dt)
     Renderer::queueDebug(&this->charHandler);
 }
 
-void Game::loadLevel(int level)
+void Game::loadLevel(Levels level)
 {
-    levelHandler.loadLevel(LevelHandler::Levels(level));
+    levelHandler.loadLevel(level);
     charHandler.initialize(levelHandler.getShadowLinePtr(), &uiHandler);
     charHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
     charHandler.spawnEnemies();

@@ -2,7 +2,7 @@
 #include "SFML/Window.hpp"
 #include "Handlers/CharacterHandler.h"
 #include "Collision/CollisionHandler.h"
-#include "Handlers/LevelHandler.h"
+#include "Level/LevelHandler.h"
 #include "Handlers/ItemHandler.h"
 #include "Handlers/ParticleHandler.h"
 #include "Interface/UIHandler.h"
@@ -26,7 +26,7 @@ public:
 private:
     void updateHub(float dt);
     void updateLevel(float dt);
-    void loadLevel(int level);
+    void loadLevel(Levels level);
 
     sf::Vector2f mousePos;
     sf::Vector2f mousePosWorld;
