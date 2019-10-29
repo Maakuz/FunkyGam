@@ -2,6 +2,7 @@
 #include "MovingEntity.h"
 #include "Misc/Counter.h"
 #include "Interface/UIHandler.h"
+#include "Items/Item.h"
 #include <istream>
 
 class Player : public MovingEntity 
@@ -19,12 +20,15 @@ public:
     float getIllumination() const { return illumination; };
     bool isAlive() const { return this->health > 0; };
 
+    void setGatherableInRange(Item* item) { this->gatherableInRange = item; };
+
     virtual void handleCollision(const Entity* collider);
     virtual void handleExplosion(const Explosion& explosion) {};
 
 private:
     Counter platformPassingCounter;
     UIHandler* ui;
+    Item* gatherableInRange;
     float illumination;
     int health;
     int maxHealth;

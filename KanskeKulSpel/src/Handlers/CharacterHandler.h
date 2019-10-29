@@ -26,7 +26,7 @@ public:
     void queueColliders();
 
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
-    const Player& getPlayer() const { return *this->player; };
+    Player* getPlayer() const { return this->player; };
     void calculatePlayerIllumination();
 
     virtual void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;

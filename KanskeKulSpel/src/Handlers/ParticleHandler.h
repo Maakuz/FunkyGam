@@ -13,7 +13,7 @@ public:
 
     void loadEmitters();
 
-    static Emitter const * addEmitter(int emitterID, sf::Vector2f pos);
+    static Emitter* addEmitter(int emitterID, sf::Vector2f pos);
 
 private:
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;

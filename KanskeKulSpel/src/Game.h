@@ -38,7 +38,7 @@ private:
     LevelHandler levelHandler;
     ItemHandler itemHandler;
     ParticleHandler particleHandler;
-    CharacterHandler charHandler;
+    CharacterHandler characterHandler;
     UIHandler uiHandler;
     HubHandler hubHandler;
     

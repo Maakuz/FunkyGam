@@ -163,16 +163,22 @@ int InventoryHandler::useSelectedItem()
     int id = getSelectedItemID();
     if (id != -1)
     {
-        inventory.stackSizes[inventory.selectedItemBarItem]--;
-        stackText[inventory.selectedItemBarItem].setString(std::to_string(inventory.stackSizes[inventory.selectedItemBarItem]));
+        if (!inventory.itemSlots[inventory.selectedItemBarItem]->isUseable())
+            id = -1;
 
-        if (inventory.stackSizes[inventory.selectedItemBarItem] <= 0)
+        else
         {
-            delete inventory.itemSlots[inventory.selectedItemBarItem];
-            inventory.itemSlots[inventory.selectedItemBarItem] = nullptr;
-        }
+            inventory.stackSizes[inventory.selectedItemBarItem]--;
+            stackText[inventory.selectedItemBarItem].setString(std::to_string(inventory.stackSizes[inventory.selectedItemBarItem]));
 
-        updateQuickslotSprites();
+            if (inventory.stackSizes[inventory.selectedItemBarItem] <= 0)
+            {
+                delete inventory.itemSlots[inventory.selectedItemBarItem];
+                inventory.itemSlots[inventory.selectedItemBarItem] = nullptr;
+            }
+
+            updateQuickslotSprites();
+        }
     }
 
     return id;

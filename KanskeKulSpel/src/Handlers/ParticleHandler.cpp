@@ -79,7 +79,7 @@ void ParticleHandler::loadEmitters()
     loadlist.close();
 }
 
-Emitter const * ParticleHandler::addEmitter(int emitterID, sf::Vector2f pos)
+Emitter* ParticleHandler::addEmitter(int emitterID, sf::Vector2f pos)
 {
     Emitter* emitter = new Emitter(emitterTemplates[emitterID]);
     emitter->setEmitterPos(pos);

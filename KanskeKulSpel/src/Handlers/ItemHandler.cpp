@@ -5,6 +5,7 @@
 #include "Misc/ConsoleWindow.h"
 #include "Misc/Definitions.h"
 #include "ParticleHandler.h"
+#include "Misc/VectorFunctions.h"
 
 #define LEVEL1_ITEM_COUNT 2
 
@@ -16,11 +17,22 @@ std::vector<Item*> ItemHandler::itemTemplates;
 
 ItemHandler::ItemHandler()
 {
+    this->gatherRange = 64;
     ConsoleWindow::get().addCommand("reloadItems", [&](Arguments args)->std::string 
         {
             loadTemplates();
 
             return "Items reloaded";
+        });
+
+    ConsoleWindow::get().addCommand("setGatherRange", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing argument int range";
+
+            gatherRange = std::stoi(args[0]);
+
+            return "Gather range is now " + args[0] + "!";
         });
 }
 
@@ -93,7 +105,7 @@ void ItemHandler::loadTemplates()
 
 }
 
-void ItemHandler::update(float dt)
+void ItemHandler::update(float dt, Player* player)
 {
     for (int i = 0; i < throwables.size(); i++)
     {
@@ -107,6 +119,29 @@ void ItemHandler::update(float dt)
             throwables[i].update(dt);
         }
     }
+
+    Item* inRange = nullptr;
+    auto it = gatherItems.begin();
+    while (it != gatherItems.end())
+    {
+        if (it->item.isObtained())
+        {
+            
+            if (it->emitter != nullptr)
+                it->emitter->kill();
+
+            it = gatherItems.erase(it);
+        }
+        else
+        {
+            if (length(player->getCenterPos() - it->item.getCenterPos()) < this->gatherRange)
+                inRange = &it->item;
+
+            it++;
+        }
+    }
+
+    player->setGatherableInRange(inRange);
 }
 
 void ItemHandler::spawnGatherables(Level level)
@@ -123,11 +158,12 @@ void ItemHandler::spawnGatherables(Level level)
             pos.y += TILE_SIZE - item.getSize().y;
 
             item.setPosition(pos);
-            if (item.getEmitterID() != -1)
-                ParticleHandler::addEmitter(item.getEmitterID(), pos);
+            Emitter* emitter = nullptr;
 
-            this->gatherItems.push_back(item);
-            
+            if (item.getEmitterID() != -1)
+                emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
+
+            gatherItems.push_back(GatherItem{emitter, item});
         }
     }
 }
@@ -155,6 +191,6 @@ void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
     for (const Throwable& throwable : this->throwables)
         target.draw(throwable, states);
 
-    for (const Item& item : this->gatherItems)
-        target.draw(item, states);
+    for (const GatherItem& item : this->gatherItems)
+        target.draw(item.item, states);
 }

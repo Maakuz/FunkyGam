@@ -7,16 +7,7 @@ Item::Item(sf::Vector2f pos, sf::Texture* texture):
     stackLimit = 0;
     emitterID = -1;
     useable = false;
-    obtainable = false;
     obtained = false;
-}
-
-bool Item::pluck()
-{
-    if (this->obtainable)
-        this->obtained = true;
-
-    return this->obtained;
 }
 
 std::istream& operator>>(std::istream& in, Item& item)
