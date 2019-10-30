@@ -39,6 +39,7 @@ HubHandler::HubHandler(UIHandler* uiHandler)
     this->ui = uiHandler;
     this->background.setTexture(*TextureHandler::get().getTexture(6), true);
     this->background.setScale(2, 2);
+    this->alchemist.setTexture(*TextureHandler::get().getTexture(14), true);
 
     this->loadInterface();
 
@@ -163,6 +164,9 @@ void HubHandler::loadInterface()
         system("pause");
         exit(-43);
     }
+    //General
+    sf::Vector2f spacing;
+
     //Text
     int textWindowTextureID;
     int characterSize;
@@ -173,7 +177,6 @@ void HubHandler::loadInterface()
     std::string trash;
     sf::Vector2f pos;
     sf::Vector2f size;
-    sf::Vector2f spacing;
     int buttonCharacterSize;
     int textureID;
     int hoverTextureID;
@@ -187,6 +190,11 @@ void HubHandler::loadInterface()
     //Alchemy
     sf::Vector2f recipeListPos;
     sf::Vector2f recipeListSize;
+    int recipeDescWidth;
+
+    //General read
+    file >> trash;
+    file >> trash >> spacing.x >> spacing.y;
 
     //Text read
     file >> trash;
@@ -199,7 +207,6 @@ void HubHandler::loadInterface()
     file >> trash;
     file >> trash >> pos.x >> pos.y;
     file >> trash >> size.x >> size.y;
-    file >> trash >> spacing.x >> spacing.y;
     file >> trash >> buttonCharacterSize;
     file >> trash >> textureID;
     file >> trash >> hoverTextureID;
@@ -227,6 +234,7 @@ void HubHandler::loadInterface()
     file >> trash;
     file >> trash >> recipeListPos.x >> recipeListPos.y;
     file >> trash >> recipeListSize.x >> recipeListSize.y;
+    file >> trash >> recipeDescWidth;
 
 
     file.close();
@@ -263,6 +271,26 @@ void HubHandler::loadInterface()
     this->recipeListBackground.setPos(recipeListPos);
     this->recipeListBackground.setWidth(recipeListSize.x);
     this->recipeListBackground.setHeight(recipeListSize.y);
+
+    this->recipeDescBackground.create(this->textureTextWindow, TextureHandler::get().getFont());
+    this->recipeDescBackground.setWidth(recipeDescWidth);
+    this->recipeDescBackground.setHeight(recipeListBackground.getBounds().height - this->alchemist.getGlobalBounds().height - spacing.y);
+    sf::Vector2f descPos = recipeListBackground.getPos();
+    descPos.x += recipeListBackground.getBounds().width + spacing.x;
+    descPos.y += recipeListBackground.getBounds().height - recipeDescBackground.getBounds().height;
+    this->recipeDescBackground.setPos(descPos);
+
+    this->recipeReqBackground.create(this->textureTextWindow, TextureHandler::get().getFont());
+    
+    this->recipeReqBackground.setWidth(recipeDescWidth - this->alchemist.getGlobalBounds().width - spacing.x);
+    this->recipeReqBackground.setHeight(this->alchemist.getGlobalBounds().height);
+    this->recipeReqBackground.setPos(sf::Vector2f(recipeListPos.x + recipeListSize.x + spacing.x, recipeListPos.y));
+
+    
+    float alchemyX = recipeListPos.x + recipeListSize.x + spacing.x + recipeDescWidth - this->alchemist.getGlobalBounds().width;
+    this->alchemist.setPosition(alchemyX, recipeListPos.y);
+
+
 
 }
 
@@ -328,12 +356,13 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
 
         sf::Vector2f pos = this->recipeListBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
         recipe->name.setPosition(pos);
+        recipe->description.setPosition(this->recipeDescBackground.getTextPos());
 
         if (recipe->name.getGlobalBounds().contains(mousePos) && MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
         {
             recipe->name.setOutlineThickness(1);
 
-            if (this->selectedRecipe != -1)
+            if (this->selectedRecipe != -1 && this->selectedRecipe != i)
                 this->recipes[this->selectedRecipe].name.setOutlineThickness(0);
             this->selectedRecipe = i;
         }
@@ -360,10 +389,14 @@ void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
     case HubHandler::State::alchemist:
         target.draw(backButton, states);
         target.draw(recipeListBackground, states);
+        target.draw(recipeDescBackground, states);
+        target.draw(recipeReqBackground, states);
+        target.draw(alchemist, states);
         for (const Recipe& recipe : this->recipes)
-        {
             target.draw(recipe.name, states);
-        }
+        
+        if (this->selectedRecipe != -1)
+            target.draw(this->recipes[this->selectedRecipe].description, states);
         break;
     default:
         break;

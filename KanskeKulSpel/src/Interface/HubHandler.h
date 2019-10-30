@@ -35,8 +35,10 @@ private:
     Level levelSelected;
     UIHandler* ui;
 
+    sf::Sprite alchemist;
     TextBubble recipeListBackground;
     TextBubble recipeDescBackground;
+    TextBubble recipeReqBackground;
     int infoTextCharacterSize;
     sf::Color textFillColor;
     sf::Color textOutlineColor;

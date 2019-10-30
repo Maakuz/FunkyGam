@@ -1,6 +1,6 @@
 [Textures]
 Folder: ../Resources/Sprites/
-TextureCount: 14
+TextureCount: 15
 0: cateSheetM.png
 1: fish.png
 2: bamb.png
@@ -15,6 +15,7 @@ TextureCount: 14
 11: ui_health_overlay.png
 12: clay_bamboo.png
 13: light_flower.png
+14: alchemist.png
 
 [Fonts]
 Folder: ../Resources/Fonts/

@@ -1,3 +1,6 @@
+[General]
+Spacing: 10 10
+
 [Text]
 TextWindowTextureID: 7
 CharacterSize: 14
@@ -7,7 +10,6 @@ TextOutlineColor: 0 130 200
 [MainButtons]
 Pos: 500 100
 Size: 170 50
-Spacing: 10 10
 CharacterSize 16
 TextureID: 8
 HoverTextureID: 9
@@ -18,11 +20,12 @@ Manage inventory
 Visit alchemist
 
 [Backbutton]
-Pos: 500 550
+Pos: 500 450
 Size: 170 50
 
 [Inventory]
 
 [Alchemy]
 RecipeListPos: 700 100
-RecipeListSize: 300 500
+RecipeListSize: 200 400
+RecipeDescWidth: 500
