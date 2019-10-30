@@ -159,6 +159,18 @@ void InventoryHandler::addStartItems()
     }
 }
 
+int InventoryHandler::countItem(int itemID)
+{
+    int tally = 0;
+    for (int i = 0; i < Inventory::ITEM_SLOT_COUNT; i++)
+    {
+        if (inventory.itemSlots[i] != nullptr && inventory.itemSlots[i]->getID() == itemID)
+            tally += inventory.stackSizes[i];
+    }
+
+    return tally;
+}
+
 void InventoryHandler::setSelectedItem(int item)
 {
     int prevSelected = this->inventory.selectedItemBarItem;
@@ -249,6 +261,31 @@ void InventoryHandler::addItem(int itemID, int amount)
     if (updateQuickslots)
         updateQuickslotSprites();
 
+}
+
+int InventoryHandler::removeItem(int itemID, int amount)
+{
+    int tally = 0;
+    for (int i = 0; i < Inventory::ITEM_SLOT_COUNT && amount > 0; i++)
+    {
+        if (inventory.itemSlots[i] != nullptr && inventory.itemSlots[i]->getID() == itemID)
+        {
+            int itemsTaken = std::min(amount, inventory.stackSizes[i]);
+            tally += itemsTaken;
+
+            inventory.stackSizes[i] -= itemsTaken;
+            amount -= itemsTaken;
+            stackText[i].setString(std::to_string(inventory.stackSizes[i]));
+
+            if (inventory.stackSizes[i] <= 0)
+            {
+                delete inventory.itemSlots[i];
+                inventory.itemSlots[i] = nullptr;
+            }
+        }
+    }
+
+    return tally;
 }
 
 void InventoryHandler::swapItems(int a, int b)

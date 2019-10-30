@@ -9,7 +9,8 @@ public:
     ~TextBubble() {};
 
     void create(sf::Texture* texture, sf::Font* font);
-    void setTexture(sf::Texture* texture) { this->texture = texture; };//this only works if the textures has the same dimensions. TAKE HEED
+    //this only works if the textures has the same dimensions. TAKE HEED
+    void setTexture(sf::Texture* texture) { this->texture = texture; };
     void setWidth(unsigned int width);
     void setHeight(unsigned int height);
     sf::Vector2u resizeToFit();

@@ -1,8 +1,11 @@
 [General]
 Spacing: 10 10
+TextWindowTextureID: 7
+TextureID: 8
+HoverTextureID: 9
+InactiveTextureID: 15
 
 [Text]
-TextWindowTextureID: 7
 CharacterSize: 14
 TextFillColor: 0 0 0
 TextOutlineColor: 0 130 200
@@ -11,8 +14,6 @@ TextOutlineColor: 0 130 200
 Pos: 500 100
 Size: 170 50
 CharacterSize 16
-TextureID: 8
-HoverTextureID: 9
 Count: 3
 [ButtonLabels]
 Play level 1
@@ -26,6 +27,8 @@ Size: 170 50
 [Inventory]
 
 [Alchemy]
-RecipeListPos: 700 100
+RecipeListPos: 680 100
 RecipeListSize: 200 400
 RecipeDescWidth: 500
+CraftButtonPos: 500 390
+CraftButtonSize: 170 50

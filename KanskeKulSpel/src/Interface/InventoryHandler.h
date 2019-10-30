@@ -16,7 +16,7 @@ public:
 
     void addStartItems();
 
-
+    int countItem(int itemID);
     void setSelectedItem(int item);
     int getSelectedItemID() const;
     int useSelectedItem();
@@ -26,6 +26,8 @@ public:
     void setQuickslotHidden(bool value) { this->quickslotsHidden = value; };
 
     void addItem(int itemID, int amount = 1);
+    //Returns amount of items removed
+    int removeItem(int itemID, int amount = 1);
 private:
     struct Inventory
     {

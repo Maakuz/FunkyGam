@@ -26,6 +26,7 @@ private:
     State state;
     sf::Texture* textureOn;
     sf::Texture* textureOff;
+    sf::Texture* textureInactive;
     sf::Texture* textureTextWindow;
     sf::Sprite background;
     
@@ -37,8 +38,10 @@ private:
 
     sf::Sprite alchemist;
     TextBubble recipeListBackground;
-    TextBubble recipeDescBackground;
-    TextBubble recipeReqBackground;
+    TextBubble recipeDesc;
+    TextBubble recipeReq;
+    TextBubble craftButton;
+
     int infoTextCharacterSize;
     sf::Color textFillColor;
     sf::Color textOutlineColor;
