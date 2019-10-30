@@ -18,8 +18,13 @@ TextBubble::TextBubble()
 
 void TextBubble::create(sf::Texture* texture, sf::Font* font)
 {
+    this->width = 0;
+    this->height = 0;
+    setPos(sf::Vector2f(0, 0));
+    this->text.setString("");
     bubble.clear();
     bubble.setPrimitiveType(sf::Quads);
+
     this->size = texture->getSize();
     text.setPosition(this->size.x, this->size.y);
 
@@ -73,6 +78,12 @@ void TextBubble::create(sf::Texture* texture, sf::Font* font)
 
 void TextBubble::setWidth(unsigned int width) //pure witchcraft
 {
+    if (width < texture->getSize().x * 2)
+        width = 0;
+
+    else
+        width -= 32;
+
     bubble[5].position.x += width - this->width;
     bubble[6].position.x += width - this->width;
 
@@ -90,6 +101,12 @@ void TextBubble::setWidth(unsigned int width) //pure witchcraft
 
 void TextBubble::setHeight(unsigned int height)
 {
+    if (height < texture->getSize().y * 2)
+        height = 0;
+
+    else
+        height -= 32;
+
     for (int i = 14; i < 28; i++)
     {
         bubble[i].position.y += height - this->height;
@@ -108,8 +125,8 @@ sf::Vector2u TextBubble::resizeToFit()
     int x = text.getLocalBounds().width;
     int y = text.getLocalBounds().height;
 
-    setWidth(x);
-    setHeight(y);
+    setWidth(x + 32);
+    setHeight(y + 32);
 
     return sf::Vector2u(x, y);
 }

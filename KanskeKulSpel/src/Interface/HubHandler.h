@@ -24,15 +24,22 @@ private:
         alchemist
     };
     State state;
-    static const int MAIN_BUTTON_COUNT = 3;
+    sf::Texture* textureOn;
+    sf::Texture* textureOff;
+    sf::Texture* textureTextWindow;
     sf::Sprite background;
-    TextBubble mainButtons[MAIN_BUTTON_COUNT];
+    
+    std::vector<TextBubble> mainButtons;
     TextBubble backButton;
+    
     Level levelSelected;
+    UIHandler* ui;
 
     TextBubble recipeListBackground;
-
-    UIHandler* ui;
+    TextBubble recipeDescBackground;
+    int infoTextCharacterSize;
+    sf::Color textFillColor;
+    sf::Color textOutlineColor;
 
     struct Recipe
     {
@@ -45,10 +52,30 @@ private:
         bool seen;
 
         Recipe();
+        void setFillColor(sf::Color color)
+        {
+            name.setFillColor(color);
+            description.setFillColor(color);
+        }
+
+        void setOutlineColor(sf::Color color)
+        {
+            name.setOutlineColor(color);
+            description.setOutlineColor(color);
+        }
+
+        void setCharacterSize(int size)
+        {
+            name.setCharacterSize(size);
+            description.setCharacterSize(size);
+        }
     };
     
     std::vector<Recipe> recipes;
+    int selectedRecipe;
+
     void loadRecipes();
+    void loadInterface();
 
     void updateBack(sf::Vector2f mousePos, State backstate);
     void updateMain(sf::Vector2f mousePos);

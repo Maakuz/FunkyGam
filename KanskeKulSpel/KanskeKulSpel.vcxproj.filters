@@ -255,6 +255,7 @@
     <None Include="..\Resources\Shaders\GaussianHor.frag" />
     <None Include="..\Resources\Data\Items.mop" />
     <None Include="..\Resources\Data\Recipes.mop" />
+    <None Include="..\Resources\Data\HubInterface.mop" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc\Todo.txt" />

@@ -2,10 +2,7 @@
 #include "Handlers/TextureHandler.h"
 #include "Misc/MouseState.h"
 #include "Misc/Definitions.h"
-
-#define OFF_TEX 8
-#define ON_TEX 9
-
+#include "Misc/ConsoleWindow.h"
 
 HubHandler::Recipe::Recipe()
 {
@@ -23,31 +20,27 @@ HubHandler::Recipe::Recipe()
 
 HubHandler::HubHandler(UIHandler* uiHandler)
 {
+    ConsoleWindow::get().addCommand("reloadHubInterface", [&](Arguments args)->std::string 
+        {
+
+            loadInterface();
+            for (int i = 0; i < recipes.size(); i++)
+            {
+                recipes[i].setCharacterSize(infoTextCharacterSize);
+                recipes[i].setFillColor(textFillColor);
+                recipes[i].setOutlineColor(textOutlineColor);
+            }
+
+            return "Locked and maybe loaded";
+        });
+
+    this->infoTextCharacterSize = DEFAULT_TEXT_SIZE;
+    this->selectedRecipe = -1;
     this->ui = uiHandler;
     this->background.setTexture(*TextureHandler::get().getTexture(6), true);
     this->background.setScale(2, 2);
-    std::string mainButtonText[MAIN_BUTTON_COUNT] = {"Play level 1", "Manage inventory", "Visit alchemist"};
 
-    for (int i = 0; i < MAIN_BUTTON_COUNT; i++)
-    {
-        this->mainButtons[i].create(TextureHandler::get().getTexture(8), TextureHandler::get().getFont());
-        this->mainButtons[i].setCharacterSize(16);
-        this->mainButtons[i].setText(mainButtonText[i]);
-        this->mainButtons[i].resizeToFit();
-        this->mainButtons[i].setWidth(150);
-        this->mainButtons[i].setPos(sf::Vector2f(600, 100 + i * 100));
-    }
-
-    this->backButton.create(TextureHandler::get().getTexture(8), TextureHandler::get().getFont());
-    this->backButton.setCharacterSize(16);
-    this->backButton.setText("Back");
-    this->backButton.resizeToFit();
-    this->backButton.setPos(sf::Vector2f(700, 100));
-
-    this->recipeListBackground.create(TextureHandler::get().getTexture(7), TextureHandler::get().getFont());
-    this->recipeListBackground.setPos(sf::Vector2f(800, 100));
-    this->recipeListBackground.setWidth(300);
-    this->recipeListBackground.setHeight(500);
+    this->loadInterface();
 
     this->reset();
 
@@ -80,11 +73,14 @@ void HubHandler::reset()
 {
     this->levelSelected = Level::none;
     this->state = State::main;
+    this->selectedRecipe = -1;
     ui->getInventory()->setQuickslotHidden(true);
 }
 
 void HubHandler::loadRecipes()
 {
+    this->recipes.clear();
+
     std::ifstream file(DATA_PATH "Recipes.mop");
 
     if (!file.is_open())
@@ -146,17 +142,135 @@ void HubHandler::loadRecipes()
         recipe.name.setString(name);
         recipe.description.setString(desc);
 
+        recipe.setCharacterSize(this->infoTextCharacterSize);
+        recipe.setFillColor(this->textFillColor);
+        recipe.setOutlineColor(this->textOutlineColor);
         recipes.push_back(recipe);
     }
 
     file.close();
 }
 
+void HubHandler::loadInterface()
+{
+    mainButtons.clear();
+
+    std::ifstream file(DATA_PATH "HubInterface.mop");
+
+    if (!file.is_open())
+    {
+        printf("Could not open \"HubInterface.mop\". Death\n");
+        system("pause");
+        exit(-43);
+    }
+    //Text
+    int textWindowTextureID;
+    int characterSize;
+    int philCollins[3];
+    int outlineColor[3];
+
+    //Main buttons
+    std::string trash;
+    sf::Vector2f pos;
+    sf::Vector2f size;
+    sf::Vector2f spacing;
+    int buttonCharacterSize;
+    int textureID;
+    int hoverTextureID;
+    int mainButtonCount;
+    std::vector<std::string> labels;
+    
+    //Back button
+    sf::Vector2f backPos;
+    sf::Vector2f backSize;
+
+    //Alchemy
+    sf::Vector2f recipeListPos;
+    sf::Vector2f recipeListSize;
+
+    //Text read
+    file >> trash;
+    file >> trash >> textWindowTextureID;
+    file >> trash >> characterSize;
+    file >> trash >> philCollins[0] >> philCollins[1] >> philCollins[2];
+    file >> trash >> outlineColor[0] >> outlineColor[1] >> outlineColor[2];
+
+    //Main button read
+    file >> trash;
+    file >> trash >> pos.x >> pos.y;
+    file >> trash >> size.x >> size.y;
+    file >> trash >> spacing.x >> spacing.y;
+    file >> trash >> buttonCharacterSize;
+    file >> trash >> textureID;
+    file >> trash >> hoverTextureID;
+    file >> trash >> mainButtonCount;
+
+    file >> trash;
+    file.ignore();
+
+    for (int i = 0; i < mainButtonCount; i++)
+    {
+        std::string label;
+        std::getline(file, label);
+        labels.push_back(label);
+    }
+
+    //back button read
+    file >> trash;
+    file >> trash >> backPos.x >> backPos.y;
+    file >> trash >> backSize.x >> backSize.y;
+
+    //Inventory read heh
+    file >> trash;
+
+    //Alchemy read
+    file >> trash;
+    file >> trash >> recipeListPos.x >> recipeListPos.y;
+    file >> trash >> recipeListSize.x >> recipeListSize.y;
+
+
+    file.close();
+
+
+    this->textureOff = TextureHandler::get().getTexture(textureID);
+    this->textureOn = TextureHandler::get().getTexture(hoverTextureID);
+    this->textureTextWindow = TextureHandler::get().getTexture(textWindowTextureID);
+
+    this->infoTextCharacterSize = characterSize;
+    this->textFillColor = sf::Color(philCollins[0], philCollins[1], philCollins[2]);
+    this->textOutlineColor = sf::Color(outlineColor[0], outlineColor[1], outlineColor[2]);
+
+    for (int i = 0; i < mainButtonCount; i++)
+    {
+        TextBubble button(this->textureOff, TextureHandler::get().getFont());
+        button.setCharacterSize(buttonCharacterSize);
+        button.setText(labels[i]);
+        button.setWidth(size.x);
+        button.setHeight(size.y);
+        button.setPos(pos + sf::Vector2f(0, (size.y + spacing.y) * i));
+        
+        mainButtons.push_back(button);
+    }
+
+    this->backButton.create(this->textureOff, TextureHandler::get().getFont());
+    this->backButton.setCharacterSize(buttonCharacterSize);
+    this->backButton.setText("Back");
+    this->backButton.setPos(backPos);
+    this->backButton.setWidth(backSize.x);
+    this->backButton.setHeight(backSize.y);
+
+    this->recipeListBackground.create(this->textureTextWindow, TextureHandler::get().getFont());
+    this->recipeListBackground.setPos(recipeListPos);
+    this->recipeListBackground.setWidth(recipeListSize.x);
+    this->recipeListBackground.setHeight(recipeListSize.y);
+
+}
+
 void HubHandler::updateBack(sf::Vector2f mousePos, State backstate)
 {
     if (backButton.getBounds().contains(mousePos))
     {
-        this->backButton.setTexture(TextureHandler::get().getTexture(ON_TEX));
+        this->backButton.setTexture(this->textureOn);
         if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
         {
             state = backstate;
@@ -165,17 +279,17 @@ void HubHandler::updateBack(sf::Vector2f mousePos, State backstate)
     }
 
     else
-        this->backButton.setTexture(TextureHandler::get().getTexture(OFF_TEX));
+        this->backButton.setTexture(this->textureOff);
 
 }
 
 void HubHandler::updateMain(sf::Vector2f mousePos)
 {
-    for (int i = 0; i < MAIN_BUTTON_COUNT; i++)
+    for (int i = 0; i < mainButtons.size(); i++)
     {
         if (mainButtons[i].getBounds().contains(mousePos))
         {
-            this->mainButtons[i].setTexture(TextureHandler::get().getTexture(ON_TEX));
+            this->mainButtons[i].setTexture(this->textureOn);
             if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
             {
                 switch (i)
@@ -200,7 +314,7 @@ void HubHandler::updateMain(sf::Vector2f mousePos)
         }
 
         else
-            this->mainButtons[i].setTexture(TextureHandler::get().getTexture(OFF_TEX));
+            this->mainButtons[i].setTexture(this->textureOff);
 
     }
 
@@ -214,7 +328,17 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
 
         sf::Vector2f pos = this->recipeListBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
         recipe->name.setPosition(pos);
+
+        if (recipe->name.getGlobalBounds().contains(mousePos) && MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+        {
+            recipe->name.setOutlineThickness(1);
+
+            if (this->selectedRecipe != -1)
+                this->recipes[this->selectedRecipe].name.setOutlineThickness(0);
+            this->selectedRecipe = i;
+        }
     }
+
 }
 
 void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
@@ -224,8 +348,8 @@ void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
     switch (state)
     {
     case HubHandler::State::main:
-        for (int i = 0; i < MAIN_BUTTON_COUNT; i++)
-            target.draw(mainButtons[i], states);
+        for (const TextBubble& text : mainButtons)
+            target.draw(text, states);
         break;
     case HubHandler::State::level:
         break;
