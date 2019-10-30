@@ -1,0 +1,13 @@
+[Recipes]
+RecipeCount 1
+
+[Flare]
+RecipeName: Mix flare
+ComponentCount: 2
+ComponentID:        4 5
+ComponentAmount:    2 1
+FinishedItemID: 2
+[Description]
+Text blahblabbla
+descriptionstuff
+[DescriptionEnd]

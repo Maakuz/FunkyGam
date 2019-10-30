@@ -21,7 +21,7 @@ private:
         main,
         level,
         inventory,
-        achemist
+        alchemist
     };
     State state;
     static const int MAIN_BUTTON_COUNT = 3;
@@ -30,9 +30,28 @@ private:
     TextBubble backButton;
     Level levelSelected;
 
+    TextBubble recipeListBackground;
+
     UIHandler* ui;
+
+    struct Recipe
+    {
+        sf::Text name;
+        sf::Text description;
+        std::vector<int> components;
+        std::vector<int> componentAmounts;
+        int resultID;
+        bool unlocked;
+        bool seen;
+
+        Recipe();
+    };
+    
+    std::vector<Recipe> recipes;
+    void loadRecipes();
 
     void updateBack(sf::Vector2f mousePos, State backstate);
     void updateMain(sf::Vector2f mousePos);
+    void updateAlchemy(sf::Vector2f mousePos);
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

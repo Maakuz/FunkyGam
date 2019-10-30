@@ -8,8 +8,6 @@ public:
     Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture);
     ~Throwable() { };
 
-    friend std::istream& operator>>(std::istream& in, Throwable& throwable);
-
     void update(float dt);
 
     bool hasDetonated() const { return detonated; };
@@ -40,4 +38,6 @@ private:
     int damage;
 
     int particleEffectID;
+
+    virtual std::istream& readSpecific(std::istream& in);
 };

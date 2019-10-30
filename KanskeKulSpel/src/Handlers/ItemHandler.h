@@ -22,7 +22,6 @@ public:
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);
     static const Item* getTemplate(int itemID);
 
-    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     static std::vector<Throwable> throwables;
     static std::vector<Item*> itemTemplates;
@@ -35,4 +34,9 @@ private:
     };
     std::vector<GatherItem> gatherItems;
     int gatherRange;
+    
+    void loadThrowables(std::ifstream& file);
+    void loadGatherables(std::ifstream& file);
+
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

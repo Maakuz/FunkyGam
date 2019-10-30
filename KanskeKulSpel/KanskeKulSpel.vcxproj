@@ -213,12 +213,12 @@
     <ClInclude Include="src\Renderer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\Resources\Data\Gatherables.mop" />
     <None Include="..\Resources\Data\Grunt.mop" />
+    <None Include="..\Resources\Data\Items.mop" />
     <None Include="..\Resources\Data\LoadList.mop" />
     <None Include="..\Resources\Data\Player.mop" />
+    <None Include="..\Resources\Data\Recipes.mop" />
     <None Include="..\Resources\Data\StartItems.mop" />
-    <None Include="..\Resources\Data\Throwables.mop" />
     <None Include="..\Resources\Shaders\GaussianHor.frag" />
     <None Include="..\Resources\Shaders\GaussianVert.frag" />
     <None Include="..\Resources\Shaders\Lighting.frag" />

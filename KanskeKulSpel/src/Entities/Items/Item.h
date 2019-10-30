@@ -12,7 +12,7 @@ public:
     friend std::istream& operator>>(std::istream& in, Item& item);
 
 
-    int getID() const{ return id; };
+    int getID() const { return id; };
     void setID(int id) { this->id = id; };
 
     std::string getName() const { return name; };
@@ -40,5 +40,7 @@ private:
     int emitterID;
     bool useable;
     bool obtained;
+
+    virtual std::istream& readSpecific(std::istream& in) { return in; };
 };
 

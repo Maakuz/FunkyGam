@@ -85,38 +85,30 @@ void Throwable::handleCollision(const Entity* collider)
     this->impacted = true;
 }
 
-std::istream& operator>>(std::istream& in, Throwable& throwable)
+std::istream& Throwable::readSpecific(std::istream& in)
 {
     std::string trash;
     int limit;
     int emitterID;
     bool useable;
 
-    in >> trash >> trash;
-    throwable.setName(trash);
-    in >> trash >>  limit;
-    throwable.setStackLimit(limit);
-    in >> trash >> emitterID;
-    throwable.setEmitterID(emitterID);
-    in >> trash >> useable;
-    throwable.setUseable(useable);
 
-    in >> trash >> throwable.mass;
-    in >> trash >> throwable.armingTime;
-    in >> trash >> throwable.bounce;
-    in >> trash >> throwable.detonateOnImpact;
-    in >> trash >> throwable.damage;
-    in >> trash >> throwable.particleEffectID;
+    in >> trash;
+    in >> trash >> mass;
+    in >> trash >> armingTime;
+    in >> trash >> bounce;
+    in >> trash >> detonateOnImpact;
+    in >> trash >> damage;
+    in >> trash >> particleEffectID;
 
     int explosionType;
 
     in >> trash;
     in >> trash >> explosionType;
-    throwable.explosionData.type = ExplosionType(explosionType);
-    in >> trash >> throwable.explosionData.radius;
-    in >> trash >> throwable.explosionData.falloff;
-    in >> trash >> throwable.explosionData.damage;
-
+    explosionData.type = ExplosionType(explosionType);
+    in >> trash >> explosionData.radius;
+    in >> trash >> explosionData.falloff;
+    in >> trash >> explosionData.damage;
 
     return in;
 }

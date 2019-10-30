@@ -18,5 +18,7 @@ std::istream& operator>>(std::istream& in, Item& item)
     in >> trash >> item.emitterID;
     in >> trash >> item.useable;
 
+    item.readSpecific(in);
+
     return in;
 }

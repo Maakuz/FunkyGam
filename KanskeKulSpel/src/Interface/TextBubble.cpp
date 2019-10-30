@@ -143,6 +143,11 @@ void TextBubble::appendText(std::string text)
     this->text.setString(this->text.getString() + text);
 }
 
+sf::Vector2f TextBubble::getTextPos() const
+{
+    return this->pos + sf::Vector2f(this->size);
+}
+
 sf::FloatRect TextBubble::getBounds()
 {
     return sf::FloatRect(pos.x, pos.y, texture->getSize().x * 2 + width, texture->getSize().y * 2 + height);
