@@ -9,9 +9,11 @@ class CollisionBox : public sf::Drawable
 public:
     enum ColliderKeys
     {
-        Ground = 501,
-        Platform = 502,
-        Player = 1,
+        ground = 501,
+        platform = 502,
+        levelEnd = 507,
+        levelReturn = 508,
+        player = 1,
         Static = 2,
         throwable = 3,
         character = 4,

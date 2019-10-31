@@ -8,8 +8,10 @@
 #include "Misc/VectorFunctions.h"
 
 #define LEVEL1_ITEM_COUNT 2
+#define LEVEL1_RARE_ITEM_COUNT 1
 
-const int LEVEL1_ITEMS[LEVEL1_ITEM_COUNT] = {4, 5};
+const int LEVEL1_ITEMS[LEVEL1_ITEM_COUNT] = { 4, 5 };
+const int LEVEL1_RARE_ITEMS[LEVEL1_RARE_ITEM_COUNT] = {6};
 
 std::vector<Throwable> ItemHandler::throwables;
 std::vector<Item*> ItemHandler::itemTemplates;
@@ -104,6 +106,13 @@ void ItemHandler::update(float dt, Player* player)
 
 void ItemHandler::spawnGatherables(Level level)
 {
+    for (GatherItem& item : gatherItems)
+    {
+        if (item.emitter)
+            item.emitter->kill();
+    }
+    gatherItems.clear();
+
     if (level == Level::forest)
     {
         for (sf::Vector2f& point : this->gatherPoints)
@@ -122,6 +131,24 @@ void ItemHandler::spawnGatherables(Level level)
                 emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
 
             gatherItems.push_back(GatherItem{emitter, item});
+        }
+
+        for (sf::Vector2f& point : this->rareGatherPoints)
+        {
+            int i = rand() % LEVEL1_RARE_ITEM_COUNT;
+
+            Item item(*this->itemTemplates[LEVEL1_RARE_ITEMS[i]]);
+
+            sf::Vector2f pos = point;
+            pos.y += TILE_SIZE - item.getSize().y;
+
+            item.setPosition(pos);
+            Emitter* emitter = nullptr;
+
+            if (item.getEmitterID() != -1)
+                emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
+
+            gatherItems.push_back(GatherItem{ emitter, item });
         }
     }
 }

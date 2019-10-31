@@ -3,9 +3,9 @@ ItemCount: 4
 
 [Item]
 ItemID: 0
-TextureID: 4
+TextureID: 17
 Name: FlashBomb
-stack: 5
+stack: 10
 Emitter: -1
 Useable: 1
 [Throwable]
@@ -25,7 +25,7 @@ Damage: 3
 ItemID: 1
 TextureID: 2
 Name: Bomb
-stack: 3
+stack: 10
 Emitter: -1
 Useable: 1
 [Throwable]
@@ -45,7 +45,7 @@ Damage: 100
 ItemID: 2
 TextureID: 4
 Name: Flare
-stack: 5
+stack: 10
 Emitter: -1
 Useable: 1
 [Throwable]
@@ -83,7 +83,7 @@ Damage: 0
 
 
 [GatherableData]
-ItemCount: 2
+ItemCount: 3
 
 [Item]
 ItemID: 4
@@ -97,6 +97,14 @@ Useable: 0
 ItemID: 5
 TextureID: 12
 Name: Clamboo
+Stack: 10
+Emitter: -1
+Useable: 0
+
+[Item]
+ItemID: 6
+TextureID: 16
+Name: Blastberry
 Stack: 10
 Emitter: -1
 Useable: 0

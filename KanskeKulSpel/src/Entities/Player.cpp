@@ -13,7 +13,7 @@
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
 :MovingEntity(data, pos)
 {
-    this->collisionBox.addComponent(CollisionBox::ColliderKeys::Player);
+    this->collisionBox.addComponent(CollisionBox::ColliderKeys::player);
     this->collisionBox.addComponent(CollisionBox::ColliderKeys::character);
     this->walkSpeed = 0.05f;
     this->jumpHeight = 5.3f;
@@ -175,11 +175,21 @@ void Player::update(float dt, sf::Vector2f mousePos)
     ui->setHealthPercentage(this->health / float(this->maxHealth));
 }
 
+void Player::reset(sf::Vector2f spawnPoint)
+{
+    setPosition(spawnPoint);
+    this->returning = false;
+    this->goalReached = false;
+    this->health = this->maxHealth;
+    this->momentum.x = 0;
+    this->momentum.y = 0;
+}
+
 void Player::handleCollision(const Entity* collider)
 {
     if (!noClip)
     {
-        if (momentum.y > 0 && collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Platform))
+        if (momentum.y > 0 && collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::platform))
         {
             //walking on ground
             if (collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
@@ -204,6 +214,14 @@ void Player::handleCollision(const Entity* collider)
         }
 
         MovingEntity::handleCollision(collider);
+    }
+
+    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelReturn))
+        this->returning = true;
+
+    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelEnd))
+    {
+        this->goalReached = true;
     }
 }
 

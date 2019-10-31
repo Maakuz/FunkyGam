@@ -15,10 +15,13 @@ public:
     friend std::istream& operator>>(std::istream& in, Player& player);
 
     void update(float dt, sf::Vector2f mousePos);
+    void reset(sf::Vector2f spawnPoint);
 
     void setIllumination(float illumination) { this->illumination = illumination; };
     float getIllumination() const { return illumination; };
     bool isAlive() const { return this->health > 0; };
+    bool isReturning() const { return this->returning; };
+    bool isGoalReached() const { return this->goalReached; };
 
     void setGatherableInRange(Item* item) { this->gatherableInRange = item; };
 
@@ -35,6 +38,8 @@ private:
 
     bool debugMode;
     bool noClip;
+    bool returning;
+    bool goalReached;
 
     void move(float dt);
     void debugMove(float dt);

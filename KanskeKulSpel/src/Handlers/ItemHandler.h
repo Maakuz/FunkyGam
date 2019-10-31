@@ -15,7 +15,7 @@ public:
     void loadTemplates();
 
     void update(float dt, Player* player);
-    void setGatherPoints(std::vector<sf::Vector2f> gatherPoints) { this->gatherPoints = gatherPoints; };
+    void setGatherPoints(std::vector<sf::Vector2f> gatherPoints, std::vector<sf::Vector2f> rareGatherPoints) { this->gatherPoints = gatherPoints; this->rareGatherPoints = rareGatherPoints; };
     void spawnGatherables(Level level);
     void queueColliders();
 
@@ -26,6 +26,7 @@ private:
     static std::vector<Throwable> throwables;
     static std::vector<Item*> itemTemplates;
     std::vector<sf::Vector2f> gatherPoints;
+    std::vector<sf::Vector2f> rareGatherPoints;
 
     struct GatherItem
     {

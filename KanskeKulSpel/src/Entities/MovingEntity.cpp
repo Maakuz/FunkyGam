@@ -84,7 +84,7 @@ void MovingEntity::stopJump(float haltForce)
 
 void MovingEntity::handleCollision(const Entity* collider)
 {
-    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Ground))
+    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::ground))
     {
         //walking on ground
         if (this->momentum.y > 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))

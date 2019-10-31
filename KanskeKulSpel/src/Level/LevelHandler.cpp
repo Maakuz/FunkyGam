@@ -1,6 +1,7 @@
 #include "LevelHandler.h"
 #include <fstream>
 #include "Misc/Definitions.h"
+#include "Misc/ConsoleWindow.h"
 
 #define LEVEL_FOLDER "../Resources/Maps/"
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
@@ -11,6 +12,7 @@
 #define PLAYER_SPAWN_POINT 506
 #define LEVEL_END_POINT 507
 #define LEVEL_RETURN_POINT 508
+#define BREAKABLE_BLOCK 508
 
 const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
 {"Level1.yay"};
@@ -20,6 +22,18 @@ const std::string LEVEL_BG_NAMES[NR_OF_LEVELS] =
 
 LevelHandler::LevelHandler()
 {
+    drawCollision = false;
+
+    ConsoleWindow::get().addCommand("levelShowCollision", [&](Arguments args)->std::string 
+        {
+            if (args.empty())
+                return "Missing argument 0 or 1";
+
+            drawCollision = std::stoi(args[0]);
+
+
+            return "It is done";
+        });
 }
 
 LevelHandler::~LevelHandler()
@@ -30,9 +44,13 @@ LevelHandler::~LevelHandler()
 
 bool LevelHandler::loadLevel(Level level)
 {
+    terrain.clear();
+
     this->importLevel(level);
-    this->generateHitboxes(CollisionBox::ColliderKeys::Ground);
-    this->generateHitboxes(CollisionBox::ColliderKeys::Platform);
+    this->generateHitboxes(CollisionBox::ColliderKeys::ground);
+    this->generateHitboxes(CollisionBox::ColliderKeys::platform);
+    this->generateHitboxes(CollisionBox::ColliderKeys::levelEnd);
+    this->generateHitboxes(CollisionBox::ColliderKeys::levelReturn);
     this->createSpites();
     this->generateShadowLines();
 
@@ -70,12 +88,11 @@ void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
     }
 }
 
-void LevelHandler::drawCollision(sf::RenderTarget& target, sf::RenderStates states) const
+void LevelHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    for (size_t i = 0; i < terrain.size(); i++)
-    {
-        target.draw(terrain[i].getCollisionBox());
-    }
+    if (drawCollision)
+        for (size_t i = 0; i < terrain.size(); i++)
+            target.draw(terrain[i].getCollisionBox(), states);
 }
 
 bool LevelHandler::importLevel(Level level)
@@ -290,7 +307,7 @@ bool LevelHandler::generateHitboxes(CollisionBox::ColliderKeys type)
     return true;
 }
 
-std::vector<sf::Vector2f> LevelHandler::generateSpawnPoints()
+std::vector<sf::Vector2f> LevelHandler::generateEnemySpawnPoints()
 {
     std::vector<sf::Vector2f> spawnPoints;
 
@@ -303,7 +320,6 @@ std::vector<sf::Vector2f> LevelHandler::generateSpawnPoints()
             if (hitboxData[i][j].tileID == ENEMY_SPAWN_POINT)
             {
                 spawnPoints.push_back(sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y));
-
             }
         }
     }
@@ -333,11 +349,51 @@ std::vector<sf::Vector2f> LevelHandler::generateGatherPoints()
     return gatherPoints;
 }
 
+std::vector<sf::Vector2f> LevelHandler::generateRareGatherPoints()
+{
+    std::vector<sf::Vector2f> gatherPoints;
+
+    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
+
+    for (int i = 0; i < end.y; i++)
+    {
+        for (int j = 0; j < end.x; j++)
+        {
+            if (hitboxData[i][j].tileID == RARE_GATHER_POINT)
+            {
+                gatherPoints.push_back(sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y));
+            }
+        }
+    }
+
+
+    return gatherPoints;
+}
+
+sf::Vector2f LevelHandler::findPlayerSpawnPoint()
+{
+    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
+    sf::Vector2f point;
+    for (int i = 0; i < end.y; i++)
+    {
+        for (int j = 0; j < end.x; j++)
+        {
+            if (hitboxData[i][j].tileID == PLAYER_SPAWN_POINT)
+            {
+                point = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
+            }
+        }
+    }
+
+    return point;
+}
+
 void LevelHandler::generateShadowLines()
 {
+    shadowLines.clear();
     for (auto& ter : terrain)
     {
-        if (ter.getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Ground))
+        if (ter.getCollisionBox().hasComponent(CollisionBox::ColliderKeys::ground))
         {
             Line top(
                 ter.getPosition(),
@@ -364,6 +420,7 @@ void LevelHandler::generateShadowLines()
 
 void LevelHandler::createSpites()
 {
+    linearSprite.clear();
     for (size_t i = 0; i < layers.size(); i++)
     {
         for (size_t j = 0; j < layers[i].size(); j++)
@@ -373,17 +430,41 @@ void LevelHandler::createSpites()
                 Tile tile = layers[i][j][k];
                 if (tile.tileID != -1)
                 {
-                    sf::Sprite sprite;
-                    sprite.setTexture(tilemaps[tile.textureID].texture);
-                    sprite.setPosition((float)tile.x, (float)tile.y);
                     int xMap = tile.tileID % tilemaps[tile.textureID].x;
                     int yMap = tile.tileID / tilemaps[tile.textureID].x;
-
-                    sprite.setTextureRect(sf::IntRect(xMap * TILE_SIZE, yMap * TILE_SIZE, TILE_SIZE, TILE_SIZE));
-                    linearSprite.push_back(sprite);
-
+                    sf::Vector2f pos((float)tile.x, (float)tile.y);
+                    sf::IntRect rect(xMap * TILE_SIZE, yMap * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                    
                     this->dimensions.x = std::max(this->dimensions.x, (int)k * TILE_SIZE);
                     this->dimensions.y = std::max(this->dimensions.y, (int)j * TILE_SIZE);
+
+                    if (hitboxData[j][k].tileID != BREAKABLE_BLOCK || i == 0)
+                    {
+                        sf::Sprite sprite;
+                        sprite.setTexture(tilemaps[tile.textureID].texture);
+                        sprite.setPosition(pos);
+
+
+                        sprite.setTextureRect(rect);
+                        linearSprite.push_back(sprite);
+
+
+                    }
+
+                    else
+                    {
+                        if (i == 1) //layer 2
+                        {
+                            BreakableTerrain ter(pos, &tilemaps[tile.textureID].texture, rect);
+                            if (layers[2][j][k].tileID != -1)
+                            {
+                                int xOverMap = tile.tileID % tilemaps[layers[2][j][k].textureID].x;
+                                int yOverMap = tile.tileID / tilemaps[layers[2][j][k].textureID].x;
+                                sf::IntRect rectOverlay(xOverMap * TILE_SIZE, yOverMap * TILE_SIZE, TILE_SIZE, TILE_SIZE);
+                                ter.addOverlay(&tilemaps[layers[2][j][k].textureID].texture, rectOverlay);
+                            }
+                        }
+                    }
                 }
             }
         }

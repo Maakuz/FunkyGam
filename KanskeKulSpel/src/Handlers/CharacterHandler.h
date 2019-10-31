@@ -15,10 +15,10 @@ public:
         grunt = 0
     };
 
-    CharacterHandler();
+    CharacterHandler(UIHandler* uiHandler);
     ~CharacterHandler();
 
-    void initialize(const std::vector<Line>* occluders, UIHandler* uiHandler);
+    void initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint);
     void loadPlayer();
     void loadEnemies();
     void spawnEnemies();

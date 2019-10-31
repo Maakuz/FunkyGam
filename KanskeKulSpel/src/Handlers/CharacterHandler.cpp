@@ -9,13 +9,17 @@
 #include "Misc/Profiler.h"
 #include "Misc/Definitions.h"
 
-CharacterHandler::CharacterHandler()
+CharacterHandler::CharacterHandler(UIHandler* uiHandler)
 {
     player = nullptr;
     occluders = nullptr;
-    ui = nullptr;
     this->drawHitboxes = false;
     this->drawSightlines = false;
+
+    this->ui = uiHandler;
+
+    loadPlayer();
+    loadEnemies();
 
     ConsoleWindow::get().addCommand("charResetEnemies", [&](Arguments args)->std::string {
         enemies.clear();
@@ -65,13 +69,10 @@ CharacterHandler::~CharacterHandler()
         delete enemy;
 }
 
-void CharacterHandler::initialize(const std::vector<Line>* occluders, UIHandler* uiHandler)
+void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint)
 {
     this->occluders = occluders;
-    this->ui = uiHandler;
-
-    loadPlayer();
-    loadEnemies();
+    this->player->reset(playerSpawnPoint - this->player->getSize());
 }
 
 void CharacterHandler::loadPlayer()

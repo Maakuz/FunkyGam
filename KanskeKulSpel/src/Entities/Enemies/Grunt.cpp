@@ -246,7 +246,7 @@ std::istream& Grunt::readSpecific(std::istream& in)
 
 void Grunt::handleCollision(const Entity* collider)
 {
-    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Ground) || collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Platform))
+    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::ground) || collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::platform))
     {
         //walking on ground
         if (this->momentum.y > 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
@@ -284,13 +284,13 @@ void Grunt::handleCollision(const Entity* collider)
         }
     }
 
-    else if (flying && !collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Player))
+    else if (flying && !collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::player))
     {
         this->flying = false;
         this->state = State::stunned;
     }
 
-    else if (flying && collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Player))
+    else if (flying && collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::player))
     {
         const MovingEntity* ptr = dynamic_cast<const MovingEntity*>(collider);
         

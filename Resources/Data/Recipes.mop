@@ -1,5 +1,5 @@
 [Recipes]
-RecipeCount 1
+RecipeCount 2
 
 [Flare]
 RecipeName: Mix flare
@@ -8,6 +8,17 @@ ComponentID:        4 5
 ComponentAmount:    2 1
 FinishedItemID: 2
 [Description]
-Text blahblabbla
-descriptionstuff
+Good for illuminationg the surrounding area. It
+also attracts enemies.
+[DescriptionEnd]
+
+[Flare]
+RecipeName: Brew bomb
+ComponentCount: 2
+ComponentID:        6 5
+ComponentAmount:    1 1
+FinishedItemID: 1
+[Description]
+This is a somewhat powerful bomb. You
+could probably use it to blow up weak stuff.
 [DescriptionEnd]

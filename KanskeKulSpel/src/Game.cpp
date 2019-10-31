@@ -11,7 +11,8 @@
 const float ZOOM_LEVEL = 1.f;
 
 Game::Game(sf::RenderWindow* window) :
-    hubHandler(&this->uiHandler)
+    hubHandler(&this->uiHandler),
+    characterHandler(&this->uiHandler)
 {
     this->window = window;
     this->paused = false;
@@ -111,7 +112,9 @@ void Game::updateLevel(float dt)
 
     PROFILER_START("CharUpdate");
     this->characterHandler.update(dt, mousePosWorld);
-    if (!this->characterHandler.getPlayer()->isAlive())
+    if (!this->characterHandler.getPlayer()->isAlive() || 
+        characterHandler.getPlayer()->isGoalReached() ||
+        characterHandler.getPlayer()->isReturning())
     {
         this->gameState = GameState::States::hub;
         this->hubHandler.reset();
@@ -144,15 +147,16 @@ void Game::updateLevel(float dt)
     Renderer::queueUI(&this->uiHandler);
 
     Renderer::queueDebug(&this->characterHandler);
+    Renderer::queueDebug(&this->levelHandler);
 }
 
 void Game::loadLevel(Level level)
 {
     levelHandler.loadLevel(level);
-    characterHandler.initialize(levelHandler.getShadowLinePtr(), &uiHandler);
-    characterHandler.setSpawnPoints(levelHandler.generateSpawnPoints());
+    characterHandler.initializeLevel(levelHandler.getShadowLinePtr(), levelHandler.findPlayerSpawnPoint());
+    characterHandler.setSpawnPoints(levelHandler.generateEnemySpawnPoints());
     characterHandler.spawnEnemies();
-    itemHandler.setGatherPoints(levelHandler.generateGatherPoints());
+    itemHandler.setGatherPoints(levelHandler.generateGatherPoints(), levelHandler.generateRareGatherPoints());
     itemHandler.spawnGatherables(level);
 }
 

@@ -148,6 +148,7 @@
     <ClCompile Include="src\Entities\Entity.cpp" />
     <ClCompile Include="src\Entities\Items\Item.cpp" />
     <ClCompile Include="src\Entities\MovingEntity.cpp" />
+    <ClCompile Include="src\Level\BreakableTerrain.cpp" />
     <ClCompile Include="src\Level\Terrain.cpp" />
     <ClCompile Include="src\Entities\Items\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -187,6 +188,7 @@
     <ClInclude Include="src\Interface\InventoryHandler.h" />
     <ClInclude Include="src\Interface\UIHandler.h" />
     <ClInclude Include="src\Interface\TextBubble.h" />
+    <ClInclude Include="src\Level\BreakableTerrain.h" />
     <ClInclude Include="src\Misc\ConsoleWindow.h" />
     <ClInclude Include="src\Misc\Counter.h" />
     <ClInclude Include="src\Misc\DebugDrawable.h" />

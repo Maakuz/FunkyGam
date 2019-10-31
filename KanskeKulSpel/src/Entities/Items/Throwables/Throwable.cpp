@@ -46,14 +46,17 @@ void Throwable::update(float dt)
 
 void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Entity* thrower)
 {
-    this->pos = pos;
+    this->setPosition(pos);
     this->momentum = momentum;
     this->thrower = thrower;
 }
 
 void Throwable::handleCollision(const Entity* collider)
 {
-    if (collider == thrower) //Projectile is immune to thrower NO, NOT THE OTHER WAY AROUND
+    //Projectile is immune to thrower NO, NOT THE OTHER WAY AROUND
+    if (collider == thrower || 
+        collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelEnd) ||
+        collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelReturn))
         return;
 
     if (this->momentum.y > 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
