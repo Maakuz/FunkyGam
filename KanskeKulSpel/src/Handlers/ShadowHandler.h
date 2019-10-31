@@ -11,7 +11,7 @@ public:
     ShadowHandler();
     ~ShadowHandler() {};
 
-    void generateShadowMap(sf::RenderTarget& target, sf::Vector2f viewOffset);
+    void generateShadowMap(sf::RenderTarget& target, sf::Vector2f viewOffset, std::vector<Light*>& lights);
     void clearLines();
 
     static void queueLine(Line line);

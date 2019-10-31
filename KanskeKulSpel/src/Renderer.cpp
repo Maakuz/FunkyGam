@@ -66,12 +66,19 @@ void Renderer::render(sf::RenderTarget& target)
     {
         PROFILER_START("Shoaduv");
         sf::View view = target.getView();
-        this->fullscreenboi.setPosition(view.getCenter() - (view.getSize() / 2.f));
         sf::Vector2f offset = view.getCenter() - (view.getSize() / 2.f);
+        this->fullscreenboi.setPosition(offset);
+
+        std::vector<Light*> lights;
+        for (Light* light : LightQueue::get().getQueue())
+        {
+            if (sf::FloatRect(offset, view.getSize()).intersects(sf::FloatRect(light->pos - sf::Vector2f(light->radius, light->radius), (sf::Vector2f)light->shadowMap.getSize())))
+                lights.push_back(light);
+        }
 
         this->renderTargets[0].clear(sf::Color::Black);
         this->renderTargets[0].setView(view);
-        this->shadowHandler.generateShadowMap(this->renderTargets[0], offset);
+        this->shadowHandler.generateShadowMap(this->renderTargets[0], offset, lights);
         this->renderTargets[0].display();
 
         this->fullscreenboi.setTexture(&this->renderTargets[0].getTexture());

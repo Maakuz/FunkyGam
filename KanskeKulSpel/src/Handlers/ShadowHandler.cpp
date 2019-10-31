@@ -36,12 +36,10 @@ ShadowHandler::ShadowHandler()
 }
 
 //Please don't look here
-void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f viewOffset)
+void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f viewOffset, std::vector<Light*>& lights)
 {
-    for (size_t k = 0; k < LightQueue::get().getQueue().size(); k++)
+    for (Light* light : lights)
     {
-        Light* light = LightQueue::get().getQueue()[k];
-
         std::vector<Line> currentLines = this->lines;
         //For loop this perhaps
         sf::Vector2f topRight(light->pos.x + light->radius, light->pos.y - light->radius);
