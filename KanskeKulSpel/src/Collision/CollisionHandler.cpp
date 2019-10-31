@@ -4,42 +4,54 @@
 std::vector<Entity*> CollisionHandler::colliders;
 std::vector<Entity*> CollisionHandler::staticColliders;
 std::vector<Explosion> CollisionHandler::explosions;
+std::vector<BreakableTerrain*> CollisionHandler::breakableTerrain;
 
 void CollisionHandler::processQueue()
 {
-    for (int i = 0; i < colliders.size(); i++)
+    for (auto entity1 = colliders.begin(); entity1 < colliders.end(); entity1++)
     {
-        for (int j = i + 1; j < colliders.size(); j++)
+        for (auto entity2 = entity1 +1; entity2 < colliders.end(); entity2++)
         {
-            if (colliders[i]->getCollisionBox().intersects(colliders[j]->getCollisionBox()))
+            if ((*entity1)->getCollisionBox().intersects((*entity2)->getCollisionBox()))
             {
-                colliders[i]->handleCollision(colliders[j]);
-                colliders[j]->handleCollision(colliders[i]);
+                (*entity1)->handleCollision((*entity2));
+                (*entity2)->handleCollision((*entity1));
             }
         }
     }
 
     //Static objects cannot collide with other static objects
-    for (int i = 0; i < staticColliders.size(); i++)
+    for (const Entity* staticEntity : staticColliders)
+        for (Entity* entity : colliders)
+            if (staticEntity->getCollisionBox().intersects(entity->getCollisionBox()))
+                entity->handleCollision(staticEntity);
+
+
+
+    for (Explosion& explosion : explosions)
+        for (Entity* entity : colliders)
+            if (lengthSquared(explosion.center - entity->getCenterPos()) < explosion.radius * explosion.radius)
+                entity->handleExplosion(explosion);
+
+
+
+    for (BreakableTerrain* terrain : breakableTerrain)
     {
-        for (int j = 0; j < colliders.size(); j++)
+        for (Explosion& explosion : explosions)
+            if (lengthSquared(explosion.center - terrain->getCenterPos()) < explosion.radius * explosion.radius)
+                terrain->handleExplosion(explosion);
+    
+        for (Entity* entity : colliders)
         {
-            if (staticColliders[i]->getCollisionBox().intersects(colliders[j]->getCollisionBox()))
+            if (terrain->getCollisionBox().intersects(entity->getCollisionBox()))
             {
-                colliders[j]->handleCollision(staticColliders[i]);
+                entity->handleCollision(terrain);
+                terrain->handleCollision(entity);
             }
         }
     }
 
-    for (int i = 0; i < explosions.size(); i++)
-    {
-        for (int j = 0; j < colliders.size(); j++)
-        {
-            if (lengthSquared(explosions[i].center - colliders[j]->getCenterPos()) < explosions[i].radius * explosions[i].radius)
-                colliders[j]->handleExplosion(explosions[i]);
-        }
-    }
-
+    CollisionHandler::breakableTerrain.clear();
     CollisionHandler::explosions.clear();
     CollisionHandler::colliders.clear();
     CollisionHandler::staticColliders.clear();
@@ -58,4 +70,9 @@ void CollisionHandler::queueStaticCollider(Entity* causer)
 void CollisionHandler::queueExplosion(Explosion explosion)
 {
     CollisionHandler::explosions.push_back(explosion);
+}
+
+void CollisionHandler::queueBreakable(BreakableTerrain* terrain)
+{
+    CollisionHandler::breakableTerrain.push_back(terrain);
 }

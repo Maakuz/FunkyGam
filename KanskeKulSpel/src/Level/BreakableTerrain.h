@@ -11,11 +11,14 @@ public:
     virtual void handleExplosion(const Explosion& explosion);
 
     void addOverlay(sf::Texture* texture, sf::IntRect texRext);
-
+    bool isBroken() const { return this->broken; };
 private:
     sf::Sprite overlay;
     bool overlayPresent;
+    
+    bool broken;
+    int breakThreshold;
 
-    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 };

@@ -50,8 +50,8 @@ protected:
     CollisionBox collisionBox;
     sf::Vector2f pos;
     
-private:
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+private:
 
     sf::Vector2f spriteOffset;
     sf::Vector2f size;

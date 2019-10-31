@@ -299,9 +299,10 @@ void Grunt::handleCollision(const Entity* collider)
 
     if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::throwable))
     {
-        Throwable* throwable = (Throwable*)&collider;
-        if (lengthSquared( throwable->getMomentum()) > 5)
-            this->health -= throwable->getDamage();
+        const Throwable* throwable = dynamic_cast<const Throwable*>(collider);
+        this->health -= throwable->getDamage();
+
+        printCon(std::to_string(this->health));
     }
 }
 
@@ -309,9 +310,8 @@ void Grunt::handleExplosion(const Explosion& explosion)
 {
     if (explosion.damage > 0)
     {
-        int damage = (explosion.damage - (explosion.damage * std::min(std::max((length(explosion.center - pos) / explosion.radius) - explosion.falloff, 0.f), 1.f)));
+        int damage = explosion.calculateDamage(this->getCenterPos());
         this->health -= damage;
-        printCon(std::to_string(damage));
     }
 
     switch (explosion.type)

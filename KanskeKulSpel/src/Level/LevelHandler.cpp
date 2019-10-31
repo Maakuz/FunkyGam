@@ -2,6 +2,7 @@
 #include <fstream>
 #include "Misc/Definitions.h"
 #include "Misc/ConsoleWindow.h"
+#include "Misc/UnorderedErase.h"
 
 #define LEVEL_FOLDER "../Resources/Maps/"
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
@@ -12,7 +13,7 @@
 #define PLAYER_SPAWN_POINT 506
 #define LEVEL_END_POINT 507
 #define LEVEL_RETURN_POINT 508
-#define BREAKABLE_BLOCK 508
+#define BREAKABLE_BLOCK 509
 
 const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
 {"Level1.yay"};
@@ -67,25 +68,35 @@ bool LevelHandler::loadLevel(Level level)
 
 void LevelHandler::updateLevel(float dt)
 {
-    for (auto & ter : terrain)
-        CollisionHandler::queueStaticCollider(&ter);
+    for (int i = 0; i < breakableTerrain.size(); i++)
+    {
+        if (breakableTerrain[i].isBroken())
+        {
+            unordered_erase(breakableTerrain, breakableTerrain.begin() + i);
+            unordered_erase(breakableShadowLines, breakableShadowLines.begin() + i--);
+        }
+    }
+
+
 
     for (auto & line : this->shadowLines)
         ShadowHandler::queueLine(line);
+
+    for (std::vector<Line>& lines : this->breakableShadowLines)
+        for (Line& line : lines)
+            ShadowHandler::queueLine(line);
 
     for (Light* light : lights)
         LightQueue::get().queue(light);
 }
 
-void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
+void LevelHandler::queueColliders()
 {
-    //target.draw(this->backgroundSprite, states);
+    for (auto& ter : terrain)
+        CollisionHandler::queueStaticCollider(&ter);
 
-    //TODO: only draw stuff thats on the screen
-    for (size_t i = 0; i < linearSprite.size(); i++)
-    {
-        target.draw(linearSprite[i], states);
-    }
+    for (auto& ter : breakableTerrain)
+        CollisionHandler::queueBreakable(&ter);
 }
 
 void LevelHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
@@ -391,6 +402,7 @@ sf::Vector2f LevelHandler::findPlayerSpawnPoint()
 void LevelHandler::generateShadowLines()
 {
     shadowLines.clear();
+    breakableShadowLines.clear();
     for (auto& ter : terrain)
     {
         if (ter.getCollisionBox().hasComponent(CollisionBox::ColliderKeys::ground))
@@ -416,11 +428,44 @@ void LevelHandler::generateShadowLines()
             this->shadowLines.push_back(left);
         }
     }
+
+    //Might be a criminal now
+    for (auto& ter : breakableTerrain)
+    {
+        if (ter.getCollisionBox().hasComponent(CollisionBox::ColliderKeys::ground))
+        {            
+             Line top(
+                ter.getPosition(),
+                sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y));
+
+            Line right(
+                sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y),
+                sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
+
+            Line bottom(
+                sf::Vector2f(ter.getPosition().x + ter.getCollisionBox().getAABB().size.x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
+                sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y));
+
+            Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollisionBox().getAABB().size.y),
+                ter.getPosition());
+
+
+            std::vector<Line> lines;
+            lines.push_back(top);
+            lines.push_back(right);
+            lines.push_back(bottom);
+            lines.push_back(left);
+
+
+            this->breakableShadowLines.push_back(lines);
+        }
+    }
 }
 
 void LevelHandler::createSpites()
 {
     linearSprite.clear();
+    breakableTerrain.clear();
     for (size_t i = 0; i < layers.size(); i++)
     {
         for (size_t j = 0; j < layers[i].size(); j++)
@@ -463,10 +508,26 @@ void LevelHandler::createSpites()
                                 sf::IntRect rectOverlay(xOverMap * TILE_SIZE, yOverMap * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                                 ter.addOverlay(&tilemaps[layers[2][j][k].textureID].texture, rectOverlay);
                             }
+
+                            breakableTerrain.push_back(ter);
                         }
                     }
                 }
             }
         }
     }
+}
+
+void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    //target.draw(this->backgroundSprite, states);
+
+    //TODO: only draw stuff thats on the screen
+    for (size_t i = 0; i < linearSprite.size(); i++)
+    {
+        target.draw(linearSprite[i], states);
+    }
+
+    for (const BreakableTerrain& ter : breakableTerrain)
+        target.draw(ter, states);
 }

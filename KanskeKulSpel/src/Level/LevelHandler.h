@@ -35,6 +35,7 @@ public:
     bool loadLevel(Level level);
 
     void updateLevel(float dt);
+    void queueColliders();
     sf::Vector2i getDimensions() const { return this->dimensions; }
 
     std::vector<sf::Vector2f> generateEnemySpawnPoints();
@@ -56,8 +57,9 @@ private:
     Layer hitboxData;
 
     std::vector<Line> shadowLines;
-
     std::vector<Terrain> terrain;
+
+    std::vector<std::vector<Line>> breakableShadowLines;
     std::vector<BreakableTerrain> breakableTerrain;
 
     std::vector<Tilemap> tilemaps;

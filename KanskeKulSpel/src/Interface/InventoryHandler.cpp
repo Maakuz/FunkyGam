@@ -34,7 +34,7 @@ InventoryHandler::InventoryHandler()
                 addItem(std::stoi(args[0]), std::stoi(args[1]));
 
             else
-                addItem(std::stoi(args[0]));
+                addItem(std::stoi(args[0]), ItemHandler::getTemplate(std::stoi(args[0]))->getStackLimit());
 
             updateQuickslotSprites();
             return "You got " + ItemHandler::getTemplate(std::stoi(args[0]))->getName() + "!";
@@ -173,6 +173,9 @@ int InventoryHandler::countItem(int itemID)
 
 void InventoryHandler::setSelectedItem(int item)
 {
+    if (this->inventory.selectedItemBarItem == item)
+        return;
+
     int prevSelected = this->inventory.selectedItemBarItem;
     this->inventory.selectedItemBarItem = item;
 

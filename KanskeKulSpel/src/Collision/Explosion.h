@@ -1,5 +1,6 @@
 #pragma once
 #include "SFML/System/Vector2.hpp"
+#include "Misc/VectorFunctions.h"
 enum class ExplosionType 
 {
     damage,
@@ -21,5 +22,10 @@ struct Explosion
         this->damage = damage;
         this->falloff = falloff;
         this->type = type;
+    }
+
+    float calculateDamage(sf::Vector2f entityPos) const
+    {
+        return damage - (damage * std::min(std::max((length(center - entityPos) / radius) - falloff, 0.f), 1.f));
     }
 };

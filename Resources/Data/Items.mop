@@ -38,7 +38,7 @@ ParticleEffectID: 0
 [Explosion]
 Type: 0
 Radius: 300
-Falloff: 1
+Falloff: 0
 Damage: 100
 
 [Item]

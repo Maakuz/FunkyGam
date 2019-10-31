@@ -4,10 +4,11 @@ BreakableTerrain::BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::I
     :Entity(pos, texture)
 {
     overlayPresent = false;
-    collisionBox.addComponent(CollisionBox::ColliderKeys::Static);
+    broken = false;
     collisionBox.addComponent(CollisionBox::ColliderKeys::ground);
     setTextureRect(texRext);
     addCollision();
+    breakThreshold = 50;
 }
 
 void BreakableTerrain::handleCollision(const Entity* collider)
@@ -16,6 +17,8 @@ void BreakableTerrain::handleCollision(const Entity* collider)
 
 void BreakableTerrain::handleExplosion(const Explosion& explosion)
 {
+    if (explosion.calculateDamage(getCenterPos()) > this->breakThreshold)
+        broken = true;
 }
 
 void BreakableTerrain::addOverlay(sf::Texture* texture, sf::IntRect texRext)
@@ -28,7 +31,7 @@ void BreakableTerrain::addOverlay(sf::Texture* texture, sf::IntRect texRext)
 
 void BreakableTerrain::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(*this, states);
+    Entity::draw(target, states);
     if (overlayPresent)
         target.draw(overlay, states);
 }
