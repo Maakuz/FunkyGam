@@ -33,7 +33,7 @@ public:
     virtual ~LevelHandler();
 
     bool loadLevel(Level level);
-
+    void markLevelAsComplete();
     void updateLevel(float dt);
     void queueColliders();
     sf::Vector2i getDimensions() const { return this->dimensions; }
@@ -65,6 +65,7 @@ private:
     std::vector<Tilemap> tilemaps;
 
     bool drawCollision;
+    Level currentLevel;
 
     bool importLevel(Level level);
     bool generateHitboxes(CollisionBox::ColliderKeys type);

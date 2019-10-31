@@ -23,7 +23,8 @@ const std::string LEVEL_BG_NAMES[NR_OF_LEVELS] =
 
 LevelHandler::LevelHandler()
 {
-    drawCollision = false;
+    this->drawCollision = false;
+    this->currentLevel = Level::none;
 
     ConsoleWindow::get().addCommand("levelShowCollision", [&](Arguments args)->std::string 
         {
@@ -63,7 +64,12 @@ bool LevelHandler::loadLevel(Level level)
 
     this->backgroundSprite.setTexture(backgroundTexture);
 
+    this->currentLevel = level;
     return true;
+}
+
+void LevelHandler::markLevelAsComplete()
+{
 }
 
 void LevelHandler::updateLevel(float dt)
