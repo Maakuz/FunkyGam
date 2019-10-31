@@ -303,9 +303,6 @@ void HubHandler::loadInterface()
     
     float alchemyX = recipeListPos.x + recipeListSize.x + spacing.x + recipeDescWidth - this->alchemist.getGlobalBounds().width;
     this->alchemist.setPosition(alchemyX, recipeListPos.y);
-
-
-
 }
 
 void HubHandler::updateBack(sf::Vector2f mousePos, State backstate)

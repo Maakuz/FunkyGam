@@ -179,7 +179,7 @@ void Player::handleCollision(const Entity* collider)
 {
     if (!noClip)
     {
-        if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Platform))
+        if (momentum.y > 0 && collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::Platform))
         {
             //walking on ground
             if (collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))

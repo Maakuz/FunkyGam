@@ -7,6 +7,10 @@
 #define LAYER_AMOUNT 3
 #define ENEMY_SPAWN_POINT 503
 #define GATHER_POINT 504
+#define RARE_GATHER_POINT 505
+#define PLAYER_SPAWN_POINT 506
+#define LEVEL_END_POINT 507
+#define LEVEL_RETURN_POINT 508
 
 const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
 {"Level1.yay"};
