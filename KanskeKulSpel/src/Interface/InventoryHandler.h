@@ -66,6 +66,9 @@ private:
     bool quickslotsHidden;
     int clickedItem;
 
+    //return true if merged successfully without leftovers
+    bool mergeStacks(int to, int from);
+
     void swapItems(int a, int b);
     void updateQuickslotSprites();
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;

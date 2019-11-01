@@ -515,7 +515,9 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
                     {
                         this->ui->getInventory()->removeItem(recipe->components[i], recipe->componentAmounts[i]);
                     }
-                        this->ui->getInventory()->addItem(recipe->resultID, recipe->resultAmount);
+
+                    this->ui->getInventory()->addItem(recipe->resultID, recipe->resultAmount);
+                    this->ui->getInventory()->sortItems();
                 }
 
             }

@@ -39,6 +39,12 @@ InventoryHandler::InventoryHandler()
             updateQuickslotSprites();
             return "You got " + ItemHandler::getTemplate(std::stoi(args[0]))->getName() + "!";
         });
+
+    ConsoleWindow::get().addCommand("sortInventory", [&](Arguments args)->std::string
+        {
+            sortItems();
+            return "Sorted";
+        });
 }
 
 InventoryHandler::~InventoryHandler()
@@ -115,7 +121,8 @@ void InventoryHandler::update(float dt, sf::Vector2f mousePos)
 
                 else if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && this->clickedItem != -1)
                 {
-                    this->swapItems(i, this->clickedItem);
+                    if (!this->mergeStacks(i, this->clickedItem))
+                        this->swapItems(i, this->clickedItem);
                     this->clickedItem = -1;
                 }
             }
@@ -225,7 +232,42 @@ int InventoryHandler::useSelectedItem()
 
 void InventoryHandler::sortItems()
 {
+    //Sort out empty spaces
+    for (int i = 0; i < ITEM_SLOT_COUNT; i++)
+    {
+        for (int j = i; j < ITEM_SLOT_COUNT; j++)
+        {
+            if (slots[i].item == nullptr && slots[j].item != nullptr)
+                swapItems(i, j);
+        }
+    }
 
+    //Merge what can be merged
+    for (int i = 0; i < ITEM_SLOT_COUNT-1; i++)
+    {
+        for (int j = i + 1; j < ITEM_SLOT_COUNT; j++)
+        {
+            if (slots[i].item && slots[j].item && slots[i].item->getID() == slots[j].item->getID())
+            {
+                bool fullyMerged = mergeStacks(i, j);
+                if (!fullyMerged)
+                {
+                    i++;
+                    swapItems(i, j);
+                }
+            }
+        }
+    }
+
+    //And sort empty spaces once more
+    for (int i = 0; i < ITEM_SLOT_COUNT; i++)
+    {
+        for (int j = i; j < ITEM_SLOT_COUNT; j++)
+        {
+            if (slots[i].item == nullptr && slots[j].item != nullptr)
+                swapItems(i, j);
+        }
+    }
 }
 
 void InventoryHandler::addItem(int itemID, int amount)
@@ -296,6 +338,29 @@ int InventoryHandler::removeItem(int itemID, int amount)
     }
 
     return tally;
+}
+
+bool InventoryHandler::mergeStacks(int to, int from)
+{
+    if (!slots[to].item || !slots[from].item || slots[to].item->getID() != slots[from].item->getID())
+        return false;
+
+    int avaliableSpace = slots[to].item->getStackLimit() - slots[to].size;
+
+    slots[to].size += std::min(slots[from].size, avaliableSpace);
+    slots[from].size -= std::min(slots[from].size, avaliableSpace);
+
+    slots[to].text.setString(std::to_string(slots[to].size));
+    slots[from].text.setString(std::to_string(slots[from].size));
+
+    if (slots[from].size <= 0)
+    {
+        delete slots[from].item;
+        slots[from].item = nullptr;
+        return true;
+    }
+
+    return false;
 }
 
 void InventoryHandler::swapItems(int a, int b)
