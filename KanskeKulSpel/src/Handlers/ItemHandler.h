@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include "Entities/Items/Throwables/Throwable.h"
-#include "Level/Levels.h"
+#include "Level/Level.h"
 #include "Entities/Player.h"
 #include "Particles/Emitter.h"
 
@@ -16,7 +16,7 @@ public:
 
     void update(float dt, Player* player);
     void setGatherPoints(std::vector<sf::Vector2f> gatherPoints, std::vector<sf::Vector2f> rareGatherPoints) { this->gatherPoints = gatherPoints; this->rareGatherPoints = rareGatherPoints; };
-    void spawnGatherables(Level level);
+    void spawnGatherables(const LevelInfo* level);
     void queueColliders();
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);

@@ -6,10 +6,8 @@
 #include "Handlers/ShadowHandler.h"
 #include "Misc/DebugDrawable.h"
 #include "Lighting/Light.h"
-#include "Level/Levels.h"
+#include "Level/Level.h"
 #include <vector>
-
-#define NR_OF_LEVELS 1
 
 class LevelHandler : public sf::Drawable, public DebugDrawable
 {
@@ -32,8 +30,7 @@ public:
     LevelHandler();
     virtual ~LevelHandler();
 
-    bool loadLevel(Level level);
-    void markLevelAsComplete();
+    bool loadLevel(const LevelInfo* level);
     void updateLevel(float dt);
     void queueColliders();
     sf::Vector2i getDimensions() const { return this->dimensions; }
@@ -65,9 +62,8 @@ private:
     std::vector<Tilemap> tilemaps;
 
     bool drawCollision;
-    Level currentLevel;
 
-    bool importLevel(Level level);
+    bool importLevel(const LevelInfo* level);
     bool generateHitboxes(CollisionBox::ColliderKeys type);
     void generateShadowLines();
     void createSpites();

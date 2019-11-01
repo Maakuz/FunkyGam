@@ -15,17 +15,9 @@
 #define LEVEL_RETURN_POINT 508
 #define BREAKABLE_BLOCK 509
 
-const std::string LEVEL_FILE_NAMES[NR_OF_LEVELS] = 
-{"Level1.yay"};
-
-const std::string LEVEL_BG_NAMES[NR_OF_LEVELS] =
-{ "forestBG.png" };
-
 LevelHandler::LevelHandler()
 {
     this->drawCollision = false;
-    this->currentLevel = Level::none;
-
     ConsoleWindow::get().addCommand("levelShowCollision", [&](Arguments args)->std::string 
         {
             if (args.empty())
@@ -44,7 +36,7 @@ LevelHandler::~LevelHandler()
         delete light;
 }
 
-bool LevelHandler::loadLevel(Level level)
+bool LevelHandler::loadLevel(const LevelInfo* level)
 {
     terrain.clear();
 
@@ -56,20 +48,14 @@ bool LevelHandler::loadLevel(Level level)
     this->createSpites();
     this->generateShadowLines();
 
-    if (!this->backgroundTexture.loadFromFile(LEVEL_TEX_FOLDER + LEVEL_BG_NAMES[level]))
-    {
-        exit(-55);
-        system("Pause");
-    }
+    //if (!this->backgroundTexture.loadFromFile(LEVEL_TEX_FOLDER + LEVEL_BG_NAMES[level]))
+    //{
+    //    exit(-55);
+    //    system("Pause");
+    //}
 
     this->backgroundSprite.setTexture(backgroundTexture);
-
-    this->currentLevel = level;
     return true;
-}
-
-void LevelHandler::markLevelAsComplete()
-{
 }
 
 void LevelHandler::updateLevel(float dt)
@@ -112,7 +98,7 @@ void LevelHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) 
             target.draw(terrain[i].getCollisionBox(), states);
 }
 
-bool LevelHandler::importLevel(Level level)
+bool LevelHandler::importLevel(const LevelInfo* level)
 {
     std::string trash = "";
 
@@ -125,7 +111,7 @@ bool LevelHandler::importLevel(Level level)
     tilemaps.clear();
     layers.resize(LAYER_AMOUNT);
 
-    std::ifstream in(LEVEL_FOLDER + LEVEL_FILE_NAMES[level]);
+    std::ifstream in(LEVEL_FOLDER + level->levelFileName);
     if (in.is_open())
     {
         in >> trash;

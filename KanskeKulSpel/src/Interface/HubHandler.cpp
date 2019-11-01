@@ -5,20 +5,6 @@
 #include "Misc/ConsoleWindow.h"
 #include "Handlers/ItemHandler.h"
 
-HubHandler::Recipe::Recipe()
-{
-    resultID = -1;
-    unlocked = false;
-    seen = false;
-    name.setFont(*TextureHandler::get().getFont());
-    name.setCharacterSize(DEFAULT_TEXT_SIZE);
-    name.setFillColor(sf::Color::Black);
-    description.setFont(*TextureHandler::get().getFont());
-    description.setCharacterSize(DEFAULT_TEXT_SIZE);
-    description.setFillColor(sf::Color::Black);
-}
-
-
 HubHandler::HubHandler(UIHandler* uiHandler)
 {
     ConsoleWindow::get().addCommand("reloadHubInterface", [&](Arguments args)->std::string 
@@ -37,16 +23,19 @@ HubHandler::HubHandler(UIHandler* uiHandler)
 
     this->infoTextCharacterSize = DEFAULT_TEXT_SIZE;
     this->selectedRecipe = -1;
+    this->selectedLevel = -1;
     this->ui = uiHandler;
     this->background.setTexture(*TextureHandler::get().getTexture(6), true);
     this->background.setScale(2, 2);
     this->alchemist.setTexture(*TextureHandler::get().getTexture(14), true);
+    this->adventurer.setTexture(*TextureHandler::get().getTexture(18), true);
 
     this->loadInterface();
 
     this->reset();
 
     this->loadRecipes();
+    this->loadLevelInfo();
 }
 
 void HubHandler::update(float dt, sf::Vector2f mousePos)
@@ -61,6 +50,11 @@ void HubHandler::update(float dt, sf::Vector2f mousePos)
         updateBack(mousePos, State::main);
         break;
 
+    case State::level:
+        updateLevelSelect(mousePos);
+        updateBack(mousePos, State::main);
+        break;
+
     case State::alchemist:
         updateBack(mousePos, State::main);
         updateAlchemy(mousePos);
@@ -71,11 +65,29 @@ void HubHandler::update(float dt, sf::Vector2f mousePos)
 
 }
 
+const LevelInfo* HubHandler::getActiveLevel() const 
+{ 
+    if (activeLevel == -1)
+        return nullptr;
+
+    return &levels[activeLevel]; 
+}
+
 void HubHandler::reset()
 {
-    this->levelSelected = Level::none;
+    if (selectedLevel != -1)
+        this->levels[selectedLevel].name.setOutlineThickness(0);
+
+    if (selectedRecipe != -1)
+        this->recipes[selectedRecipe].name.setOutlineThickness(0);
+
+    this->infoBox.setText("");
+    this->descriptionBox.setText("");
+
+    this->activeLevel = -1;
     this->state = State::main;
     this->selectedRecipe = -1;
+    this->selectedLevel = -1;
     ui->getInventory()->setQuickslotHidden(true);
 }
 
@@ -131,6 +143,7 @@ void HubHandler::loadRecipes()
         }
 
         file >> trash >> recipe.resultID;
+        file >> trash >> recipe.resultAmount;
         file >> trash;
 
         file.ignore();
@@ -148,6 +161,39 @@ void HubHandler::loadRecipes()
         recipe.setFillColor(this->textFillColor);
         recipe.setOutlineColor(this->textOutlineColor);
         recipes.push_back(recipe);
+    }
+
+    file.close();
+}
+
+void HubHandler::loadLevelInfo()
+{
+    this->levels.clear();
+
+    std::ifstream file(DATA_PATH "LevelInfo.mop");
+
+    if (!file.is_open())
+    {
+        printf("Could not open \"LevelInfo.mop\". Terminating computer hehe\n");
+        system("pause");
+        exit(-2);
+    }
+
+    std::string trash;
+    int levelCount;
+
+    file >> trash;
+    file >> trash >> levelCount;
+
+    for (int i = 0; i < levelCount; i++)
+    {
+        LevelInfo info;
+        file >> info;
+
+        info.setCharacterSize(this->infoTextCharacterSize);
+        info.setFillColor(this->textFillColor);
+        info.setOutlineColor(this->textOutlineColor);
+        levels.push_back(info);
     }
 
     file.close();
@@ -275,34 +321,35 @@ void HubHandler::loadInterface()
     this->backButton.setWidth(backSize.x);
     this->backButton.setHeight(backSize.y);
 
-    this->recipeListBackground.create(this->textureTextWindow, TextureHandler::get().getFont());
-    this->recipeListBackground.setPos(recipeListPos);
-    this->recipeListBackground.setWidth(recipeListSize.x);
-    this->recipeListBackground.setHeight(recipeListSize.y);
+    this->listBackground.create(this->textureTextWindow, TextureHandler::get().getFont());
+    this->listBackground.setPos(recipeListPos);
+    this->listBackground.setWidth(recipeListSize.x);
+    this->listBackground.setHeight(recipeListSize.y);
 
-    this->recipeDesc.create(this->textureTextWindow, TextureHandler::get().getFont());
-    this->recipeDesc.setWidth(recipeDescWidth);
-    this->recipeDesc.setHeight(recipeListBackground.getBounds().height - this->alchemist.getGlobalBounds().height - spacing.y);
-    sf::Vector2f descPos = recipeListBackground.getPos();
-    descPos.x += recipeListBackground.getBounds().width + spacing.x;
-    descPos.y += recipeListBackground.getBounds().height - recipeDesc.getBounds().height;
-    this->recipeDesc.setPos(descPos);
+    this->descriptionBox.create(this->textureTextWindow, TextureHandler::get().getFont());
+    this->descriptionBox.setWidth(recipeDescWidth);
+    this->descriptionBox.setHeight(listBackground.getBounds().height - this->alchemist.getGlobalBounds().height - spacing.y);
+    sf::Vector2f descPos = listBackground.getPos();
+    descPos.x += listBackground.getBounds().width + spacing.x;
+    descPos.y += listBackground.getBounds().height - descriptionBox.getBounds().height;
+    this->descriptionBox.setPos(descPos);
 
-    this->recipeReq.create(this->textureTextWindow, TextureHandler::get().getFont());
-    this->recipeReq.setCharacterSize(characterSize);
-    this->recipeReq.setWidth(recipeDescWidth - this->alchemist.getGlobalBounds().width - spacing.x);
-    this->recipeReq.setHeight(this->alchemist.getGlobalBounds().height);
-    this->recipeReq.setPos(sf::Vector2f(recipeListPos.x + recipeListSize.x + spacing.x, recipeListPos.y));
+    this->infoBox.create(this->textureTextWindow, TextureHandler::get().getFont());
+    this->infoBox.setCharacterSize(characterSize);
+    this->infoBox.setWidth(recipeDescWidth - this->alchemist.getGlobalBounds().width - spacing.x);
+    this->infoBox.setHeight(this->alchemist.getGlobalBounds().height);
+    this->infoBox.setPos(sf::Vector2f(recipeListPos.x + recipeListSize.x + spacing.x, recipeListPos.y));
 
-    this->craftButton.create(this->textureInactive, TextureHandler::get().getFont());
-    this->craftButton.setCharacterSize(buttonCharacterSize);
-    this->craftButton.setText("Craft");
-    this->craftButton.setPos(craftPos);
-    this->craftButton.setWidth(craftSize.x);
-    this->craftButton.setHeight(craftSize.y);
+    this->acceptButton.create(this->textureInactive, TextureHandler::get().getFont());
+    this->acceptButton.setCharacterSize(buttonCharacterSize);
+    this->acceptButton.setText("Craft");
+    this->acceptButton.setPos(craftPos);
+    this->acceptButton.setWidth(craftSize.x);
+    this->acceptButton.setHeight(craftSize.y);
     
     float alchemyX = recipeListPos.x + recipeListSize.x + spacing.x + recipeDescWidth - this->alchemist.getGlobalBounds().width;
     this->alchemist.setPosition(alchemyX, recipeListPos.y);
+    this->adventurer.setPosition(alchemyX, recipeListPos.y);
 }
 
 void HubHandler::updateBack(sf::Vector2f mousePos, State backstate)
@@ -334,8 +381,8 @@ void HubHandler::updateMain(sf::Vector2f mousePos)
                 switch (i)
                 {
                 case 0:
-                    levelSelected = Level::forest;
-                    ui->getInventory()->setQuickslotHidden(false);
+                    this->state = State::level;
+                    this->acceptButton.setText("Embark!");
                     break;
 
                 case 1:
@@ -345,6 +392,7 @@ void HubHandler::updateMain(sf::Vector2f mousePos)
 
                 case 2:
                     this->state = State::alchemist;
+                    this->acceptButton.setText("Trade");
                     break;
                 default:
                     break;
@@ -359,15 +407,64 @@ void HubHandler::updateMain(sf::Vector2f mousePos)
 
 }
 
+void HubHandler::updateLevelSelect(sf::Vector2f mousePos)
+{
+    for (int i = 0; i < this->levels.size(); i++)
+    {
+        LevelInfo* info = &this->levels[i];
+
+        sf::Vector2f pos = this->listBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
+        info->name.setPosition(pos);
+        info->description.setPosition(this->descriptionBox.getTextPos());
+
+        if (info->name.getGlobalBounds().contains(mousePos) && MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+        {
+            info->name.setOutlineThickness(1);
+
+            if (this->selectedLevel != -1 && this->selectedLevel != i)
+                this->levels[this->selectedLevel].name.setOutlineThickness(0);
+            this->selectedLevel = i;
+        }
+    }
+
+    if (selectedLevel != -1)
+    {
+        this->infoBox.setText("Emenies:\nyes");
+
+
+        this->infoBox.appendText("\n\nPossible items:\nitems");
+
+        if (acceptButton.getBounds().contains(mousePos))
+        {
+            acceptButton.setTexture(textureOn);
+
+            if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+            {
+                activeLevel = levels[selectedLevel].levelID;
+                ui->getInventory()->setQuickslotHidden(false);
+            }
+
+        }
+        else
+            acceptButton.setTexture(textureOff);
+    }
+
+    else
+        acceptButton.setTexture(textureInactive);
+
+
+
+}
+
 void HubHandler::updateAlchemy(sf::Vector2f mousePos)
 {
     for (int i = 0; i < this->recipes.size(); i++)
     {
         Recipe* recipe = &this->recipes[i];
 
-        sf::Vector2f pos = this->recipeListBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
+        sf::Vector2f pos = this->listBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
         recipe->name.setPosition(pos);
-        recipe->description.setPosition(this->recipeDesc.getTextPos());
+        recipe->description.setPosition(this->descriptionBox.getTextPos());
 
         if (recipe->name.getGlobalBounds().contains(mousePos) && MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
         {
@@ -385,15 +482,15 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
         Recipe* recipe = &this->recipes[this->selectedRecipe];
         bool craftingClearance = true;
 
-        this->recipeReq.setText("Requires:\n");
+        this->infoBox.setText("Requires:\n");
 
         for (int i = 0; i < recipe->components.size(); i++)
         {
-            this->recipeReq.appendText(std::to_string(recipe->componentAmounts[i]) + " ");
-            this->recipeReq.appendText(ItemHandler::getTemplate(recipe->components[i])->getName() + "\n");
+            this->infoBox.appendText(std::to_string(recipe->componentAmounts[i]) + " ");
+            this->infoBox.appendText(ItemHandler::getTemplate(recipe->components[i])->getName() + "\n");
         }
 
-        this->recipeReq.appendText("\n\nYou have:\n");
+        this->infoBox.appendText("\n\nYou have:\n");
 
         for (int i = 0; i < recipe->components.size(); i++)
         {
@@ -402,15 +499,15 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
                 craftingClearance = false;
 
 
-            this->recipeReq.appendText(std::to_string(currentAmount) + " ");
-            this->recipeReq.appendText(ItemHandler::getTemplate(recipe->components[i])->getName() + "\n");
+            this->infoBox.appendText(std::to_string(currentAmount) + " ");
+            this->infoBox.appendText(ItemHandler::getTemplate(recipe->components[i])->getName() + "\n");
         }
 
         if (craftingClearance)
         {
-            if (craftButton.getBounds().contains(mousePos))
+            if (acceptButton.getBounds().contains(mousePos))
             {
-                craftButton.setTexture(textureOn);
+                acceptButton.setTexture(textureOn);
 
                 if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
                 {
@@ -418,22 +515,22 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
                     {
                         this->ui->getInventory()->removeItem(recipe->components[i], recipe->componentAmounts[i]);
                     }
-                        this->ui->getInventory()->addItem(recipe->resultID);
+                        this->ui->getInventory()->addItem(recipe->resultID, recipe->resultAmount);
                 }
 
             }
 
 
             else
-                craftButton.setTexture(textureOff);
+                acceptButton.setTexture(textureOff);
         }
 
         else
-            craftButton.setTexture(textureInactive);
+            acceptButton.setTexture(textureInactive);
     }
 
     else
-        craftButton.setTexture(textureInactive);
+        acceptButton.setTexture(textureInactive);
 
 }
 
@@ -447,24 +544,37 @@ void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
         for (const TextBubble& text : mainButtons)
             target.draw(text, states);
         break;
-    case HubHandler::State::level:
-        break;
+
     case HubHandler::State::inventory:
         target.draw(backButton, states);
         break;
 
     case HubHandler::State::alchemist:
         target.draw(backButton, states);
-        target.draw(craftButton, states);
-        target.draw(recipeListBackground, states);
-        target.draw(recipeDesc, states);
-        target.draw(recipeReq, states);
+        target.draw(acceptButton, states);
+        target.draw(listBackground, states);
+        target.draw(descriptionBox, states);
+        target.draw(infoBox, states);
         target.draw(alchemist, states);
         for (const Recipe& recipe : this->recipes)
             target.draw(recipe.name, states);
         
         if (this->selectedRecipe != -1)
             target.draw(this->recipes[this->selectedRecipe].description, states);
+        break;
+
+    case HubHandler::State::level:
+        target.draw(backButton, states);
+        target.draw(acceptButton, states);
+        target.draw(listBackground, states);
+        target.draw(descriptionBox, states);
+        target.draw(infoBox, states);
+        target.draw(adventurer, states);
+        for (const LevelInfo& level : this->levels)
+            target.draw(level.name, states);
+
+        if (this->selectedLevel != -1)
+            target.draw(this->levels[this->selectedLevel].description, states);
         break;
     default:
         break;
@@ -473,3 +583,4 @@ void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 
 }
+

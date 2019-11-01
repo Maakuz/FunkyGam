@@ -148,7 +148,9 @@
     <ClCompile Include="src\Entities\Entity.cpp" />
     <ClCompile Include="src\Entities\Items\Item.cpp" />
     <ClCompile Include="src\Entities\MovingEntity.cpp" />
+    <ClCompile Include="src\Interface\Info.cpp" />
     <ClCompile Include="src\Level\BreakableTerrain.cpp" />
+    <ClCompile Include="src\Level\Level.cpp" />
     <ClCompile Include="src\Level\Terrain.cpp" />
     <ClCompile Include="src\Entities\Items\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game.cpp" />
@@ -185,6 +187,7 @@
     <ClInclude Include="src\Handlers\ParticleHandler.h" />
     <ClInclude Include="src\Handlers\ItemHandler.h" />
     <ClInclude Include="src\Handlers\TextureHandler.h" />
+    <ClInclude Include="src\Interface\Info.h" />
     <ClInclude Include="src\Interface\InventoryHandler.h" />
     <ClInclude Include="src\Interface\UIHandler.h" />
     <ClInclude Include="src\Interface\TextBubble.h" />
@@ -205,7 +208,7 @@
     <ClInclude Include="src\Lighting\LightQueue.h" />
     <ClInclude Include="src\Entities\Player.h" />
     <ClInclude Include="src\Handlers\ShaderHandler.h" />
-    <ClInclude Include="src\Level\Levels.h" />
+    <ClInclude Include="src\Level\Level.h" />
     <ClInclude Include="src\Misc\Line.h" />
     <ClInclude Include="src\Misc\MouseState.h" />
     <ClInclude Include="src\Misc\Profiler.h" />
@@ -218,6 +221,7 @@
     <None Include="..\Resources\Data\Grunt.mop" />
     <None Include="..\Resources\Data\HubInterface.mop" />
     <None Include="..\Resources\Data\Items.mop" />
+    <None Include="..\Resources\Data\LevelInfo.mop" />
     <None Include="..\Resources\Data\LoadList.mop" />
     <None Include="..\Resources\Data\Player.mop" />
     <None Include="..\Resources\Data\Recipes.mop" />

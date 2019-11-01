@@ -7,12 +7,6 @@
 #include "ParticleHandler.h"
 #include "Misc/VectorFunctions.h"
 
-#define LEVEL1_ITEM_COUNT 2
-#define LEVEL1_RARE_ITEM_COUNT 1
-
-const int LEVEL1_ITEMS[LEVEL1_ITEM_COUNT] = { 4, 5 };
-const int LEVEL1_RARE_ITEMS[LEVEL1_RARE_ITEM_COUNT] = {6};
-
 std::vector<Throwable> ItemHandler::throwables;
 std::vector<Item*> ItemHandler::itemTemplates;
 
@@ -104,7 +98,7 @@ void ItemHandler::update(float dt, Player* player)
     player->setGatherableInRange(inRange);
 }
 
-void ItemHandler::spawnGatherables(Level level)
+void ItemHandler::spawnGatherables(const LevelInfo* level)
 {
     for (GatherItem& item : gatherItems)
     {
@@ -113,13 +107,13 @@ void ItemHandler::spawnGatherables(Level level)
     }
     gatherItems.clear();
 
-    if (level == Level::forest)
+    if (level->levelID == 0)
     {
         for (sf::Vector2f& point : this->gatherPoints)
         {
-            int i = rand() % LEVEL1_ITEM_COUNT;
+            int i = rand() % level->gatherables.size();
 
-            Item item(*this->itemTemplates[LEVEL1_ITEMS[i]]);
+            Item item(*this->itemTemplates[level->gatherables[i]]);
 
             sf::Vector2f pos = point;
             pos.y += TILE_SIZE - item.getSize().y;
@@ -135,9 +129,9 @@ void ItemHandler::spawnGatherables(Level level)
 
         for (sf::Vector2f& point : this->rareGatherPoints)
         {
-            int i = rand() % LEVEL1_RARE_ITEM_COUNT;
+            int i = rand() % level->rareGatherables.size();
 
-            Item item(*this->itemTemplates[LEVEL1_RARE_ITEMS[i]]);
+            Item item(*this->itemTemplates[level->rareGatherables[i]]);
 
             sf::Vector2f pos = point;
             pos.y += TILE_SIZE - item.getSize().y;
