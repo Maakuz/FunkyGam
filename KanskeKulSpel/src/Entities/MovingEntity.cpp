@@ -95,7 +95,7 @@ void MovingEntity::handleCollision(const Entity* collider)
         }
 
         //smackin into roof
-        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getDown(), this->collisionBox.getUp()))
+        if (this->momentum.y < 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getDown(), this->collisionBox.getUp()))
         {
             this->momentum.y = 0;
             this->pos.y = collider->down();
