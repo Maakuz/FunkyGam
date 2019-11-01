@@ -39,15 +39,15 @@ Offset: -32 0
 Roamlength: 256
 Health: 100
 Mass: 0.4
-SightRadius: 750
-Nightvision: 1.5
+SightRadius: 1500
+Nightvision: 1.2
 [SpecificData]
-ChaseSpeed: 0.02
+ChaseSpeed: 0.03
 IdleSpeed: 0.01
 JumpHeight: 12
-AttackRange: 10 10
-DistanceToStartAttacking: 256
+AttackRange: 14 9
+DistanceToStartAttacking: 450
 AttackDamage: 35
-AttackChargeDuration: 1000
+AttackChargeDuration: 700
 StunDuration: 2000
 SearchingDuration: 10000 
