@@ -123,6 +123,9 @@ void CharacterHandler::loadPlayer()
 
     file >> *this->player;
 
+    player->setSize(sf::Vector2f(32, 92));
+    player->moveSpriteOffset(sf::Vector2f(-16, 0));
+
     file.close();
 }
 
