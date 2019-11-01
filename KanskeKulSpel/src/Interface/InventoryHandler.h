@@ -25,27 +25,36 @@ public:
     bool isInventoryOpen() const { return this->inventoryOpen; };
     void setQuickslotHidden(bool value) { this->quickslotsHidden = value; };
 
+    void sortItems();
     void addItem(int itemID, int amount = 1);
     //Returns amount of items removed
     int removeItem(int itemID, int amount = 1);
 private:
-    struct Inventory
-    {
-        static const int QUICKSLOT_COUNT = 5;
-        static const int ITEM_SLOT_COUNT = 25;
-        Item* itemSlots[ITEM_SLOT_COUNT];
-        int stackSizes[ITEM_SLOT_COUNT];
 
-        int selectedItemBarItem;
+    static const int QUICKSLOT_COUNT = 5;
+    static const int ITEM_SLOT_COUNT = 25;
+
+
+    struct InventorySlot
+    {
+        Item* item;
+        int size;
+        sf::Text text;
+        sf::RectangleShape rect;
     };
-    Inventory inventory;
+
+    InventorySlot slots[ITEM_SLOT_COUNT];
     
-    sf::RectangleShape quickslots[Inventory::QUICKSLOT_COUNT];
-    sf::Text quickslotStackText[Inventory::QUICKSLOT_COUNT];
-    sf::Sprite quickslotSprites[Inventory::QUICKSLOT_COUNT];
+    struct Quickslot
+    {
+        sf::RectangleShape rect;
+        sf::Text text;
+        sf::Sprite sprite;
+    };
+
+    Quickslot quickslots[QUICKSLOT_COUNT];
     sf::Vector2u quickslotPos;
-    sf::RectangleShape inventorySlots[Inventory::ITEM_SLOT_COUNT];
-    sf::Text stackText[Inventory::ITEM_SLOT_COUNT];
+    int selectedQuickslotItem;
 
     sf::Vector2u slotSize;
     const sf::Texture* slotTexture;
