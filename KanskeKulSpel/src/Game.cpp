@@ -12,7 +12,8 @@ const float ZOOM_LEVEL = 1.f;
 
 Game::Game(sf::RenderWindow* window) :
     hubHandler(&this->uiHandler),
-    characterHandler(&this->uiHandler)
+    characterHandler(&this->uiHandler),
+    itemHandler(&this->uiHandler)
 {
     this->window = window;
     this->paused = false;

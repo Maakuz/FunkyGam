@@ -1,14 +1,16 @@
 #pragma once
 #include <vector>
+#include <unordered_set>
 #include "Entities/Items/Throwables/Throwable.h"
 #include "Level/Level.h"
 #include "Entities/Player.h"
 #include "Particles/Emitter.h"
+#include "Interface/UIHandler.h"
 
 class ItemHandler : public sf::Drawable
 {
 public:
-    ItemHandler();
+    ItemHandler(UIHandler* uiHandler);
     ~ItemHandler();
     ItemHandler(const ItemHandler&) = delete;
 
@@ -23,8 +25,10 @@ public:
     static const Item* getTemplate(int itemID);
 
 private:
+    UIHandler* ui;
     static std::vector<Throwable> throwables;
     static std::vector<Item*> itemTemplates;
+    static std::unordered_set<int> foundItems;
     std::vector<sf::Vector2f> gatherPoints;
     std::vector<sf::Vector2f> rareGatherPoints;
 

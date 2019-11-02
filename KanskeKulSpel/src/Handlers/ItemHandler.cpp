@@ -9,10 +9,12 @@
 
 std::vector<Throwable> ItemHandler::throwables;
 std::vector<Item*> ItemHandler::itemTemplates;
+std::unordered_set<int> ItemHandler::foundItems;
 
 
-ItemHandler::ItemHandler()
+ItemHandler::ItemHandler(UIHandler* uiHandler)
 {
+    this->ui = uiHandler;
     this->gatherRange = 64;
     ConsoleWindow::get().addCommand("reloadItems", [&](Arguments args)->std::string 
         {
@@ -80,7 +82,13 @@ void ItemHandler::update(float dt, Player* player)
     {
         if (it->item.isObtained())
         {
-            
+            int id = it->item.getID();
+            if (!foundItems.count(id))
+            {
+                ui->displayNewItem(id);
+                foundItems.insert(id);
+            }
+
             if (it->emitter != nullptr)
                 it->emitter->kill();
 
