@@ -39,7 +39,7 @@ public:
         counter = 0;
     }
 
-    bool isTimeUp()
+    bool isTimeUp() const
     {
         return counter > stopValue;
     }

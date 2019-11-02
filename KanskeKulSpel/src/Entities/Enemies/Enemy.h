@@ -54,12 +54,18 @@ protected:
     int health;
     float sightRadius;
     float sightMultiplier; //How well enemy sees in the dark
+    Counter drawQuestion;
+    Counter drawExclamation;
+    sf::Sprite question;
+    sf::Sprite exclamation;
 
     void desicionTimeOver();
     bool isDesicionTime() const { return this->decisionTime; }
 
     sf::Vector2f getStartPoint() const { return this->startPoint; }
     void setStartPoint(sf::Vector2f point) { this->startPoint = point; }
+
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     Counter roamDecisionCounter;
     bool decisionTime;

@@ -160,6 +160,7 @@ void Grunt::updateChasing(float dt)
 {
     if (timeSincePlayerSeen.isTimeUp()) //will sort of mitigating stuck enemies looking silly
     {
+        drawQuestion.reset();
         state = State::searching;
         this->currentRoamPoint = getLastKnownPos();
         this->searchCounter.reset();
@@ -187,7 +188,7 @@ void Grunt::updateChasing(float dt)
 
     if(timeSincePlayerSeen > 200 && abs(pos.x - getLastKnownPos().x) < 10)
     {
-        jump();
+        drawQuestion.reset();
         state = State::searching;
         this->currentRoamPoint = getLastKnownPos();
         this->searchCounter.reset();
@@ -326,7 +327,14 @@ void Grunt::handleExplosion(const Explosion& explosion)
         {
             this->currentRoamPoint = explosion.center;
             this->state = State::searching;
+            this->drawQuestion.reset();
             searchCounter.reset();
+
+            if (explosion.center.x < this->pos.x)
+                this->moveLeft();
+
+            else
+                moveRight();
         }
         break;
     default:
