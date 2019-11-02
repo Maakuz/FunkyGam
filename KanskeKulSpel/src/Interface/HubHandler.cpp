@@ -56,8 +56,8 @@ void HubHandler::update(float dt, sf::Vector2f mousePos)
         break;
 
     case State::alchemist:
-        updateBack(mousePos, State::main);
         updateAlchemy(mousePos);
+        updateBack(mousePos, State::main);
         break;
     default:
         break;
@@ -89,6 +89,20 @@ void HubHandler::reset()
     this->selectedRecipe = -1;
     this->selectedLevel = -1;
     ui->getInventory()->setQuickslotHidden(true);
+
+    const std::unordered_set<int>* foundItems = ItemHandler::getFoundItems();
+
+    for (Recipe& recipe : recipes)
+    {
+        if (!recipe.unlocked)
+        {
+            for (const int ingredient : recipe.components)
+                if (foundItems->count(ingredient))
+                    recipe.unlocked = true;
+                
+        }
+    }
+    
 }
 
 void HubHandler::loadRecipes()
@@ -360,6 +374,8 @@ void HubHandler::updateBack(sf::Vector2f mousePos, State backstate)
         if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
         {
             state = backstate;
+            infoBox.setText("");
+            descriptionBox.setText("");
             ui->getInventory()->closeInventory();
         }
     }
@@ -458,21 +474,24 @@ void HubHandler::updateLevelSelect(sf::Vector2f mousePos)
 
 void HubHandler::updateAlchemy(sf::Vector2f mousePos)
 {
-    for (int i = 0; i < this->recipes.size(); i++)
+    int i = 0;
+    for (Recipe& recipe : recipes)
     {
-        Recipe* recipe = &this->recipes[i];
-
-        sf::Vector2f pos = this->listBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
-        recipe->name.setPosition(pos);
-        recipe->description.setPosition(this->descriptionBox.getTextPos());
-
-        if (recipe->name.getGlobalBounds().contains(mousePos) && MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+        if (recipe.unlocked)
         {
-            recipe->name.setOutlineThickness(1);
+            sf::Vector2f pos = this->listBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
+            recipe.name.setPosition(pos);
+            recipe.description.setPosition(this->descriptionBox.getTextPos());
 
-            if (this->selectedRecipe != -1 && this->selectedRecipe != i)
-                this->recipes[this->selectedRecipe].name.setOutlineThickness(0);
-            this->selectedRecipe = i;
+            if (recipe.name.getGlobalBounds().contains(mousePos) && MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+            {
+                recipe.name.setOutlineThickness(1);
+
+                if (this->selectedRecipe != -1 && this->selectedRecipe != i)
+                    this->recipes[this->selectedRecipe].name.setOutlineThickness(0);
+                this->selectedRecipe = i;
+            }
+            i++;
         }
     }
 

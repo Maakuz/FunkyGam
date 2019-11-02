@@ -23,7 +23,7 @@ public:
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);
     static const Item* getTemplate(int itemID);
-
+    static const std::unordered_set<int>* getFoundItems() { return &foundItems; };
 private:
     UIHandler* ui;
     static std::vector<Throwable> throwables;
