@@ -578,7 +578,8 @@ void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
         target.draw(infoBox, states);
         target.draw(alchemist, states);
         for (const Recipe& recipe : this->recipes)
-            target.draw(recipe.name, states);
+            if (recipe.unlocked)
+                target.draw(recipe.name, states);
         
         if (this->selectedRecipe != -1)
             target.draw(this->recipes[this->selectedRecipe].description, states);

@@ -187,7 +187,9 @@ bool LevelHandler::importLevel(const LevelInfo* level)
 
         in.close();
 
-
+        /*out << obj.min.x << " " << obj.min.y << " ";
+        out << obj.max.x << " " << obj.max.y << " ";
+        out << obj.flag << "\n";*/
         
 
         return true;
