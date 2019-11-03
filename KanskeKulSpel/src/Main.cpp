@@ -1,12 +1,19 @@
 #include "SFML/Window.hpp"
 #include "SFML/Graphics.hpp"
-#include "Game.h"
+#include "Game/Game.h"
 #include "Imgui/imgui.h"
 #include "Imgui/SFML-imgui/imgui-SFML.h"
-#include "Misc/Profiler.h"
 #include "Misc/ConsoleWindow.h"
-#include "Renderer.h"
-#include "Handlers/TextureHandler.h"
+#include "Misc/Profiler.h"
+#include "Renderer/Renderer.h"
+#include "Game/Handlers/TextureHandler.h"
+#include "LevelEditor/Editor.h"
+
+enum class State 
+{
+    game,
+    editor
+};
 
 int main()
 {
@@ -68,23 +75,37 @@ int main()
     TextureHandler::get().loadTextures();
     Game game(&wandow);
     Renderer renderer(&wandow);
+    Editor editor(&wandow);
 
+    State state = State::game;
+
+    bool debugActive = false;
+    bool debugActivePrev = false;
     while (wandow.isOpen())
     {
-        sf::Event event;
-        while (wandow.pollEvent(event))
+        sf::Event e;
+        while (wandow.pollEvent(e))
         {
-            // "close requested" event: we close the window
-            if (event.type == sf::Event::Closed)
+            if (e.type == sf::Event::Closed)
                 wandow.close();
 
-            ImGui::SFML::ProcessEvent(event);
+            ImGui::SFML::ProcessEvent(e);
 
             // if (event.type == sf::Event::KeyPressed)
               //   printf("%d\n", event.key.code);
 
-            if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::P)
+            if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Key(53)) //Tilde in sweden
+                debugActive = !debugActive;
+
+            if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::P) //P in sweden
                 ProfilerActive = !ProfilerActive;
+
+
+
+
+
+            if (state == State::editor)
+                editor.handleEvents(e);
         }
 
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
@@ -94,13 +115,30 @@ int main()
 
         ImGui::SFML::Update(wandow, deltaTime);
 
+        if (debugActive)
+        {
+            PROFILER_START("Console");
+            ConsoleWindow::get().update(!debugActivePrev);
+            PROFILER_STOP;
+        }
+        debugActivePrev = debugActive;
+
         PROFILER_START("Update");
-        game.update((float)deltaTime.asMilliseconds());
+        if (state == State::game)
+        {
+            game.update((float)deltaTime.asMilliseconds());
+            wandow.setView(game.getView());
+        }
+
+        else
+        {
+            editor.update(deltaTime);
+            wandow.setView(editor.getView());
+        }
         PROFILER_STOP;
 
         PROFILER_START("Draw");
         wandow.clear(clearColor);
-        wandow.setView(game.getView());
         renderer.render(wandow);
         renderer.renderDebug(wandow);
         PROFILER_STOP;

@@ -1,0 +1,14 @@
+Todo:
+
+Multitråda saker kanske om jag orkar vet inte
+Ändra tileSize
+Save - dubbelklicka en fil ska skriva över den tidigare - FAKTISKT RÄTT HÖG PRI NU
+Save - varnig ifall filen redan finns
+Foolproofa
+TileMenuHandler bloated
+Fixa new så man faktiskt får mata in preferences
+Setup alla mappar när projektet startar - LATEGAME
+om en textur failar är namnet fortfarande i systemet, eventuellt så pajar en för liten textur allt
+exportern är sådär
+Zoom
+om man sparat en gång och sparar igen sparar den på samma ställe, skaffa även en save as somn är som nu
