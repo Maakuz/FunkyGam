@@ -21,7 +21,7 @@ public:
     float getIllumination() const { return illumination; };
     bool isAlive() const { return this->health > 0; };
     bool isReturning() const { return this->returning; };
-    bool isGoalReached() const { return this->goalReached; };
+    int getExitReached() const { return this->exitReached; };
 
     void setGatherableInRange(Item* item) { this->gatherableInRange = item; };
 
@@ -39,7 +39,7 @@ private:
     bool debugMode;
     bool noClip;
     bool returning;
-    bool goalReached;
+    int exitReached;
 
     void move(float dt);
     void debugMove(float dt);

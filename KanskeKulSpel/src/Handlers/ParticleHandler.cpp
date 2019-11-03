@@ -79,6 +79,14 @@ void ParticleHandler::loadEmitters()
     loadlist.close();
 }
 
+void ParticleHandler::reset()
+{
+    for (auto& emitter : ParticleHandler::activeEmitters)
+        delete emitter;
+
+    activeEmitters.clear();
+}
+
 Emitter* ParticleHandler::addEmitter(int emitterID, sf::Vector2f pos)
 {
     Emitter* emitter = new Emitter(emitterTemplates[emitterID]);

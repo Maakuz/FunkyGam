@@ -1,14 +1,12 @@
 [Levels]
-LevelCount 2
+LevelCount 4
 
 [Beginning]
 LevelName: The hills outside
 LevelFileName: Level1.yay
 LevelID: 0
 Unlocks: 1
-GatherablesCount: 2
 GatherablesID: 4 5
-RareGatherablesCount: 1
 RareGatherablesID: 6
 [Description]
 An enemy has been spotted just outside
@@ -19,11 +17,33 @@ on the hills. Investigate!
 LevelName: Interesting hole
 LevelFileName: Level2.yay
 LevelID: 1
-unlocks: -1
-GatherablesCount: 2
+unlocks: 2 3
 GatherablesID: 4 5
-RareGatherablesCount: 1
 RareGatherablesID: 6
 [Description]
 A hole i think hmm hmm go get it!
+[DescriptionEnd]
+
+[Beginning]
+LevelName: The hills outside
+LevelFileName: Level1.yay
+LevelID: 2
+Unlocks: 1
+GatherablesID: 2
+RareGatherablesID: 6
+[Description]
+An enemy has been spotted just outside
+on the hills. Investigate!
+[DescriptionEnd]
+
+[Beginning]
+LevelName: The hills outside
+LevelFileName: Level1.yay
+LevelID: 3
+Unlocks: 1
+GatherablesID: 1
+RareGatherablesID: 6
+[Description]
+An enemy has been spotted just outside
+on the hills. Investigate!
 [DescriptionEnd]

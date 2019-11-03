@@ -1,4 +1,5 @@
 #include "Level.h"
+#include <sstream>
 
 std::istream& operator>>(std::istream& in, LevelInfo& level)
 {
@@ -6,8 +7,7 @@ std::istream& operator>>(std::istream& in, LevelInfo& level)
     std::string name;
     std::string description;
     std::string descriptionLine;
-    int gatherCount;
-    int rareCount;
+    std::stringstream sstream;
 
     in >> trash;
     in >> trash;
@@ -17,24 +17,38 @@ std::istream& operator>>(std::istream& in, LevelInfo& level)
 
     in >> trash >> level.levelFileName;
     in >> trash >> level.levelID;
-    in >> trash >> level.unlockLevelID;
-    in >> trash >> gatherCount;
+    
+    in >> trash;
+    std::getline(in, trash);
+    sstream.str(trash);
+
+    while (!sstream.eof())
+    {
+        int unlock = 0;
+        sstream >> unlock;
+        level.unlockLevels.push_back(unlock);
+    }
 
     in >> trash;
-    for (int i = 0; i < gatherCount; i++)
+    std::getline(in, trash);
+    sstream.clear();
+    sstream.str(trash);
+
+    while (!sstream.eof())
     {
         int itemID;
-        in >> itemID;
+        sstream >> itemID;
         level.gatherables.push_back(itemID);
     }
 
-    in >> trash >> rareCount;
-
     in >> trash;
-    for (int i = 0; i < rareCount; i++)
+    std::getline(in, trash);
+    sstream.clear();
+    sstream.str(trash);
+    while (!sstream.eof())
     {
         int itemID;
-        in >> itemID;
+        sstream >> itemID;
         level.rareGatherables.push_back(itemID);
     }
 

@@ -43,8 +43,13 @@ bool LevelHandler::loadLevel(const LevelInfo* level)
     this->importLevel(level);
     this->generateHitboxes(CollisionBox::ColliderKeys::ground);
     this->generateHitboxes(CollisionBox::ColliderKeys::platform);
-    this->generateHitboxes(CollisionBox::ColliderKeys::levelEnd);
     this->generateHitboxes(CollisionBox::ColliderKeys::levelReturn);
+
+    for (CustomHitbox& box : customHitboxes)
+    {
+        Terrain ter(CollisionBox::AABB(sf::Vector2f(box.min), sf::Vector2f(box.max - box.min)), CollisionBox::ColliderKeys::customTerrain, box.flag);
+        terrain.push_back(ter);
+    }
     this->createSpites();
     this->generateShadowLines();
 
@@ -109,6 +114,7 @@ bool LevelHandler::importLevel(const LevelInfo* level)
 
     layers.clear();
     tilemaps.clear();
+    customHitboxes.clear();
     layers.resize(LAYER_AMOUNT);
 
     std::ifstream in(LEVEL_FOLDER + level->levelFileName);
@@ -185,11 +191,17 @@ bool LevelHandler::importLevel(const LevelInfo* level)
             lights.push_back(new Light(pos, rad, col));
         }
 
+        int hitboxCount = 0;
+        in >> hitboxCount;
+        for (int i = 0; i < hitboxCount; i++)
+        {
+            CustomHitbox box;
+            in >> box;
+            box.min *= TILE_SIZE;
+            box.max *= TILE_SIZE;
+            customHitboxes.push_back(box);
+        }
         in.close();
-
-        /*out << obj.min.x << " " << obj.min.y << " ";
-        out << obj.max.x << " " << obj.max.y << " ";
-        out << obj.flag << "\n";*/
         
 
         return true;

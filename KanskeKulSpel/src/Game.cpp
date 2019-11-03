@@ -114,12 +114,16 @@ void Game::updateLevel(float dt)
     PROFILER_START("CharUpdate");
     this->characterHandler.update(dt, mousePosWorld);
     if (!this->characterHandler.getPlayer()->isAlive() || 
-        characterHandler.getPlayer()->isGoalReached() ||
         characterHandler.getPlayer()->isReturning())
     {
         this->gameState = GameState::States::hub;
         this->hubHandler.reset();
     }
+
+    int goal = this->characterHandler.getPlayer()->getExitReached();
+    if (goal != -1)
+        this->loadLevel(hubHandler.changeToNextLevel(goal));
+
     PROFILER_STOP;
 
     PROFILER_START("UI_Update");
@@ -154,6 +158,7 @@ void Game::updateLevel(float dt)
 
 void Game::loadLevel(const LevelInfo* level)
 {
+    particleHandler.reset();
     levelHandler.loadLevel(level);
     characterHandler.initializeLevel(levelHandler.getShadowLinePtr(), levelHandler.findPlayerSpawnPoint());
     characterHandler.setSpawnPoints(levelHandler.generateEnemySpawnPoints());

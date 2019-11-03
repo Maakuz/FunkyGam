@@ -115,43 +115,40 @@ void ItemHandler::spawnGatherables(const LevelInfo* level)
     }
     gatherItems.clear();
 
-    if (level->levelID == 0)
+    for (sf::Vector2f& point : this->gatherPoints)
     {
-        for (sf::Vector2f& point : this->gatherPoints)
-        {
-            int i = rand() % level->gatherables.size();
+        int i = rand() % level->gatherables.size();
 
-            Item item(*this->itemTemplates[level->gatherables[i]]);
+        Item item(*this->itemTemplates[level->gatherables[i]]);
 
-            sf::Vector2f pos = point;
-            pos.y += TILE_SIZE - item.getSize().y;
+        sf::Vector2f pos = point;
+        pos.y += TILE_SIZE - item.getSize().y;
 
-            item.setPosition(pos);
-            Emitter* emitter = nullptr;
+        item.setPosition(pos);
+        Emitter* emitter = nullptr;
 
-            if (item.getEmitterID() != -1)
-                emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
+        if (item.getEmitterID() != -1)
+            emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
 
-            gatherItems.push_back(GatherItem{emitter, item});
-        }
+        gatherItems.push_back(GatherItem{ emitter, item });
+    }
 
-        for (sf::Vector2f& point : this->rareGatherPoints)
-        {
-            int i = rand() % level->rareGatherables.size();
+    for (sf::Vector2f& point : this->rareGatherPoints)
+    {
+        int i = rand() % level->rareGatherables.size();
 
-            Item item(*this->itemTemplates[level->rareGatherables[i]]);
+        Item item(*this->itemTemplates[level->rareGatherables[i]]);
 
-            sf::Vector2f pos = point;
-            pos.y += TILE_SIZE - item.getSize().y;
+        sf::Vector2f pos = point;
+        pos.y += TILE_SIZE - item.getSize().y;
 
-            item.setPosition(pos);
-            Emitter* emitter = nullptr;
+        item.setPosition(pos);
+        Emitter* emitter = nullptr;
 
-            if (item.getEmitterID() != -1)
-                emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
+        if (item.getEmitterID() != -1)
+            emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
 
-            gatherItems.push_back(GatherItem{ emitter, item });
-        }
+        gatherItems.push_back(GatherItem{ emitter, item });
     }
 }
 

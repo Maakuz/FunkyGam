@@ -55,7 +55,7 @@ void Throwable::handleCollision(const Entity* collider)
 {
     //Projectile is immune to thrower NO, NOT THE OTHER WAY AROUND
     if (collider == thrower || 
-        collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelEnd) ||
+        collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::customTerrain) ||
         collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelReturn))
         return;
 

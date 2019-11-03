@@ -2,6 +2,7 @@
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Graphics/Drawable.hpp"
 #include <set>
+#include <string>
 
 //Rename, very confusing. Drawable is only for debug. Remove when sometime
 class CollisionBox : public sf::Drawable
@@ -11,8 +12,8 @@ public:
     {
         ground = 501,
         platform = 502,
-        levelEnd = 507,
         levelReturn = 508,
+        customTerrain = 999,
         player = 1,
         Static = 2,
         throwable = 3,
@@ -25,7 +26,7 @@ public:
     {
         sf::Vector2f pos;
         sf::Vector2f size;
-        
+
         AABB(sf::Vector2f pos, sf::Vector2f size)
         {
             this->pos = pos;
@@ -55,11 +56,13 @@ public:
     void addComponent(ColliderKeys key);
 
     bool hasComponent(ColliderKeys key) const;
-    
+
     AABB getAABB() const { return this->box; };
     void setAABB(AABB box);
     void setPosition(sf::Vector2f pos);
     void setSize(sf::Vector2f size);
+    void setFlag(std::string flag) { this->flag = flag; };
+    const std::string& getFlag()const { return flag; };
 
     CollisionBox::AABB getUp() const { return this->up; };
     CollisionBox::AABB getDown() const { return this->down; };
@@ -82,4 +85,5 @@ private:
     CollisionBox::AABB right;
 
     std::set<ColliderKeys> components;
+    std::string flag;
 };

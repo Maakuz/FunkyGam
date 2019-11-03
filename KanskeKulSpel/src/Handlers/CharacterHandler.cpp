@@ -200,12 +200,12 @@ void CharacterHandler::spawnEnemies()
 
     enemies.clear();
 
-    //for (const sf::Vector2f& point : spawnPoints)
-    //{
+    for (const sf::Vector2f& point : spawnPoints)
+    {
         Grunt* grunt = new Grunt(*(Grunt*)enemyTemplates[enemy::grunt]);
-        grunt->spawn(spawnPoints[0] - sf::Vector2f(0, grunt->getSize().y));
+        grunt->spawn(point - sf::Vector2f(0, grunt->getSize().y));
         enemies.push_back(grunt);
-    //}
+    }
 }
 
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)

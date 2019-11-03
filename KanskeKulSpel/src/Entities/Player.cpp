@@ -26,6 +26,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->maxHealth = 100;
     this->illumination = 0;
     this->jumping = false;
+    this->exitReached = -1;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
@@ -179,7 +180,7 @@ void Player::reset(sf::Vector2f spawnPoint)
 {
     setPosition(spawnPoint);
     this->returning = false;
-    this->goalReached = false;
+    this->exitReached = -1;
     this->health = this->maxHealth;
     this->momentum.x = 0;
     this->momentum.y = 0;
@@ -219,9 +220,11 @@ void Player::handleCollision(const Entity* collider)
     if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelReturn))
         this->returning = true;
 
-    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelEnd))
+    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::customTerrain))
     {
-        this->goalReached = true;
+        std::string flag = collider->getCollisionBox().getFlag();
+        if (flag.compare(0, 4, "exit") == 0)
+            this->exitReached = flag[4] - '0';
     }
 }
 

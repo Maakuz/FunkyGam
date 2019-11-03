@@ -12,6 +12,7 @@ public:
     void update(float dt);
 
     void loadEmitters();
+    void reset();
 
     static Emitter* addEmitter(int emitterID, sf::Vector2f pos);
 

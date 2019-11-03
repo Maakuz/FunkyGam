@@ -19,6 +19,32 @@ public:
         int y;
     };
 
+    struct CustomHitbox
+    {
+        sf::Vector2i min;
+        sf::Vector2i max;
+        std::string flag;
+
+        friend std::ostream& operator<<(std::ostream& out, const CustomHitbox& obj)
+        {
+            out << obj.min.x << " " << obj.min.y << " ";
+            out << obj.max.x << " " << obj.max.y << " ";
+            out << obj.flag << "\n";
+
+            return out;
+        }
+
+        friend std::istream& operator>>(std::istream& in, CustomHitbox& obj)
+        {
+            in >> obj.min.x >> obj.min.y;
+            in >> obj.max.x >> obj.max.y;
+            in >> obj.flag;
+
+            return in;
+        }
+
+    };
+
     struct Tile
     {
         int tileID;
@@ -52,6 +78,7 @@ private:
     sf::Vector2i dimensions;
 
     Layer hitboxData;
+    std::vector<CustomHitbox> customHitboxes;
 
     std::vector<Line> shadowLines;
     std::vector<Terrain> terrain;
