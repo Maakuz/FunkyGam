@@ -13,6 +13,7 @@ public:
     ~GameState() {};
 
     void operator=(States state) { GameState::state = state; };
+    bool operator==(States state) { return GameState::state == state; };
 
     void setState(States state) { GameState::state = state; };
 

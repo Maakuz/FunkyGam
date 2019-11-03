@@ -52,6 +52,14 @@ void Game::update(float dt)
     }
 }
 
+void Game::resetAfterEditing()
+{
+    Renderer::setDrawLights(true);
+    this->hubHandler.reload();
+    if (this->gameState == GameState::States::level)
+        loadLevel(this->hubHandler.getActiveLevel());
+}
+
 void Game::updateHub(float dt)
 {
     static Light light(sf::Vector2f(1300, 500), 800, sf::Vector3f(0.9f, 0.7f, 0.2f));

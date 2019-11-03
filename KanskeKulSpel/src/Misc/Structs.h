@@ -1,12 +1,14 @@
 #pragma once
-#include <vector>
-#include "Interactables\Button.h"
 
 struct Tile
 {
     Tile()
     {
         color = sf::Color::White;
+        x = 0;
+        y = 0;
+        textureID = -1;
+        tileID = -1;
     };
     int x;
     int y;
@@ -19,23 +21,7 @@ struct Tile
     sf::Color color;
 };
 
-//Coordianates are in relation to each other in tile-space...?
-struct ActiveTile
-{
-    ActiveTile(Button::SIDES::SIDES_VISIBLE visibleSide = Button::SIDES::SIDES_VISIBLE::NONE)
-    {
-        box.setFillColor(sf::Color::Transparent);
-        box.setOutlineColor(sf::Color::White);
-        box.setVisibleSide(visibleSide);
-        box.setOutlineThickness(-2);
-    };
 
-    Button box;
-    int tileID;
-    int textureID;
-    int x;
-    int y;
-};
 
 struct CustomHitbox
 {

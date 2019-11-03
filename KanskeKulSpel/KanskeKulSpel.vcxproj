@@ -155,6 +155,7 @@
     <ClCompile Include="src\Game\Handlers\CharacterHandler.cpp" />
     <ClCompile Include="src\Game\Handlers\ItemHandler.cpp" />
     <ClCompile Include="src\Game\Handlers\ParticleHandler.cpp" />
+    <ClCompile Include="src\LevelEditor\Interface\Windows\InfoWindow.cpp" />
     <ClCompile Include="src\LevelEditor\TileStager.cpp" />
     <ClCompile Include="src\Renderer\ShaderHandler.cpp" />
     <ClCompile Include="src\Renderer\Lighting\ShadowHandler.cpp" />
@@ -202,6 +203,8 @@
     <ClInclude Include="src\Game\Handlers\CharacterHandler.h" />
     <ClInclude Include="src\Game\Handlers\ItemHandler.h" />
     <ClInclude Include="src\Game\Handlers\ParticleHandler.h" />
+    <ClInclude Include="src\LevelEditor\Interactables\ActiveTile.h" />
+    <ClInclude Include="src\LevelEditor\Interface\Windows\InfoWindow.h" />
     <ClInclude Include="src\LevelEditor\Queues\ToolTileQueue.h" />
     <ClInclude Include="src\LevelEditor\TileStager.h" />
     <ClInclude Include="src\Misc\GlobalDefinitions.h" />
@@ -246,7 +249,7 @@
     <ClInclude Include="src\LevelEditor\Queues\BackgroundQueue.h" />
     <ClInclude Include="src\LevelEditor\Queues\OverlayQueue.h" />
     <ClInclude Include="src\LevelEditor\Queues\TileQueue.h" />
-    <ClInclude Include="src\LevelEditor\Structs.h" />
+    <ClInclude Include="src\Misc\Structs.h" />
     <ClInclude Include="src\LevelEditor\TileMaps.h" />
   </ItemGroup>
   <ItemGroup>

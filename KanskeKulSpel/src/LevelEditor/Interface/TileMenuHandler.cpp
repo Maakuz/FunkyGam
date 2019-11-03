@@ -1,11 +1,11 @@
 #include "TileMenuHandler.h"
-#include "LevelEditor/Queues\TileQueue.h"
-#include "LevelEditor/Queues\OverlayQueue.h"
-#include "LevelEditor/Queues\BackgroundQueue.h"
+#include "LevelEditor/Queues/TileQueue.h"
+#include "LevelEditor/Queues/OverlayQueue.h"
+#include "LevelEditor/Queues/BackgroundQueue.h"
 #include "LevelEditor/Queues/ToolTileQueue.h"
-#include "LevelEditor/Structs.h"
+#include "Misc/Structs.h"
 #include "LevelEditor/Constants.h"
-#include "SFML\Window\Mouse.hpp"
+#include "SFML/Window/Mouse.hpp"
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
 #include "LevelEditor/TileMaps.h"
@@ -30,7 +30,7 @@ TileMenuHandler::TileMenuHandler() :
     activeTileTexture = -1;
 
     createTileButtons();
-
+    infoWindow.fetchInfo("");
 }
 
 void TileMenuHandler::handleEvent(sf::Event event, bool guiBlock, sf::Vector2i viewPortMousePos)
@@ -97,6 +97,8 @@ void TileMenuHandler::handleKeyboardEvents(sf::Event event)
     switch (event.type)
     {
     case sf::Event::KeyPressed:
+        if (event.key.code == sf::Keyboard::S && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
+            saveAsCurrentFile();
 
         if (event.key.code == sf::Keyboard::Z && sf::Keyboard::isKeyPressed(sf::Keyboard::LControl))
             layerManager.undo();
@@ -259,6 +261,7 @@ void TileMenuHandler::handleMenuBar()
             if (ImGui::MenuItem("New"))
             {
                 layerManager.startOver();
+                infoWindow.fetchInfo("");
                 activeTiles.clear();
             }
 
@@ -508,9 +511,16 @@ void TileMenuHandler::handleHelpWindow()
             ImGui::EndTabItem();
         }
 
+
+        if (ImGui::BeginTabItem("Level info"))
+        {
+            infoWindow.update();
+            ImGui::EndTabItem();
+        }
+
         if (ImGui::BeginTabItem("Help"))
         {
-            ImGui::Text("Commands\nUndo: CTRL + Z\nRedo: CTRL + Y\nCopy: CTRL + C\nCut: CTRL +X\nPaste: CTRL + V\nSelect eraser: E\nQuicksave: F5\nNumber buttons is used to change layers.");
+            ImGui::Text("Commands\nSave: CTRL + S\nUndo: CTRL + Z\nRedo: CTRL + Y\nCopy: CTRL + C\nCut: CTRL +X\nPaste: CTRL + V\nSelect eraser: E\nQuicksave: F5\nNumber buttons is used to change layers.");
 
             
             ImGui::EndTabItem();
@@ -739,8 +749,9 @@ bool TileMenuHandler::anyWindowsOpen()
 void TileMenuHandler::saveFile()
 {
     std::string name = saveWindow.getFileName();
-
     fs::path dir = saveWindow.getPath();
+    currentFileName = name;
+    currentDir = dir;
 
     if (name.empty())
     {
@@ -748,21 +759,52 @@ void TileMenuHandler::saveFile()
     }
 
     fileManager.save(layerManager, lightManager, hitbaxes, dir / name);
-
+    infoWindow.saveInfo(currentFileName);
     saveWindow.closeWindow();
+}
+
+void TileMenuHandler::saveAsCurrentFile()
+{
+    if (currentFileName.size() == 0)
+        saveWindow.openWindow();
+
+    else
+    {
+        fileManager.save(layerManager, lightManager, hitbaxes, currentDir / currentFileName);
+        infoWindow.saveInfo(currentFileName);
+    }
 }
 
 void TileMenuHandler::loadFile()
 {
     std::string name = loadWindow.getFilename();
-
     fs::path dir = loadWindow.getPath();
+    currentFileName = name;
+    currentDir = dir;
 
     fileManager.load(layerManager, lightManager, hitbaxes, dir / name);
 
     activeTiles.clear();
     activeTileTexture = TileMaps::get().getTexureCount() - 1;
 
+    infoWindow.fetchInfo(name);
+    loadWindow.closeWindow();
+}
+
+void TileMenuHandler::autosave()
+{
+    fileManager.save(layerManager, lightManager, hitbaxes, fs::current_path() / DEFAULT_SAVE_PATH / "autoSave");
+}
+
+void TileMenuHandler::load(std::string filename)
+{
+    fileManager.load(layerManager, lightManager, hitbaxes, fs::path(DEFAULT_SAVE_PATH) / filename);
+    currentFileName = filename;
+    currentDir = fs::path(DEFAULT_SAVE_PATH);
+    activeTiles.clear();
+    activeTileTexture = TileMaps::get().getTexureCount() - 1;
+
+    infoWindow.fetchInfo(filename);
     loadWindow.closeWindow();
 }
 
@@ -786,9 +828,4 @@ void TileMenuHandler::generateGrid(sf::Color color)
         vertex.position.x = layerManager.getWorkAreaStart().x + (layerManager.getWorkAreaX() * TILE_SIZE);
         grid.append(vertex);
     }
-}
-
-void TileMenuHandler::autosave()
-{
-    fileManager.save(layerManager, lightManager, hitbaxes, fs::current_path() / DEFAULT_SAVE_PATH / "autoSave");
 }

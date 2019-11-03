@@ -5,6 +5,7 @@
 #include "LevelEditor/FileManager.h"
 #include "Windows/SaveWindow.h"
 #include "Windows/LoadWindow.h"
+#include "Windows/InfoWindow.h"
 #include "LightManager.h"
 #include <vector>
 
@@ -26,6 +27,7 @@ public:
     const sf::VertexArray& getGrid() const { return grid; };
     bool isGridVisible() const { return gridVisible; };
     void autosave();
+    void load(std::string filename);
 
 private:
     void handleMouseEvents(sf::Event event, bool guiBlock, sf::Vector2i viewPortMousePos);
@@ -44,6 +46,7 @@ private:
     bool anyWindowsOpen();
 
     void saveFile();
+    void saveAsCurrentFile();
     void loadFile();
 
     void generateGrid(sf::Color color);
@@ -55,6 +58,7 @@ private:
     LayerManager layerManager;
     SaveWindow saveWindow;
     LoadWindow loadWindow;
+    InfoWindow infoWindow;
     LightManager lightManager;
     BoxyBox tileBox;
     int activeTileTexture;
@@ -67,6 +71,9 @@ private:
     sf::Vector2i releasedPos;
 
     std::vector<Button> buttons;
+
+    std::string currentFileName;
+    fs::path currentDir;
 
     sf::VertexArray grid;
 

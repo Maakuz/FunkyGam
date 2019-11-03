@@ -293,7 +293,6 @@ void LayerManager::resize(int width, int height)
             }
         }
     }
-    printf("resizeo");
 }
 
 void LayerManager::undo(int steps)

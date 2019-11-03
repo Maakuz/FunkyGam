@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
-#include "SFML\Graphics.hpp"
-#include "LevelEditor/Structs.h"
+#include "SFML/Graphics.hpp"
+#include "Misc/Structs.h"
 
 class TileManager
 {

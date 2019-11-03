@@ -1,6 +1,6 @@
 #pragma once
 #pragma once
-#include "../Structs.h"
+#include "Misc/Structs.h"
 #include <vector>
 
 class ToolTileQueue

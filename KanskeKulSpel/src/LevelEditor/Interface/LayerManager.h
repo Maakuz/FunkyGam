@@ -1,7 +1,8 @@
 #pragma once
 #include <vector>
-#include "SFML\Graphics.hpp"
-#include "LevelEditor/Structs.h"
+#include "SFML/Graphics.hpp"
+#include "Misc/Structs.h"
+#include "LevelEditor/Interactables/ActiveTile.h"
 #include <fstream>
 #include "LevelEditor/Constants.h"
 #define STATE_AMOUNTS 50

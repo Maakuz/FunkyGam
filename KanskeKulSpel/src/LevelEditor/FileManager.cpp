@@ -2,6 +2,7 @@
 #include <fstream>
 #include "Constants.h"
 #include "TileMaps.h"
+#include "Misc/ConsoleWindow.h"
 
 namespace fs = std::filesystem;
 
@@ -28,11 +29,11 @@ void FileManager::save(const LayerManager & layerManager, const LightManager& li
 
         file.close();
 
-        printf("Saved!\n");
+        printCon("Saved!");
     }
 
     else
-        printf("NOT saved!\n");
+        printCon("NOT saved!");
 
 }
 
@@ -57,11 +58,11 @@ void FileManager::quickSave(const LayerManager & layerManager, const LightManage
 
         file.close();
 
-        printf("Quacksaved!\n");
+        printCon("Quacksaved!");
     }
 
     else
-        printf("NOT quacksaved!\n");
+        printCon("NOT quacksaved!");
 }
 
 void FileManager::load(LayerManager & layerManager, LightManager& lightManager,
@@ -85,11 +86,11 @@ void FileManager::load(LayerManager & layerManager, LightManager& lightManager,
         }
         file.close();
 
-        printf("Loaded?!\n");
+        printCon("Loaded?!");
     }
 
     else 
-        printf("NOT loaded!\n");
+        printCon("NOT loaded!");
 }
 
 void FileManager::exportTextures(const LayerManager & layerManager)
@@ -101,7 +102,7 @@ void FileManager::exportTextures(const LayerManager & layerManager)
         layerManager.getLayerAsImage(i).saveToFile(fileName);
     }
 
-    printf("exprot comprot\n");
+    printCon("exprot comprot");
 }
 
 std::vector<fs::path> FileManager::getTexturePaths()
@@ -125,7 +126,7 @@ int FileManager::addTexture(std::string name, std::string path)
     }
     catch (const char* e)
     {
-        printf("%s\n", e);
+        printCon("%s", e);
     }
 
     return TileMaps::get().getTextureIndex(name);

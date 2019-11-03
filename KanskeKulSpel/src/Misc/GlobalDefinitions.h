@@ -3,3 +3,5 @@
 #define WIN_HEIGHT 1080
 
 #define TILE_SIZE 64
+
+#define DATA_PATH "../Resources/Data/"

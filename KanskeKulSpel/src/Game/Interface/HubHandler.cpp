@@ -115,6 +115,13 @@ void HubHandler::reset()
     
 }
 
+void HubHandler::reload()
+{
+    loadRecipes();
+    loadLevelInfo();
+    loadInterface();
+}
+
 void HubHandler::loadRecipes()
 {
     this->recipes.clear();

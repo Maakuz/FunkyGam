@@ -15,6 +15,7 @@ public:
     const LevelInfo* getActiveLevel()const;
     const LevelInfo* changeToNextLevel(int exitTaken);
     void reset();
+    void reload();
 
 private:
     enum class State

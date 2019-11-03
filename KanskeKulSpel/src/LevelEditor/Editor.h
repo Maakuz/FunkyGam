@@ -9,6 +9,7 @@ class Editor
 public:
     Editor(const sf::RenderWindow* window);
     virtual ~Editor() {};
+    void loadLevel(std::string filename);
     void update(sf::Time deltaTime);
     void handleEvents(sf::Event e);
     const sf::View& getView() { return workView; };

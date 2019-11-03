@@ -7,6 +7,7 @@
 #include "Renderer/Lighting/Light.h"
 #include "Renderer/DebugDrawable.h"
 #include "Game/Level/Level.h"
+#include "Misc/Structs.h"
 #include <vector>
 
 class LevelHandler : public sf::Drawable, public DebugDrawable
@@ -45,13 +46,6 @@ public:
 
     };
 
-    struct Tile
-    {
-        int tileID;
-        int textureID;
-        int x;
-        int y;
-    };
 
     LevelHandler();
     virtual ~LevelHandler();

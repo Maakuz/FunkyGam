@@ -16,6 +16,11 @@ Editor::Editor(const sf::RenderWindow* window) :
     this->zoom = 1;
 }
 
+void Editor::loadLevel(std::string filename)
+{
+    tileMenuHandler.load(filename);
+}
+
 void Editor::update(sf::Time deltaTime)
 {
     float dt = deltaTime.asMilliseconds();
