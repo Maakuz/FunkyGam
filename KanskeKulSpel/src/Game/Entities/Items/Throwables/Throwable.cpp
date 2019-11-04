@@ -1,6 +1,6 @@
 #include "Throwable.h"
 #include "Game/Misc/Definitions.h"
-#include "Game/Handlers/ParticleHandler.h"
+#include "Game/Particles/ParticleHandler.h"
 #include <string>
 
 Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, const sf::Texture* texture)

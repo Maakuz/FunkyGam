@@ -2,7 +2,7 @@
 #include "Game/Misc/Definitions.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Handlers/TextureHandler.h"
-#include "Game/Handlers/ParticleHandler.h"
+#include "Game/Particles/ParticleHandler.h"
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
 

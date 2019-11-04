@@ -53,6 +53,7 @@ public:
     bool loadLevel(const LevelInfo* level);
     void updateLevel(float dt);
     void queueColliders();
+    void queueLightsAndShadows();
 
     sf::Vector2i getDimensions() const { return this->dimensions; }
 

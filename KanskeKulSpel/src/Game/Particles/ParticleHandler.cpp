@@ -36,6 +36,12 @@ void ParticleHandler::update(float dt)
     }
 }
 
+void ParticleHandler::queueLights()
+{
+    for (Emitter* emitter : this->activeEmitters)
+        emitter->queueLights();
+}
+
 void ParticleHandler::loadEmitters()
 {
     emitterTemplates.clear();

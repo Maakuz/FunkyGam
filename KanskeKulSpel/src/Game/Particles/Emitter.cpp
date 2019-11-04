@@ -92,9 +92,6 @@ Emitter::~Emitter()
 
 void Emitter::update(float dt)
 {
-    for (EmitterLight& light : lights)
-        LightQueue::get().queue(light.light);
-
     if (!immortalEmitter)
     {
         this->lifespanCounter += dt;
@@ -170,10 +167,21 @@ void Emitter::update(float dt)
             if (particlesHasLight) //plz dont kill me frames
             {
                 particles[i]->light->pos += particle->velocity;
-                LightQueueNoShadow::get().queue(particles[i]->light);
             }
         }
     }
+}
+
+void Emitter::queueLights()
+{
+    if (particlesHasLight)
+    {
+        for (Particle* particle : this->particles)
+            LightQueueNoShadow::get().queue(particle->light);
+    }
+
+    for (EmitterLight& light : lights)
+        LightQueue::get().queue(light.light);
 }
 
 void Emitter::setParticleLifeSpan(float lifespan)

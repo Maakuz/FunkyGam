@@ -73,18 +73,6 @@ void LevelHandler::updateLevel(float dt)
             unordered_erase(breakableShadowLines, breakableShadowLines.begin() + i--);
         }
     }
-
-
-
-    for (auto & line : this->shadowLines)
-        ShadowHandler::queueLine(line);
-
-    for (std::vector<Line>& lines : this->breakableShadowLines)
-        for (Line& line : lines)
-            ShadowHandler::queueLine(line);
-
-    for (Light* light : lights)
-        LightQueue::get().queue(light);
 }
 
 void LevelHandler::queueColliders()
@@ -94,6 +82,19 @@ void LevelHandler::queueColliders()
 
     for (auto& ter : breakableTerrain)
         CollisionHandler::queueBreakable(&ter);
+}
+
+void LevelHandler::queueLightsAndShadows()
+{
+    for (auto& line : this->shadowLines)
+        ShadowHandler::queueLine(line);
+
+    for (std::vector<Line>& lines : this->breakableShadowLines)
+        for (Line& line : lines)
+            ShadowHandler::queueLine(line);
+
+    for (Light* light : lights)
+        LightQueue::get().queue(light);
 }
 
 void LevelHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const

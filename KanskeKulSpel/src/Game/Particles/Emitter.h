@@ -91,6 +91,7 @@ public:
     ~Emitter();
 
     void update(float dt);
+    void queueLights();
 
     friend std::ostream& operator<<(std::ostream& out, const Emitter& emitter);
     friend std::istream& operator>>(std::istream& in, Emitter& emitter);

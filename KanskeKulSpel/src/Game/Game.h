@@ -4,7 +4,7 @@
 #include "Collision/CollisionHandler.h"
 #include "Level/LevelHandler.h"
 #include "Handlers/ItemHandler.h"
-#include "Handlers/ParticleHandler.h"
+#include "Particles/ParticleHandler.h"
 #include "Interface/UIHandler.h"
 #include "Interface/HubHandler.h"
 #include "Game/Entities/Items/ItemEditor.h"

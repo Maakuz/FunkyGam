@@ -152,6 +152,8 @@ void Game::updateLevel(float dt)
         PROFILER_STOP;
     }
 
+    this->levelHandler.queueLightsAndShadows();
+    this->particleHandler.queueLights();
     Renderer::queueDrawable(&this->levelHandler);
     Renderer::queueDrawable(&this->characterHandler);
     Renderer::queueDrawable(&this->itemHandler);

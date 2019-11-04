@@ -4,7 +4,7 @@
 #include "Game/Misc/UnorderedErase.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Misc/Definitions.h"
-#include "ParticleHandler.h"
+#include "Game/Particles/ParticleHandler.h"
 #include "Game/Misc/VectorFunctions.h"
 
 std::vector<Throwable> ItemHandler::throwables;

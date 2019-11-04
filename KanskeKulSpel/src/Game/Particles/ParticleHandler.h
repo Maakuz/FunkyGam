@@ -11,6 +11,7 @@ public:
     ~ParticleHandler();
 
     void update(float dt);
+    void queueLights();
 
     void loadEmitters();
     void reset();
