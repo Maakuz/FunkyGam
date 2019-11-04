@@ -389,6 +389,7 @@
     <None Include="..\Resources\Data\Recipes.mop" />
     <None Include="..\Resources\Data\HubInterface.mop" />
     <None Include="..\Resources\Data\LevelInfo.mop" />
+    <None Include="..\Resources\Data\Particles.mop" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc\Todo.txt" />

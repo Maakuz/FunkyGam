@@ -262,6 +262,7 @@
     <None Include="..\Resources\Data\Items.mop" />
     <None Include="..\Resources\Data\LevelInfo.mop" />
     <None Include="..\Resources\Data\LoadList.mop" />
+    <None Include="..\Resources\Data\Particles.mop" />
     <None Include="..\Resources\Data\Player.mop" />
     <None Include="..\Resources\Data\Recipes.mop" />
     <None Include="..\Resources\Data\StartItems.mop" />

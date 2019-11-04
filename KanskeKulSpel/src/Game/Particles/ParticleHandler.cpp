@@ -47,7 +47,7 @@ void ParticleHandler::loadEmitters()
     emitterTemplates.clear();
     templateNames.clear();
 
-    std::ifstream loadlist(DATA_PATH "LoadList.mop");
+    std::ifstream loadlist(DATA_PATH "Particles.mop");
 
     if (!loadlist.is_open())
     {
@@ -59,14 +59,10 @@ void ParticleHandler::loadEmitters()
     int particleCount;
     std::string folder;
 
-    while (trash != "[Particles]")
-        loadlist >> trash;
 
     loadlist >> trash >> folder;
-    loadlist >> trash >> particleCount;
 
-
-    for (int i = 0; i < particleCount; i++)
+    while (!loadlist.eof())
     {
         std::string fileName;
         loadlist >> trash >> fileName;
@@ -84,7 +80,7 @@ void ParticleHandler::loadEmitters()
         }
 
         else
-            printf("Particle with ID: %d could not be loaded.\n", i);
+            printf("Particle %s could not be loaded.\n", fileName.c_str());
     }
 
     loadlist.close();

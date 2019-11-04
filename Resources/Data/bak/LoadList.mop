@@ -26,3 +26,14 @@ TextureCount: 21
 [Fonts]
 Folder: ../Resources/Fonts/
 0: consola.ttf
+
+
+[Particles]
+Folder: ../Resources/Particles/
+ParticleCount: 6
+0: bomb.part
+1: fire.part
+2: flash.part
+3: flare.part
+4: stone.part
+5: brightblossom.part

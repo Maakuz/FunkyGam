@@ -218,9 +218,9 @@ void Emitter::kill()
 }
 
 //USE RESPONSIBLY
-void Emitter::enableParticleLight() 
+void Emitter::setParticleHasLight(bool hasLight)
 { 
-    this->particlesHasLight = true; 
+    this->particlesHasLight = hasLight; 
     reset();
 }
 

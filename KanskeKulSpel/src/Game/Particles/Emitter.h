@@ -118,7 +118,7 @@ public:
     void kill();
 
     //USE RESPONSIBLY
-    void enableParticleLight();
+    void setParticleHasLight(bool hasLight);
     void setParticleLightRadius(float radius) { this->particleLightRadius = radius; };
 
     void enableGravity(bool isAffectedByGravity) { this->affectedByGravity = isAffectedByGravity; };

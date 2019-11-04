@@ -31,6 +31,14 @@ Game::Game(const sf::RenderWindow* window) :
 
             return "Open and seeded";
         });
+
+    ConsoleWindow::get().addCommand("openParticleEditor", [&](Arguments args)->std::string
+        {
+            paused = true;
+            particleEditor.openWindow();
+
+            return "Pickle yo particle";
+        });
 }
 
 Game::~Game()
@@ -61,6 +69,9 @@ void Game::update(float dt)
 
     if (itemEditor.isOpen())
         itemEditor.update();
+
+    if (particleEditor.isOpen())
+        particleEditor.update(mousePosWorld, dt);
 }
 
 void Game::resetAfterEditing()
