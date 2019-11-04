@@ -35,6 +35,7 @@ private:
     float illumination;
     int health;
     int maxHealth;
+    float throwingPower;
 
     bool debugMode;
     bool noClip;

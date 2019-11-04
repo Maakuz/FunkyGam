@@ -53,9 +53,17 @@ void ItemHandler::loadTemplates()
         exit(-44);
     }
 
-    loadThrowables(file);
-    loadGatherables(file);
+    while (!file.eof())
+    {
+        std::string type;
+        file >> type;
 
+        if (type == "[Throwable]")
+            loadThrowables(file);
+
+        else if (type == "[Item]")
+            loadGatherables(file);
+    }
 
     file.close();
 
@@ -173,52 +181,37 @@ const Item* ItemHandler::getTemplate(int itemID)
 void ItemHandler::loadThrowables(std::ifstream& file)
 {
     std::string trash;
-    int count;
 
-    file >> trash;
-    file >> trash >> count;
+    int itemID;
+    int textureID;
 
-    for (int i = 0; i < count; i++)
-    {
-        int itemID;
-        int textureID;
+    file >> trash >> itemID;
+    file >> trash >> textureID;
+    Throwable* throwable = new Throwable(sf::Vector2f(), sf::Vector2f(), TextureHandler::get().getTexture(textureID));
 
-        file >> trash;
-        file >> trash >> itemID;
-        file >> trash >> textureID;
-        Throwable* throwable = new Throwable(sf::Vector2f(), sf::Vector2f(), TextureHandler::get().getTexture(textureID));
+    file >> *throwable;
 
-        file >> *throwable;
+    throwable->setID(itemID);
 
-        throwable->setID(itemID);
-
-        itemTemplates.push_back(throwable);
-    }
+    itemTemplates.push_back(throwable);
 }
 
 void ItemHandler::loadGatherables(std::ifstream& file)
 {
     std::string trash;
-    int count;
-    file >> trash;
-    file >> trash >> count;
 
-    for (int i = 0; i < count; i++)
-    {
-        int itemID;
-        int textureID;
+    int itemID;
+    int textureID;
 
-        file >> trash;
-        file >> trash >> itemID;
-        file >> trash >> textureID;
-        Item* item = new Item(sf::Vector2f(), TextureHandler::get().getTexture(textureID));
+    file >> trash >> itemID;
+    file >> trash >> textureID;
+    Item* item = new Item(sf::Vector2f(), TextureHandler::get().getTexture(textureID));
 
-        file >> *item;
-        item->setID(itemID);
-        item->addCollisionComponent(CollisionBox::ColliderKeys::gatherable);
+    file >> *item;
+    item->setID(itemID);
+    item->addCollisionComponent(CollisionBox::ColliderKeys::gatherable);
 
-        itemTemplates.push_back(item);
-    }
+    itemTemplates.push_back(item);
 }
 
 void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const

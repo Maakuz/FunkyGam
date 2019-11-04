@@ -5,6 +5,8 @@
 
 void TextureHandler::loadTextures()
 {
+    textures.clear();
+    texNames.clear();
     std::fstream file(DATA_PATH "LoadList.mop");
 
     if (!file.is_open())
@@ -36,6 +38,7 @@ void TextureHandler::loadTextures()
         }
 
         this->textures.push_back(texture);
+        this->texNames.push_back(fileName);
     }
     std::string fontName;
     std::string fontFolder;
@@ -56,4 +59,20 @@ void TextureHandler::loadTextures()
 sf::Texture* TextureHandler::getTexture(int texID)
 {
     return &this->textures[texID];
+}
+
+std::string TextureHandler::getTextureName(int texID)
+{
+    return this->texNames[texID];
+}
+
+int TextureHandler::getIDForTexture(const sf::Texture* texture)
+{
+    for (int i = 0; i < textures.size(); i++)
+    {
+        if (&textures[i] == texture)
+            return i;
+    }
+
+    return -1;
 }

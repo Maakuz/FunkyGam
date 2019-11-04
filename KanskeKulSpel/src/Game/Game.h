@@ -7,6 +7,7 @@
 #include "Handlers/ParticleHandler.h"
 #include "Interface/UIHandler.h"
 #include "Interface/HubHandler.h"
+#include "Game/Entities/Items/ItemEditor.h"
 #include "GameState.h"
 
 #define MAX_LIGHTS 200
@@ -42,7 +43,8 @@ private:
     CharacterHandler characterHandler;
     UIHandler uiHandler;
     HubHandler hubHandler;
-    
+    ItemEditor itemEditor;
+
     const sf::RenderWindow* window;
 
     sf::View view;

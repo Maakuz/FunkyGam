@@ -130,7 +130,7 @@ int main()
             if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Key(53)) //Tilde in sweden
                 debugActive = !debugActive;
 
-            if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::P) //P in sweden
+            if (!ImGui::IsAnyItemActive() && e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::P) //P in sweden
                 ProfilerActive = !ProfilerActive;
 
 

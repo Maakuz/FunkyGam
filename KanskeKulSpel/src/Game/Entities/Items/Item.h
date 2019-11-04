@@ -10,6 +10,7 @@ public:
     virtual ~Item() {};
 
     friend std::istream& operator>>(std::istream& in, Item& item);
+    friend std::ostream& operator<<(std::ostream& out, const Item& item);
 
 
     int getID() const { return id; };
@@ -42,5 +43,6 @@ private:
     bool obtained;
 
     virtual std::istream& readSpecific(std::istream& in) { return in; };
+    virtual std::ostream& writeSpecific(std::ostream& out)const { return out; };
 };
 

@@ -14,9 +14,27 @@ public:
 
     void throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Entity* thrower);
 
-    Explosion getExplosion() const { return explosionData; };
-    int getDamage() const { return this->damage; };
+    const Explosion& getExplosion() const { return explosionData; };
+    Explosion* getExplosionPtr() { return &this->explosionData; };
     sf::Vector2f getMomentum() const { return this->momentum; };
+    int getDamage() const { return this->damage; };
+    void setDamage(int damage) { this->damage = damage; };
+
+    float getMass()const { return mass; };
+    void setMass(float mass) { this->mass = mass; };
+
+    int getArmingTime()const { return this->armingTime; };
+    void setArmingTime(int time) { this->armingTime = time; };
+
+    float getBounce()const { return this->bounce; };
+    void setBounce(float bounce) { this->bounce = bounce; };
+
+    bool isDetonatingOnImpact()const { return detonateOnImpact; };
+    void setDetonatingOnImpact(bool detonateOnImpact) { this->detonateOnImpact = detonateOnImpact; };
+
+    int getParticleEffectID()const { return particleEffectID; };
+    void setParticleEffectID(int effectID) { this->particleEffectID = effectID; };
+
 
     virtual void handleCollision(const Entity* collider);
     virtual void handleExplosion(const Explosion& explosion) {};
@@ -40,4 +58,5 @@ private:
     int particleEffectID;
 
     virtual std::istream& readSpecific(std::istream& in);
+    virtual std::ostream& writeSpecific(std::ostream& out) const;
 };

@@ -22,3 +22,15 @@ std::istream& operator>>(std::istream& in, Item& item)
 
     return in;
 }
+
+std::ostream& operator<<(std::ostream& out, const Item& item)
+{
+    out << "Name: " << item.name << "\n";
+    out << "StackLimit: "<< item.stackLimit << "\n";
+    out << "EmitterID: "<< item.emitterID << "\n";
+    out << "Useable: " << item.useable << "\n";
+
+    item.writeSpecific(out);
+
+    return out;
+}

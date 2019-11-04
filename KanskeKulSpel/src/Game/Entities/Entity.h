@@ -17,7 +17,6 @@ public:
 
     virtual void flipHorizontally();
 
-    ////ONLY USE THIS FROM THE OUTSIDE
     const CollisionBox& getCollisionBox() const { return this->collisionBox; };
     sf::Vector2f getSize() const { return this->size; };
     void setSize(sf::Vector2f size);
@@ -29,6 +28,8 @@ public:
     sf::Vector2f getCenterPos() const;
     const sf::Texture* getTexture() const { return this->sprite.getTexture(); };
 
+    //Might need to do more stuff if dimensions are changed
+    void setTexture(const sf::Texture* texture) { this->sprite.setTexture(*texture); };
     void addCollisionComponent(CollisionBox::ColliderKeys component);
 
     float left() const;

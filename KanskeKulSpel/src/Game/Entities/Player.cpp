@@ -142,8 +142,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
     {
         sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
         normalize(direction);
-        direction.x *= 8;
-        direction.y *= 10;
+        direction *= this->throwingPower;
 
         int itemID = this->ui->getInventory()->useSelectedItem();
         if (itemID != -1)
@@ -297,6 +296,7 @@ std::istream& operator>>(std::istream& in, Player& player)
     in >> trash >> player.jumpHeight;
     in >> trash >> player.mass;
     in >> trash >> player.health;
+    in >> trash >> player.throwingPower;
     player.maxHealth = player.health;
 
     return in;

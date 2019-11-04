@@ -147,6 +147,7 @@
     <ClCompile Include="src\Game\Entities\Enemies\Grunt.cpp" />
     <ClCompile Include="src\Game\Entities\Entity.cpp" />
     <ClCompile Include="src\Game\Entities\Items\Item.cpp" />
+    <ClCompile Include="src\Game\Entities\Items\ItemEditor.cpp" />
     <ClCompile Include="src\Game\Entities\Items\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game\Entities\MovingEntity.cpp" />
     <ClCompile Include="src\Game\Entities\Player.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="src\Game\Entities\Enemies\Grunt.h" />
     <ClInclude Include="src\Game\Entities\Entity.h" />
     <ClInclude Include="src\Game\Entities\Items\Item.h" />
+    <ClInclude Include="src\Game\Entities\Items\ItemEditor.h" />
     <ClInclude Include="src\Game\Entities\Items\Throwables\Throwable.h" />
     <ClInclude Include="src\Game\Entities\MovingEntity.h" />
     <ClInclude Include="src\Game\Entities\Player.h" />

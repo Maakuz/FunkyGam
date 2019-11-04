@@ -1,11 +1,10 @@
 #pragma once
 #include "SFML/System/Vector2.hpp"
 #include "Game/Misc/VectorFunctions.h"
-enum class ExplosionType 
+enum ExplosionType 
 {
-    damage,
-    flash,
-    sound
+    basic = 0,
+    flash = 1
 };
 struct Explosion
 {
@@ -15,7 +14,7 @@ struct Explosion
     float falloff;
     ExplosionType type;
 
-    Explosion(sf::Vector2f center = sf::Vector2f(), float radius = 0, ExplosionType type = ExplosionType::damage, int damage = 0, float falloff = 0)
+    Explosion(sf::Vector2f center = sf::Vector2f(), float radius = 0, ExplosionType type = ExplosionType::basic, int damage = 0, float falloff = 0)
     {
         this->radius = radius;
         this->center = center;

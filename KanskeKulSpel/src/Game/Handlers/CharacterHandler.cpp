@@ -35,6 +35,13 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
         return "Enemies has been reloaded.";
         });
 
+    ConsoleWindow::get().addCommand("charReloadPlayer", [&](Arguments args)->std::string {
+        loadPlayer();
+        
+
+        return "Player has been reloaded.";
+        });
+
     ConsoleWindow::get().addCommand("charShowHitboxes", [&](Arguments args)->std::string
         {
             if (args.empty())

@@ -1,110 +1,104 @@
-[ThrowableData]
-ItemCount: 4
-
-[Item]
-ItemID: 0
-TextureID: 17
-Name: FlashBomb
-stack: 10
-Emitter: -1
-Useable: 1
 [Throwable]
+ID: 0
+TexID: 17
+Name: FlashBomb
+StackLimit: 10
+EmitterID: -1
+Useable: 1
+[Specific]
 Mass: 0.3
-Armingtime: 1000
-Bouncyness: 0.4
-DetonateonImpact: 0
+ArmingTime: 1000
+Bounce: 0.4
+DetonateOnImpact: 0
 Damage: 3
 ParticleEffectID: 2
 [Explosion]
 Type: 1
 Radius: 300
 Falloff: 0
-Damage: 3
+Damage 0
 
-[Item]
-ItemID: 1
-TextureID: 2
-Name: Bomb
-stack: 10
-Emitter: -1
-Useable: 1
 [Throwable]
+ID: 1
+TexID: 2
+Name: Bomb
+StackLimit: 10
+EmitterID: -1
+Useable: 1
+[Specific]
 Mass: 0.5
-Armingtime: 1000
-Bouncyness: 0.3
-DetonateonImpact: 0
+ArmingTime: 1000
+Bounce: 0.3
+DetonateOnImpact: 0
 Damage: 3
 ParticleEffectID: 0
 [Explosion]
 Type: 0
 Radius: 300
 Falloff: 0
-Damage: 100
+Damage 100
 
-[Item]
-ItemID: 2
-TextureID: 4
-Name: Flare
-stack: 10
-Emitter: -1
-Useable: 1
 [Throwable]
+ID: 2
+TexID: 4
+Name: Flare
+StackLimit: 10
+EmitterID: -1
+Useable: 1
+[Specific]
 Mass: 0.2
-Armingtime: 1500
-Bouncyness: 0.4
-DetonateonImpact: 1
+ArmingTime: 1500
+Bounce: 0.4
+DetonateOnImpact: 1
 Damage: 3
 ParticleEffectID: 3
 [Explosion]
-Type: 2
-Radius: 200
+Type: 0
+Radius: 300
 Falloff: 0
-Damage: 0
+Damage 0
 
-[Item]
-ItemID: 3
-TextureID: 3
-Name: Rock
-stack: 20
-Emitter: -1
-Useable: 1
 [Throwable]
+ID: 3
+TexID: 3
+Name: Rock
+StackLimit: 20
+EmitterID: -1
+Useable: 1
+[Specific]
 Mass: 0.3
-Armingtime: 1000
-Bouncyness: 0.4
-DetonateonImpact: 1
+ArmingTime: 1000
+Bounce: 0.4
+DetonateOnImpact: 1
 Damage: 3
 ParticleEffectID: 4
 [Explosion]
-Type: 2
+Type: 0
 Radius: 500
 Falloff: 0
-Damage: 0
-
-
-[GatherableData]
-ItemCount: 3
+Damage 0
 
 [Item]
-ItemID: 4
-TextureID: 13
+ID: 4
+TexID: 13
 Name: Brightblossom
-Stack: 10
-Emitter: 5
+StackLimit: 10
+EmitterID: 5
 Useable: 0
 
 [Item]
-ItemID: 5
-TextureID: 12
+ID: 5
+TexID: 12
 Name: Clamboo
-Stack: 10
-Emitter: -1
+StackLimit: 10
+EmitterID: -1
 Useable: 0
 
 [Item]
-ItemID: 6
-TextureID: 16
+ID: 6
+TexID: 16
 Name: Blastberry
-Stack: 10
-Emitter: -1
+StackLimit: 10
+EmitterID: -1
 Useable: 0
+

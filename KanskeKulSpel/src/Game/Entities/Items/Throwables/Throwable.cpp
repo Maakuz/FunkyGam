@@ -115,3 +115,23 @@ std::istream& Throwable::readSpecific(std::istream& in)
 
     return in;
 }
+
+std::ostream& Throwable::writeSpecific(std::ostream& out) const
+{
+    out << "[Specific]\n";
+    out << "Mass: " << mass << "\n";
+    out << "ArmingTime: " << armingTime << "\n";
+    out << "Bounce: "<< bounce << "\n";
+    out << "DetonateOnImpact: "<< detonateOnImpact << "\n";
+    out << "Damage: "<< damage << "\n";
+    out << "ParticleEffectID: " << particleEffectID << "\n";
+
+
+    out << "[Explosion]\n";
+    out << "Type: " << (int)explosionData.type << "\n";
+    out << "Radius: " << explosionData.radius << "\n";
+    out << "Falloff: "<< explosionData.falloff << "\n";
+    out << "Damage "<< explosionData.damage << "\n";
+
+    return out;
+}

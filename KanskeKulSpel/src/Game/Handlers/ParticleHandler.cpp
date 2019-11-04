@@ -6,6 +6,7 @@
 
 std::vector<Emitter*> ParticleHandler::activeEmitters;
 std::vector<Emitter> ParticleHandler::emitterTemplates;
+std::vector<std::string> ParticleHandler::templateNames;
 
 
 ParticleHandler::ParticleHandler()
@@ -37,6 +38,9 @@ void ParticleHandler::update(float dt)
 
 void ParticleHandler::loadEmitters()
 {
+    emitterTemplates.clear();
+    templateNames.clear();
+
     std::ifstream loadlist(DATA_PATH "LoadList.mop");
 
     if (!loadlist.is_open())
@@ -70,6 +74,7 @@ void ParticleHandler::loadEmitters()
             file.close();
 
             emitterTemplates.push_back(emitter);
+            templateNames.push_back(fileName);
         }
 
         else
@@ -95,6 +100,14 @@ Emitter* ParticleHandler::addEmitter(int emitterID, sf::Vector2f pos)
     activeEmitters.push_back(emitter);
 
     return emitter;
+}
+
+std::string ParticleHandler::getEmitterName(int id) 
+{
+    if (id < 0)
+        return "None";
+
+    return templateNames[id]; 
 }
 
 void ParticleHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const

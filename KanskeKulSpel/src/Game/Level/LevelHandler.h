@@ -53,6 +53,7 @@ public:
     bool loadLevel(const LevelInfo* level);
     void updateLevel(float dt);
     void queueColliders();
+
     sf::Vector2i getDimensions() const { return this->dimensions; }
 
     std::vector<sf::Vector2f> generateEnemySpawnPoints();
@@ -60,6 +61,7 @@ public:
     std::vector<sf::Vector2f> generateRareGatherPoints();
     sf::Vector2f findPlayerSpawnPoint();
     const std::vector<Line>* getShadowLinePtr() const { return &this->shadowLines; }
+    
     void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     typedef std::vector<std::vector<Tile>> Layer;
@@ -90,6 +92,6 @@ private:
     void createSpites();
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-    
+
 
 };

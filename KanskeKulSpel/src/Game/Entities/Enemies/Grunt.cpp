@@ -315,6 +315,20 @@ void Grunt::handleExplosion(const Explosion& explosion)
         this->health -= damage;
     }
 
+    if (state != State::stunned && state != State::chasing && state != State::attacking)
+    {
+        this->currentRoamPoint = explosion.center;
+        this->state = State::searching;
+        this->drawQuestion.reset();
+        searchCounter.reset();
+
+        if (explosion.center.x < this->pos.x)
+            this->moveLeft();
+
+        else
+            moveRight();
+    }
+
     switch (explosion.type)
     {
     case ExplosionType::flash:
@@ -322,21 +336,6 @@ void Grunt::handleExplosion(const Explosion& explosion)
         stunCounter.reset();
         break;
 
-    case ExplosionType::sound:
-        if (state != State::stunned && state != State::chasing && state != State::attacking)
-        {
-            this->currentRoamPoint = explosion.center;
-            this->state = State::searching;
-            this->drawQuestion.reset();
-            searchCounter.reset();
-
-            if (explosion.center.x < this->pos.x)
-                this->moveLeft();
-
-            else
-                moveRight();
-        }
-        break;
     default:
         break;
     }
