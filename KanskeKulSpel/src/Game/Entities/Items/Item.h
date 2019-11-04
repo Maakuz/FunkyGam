@@ -6,7 +6,7 @@
 class Item : public Entity
 {
 public:
-    Item(sf::Vector2f pos, sf::Texture* texture);
+    Item(sf::Vector2f pos, const sf::Texture* texture);
     virtual ~Item() {};
 
     friend std::istream& operator>>(std::istream& in, Item& item);

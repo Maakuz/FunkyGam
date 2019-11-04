@@ -1,6 +1,6 @@
 #include "Entity.h"
 
-Entity::Entity(sf::Vector2f pos, sf::Texture * texture)
+Entity::Entity(sf::Vector2f pos, const sf::Texture * texture)
 :collisionBox(sf::Vector2f(0, 0), sf::Vector2f(0, 0)) 
 {
     flipped = false;

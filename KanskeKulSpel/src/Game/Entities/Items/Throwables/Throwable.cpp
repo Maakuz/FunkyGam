@@ -3,7 +3,7 @@
 #include "Game/Handlers/ParticleHandler.h"
 #include <string>
 
-Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture)
+Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, const sf::Texture* texture)
     :Item(pos, texture)
 {
     this->collisionBox.addComponent(CollisionBox::ColliderKeys::throwable);

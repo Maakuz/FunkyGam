@@ -5,7 +5,7 @@
 class Throwable : public Item
 {
 public:
-    Throwable(sf::Vector2f momentum, sf::Vector2f pos, sf::Texture* texture);
+    Throwable(sf::Vector2f momentum, sf::Vector2f pos, const sf::Texture* texture);
     ~Throwable() { };
 
     void update(float dt);

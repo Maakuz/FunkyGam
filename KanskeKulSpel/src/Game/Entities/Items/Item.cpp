@@ -1,6 +1,6 @@
 #include "Game/Entities/Items/Item.h"
 
-Item::Item(sf::Vector2f pos, sf::Texture* texture):
+Item::Item(sf::Vector2f pos, const sf::Texture* texture):
     Entity(pos, texture)
 {
     id = 0;

@@ -102,3 +102,23 @@ StackLimit: 10
 EmitterID: -1
 Useable: 0
 
+[Throwable]
+ID: 7
+TexID: 16
+Name: Molletolle
+StackLimit: 3
+EmitterID: 3
+Useable: 1
+[Specific]
+Mass: 0.3
+ArmingTime: 1000
+Bounce: 0.4
+DetonateOnImpact: 1
+Damage: 200
+ParticleEffectID: 1
+[Explosion]
+Type: 0
+Radius: 0
+Falloff: 0
+Damage 0
+

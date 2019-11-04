@@ -54,6 +54,30 @@ void ItemEditor::update()
     if (ImGui::Button("save"))
         writeItems();
 
+    if (ImGui::Button("Create Item"))
+    {
+        Item* item = new Item(sf::Vector2f(), items[currentItem]->getTexture());
+        this->items.push_back(item);
+        item->setID(this->items.size() - 1);
+        this->currentItem = this->items.size() - 1;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Create Throwable"))
+    {
+        Throwable* item = new Throwable(sf::Vector2f(), sf::Vector2f(), items[currentItem]->getTexture());
+        this->items.push_back(item);
+        item->setID(this->items.size() - 1);
+        item->setUseable(true);
+        this->currentItem = this->items.size() - 1;
+    }
+
+    if (ImGui::Button("Delete"))
+    {
+        this->items.erase(items.begin() + currentItem);
+        this->currentItem = this->items.size() - 1;
+    }
     ImGui::End();
 }
 
