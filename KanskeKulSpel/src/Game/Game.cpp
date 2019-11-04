@@ -151,6 +151,8 @@ void Game::updateLevel(float dt)
 
 void Game::loadLevel(const LevelInfo* level)
 {
+    LightQueue::get().clear();
+    LightQueueNoShadow::get().clear();
     particleHandler.reset();
     levelHandler.loadLevel(level);
     characterHandler.initializeLevel(levelHandler.getShadowLinePtr(), levelHandler.findPlayerSpawnPoint());
