@@ -2,9 +2,10 @@
 #include <string>
 #include "Game/Handlers/TextureHandler.h"
 
-Enemy::Enemy(AnimationData data, sf::Vector2f pos)
+Enemy::Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     :MovingEntity(data, pos)
 {
+    this->ui = ui;
     this->collisionBox.addComponent(CollisionBox::ColliderKeys::character);
     this->roamDecisionCounter = Counter(2500 + rand() % 1000);
     this->timeSincePlayerSeen = Counter(10000);
@@ -113,11 +114,12 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
 
 
     in >> trash >> enemy.roamDistance;
-    in >> trash >> enemy.health;
+    in >> trash >> enemy.maxHealth;
     in >> trash >> enemy.mass;
     in >> trash >> enemy.sightRadius;
     in >> trash >> enemy.sightMultiplier;
 
+    enemy.health = enemy.maxHealth;
 
     enemy.readSpecific(in);
     return in;

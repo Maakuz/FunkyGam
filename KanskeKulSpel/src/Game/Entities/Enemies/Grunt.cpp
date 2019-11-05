@@ -4,8 +4,8 @@
 #include <string>
 #include "Game/Entities/Items/Throwables/Throwable.h"
 
-Grunt::Grunt(AnimationData data, sf::Vector2f pos)
-    :Enemy(data, pos)
+Grunt::Grunt(AnimationData data, sf::Vector2f pos, UIHandler* ui)
+    :Enemy(data, pos, ui)
 {
     this->roamDistance = 64;
     this->idleSpeed = 0.005f;
@@ -302,6 +302,7 @@ void Grunt::handleCollision(const Entity* collider)
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(collider);
         this->health -= throwable->getDamage();
+        ui->displayEnemyDamage(float(health) / maxHealth);
 
         printCon(std::to_string(this->health));
     }
@@ -313,6 +314,7 @@ void Grunt::handleExplosion(const Explosion& explosion)
     {
         int damage = explosion.calculateDamage(this->getCenterPos());
         this->health -= damage;
+        ui->displayEnemyDamage(float(health)/maxHealth);
     }
 
     if (state != State::stunned && state != State::chasing && state != State::attacking)

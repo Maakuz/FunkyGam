@@ -4,7 +4,7 @@
 class Grunt : public Enemy
 {
 public:
-    Grunt(AnimationData data, sf::Vector2f pos);
+    Grunt(AnimationData data, sf::Vector2f pos, UIHandler* ui);
     ~Grunt() {};
 
     void update(float dt);

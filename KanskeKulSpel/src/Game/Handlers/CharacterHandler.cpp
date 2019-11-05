@@ -188,7 +188,7 @@ void CharacterHandler::loadEnemies()
         file >> trash >> size.x >> size.y;
         file >> trash >> offset.x >> offset.y;
 
-        Grunt* grunt = new Grunt(data, sf::Vector2f(0, 0));
+        Grunt* grunt = new Grunt(data, sf::Vector2f(0, 0), ui);
         grunt->setSize(size);
         grunt->setEyeLevel(sf::Vector2f(size.x * 0.5f, size.y * 0.2f));
         grunt->moveSpriteOffset(offset);

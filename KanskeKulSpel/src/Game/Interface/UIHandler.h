@@ -13,6 +13,7 @@ public:
     void update(float dt, sf::Vector2f mousePos);
 
     void displayNewItem(int item);
+    void displayEnemyDamage(float percentage);
 
     const sf::View& getView() const { return this->view; };
 
@@ -26,10 +27,13 @@ private:
 
     TextBubble newItem;
     Counter newItemDisplayDuration;
+    Counter showEnemyHealth;
 
     sf::Vector2u slotSize;
     sf::Sprite healthBarOverlay;
     sf::Vertex healthBar[4];
+    sf::Sprite enemyHealthBarOverlay;
+    sf::Vertex enemyHealthBar[4];
     sf::Texture* healthTexture;
     float healthPercentage;
 

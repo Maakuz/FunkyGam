@@ -1,6 +1,7 @@
 #pragma once
 #include "../MovingEntity.h"
 #include "Game/Misc/Counter.h"
+#include "Game/Interface/UIHandler.h"
 #include <fstream>
 
 
@@ -24,7 +25,7 @@ public:
         stunned
     };
 
-    Enemy(AnimationData data, sf::Vector2f pos);
+    Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui);
     ~Enemy() {};
 
     friend std::istream& operator>>(std::istream& in, Enemy& enemy);
@@ -45,6 +46,7 @@ public:
     sf::Vector2f getLastKnownPos() const { return this->lastKnownPlayerPos; };
 
 protected:
+    UIHandler* ui;
     float roamDistance;
     State state;
     Direction facingDir;
@@ -52,6 +54,7 @@ protected:
     Counter timeSincePlayerSeen;
     sf::Vector2f currentRoamPoint;
     int health;
+    int maxHealth;
     float sightRadius;
     float sightMultiplier; //How well enemy sees in the dark
     Counter drawQuestion;
