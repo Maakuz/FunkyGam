@@ -21,6 +21,15 @@ HubHandler::HubHandler(UIHandler* uiHandler)
             return "Locked and maybe loaded";
         });
 
+    ConsoleWindow::get().addCommand("unlockAllRecipes", [&](Arguments args)->std::string
+        {
+
+            for (Recipe& recipe : recipes)
+                recipe.unlocked = true;
+
+            return "unlocked and loaded";
+        });
+
     this->infoTextCharacterSize = DEFAULT_TEXT_SIZE;
     this->selectedRecipe = -1;
     this->selectedLevel = -1;

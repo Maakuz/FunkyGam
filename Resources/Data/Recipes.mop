@@ -1,24 +1,31 @@
 [Recipes]
-RecipeCount 2
+RecipeCount: 3
 
-[Flare]
 RecipeName: Mix flare
-ComponentID:        4 5
-ComponentAmount:    2 1
-FinishedItemID: 2
-FinishedItemCount: 3
+ComponentID: 4 5
+ComponentAmount: 2 1
+FinishedID: 2
+FinishedCount: 3
 [Description]
 Good for illuminationg the surrounding area. It
 also attracts enemies.
 [DescriptionEnd]
 
-[Flare]
 RecipeName: Brew bomb
-ComponentID:        6 5
-ComponentAmount:    1 1
-FinishedItemID: 1
-FinishedItemCount: 2
+ComponentID: 6 5
+ComponentAmount: 1 1
+FinishedID: 1
+FinishedCount: 2
 [Description]
 This is a somewhat powerful bomb. You
 could probably use it to blow up weak stuff.
+[DescriptionEnd]
+
+RecipeName: Wrommers brommers
+ComponentID: 0 2
+ComponentAmount: 1 1
+FinishedID: 7
+FinishedCount: 2
+[Description]
+This item burns baby
 [DescriptionEnd]

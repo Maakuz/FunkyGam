@@ -10,7 +10,6 @@ std::istream& operator>>(std::istream& in, Recipe& recipe)
     std::stringstream sstream;
 
     in >> trash;
-    in >> trash;
     std::getline(in, name);
     while (name.size() > 0 && name[0] == ' ')
         name.erase(name.begin());
@@ -56,4 +55,31 @@ std::istream& operator>>(std::istream& in, Recipe& recipe)
     recipe.description.setString(description);
 
     return in;
+}
+
+std::ostream& operator<<(std::ostream& out, const Recipe& recipe)
+{
+    out << "RecipeName: " << std::string(recipe.name.getString()) << "\n";
+
+    out << "ComponentID:";
+    for (int i = 0; i < recipe.components.size(); i++)
+    {
+        out << " " << recipe.components[i] ;
+    }
+
+    out << "\nComponentAmount:";
+    for (int i = 0; i < recipe.componentAmounts.size(); i++)
+    {
+        out << " " << recipe.componentAmounts[i];
+    }
+
+    out << "\nFinishedID: " << recipe.resultID << "\n";
+    out << "FinishedCount: " << recipe.resultAmount << "\n";
+    
+
+    out << "[Description]\n";
+    out << std::string(recipe.description.getString()) << "\n";
+    out << "[DescriptionEnd]";
+
+    return out;
 }

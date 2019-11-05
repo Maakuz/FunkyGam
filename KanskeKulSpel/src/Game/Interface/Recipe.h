@@ -15,4 +15,6 @@ struct Recipe : public Info
     }
 
     friend std::istream& operator>>(std::istream& in, Recipe& recipe);
+    friend std::ostream& operator<<(std::ostream& out, const Recipe& recipe);
+
 };

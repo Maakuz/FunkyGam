@@ -37,7 +37,15 @@ Game::Game(const sf::RenderWindow* window) :
             paused = true;
             particleEditor.openWindow();
 
-            return "Pickle yo particle";
+            return "Pickle yo particle!";
+        });
+
+    ConsoleWindow::get().addCommand("openRecipeEditor", [&](Arguments args)->std::string
+        {
+            paused = true;
+            recipeEditor.openWindow();
+
+            return "Ready your recipe!";
         });
 }
 
@@ -72,6 +80,9 @@ void Game::update(float dt)
 
     if (particleEditor.isOpen())
         particleEditor.update(mousePosWorld, dt);
+
+    if (recipeEditor.isOpen())
+        recipeEditor.update();
 }
 
 void Game::resetAfterEditing()

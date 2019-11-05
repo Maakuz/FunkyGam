@@ -8,7 +8,7 @@
 #include "Game/Misc/VectorFunctions.h"
 
 std::vector<Throwable> ItemHandler::throwables;
-std::vector<Item*> ItemHandler::itemTemplates;
+std::vector<const Item*> ItemHandler::itemTemplates;
 std::unordered_set<int> ItemHandler::foundItems;
 
 
@@ -36,13 +36,13 @@ ItemHandler::ItemHandler(UIHandler* uiHandler)
 
 ItemHandler::~ItemHandler()
 {
-    for (Item* item : itemTemplates)
+    for (const Item* item : itemTemplates)
         delete item;
 }
 
 void ItemHandler::loadTemplates()
 {
-    for (Item* item : itemTemplates)
+    for (const Item* item : itemTemplates)
         delete item;
     itemTemplates.clear();
 
@@ -168,7 +168,7 @@ void ItemHandler::queueColliders()
 
 void ItemHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower)
 {
-    Throwable item(*dynamic_cast<Throwable*>(itemTemplates[id]));
+    Throwable item(*dynamic_cast<const Throwable*>(itemTemplates[id]));
     item.throwItem(pos, momentum, thrower);
     throwables.push_back(item);
 }

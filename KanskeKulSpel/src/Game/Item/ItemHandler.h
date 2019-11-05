@@ -23,11 +23,12 @@ public:
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);
     static const Item* getTemplate(int itemID);
+    static const std::vector<const Item*>* getTemplateVec() { return &itemTemplates; };
     static const std::unordered_set<int>* getFoundItems() { return &foundItems; };
 private:
     UIHandler* ui;
     static std::vector<Throwable> throwables;
-    static std::vector<Item*> itemTemplates;
+    static std::vector<const Item*> itemTemplates;
     static std::unordered_set<int> foundItems;
     std::vector<sf::Vector2f> gatherPoints;
     std::vector<sf::Vector2f> rareGatherPoints;

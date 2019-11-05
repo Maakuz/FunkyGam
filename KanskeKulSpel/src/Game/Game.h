@@ -8,6 +8,7 @@
 #include "Interface/UIHandler.h"
 #include "Interface/HubHandler.h"
 #include "Game/Item/ItemEditor.h"
+#include "Game/Item/RecipeEditor.h"
 #include "Game/Particles/ParticleEditor.h"
 #include "GameState.h"
 
@@ -46,6 +47,7 @@ private:
     HubHandler hubHandler;
     ItemEditor itemEditor;
     ParticleEditor particleEditor;
+    RecipeEditor recipeEditor;
 
     const sf::RenderWindow* window;
 

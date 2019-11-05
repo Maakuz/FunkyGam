@@ -148,6 +148,7 @@
     <ClCompile Include="src\Game\Entities\Entity.cpp" />
     <ClCompile Include="src\Game\Item\Item.cpp" />
     <ClCompile Include="src\Game\Item\ItemEditor.cpp" />
+    <ClCompile Include="src\Game\Item\RecipeEditor.cpp" />
     <ClCompile Include="src\Game\Item\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game\Entities\MovingEntity.cpp" />
     <ClCompile Include="src\Game\Entities\Player.cpp" />

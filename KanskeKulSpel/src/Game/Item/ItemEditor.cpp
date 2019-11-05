@@ -275,6 +275,8 @@ void ItemEditor::writeItems()
             file << *item << "\n";
         }
     }
+
+    file.close();
 }
 
 void ItemEditor::clearItems()
