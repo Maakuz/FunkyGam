@@ -3,7 +3,7 @@
 #include "Game/Misc/MouseState.h"
 #include "Game/Misc/Definitions.h"
 #include "Misc/ConsoleWindow.h"
-#include "Game/Handlers/ItemHandler.h"
+#include "Game/Item/ItemHandler.h"
 
 HubHandler::HubHandler(UIHandler* uiHandler)
 {
@@ -144,49 +144,7 @@ void HubHandler::loadRecipes()
     for (int i = 0; i < recipeCount; i++)
     {
         Recipe recipe;
-        std::string name;
-        std::string desc;
-        std::string descLine;
-        int componentCount;
-
-        file >> trash;
-        file >> trash;
-        std::getline(file, name);
-        while (name.size() > 0 && name[0] == ' ')
-            name.erase(name.begin());
-
-        file >> trash >> componentCount;
-
-        file >> trash;
-        for (int i = 0; i < componentCount; i++)
-        {
-            int componentID;
-            file >> componentID;
-            recipe.components.push_back(componentID);
-        }
-
-        file >> trash;
-        for (int i = 0; i < componentCount; i++)
-        {
-            int componentAmount;
-            file >> componentAmount;
-            recipe.componentAmounts.push_back(componentAmount);
-        }
-
-        file >> trash >> recipe.resultID;
-        file >> trash >> recipe.resultAmount;
-        file >> trash;
-
-        file.ignore();
-        std::getline(file, descLine);
-        while (descLine != "[DescriptionEnd]")
-        {
-            desc.append(descLine + "\n");
-            std::getline(file, descLine);
-        }
-
-        recipe.name.setString(name);
-        recipe.description.setString(desc);
+        file >> recipe;
 
         recipe.setCharacterSize(this->infoTextCharacterSize);
         recipe.setFillColor(this->textFillColor);

@@ -1,4 +1,4 @@
-#include "Game/Entities/Items/Item.h"
+#include "Game/Item/Item.h"
 
 Item::Item(sf::Vector2f pos, const sf::Texture* texture):
     Entity(pos, texture)

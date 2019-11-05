@@ -2,7 +2,7 @@
 #include "MovingEntity.h"
 #include "Game/Misc/Counter.h"
 #include "Game/Interface/UIHandler.h"
-#include "Items/Item.h"
+#include "Game/Item/Item.h"
 #include <istream>
 
 class Player : public MovingEntity 

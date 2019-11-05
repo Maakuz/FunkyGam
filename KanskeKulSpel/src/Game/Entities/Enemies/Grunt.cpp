@@ -2,7 +2,7 @@
 #include "Game/Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
 #include <string>
-#include "Game/Entities/Items/Throwables/Throwable.h"
+#include "Game/Item/Throwables/Throwable.h"
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     :Enemy(data, pos, ui)

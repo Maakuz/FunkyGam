@@ -3,7 +3,7 @@
 #include "Game/Interface/TextBubble.h"
 #include "Game/Interface/UIHandler.h"
 #include "Game/Level/Level.h"
-#include "Game/Interface/Info.h"
+#include "Game/Interface/Recipe.h"
 
 class HubHandler : public sf::Drawable
 {
@@ -51,19 +51,7 @@ private:
     sf::Color textOutlineColor;
 
 
-    struct Recipe : public Info
-    {
-        std::vector<int> components;
-        std::vector<int> componentAmounts;
-        int resultID;
-        int resultAmount;
-        
-        Recipe()
-        {
-            resultID = -1;
-            resultAmount = 1;
-        }
-    };
+
     
     std::vector<Recipe> recipes;
     int selectedRecipe;

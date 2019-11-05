@@ -1,7 +1,7 @@
 #include "UIHandler.h"
 #include "Game/Handlers/TextureHandler.h"
 #include "Game/Misc/Definitions.h"
-#include "Game/Handlers/ItemHandler.h";
+#include "Game/Item/ItemHandler.h";
 #include "Game/Misc/MouseState.h"
 #include "Game/GameState.h"
 #include <fstream>

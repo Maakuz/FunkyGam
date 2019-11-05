@@ -3,7 +3,6 @@ RecipeCount 2
 
 [Flare]
 RecipeName: Mix flare
-ComponentCount: 2
 ComponentID:        4 5
 ComponentAmount:    2 1
 FinishedItemID: 2
@@ -15,7 +14,6 @@ also attracts enemies.
 
 [Flare]
 RecipeName: Brew bomb
-ComponentCount: 2
 ComponentID:        6 5
 ComponentAmount:    1 1
 FinishedItemID: 1

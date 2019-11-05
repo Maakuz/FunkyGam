@@ -1,7 +1,7 @@
 #include "InventoryHandler.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Handlers/TextureHandler.h"
-#include "Game/Handlers/ItemHandler.h";
+#include "Game/Item/ItemHandler.h";
 #include "Game/Misc/Definitions.h"
 #include "Game/Misc/MouseState.h"
 
@@ -215,8 +215,6 @@ int InventoryHandler::useSelectedItem()
 
         else if (!this->slots[this->selectedQuickslotItem].infinite)
         {
-
-
             this->slots[this->selectedQuickslotItem].size--;
             this->slots[this->selectedQuickslotItem].text.setString(std::to_string(this->slots[this->selectedQuickslotItem].size));
 

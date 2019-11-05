@@ -4,7 +4,7 @@
 #include "Game/Misc/VectorFunctions.h"
 #include "Renderer/Lighting/LightQueue.h"
 #include "Imgui/imgui.h"
-#include "Game/Handlers/ItemHandler.h"
+#include "Game/Item/ItemHandler.h"
 #include "Misc/ConsoleWindow.h"
 #include "Enemies/Grunt.h"
 

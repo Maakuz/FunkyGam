@@ -1,5 +1,5 @@
 #pragma once
-#include "Game/Entities/Items/Item.h"
+#include "Game/Item/Item.h"
 #include "Game/Collision/Explosion.h"
 
 class Throwable : public Item

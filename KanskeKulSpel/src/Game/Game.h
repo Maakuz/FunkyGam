@@ -3,11 +3,11 @@
 #include "Handlers/CharacterHandler.h"
 #include "Collision/CollisionHandler.h"
 #include "Level/LevelHandler.h"
-#include "Handlers/ItemHandler.h"
+#include "Game/Item/ItemHandler.h"
 #include "Particles/ParticleHandler.h"
 #include "Interface/UIHandler.h"
 #include "Interface/HubHandler.h"
-#include "Game/Entities/Items/ItemEditor.h"
+#include "Game/Item/ItemEditor.h"
 #include "Game/Particles/ParticleEditor.h"
 #include "GameState.h"
 

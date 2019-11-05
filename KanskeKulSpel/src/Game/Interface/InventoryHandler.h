@@ -1,6 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Game/Entities/Items/Item.h"
+#include "Game/Item/Item.h"
 #include "Game/Interface/TextBubble.h"
 #include <vector>
 

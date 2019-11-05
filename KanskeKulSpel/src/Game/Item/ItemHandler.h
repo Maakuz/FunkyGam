@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_set>
-#include "Game/Entities/Items/Throwables/Throwable.h"
+#include "Game/Item/Throwables/Throwable.h"
 #include "Game/Level/Level.h"
 #include "Game/Entities/Player.h"
 #include "Game/Particles/Emitter.h"
