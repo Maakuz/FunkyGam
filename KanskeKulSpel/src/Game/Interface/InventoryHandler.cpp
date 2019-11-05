@@ -22,6 +22,7 @@ InventoryHandler::InventoryHandler()
         this->slots[i].size = 0;
         this->slots[i].text.setFont(*TextureHandler::get().getFont());
         this->slots[i].text.setCharacterSize(12);
+        this->slots[i].infinite = false;
     }
 
     ConsoleWindow::get().addCommand("getItem", [&](Arguments args)->std::string
@@ -212,8 +213,10 @@ int InventoryHandler::useSelectedItem()
         if (!this->slots[this->selectedQuickslotItem].item->isUseable())
             id = -1;
 
-        else
+        else if (!this->slots[this->selectedQuickslotItem].infinite)
         {
+
+
             this->slots[this->selectedQuickslotItem].size--;
             this->slots[this->selectedQuickslotItem].text.setString(std::to_string(this->slots[this->selectedQuickslotItem].size));
 
@@ -226,6 +229,7 @@ int InventoryHandler::useSelectedItem()
             updateQuickslotSprites();
         }
     }
+
 
     return id;
 }
@@ -273,46 +277,78 @@ void InventoryHandler::sortItems()
 void InventoryHandler::addItem(int itemID, int amount)
 {
     bool updateQuickslots = false;
-    while (amount > 0)
+    if (amount == -1)
     {
-        int i = 0;
-        while (i < ITEM_SLOT_COUNT &&
-            this->slots[i].item != nullptr &&
-            !(this->slots[i].item->getID() == itemID && this->slots[i].item->getStackLimit() > this->slots[i].size))
+        bool first = true;
+        for (int i = 0; i < ITEM_SLOT_COUNT; i++)
         {
-            i++;
-        }
-
-        if (i < ITEM_SLOT_COUNT)
-        {
-            if (this->slots[i].item)
-            {
-                int stack = std::min(amount, this->slots[i].item->getStackLimit() - this->slots[i].size);
-                this->slots[i].size += stack;
-                amount -= stack;
-                this->slots[i].text.setString(std::to_string(this->slots[i].size));
-            }
-
-            else
+            if (slots[i].item == nullptr && first)
             {
                 this->slots[i].item = new Item(*ItemHandler::getTemplate(itemID));
                 this->slots[i].item->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getSize() / 2.f));
-                int stack = std::min(amount, this->slots[i].item->getStackLimit() - this->slots[i].size);
-                this->slots[i].size += stack;
-                amount -= stack;
-                this->slots[i].text.setString(std::to_string(this->slots[i].size));
+                slots[i].infinite = true;
+                slots[i].size = 8;
+                slots[i].text.setString("Inf");
+                first = false;
             }
 
-            if (i < QUICKSLOT_COUNT)
-                updateQuickslots = true;
+            else if (slots[i].item && slots[i].item->getID() == itemID && first)
+            {
+                slots[i].infinite = true;
+                slots[i].size = 8;
+                slots[i].text.setString("Inf");
+                first = false;
+            }
+
+            else if (slots[i].item && slots[i].item->getID() == itemID)
+            {
+                removeAt(i);
+            }
         }
-
-        else if (i >= ITEM_SLOT_COUNT)
-            amount = 0;
     }
-    if (updateQuickslots)
-        updateQuickslotSprites();
 
+    else
+    {
+        while (amount > 0)
+        {
+            int i = 0;
+            while (i < ITEM_SLOT_COUNT &&
+                this->slots[i].item != nullptr &&
+                !(this->slots[i].item->getID() == itemID && this->slots[i].item->getStackLimit() > this->slots[i].size))
+            {
+                i++;
+            }
+
+            if (i < ITEM_SLOT_COUNT)
+            {
+                if (this->slots[i].item)
+                {
+                    int stack = std::min(amount, this->slots[i].item->getStackLimit() - this->slots[i].size);
+                    this->slots[i].size += stack;
+                    amount -= stack;
+                    this->slots[i].text.setString(std::to_string(this->slots[i].size));
+                }
+
+                else
+                {
+                    this->slots[i].item = new Item(*ItemHandler::getTemplate(itemID));
+                    this->slots[i].item->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getSize() / 2.f));
+                    int stack = std::min(amount, this->slots[i].item->getStackLimit() - this->slots[i].size);
+                    this->slots[i].size += stack;
+                    amount -= stack;
+                    this->slots[i].text.setString(std::to_string(this->slots[i].size));
+                }
+
+                if (i < QUICKSLOT_COUNT)
+                    updateQuickslots = true;
+            }
+
+            else if (i >= ITEM_SLOT_COUNT)
+                amount = 0;
+        }
+        if (updateQuickslots)
+            updateQuickslotSprites();
+    }
 }
 
 int InventoryHandler::removeItem(int itemID, int amount)
@@ -338,6 +374,14 @@ int InventoryHandler::removeItem(int itemID, int amount)
     }
 
     return tally;
+}
+
+void InventoryHandler::removeAt(int slot)
+{
+    delete slots[slot].item;
+    slots[slot].item = nullptr;
+    slots[slot].infinite = false;
+    slots[slot].size = 0;
 }
 
 bool InventoryHandler::mergeStacks(int to, int from)

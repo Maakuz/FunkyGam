@@ -40,7 +40,10 @@ bool LevelHandler::loadLevel(const LevelInfo* level)
 {
     terrain.clear();
 
-    this->importLevel(level);
+    bool success = this->importLevel(level);
+    if (!success)
+        return false;
+
     this->generateHitboxes(CollisionBox::ColliderKeys::ground);
     this->generateHitboxes(CollisionBox::ColliderKeys::platform);
     this->generateHitboxes(CollisionBox::ColliderKeys::levelReturn);

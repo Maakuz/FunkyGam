@@ -759,7 +759,7 @@ void TileMenuHandler::saveFile()
     }
 
     fileManager.save(layerManager, lightManager, hitbaxes, dir / name);
-    infoWindow.saveInfo(currentFileName);
+    infoWindow.saveInfo(fs::path(currentFileName).replace_extension(FILE_EXTENSION).string());
     saveWindow.closeWindow();
 }
 
@@ -771,7 +771,7 @@ void TileMenuHandler::saveAsCurrentFile()
     else
     {
         fileManager.save(layerManager, lightManager, hitbaxes, currentDir / currentFileName);
-        infoWindow.saveInfo(currentFileName);
+        infoWindow.saveInfo(fs::path(currentFileName).replace_extension(FILE_EXTENSION).string());
     }
 }
 

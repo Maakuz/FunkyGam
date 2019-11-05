@@ -29,6 +29,7 @@ public:
     void addItem(int itemID, int amount = 1);
     //Returns amount of items removed
     int removeItem(int itemID, int amount = 1);
+    void removeAt(int slot);
 private:
 
     static const int QUICKSLOT_COUNT = 5;
@@ -41,6 +42,7 @@ private:
         int size;
         sf::Text text;
         sf::RectangleShape rect;
+        bool infinite;
     };
 
     InventorySlot slots[ITEM_SLOT_COUNT];

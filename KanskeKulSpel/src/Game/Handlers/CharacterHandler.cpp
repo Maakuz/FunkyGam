@@ -218,8 +218,8 @@ void CharacterHandler::spawnEnemies()
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 {
     this->player->update(dt, mousePos);
-
-    for (auto it = enemies.begin(); it < enemies.end(); it++)
+    auto it = enemies.begin();
+    while (!enemies.empty() && it != enemies.end())
     {
         if ((*it)->isAlive())
         {
@@ -232,12 +232,14 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
             Grunt* g = dynamic_cast<Grunt*>((*it));
             if (g)
                 g->update(dt);
+
+            it++;
         }
 
         else
         {
             delete *it;
-            unordered_erase(enemies, it--);
+            unordered_erase(enemies, it);
         }
     }
 }

@@ -86,7 +86,7 @@ void ItemHandler::update(float dt, Player* player)
 
     Item* inRange = nullptr;
     auto it = gatherItems.begin();
-    while (it != gatherItems.end())
+    while (!gatherItems.empty() && it != gatherItems.end())
     {
         if (it->item.isObtained())
         {

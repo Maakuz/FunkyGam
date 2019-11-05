@@ -129,7 +129,7 @@ void InfoWindow::fetchInfo(std::string fileName)
         LevelInfo info;
         info.name = fileName;
         info.description = "Info not found. Created new info entry for level";
-        info.levelID = -1;
+        info.levelID = infos.size();
         info.levelFileName = "Does not exist";
         infos.push_back(info);
         currentInfo = infos.size() - 1;
