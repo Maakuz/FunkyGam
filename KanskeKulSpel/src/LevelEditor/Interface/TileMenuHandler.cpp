@@ -482,6 +482,15 @@ void TileMenuHandler::handleHelpWindow()
                     hitbox.flag = input;
                     hitbaxes.push_back(hitbox);
                 }
+
+                ImGui::SameLine();
+
+                if (ImGui::Button("Delete conflicts"))
+                {
+                    for (int i = 0; i < hitbaxes.size(); i++)
+                        if (sf::IntRect(start, stop - start + sf::Vector2i(1, 1)).intersects(sf::IntRect(hitbaxes[i].min, hitbaxes[i].max - hitbaxes[i].min)))
+                            hitbaxes.erase(hitbaxes.begin() + i--);
+                }
             }
             ImGui::Checkbox("Override!!!", &turboHitboxOverride);
             ImGui::Text("When overriding all blocks placed will have hitbox ID 999\n"

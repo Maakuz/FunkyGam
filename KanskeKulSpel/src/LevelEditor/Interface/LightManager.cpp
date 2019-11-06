@@ -99,7 +99,7 @@ void LightManager::updateMenu()
             if (lights.size() > 0)
             {
                 float rad = lights[currentLight]->radius;
-                if (ImGui::DragFloat("Radius", &rad) && !placingLight)
+                if (ImGui::DragFloat("Radius", &rad, 1, 5, 10000) && !placingLight)
                     lights[currentLight]->radius = rad;
 
 

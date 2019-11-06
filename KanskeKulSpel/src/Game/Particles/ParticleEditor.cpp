@@ -321,9 +321,18 @@ void ParticleEditor::save()
     {
         file << emitto;
         file.close();
-        fileNames.push_back(emitterName);
-        this->currentEmitter = fileNames.size() - 1;
-        saveParticleList();
+
+        bool exists = false;
+        for (std::string str : fileNames)
+            if (str == emitterName)
+                exists = true;
+
+        if (!exists)
+        {
+            fileNames.push_back(emitterName);
+            this->currentEmitter = fileNames.size() - 1;
+            saveParticleList();
+        }
     }
 }
 

@@ -197,5 +197,5 @@ void Game::loadLevel(const LevelInfo* level)
     characterHandler.setSpawnPoints(levelHandler.generateEnemySpawnPoints());
     characterHandler.spawnEnemies();
     itemHandler.setGatherPoints(levelHandler.generateGatherPoints(), levelHandler.generateRareGatherPoints());
-    itemHandler.spawnGatherables(level);
+    itemHandler.spawnGatherables(level, levelHandler.getShrines());
 }

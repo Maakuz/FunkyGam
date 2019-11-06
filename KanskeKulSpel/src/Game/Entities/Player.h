@@ -3,6 +3,7 @@
 #include "Game/Misc/Counter.h"
 #include "Game/Interface/UIHandler.h"
 #include "Game/Item/Item.h"
+#include "Game/Item/GatherItem.h"
 #include <istream>
 
 class Player : public MovingEntity 
@@ -23,7 +24,7 @@ public:
     bool isReturning() const { return this->returning; };
     int getExitReached() const { return this->exitReached; };
 
-    void setGatherableInRange(Item* item) { this->gatherableInRange = item; };
+    void setGatherableInRange(GatherItem* item) { this->gatherableInRange = item; };
 
     virtual void handleCollision(const Entity* collider);
     virtual void handleExplosion(const Explosion& explosion) {};
@@ -31,7 +32,7 @@ public:
 private:
     Counter platformPassingCounter;
     UIHandler* ui;
-    Item* gatherableInRange;
+    GatherItem* gatherableInRange;
     float illumination;
     int health;
     int maxHealth;

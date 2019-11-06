@@ -392,6 +392,16 @@ std::vector<sf::Vector2f> LevelHandler::generateRareGatherPoints()
     return gatherPoints;
 }
 
+std::vector<CustomHitbox> LevelHandler::getShrines()
+{
+    std::vector<CustomHitbox> shrines;
+
+    for (CustomHitbox& box : customHitboxes)
+        if (box.flag.compare(0, 6, "shrine") == 0)
+            shrines.push_back(box);
+    return shrines;
+}
+
 sf::Vector2f LevelHandler::findPlayerSpawnPoint()
 {
     sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());

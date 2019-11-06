@@ -7,6 +7,8 @@
 #include "Game/Particles/Emitter.h"
 #include "Game/Interface/UIHandler.h"
 #include "Renderer/DebugDrawable.h"
+#include "Misc/Structs.h"
+#include "GatherItem.h"
 
 class ItemHandler : public sf::Drawable, public DebugDrawable
 {
@@ -19,7 +21,7 @@ public:
 
     void update(float dt, Player* player);
     void setGatherPoints(std::vector<sf::Vector2f> gatherPoints, std::vector<sf::Vector2f> rareGatherPoints) { this->gatherPoints = gatherPoints; this->rareGatherPoints = rareGatherPoints; };
-    void spawnGatherables(const LevelInfo* level);
+    void spawnGatherables(const LevelInfo* level, std::vector<CustomHitbox> shrines);
     void queueColliders();
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);
@@ -33,14 +35,11 @@ private:
     static std::vector<Throwable> throwables;
     static std::vector<const Item*> itemTemplates;
     static std::unordered_set<int> foundItems;
+
     std::vector<sf::Vector2f> gatherPoints;
     std::vector<sf::Vector2f> rareGatherPoints;
+    std::unordered_set<std::string> itemList;
 
-    struct GatherItem
-    {
-        Emitter* emitter;
-        Item item;
-    };
     std::vector<GatherItem> gatherItems;
     int gatherRange;
     
@@ -48,6 +47,7 @@ private:
 
     void loadThrowables(std::ifstream& file);
     void loadGatherables(std::ifstream& file);
+    void spawnShrines(std::vector<CustomHitbox> shrines);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

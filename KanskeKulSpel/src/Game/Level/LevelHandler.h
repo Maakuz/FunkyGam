@@ -33,6 +33,7 @@ public:
     std::vector<sf::Vector2f> generateEnemySpawnPoints();
     std::vector<sf::Vector2f> generateGatherPoints();
     std::vector<sf::Vector2f> generateRareGatherPoints();
+    std::vector<CustomHitbox> getShrines();
     sf::Vector2f findPlayerSpawnPoint();
     const std::vector<Line>* getShadowLinePtr() const { return &this->shadowLines; }
     

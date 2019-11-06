@@ -172,8 +172,8 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
     if (this->gatherableInRange != nullptr && KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::E))
     {
-        this->gatherableInRange->pluck();
-        this->ui->getInventory()->addItem(this->gatherableInRange->getID());
+        this->gatherableInRange->item.pluck();
+        this->ui->getInventory()->addItem(this->gatherableInRange->item.getID(), this->gatherableInRange->count);
     }
 
     ui->setHealthPercentage(this->health / float(this->maxHealth));

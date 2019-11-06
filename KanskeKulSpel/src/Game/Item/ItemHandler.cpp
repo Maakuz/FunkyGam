@@ -6,6 +6,7 @@
 #include "Game/Misc/Definitions.h"
 #include "Game/Particles/ParticleHandler.h"
 #include "Game/Misc/VectorFunctions.h"
+#include <sstream>
 
 std::vector<Throwable> ItemHandler::throwables;
 std::vector<const Item*> ItemHandler::itemTemplates;
@@ -96,7 +97,7 @@ void ItemHandler::update(float dt, Player* player)
         }
     }
 
-    Item* inRange = nullptr;
+    GatherItem* inRange = nullptr;
     auto it = gatherItems.begin();
     while (!gatherItems.empty() && it != gatherItems.end())
     {
@@ -117,7 +118,7 @@ void ItemHandler::update(float dt, Player* player)
         else
         {
             if (length(player->getCenterPos() - it->item.getCenterPos()) < this->gatherRange)
-                inRange = &it->item;
+                inRange = it._Ptr;
 
             it++;
         }
@@ -126,7 +127,7 @@ void ItemHandler::update(float dt, Player* player)
     player->setGatherableInRange(inRange);
 }
 
-void ItemHandler::spawnGatherables(const LevelInfo* level)
+void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHitbox> shrines)
 {
     for (GatherItem& item : gatherItems)
     {
@@ -150,7 +151,7 @@ void ItemHandler::spawnGatherables(const LevelInfo* level)
         if (item.getEmitterID() != -1)
             emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
 
-        gatherItems.push_back(GatherItem{ emitter, item });
+        gatherItems.push_back(GatherItem{ emitter, item, 1});
     }
 
     for (sf::Vector2f& point : this->rareGatherPoints)
@@ -168,7 +169,47 @@ void ItemHandler::spawnGatherables(const LevelInfo* level)
         if (item.getEmitterID() != -1)
             emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
 
-        gatherItems.push_back(GatherItem{ emitter, item });
+        gatherItems.push_back(GatherItem{ emitter, item, 1 });
+    }
+
+    this->spawnShrines(shrines);
+}
+
+void ItemHandler::spawnShrines(std::vector<CustomHitbox> shrines)
+{
+    for (CustomHitbox& box : shrines)
+    {
+        std::stringstream sstream(box.flag);
+        std::string itemName;
+        sstream >> itemName;
+        std::getline(sstream, itemName);
+        while (itemName.size() > 0 && itemName[0] == ' ')
+            itemName.erase(itemName.begin());
+
+        if (!itemList.count(itemName))
+        {
+            for (const Item* item : this->itemTemplates)
+            {
+                if (item->getName() == itemName)
+                {
+                    Item newItem(*item);
+
+                    sf::Vector2f pos = sf::Vector2f(box.min);
+                    pos.y += TILE_SIZE - newItem.getSize().y;
+                    pos.x += TILE_SIZE / 2 - newItem.getSize().x / 2.f;
+
+                    newItem.setPosition(pos);
+                    Emitter* emitter = nullptr;
+
+                    if (newItem.getEmitterID() != -1)
+                        emitter = ParticleHandler::addEmitter(newItem.getEmitterID(), pos);
+
+                    gatherItems.push_back({ emitter, newItem, -1});
+                }
+            }
+            
+        }
+
     }
 }
 

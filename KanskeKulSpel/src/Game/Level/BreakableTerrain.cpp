@@ -8,7 +8,7 @@ BreakableTerrain::BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::I
     collider.addComponent(Collider::ColliderKeys::ground);
     setTextureRect(texRext);
     addCollision();
-    breakThreshold = 50;
+    breakThreshold = 25;
 }
 
 void BreakableTerrain::handleCollision(const Entity* collider)
