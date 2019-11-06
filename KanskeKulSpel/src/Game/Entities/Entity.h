@@ -1,6 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-#include "Game/Collision/CollisionBox.h"
+#include "Game/Collision/Collider.h"
 #include "Game/Collision/Explosion.h"
 
 class Entity : public sf::Drawable
@@ -9,7 +9,7 @@ public:
     Entity(sf::Vector2f pos, const sf::Texture * texture);
     ~Entity() {};
 
-    void addCollision(CollisionBox::AABB aabb);
+    void addCollision(Collider::AABB aabb);
 
 
     //Uses textureRect to determinate bounds
@@ -17,7 +17,7 @@ public:
 
     virtual void flipHorizontally();
 
-    const CollisionBox& getCollisionBox() const { return this->collisionBox; };
+    const Collider& getCollider() const { return this->collider; };
     sf::Vector2f getSize() const { return this->size; };
     void setSize(sf::Vector2f size);
     void setPosition(sf::Vector2f pos);
@@ -30,7 +30,7 @@ public:
 
     //Might need to do more stuff if dimensions are changed
     void setTexture(const sf::Texture* texture) { this->sprite.setTexture(*texture); };
-    void addCollisionComponent(CollisionBox::ColliderKeys component);
+    void addCollisionComponent(Collider::ColliderKeys component);
 
     float left() const;
     float right() const;
@@ -48,7 +48,7 @@ protected:
     void setTextureRect(sf::IntRect rect) { sprite.setTextureRect(rect); };
     void updateSpritePosition();
     
-    CollisionBox collisionBox;
+    Collider collider;
     sf::Vector2f pos;
     
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

@@ -4,7 +4,7 @@
 class Terrain : public Entity
 {
 public:
-    Terrain(CollisionBox::AABB aabb, CollisionBox::ColliderKeys type, std::string colliderFlag = "");
+    Terrain(Collider::AABB aabb, Collider::ColliderKeys type, std::string colliderFlag = "");
     ~Terrain() {};
 
     virtual void handleCollision(const Entity* collider) {};

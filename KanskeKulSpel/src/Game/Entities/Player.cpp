@@ -13,8 +13,8 @@
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
 :MovingEntity(data, pos)
 {
-    this->collisionBox.addComponent(CollisionBox::ColliderKeys::player);
-    this->collisionBox.addComponent(CollisionBox::ColliderKeys::character);
+    this->collider.addComponent(Collider::ColliderKeys::player);
+    this->collider.addComponent(Collider::ColliderKeys::character);
     this->walkSpeed = 0.05f;
     this->jumpHeight = 5.3f;
     this->mass = 0.166f;
@@ -189,10 +189,10 @@ void Player::handleCollision(const Entity* collider)
 {
     if (!noClip)
     {
-        if (momentum.y > 0 && collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::platform))
+        if (momentum.y > 0 && collider->getCollider().hasComponent(Collider::ColliderKeys::platform))
         {
             //walking on ground
-            if (collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
+            if (collider->getCollider().intersects(collider->getCollider().getUp(), this->collider.getDown()))
             {
                 if (platformPassingCounter.isTimeUp())
                 {
@@ -203,7 +203,7 @@ void Player::handleCollision(const Entity* collider)
             }
         }
 
-        else if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::grunt))
+        else if (collider->getCollider().hasComponent(Collider::ColliderKeys::grunt))
         {
             const Grunt* ptr = dynamic_cast<const Grunt*>(collider);
             if (ptr->isAttacking())
@@ -216,12 +216,12 @@ void Player::handleCollision(const Entity* collider)
         MovingEntity::handleCollision(collider);
     }
 
-    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::levelReturn))
+    if (collider->getCollider().hasComponent(Collider::ColliderKeys::levelReturn))
         this->returning = true;
 
-    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::customTerrain))
+    if (collider->getCollider().hasComponent(Collider::ColliderKeys::customTerrain))
     {
-        std::string flag = collider->getCollisionBox().getFlag();
+        std::string flag = collider->getCollider().getFlag();
         if (flag.compare(0, 4, "exit") == 0)
             this->exitReached = flag[4] - '0';
     }

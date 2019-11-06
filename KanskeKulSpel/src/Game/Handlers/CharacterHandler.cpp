@@ -306,10 +306,10 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
 {
     if (drawHitboxes)
     {
-        target.draw(player->getCollisionBox(), states);
+        target.draw(player->getCollider(), states);
 
         for (Enemy* enemy : enemies)
-            target.draw(enemy->getCollisionBox(), states);
+            target.draw(enemy->getCollider(), states);
     }
 
     if (drawSightlines)

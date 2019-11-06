@@ -1,11 +1,11 @@
 #include "Terrain.h"
 
-Terrain::Terrain(CollisionBox::AABB aabb, CollisionBox::ColliderKeys type, std::string colliderFlag)
+Terrain::Terrain(Collider::AABB aabb, Collider::ColliderKeys type, std::string colliderFlag)
     :Entity(sf::Vector2f(), &sf::Texture()) //Not cute
 {
-    collisionBox.addComponent(CollisionBox::ColliderKeys::Static);
-    collisionBox.addComponent(type);
-    collisionBox.setFlag(colliderFlag);
+    collider.addComponent(Collider::ColliderKeys::Static);
+    collider.addComponent(type);
+    collider.setFlag(colliderFlag);
     addCollision(aabb);
     setPosition(aabb.pos);
 }

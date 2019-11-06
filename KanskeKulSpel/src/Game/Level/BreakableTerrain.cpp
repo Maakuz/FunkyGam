@@ -5,7 +5,7 @@ BreakableTerrain::BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::I
 {
     overlayPresent = false;
     broken = false;
-    collisionBox.addComponent(CollisionBox::ColliderKeys::ground);
+    collider.addComponent(Collider::ColliderKeys::ground);
     setTextureRect(texRext);
     addCollision();
     breakThreshold = 50;

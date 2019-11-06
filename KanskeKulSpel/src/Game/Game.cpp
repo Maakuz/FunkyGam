@@ -184,6 +184,7 @@ void Game::updateLevel(float dt)
 
     Renderer::queueDebug(&this->characterHandler);
     Renderer::queueDebug(&this->levelHandler);
+    Renderer::queueDebug(&this->itemHandler);
 }
 
 void Game::loadLevel(const LevelInfo* level)

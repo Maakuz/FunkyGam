@@ -140,7 +140,7 @@
     <ClCompile Include="..\External\Include\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\External\Include\Imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="..\External\Include\Imgui\SFML-imgui\imgui-SFML.cpp" />
-    <ClCompile Include="src\Game\Collision\CollisionBox.cpp" />
+    <ClCompile Include="src\Game\Collision\Collider.cpp" />
     <ClCompile Include="src\Game\Collision\CollisionHandler.cpp" />
     <ClCompile Include="src\Game\Entities\AnimatedEntity.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Enemy.cpp" />
@@ -191,7 +191,7 @@
     <ClCompile Include="src\Renderer\Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Game\Collision\CollisionBox.h" />
+    <ClInclude Include="src\Game\Collision\Collider.h" />
     <ClInclude Include="src\Game\Collision\CollisionHandler.h" />
     <ClInclude Include="src\Game\Collision\Explosion.h" />
     <ClInclude Include="src\Game\Entities\AnimatedEntity.h" />

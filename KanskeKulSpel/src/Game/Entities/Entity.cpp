@@ -1,7 +1,7 @@
 #include "Entity.h"
 
 Entity::Entity(sf::Vector2f pos, const sf::Texture * texture)
-:collisionBox(sf::Vector2f(0, 0), sf::Vector2f(0, 0)) 
+:collider(sf::Vector2f(0, 0), sf::Vector2f(0, 0)) 
 {
     flipped = false;
     this->pos = pos;
@@ -11,15 +11,33 @@ Entity::Entity(sf::Vector2f pos, const sf::Texture * texture)
     addCollision();
 }
 
-void Entity::addCollision(CollisionBox::AABB aabb)
+void Entity::addCollision(Collider::AABB aabb)
 {
-    collisionBox.setAABB(aabb);
+    //test
+    int diffX = Collider::EDGE_SIZE - aabb.size.x;
+    int diffY = Collider::EDGE_SIZE - aabb.size.y;
+
+    if (diffX > 0)
+    {
+        aabb.size.x += diffX;
+
+        setSpriteOffset(sf::Vector2f(diffX / 2, this->spriteOffset.y));
+    }
+
+    if (diffY > 0)
+    {
+        aabb.size.y += diffY;
+
+        setSpriteOffset(sf::Vector2f(this->spriteOffset.x, diffY / 2));
+    }
+
+    collider.setAABB(aabb);
     this->size = aabb.size;
 }
 
 void Entity::addCollision()
 {
-    CollisionBox::AABB aabb(this->pos, sf::Vector2f((float)sprite.getTextureRect().width, (float)sprite.getTextureRect().height));
+    Collider::AABB aabb(this->pos, sf::Vector2f((float)sprite.getTextureRect().width, (float)sprite.getTextureRect().height));
 
     this->addCollision(aabb);
 }
@@ -32,16 +50,16 @@ void Entity::flipHorizontally()
     flipped = !flipped;
 }
 
-void Entity::addCollisionComponent(CollisionBox::ColliderKeys component)
+void Entity::addCollisionComponent(Collider::ColliderKeys component)
 {
-    this->collisionBox.addComponent(component);
+    this->collider.addComponent(component);
 }
 
 void Entity::setSize(sf::Vector2f size)
 {
     this->size = size;
     this->spriteOffset.y = -(abs(sprite.getTextureRect().height)-size.y);
-    collisionBox.setSize(size);
+    collider.setSize(size);
 }
 
 void Entity::setPosition(sf::Vector2f pos)
@@ -101,7 +119,7 @@ float Entity::height() const
 void Entity::updateSpritePosition() 
 {
     this->sprite.setPosition(pos + spriteOffset); 
-    this->collisionBox.setPosition(pos);
+    this->collider.setPosition(pos);
 }
 
 void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const

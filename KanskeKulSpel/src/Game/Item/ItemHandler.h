@@ -6,8 +6,9 @@
 #include "Game/Entities/Player.h"
 #include "Game/Particles/Emitter.h"
 #include "Game/Interface/UIHandler.h"
+#include "Renderer/DebugDrawable.h"
 
-class ItemHandler : public sf::Drawable
+class ItemHandler : public sf::Drawable, public DebugDrawable
 {
 public:
     ItemHandler(UIHandler* uiHandler);
@@ -25,6 +26,8 @@ public:
     static const Item* getTemplate(int itemID);
     static const std::vector<const Item*>* getTemplateVec() { return &itemTemplates; };
     static const std::unordered_set<int>* getFoundItems() { return &foundItems; };
+
+    virtual void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     UIHandler* ui;
     static std::vector<Throwable> throwables;
@@ -41,6 +44,8 @@ private:
     std::vector<GatherItem> gatherItems;
     int gatherRange;
     
+    bool drawHitboxes;
+
     void loadThrowables(std::ifstream& file);
     void loadGatherables(std::ifstream& file);
 

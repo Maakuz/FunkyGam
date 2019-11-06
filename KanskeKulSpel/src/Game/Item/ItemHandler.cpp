@@ -16,6 +16,7 @@ ItemHandler::ItemHandler(UIHandler* uiHandler)
 {
     this->ui = uiHandler;
     this->gatherRange = 64;
+    this->drawHitboxes = false;
     ConsoleWindow::get().addCommand("reloadItems", [&](Arguments args)->std::string 
         {
             loadTemplates();
@@ -31,6 +32,17 @@ ItemHandler::ItemHandler(UIHandler* uiHandler)
             gatherRange = std::stoi(args[0]);
 
             return "Gather range is now " + args[0] + "!";
+        });
+
+    ConsoleWindow::get().addCommand("itemShowHitboxes", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing argument 0 or 1";
+
+            drawHitboxes = std::stoi(args[0]);
+
+
+            return "Hitboxes on mby";
         });
 }
 
@@ -209,7 +221,7 @@ void ItemHandler::loadGatherables(std::ifstream& file)
 
     file >> *item;
     item->setID(itemID);
-    item->addCollisionComponent(CollisionBox::ColliderKeys::gatherable);
+    item->addCollisionComponent(Collider::ColliderKeys::gatherable);
 
     itemTemplates.push_back(item);
 }
@@ -221,4 +233,11 @@ void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
 
     for (const GatherItem& item : this->gatherItems)
         target.draw(item.item, states);
+}
+
+void ItemHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    if (drawHitboxes)
+        for (const Throwable& throwable : this->throwables)
+            target.draw(throwable.getCollider(), states);
 }

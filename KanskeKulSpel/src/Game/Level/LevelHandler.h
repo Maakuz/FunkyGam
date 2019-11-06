@@ -88,7 +88,7 @@ private:
     bool drawCollision;
 
     bool importLevel(const LevelInfo* level);
-    bool generateHitboxes(CollisionBox::ColliderKeys type);
+    bool generateHitboxes(Collider::ColliderKeys type);
     void generateShadowLines();
     void createSpites();
 

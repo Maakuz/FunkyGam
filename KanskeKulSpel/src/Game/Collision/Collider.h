@@ -5,7 +5,7 @@
 #include <string>
 
 //Rename, very confusing. Drawable is only for debug. Remove when sometime
-class CollisionBox : public sf::Drawable
+class Collider : public sf::Drawable
 {
 public:
     enum ColliderKeys
@@ -27,11 +27,7 @@ public:
         sf::Vector2f pos;
         sf::Vector2f size;
 
-        AABB(sf::Vector2f pos, sf::Vector2f size)
-        {
-            this->pos = pos;
-            this->size = size;
-        }
+        AABB(sf::Vector2f pos, sf::Vector2f size);
 
         sf::Vector2f min() const
         {
@@ -44,14 +40,15 @@ public:
         }
     };
 
+    static const int EDGE_SIZE = 16;
 
-    CollisionBox(AABB collisionBox, bool enabled = true);
-    CollisionBox(sf::Vector2f pos, sf::Vector2f size);
-    ~CollisionBox();
+    Collider(AABB collisionBox, bool enabled = true);
+    Collider(sf::Vector2f pos, sf::Vector2f size);
+    ~Collider();
 
     bool intersects(const AABB& other) const;
     bool intersects(const AABB& a, const AABB& b) const;
-    bool intersects(const CollisionBox& other) const;
+    bool intersects(const Collider& other) const;
 
     void addComponent(ColliderKeys key);
 
@@ -64,13 +61,15 @@ public:
     void setFlag(std::string flag) { this->flag = flag; };
     const std::string& getFlag()const { return flag; };
 
-    CollisionBox::AABB getUp() const { return this->up; };
-    CollisionBox::AABB getDown() const { return this->down; };
-    CollisionBox::AABB getLeft() const { return this->left; };
-    CollisionBox::AABB getRight() const { return this->right; };
+    Collider::AABB getUp() const { return this->up; };
+    Collider::AABB getDown() const { return this->down; };
+    Collider::AABB getLeft() const { return this->left; };
+    Collider::AABB getRight() const { return this->right; };
 
     void enableCollision(bool boi) { this->enabled = boi; };
     bool isCollisionEnabled()const { return this->enabled; };
+
+    static sf::Vector2f calculateCollisionForceOnObject(sf::Vector2f objPos, sf::Vector2f colliderPos, sf::Vector2f objMomentum, sf::Vector2f colliderMomentum, float objMass, float colliderMass);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
@@ -79,10 +78,10 @@ private:
 
     bool enabled;
     AABB box;
-    CollisionBox::AABB up;
-    CollisionBox::AABB down;
-    CollisionBox::AABB left;
-    CollisionBox::AABB right;
+    Collider::AABB up;
+    Collider::AABB down;
+    Collider::AABB left;
+    Collider::AABB right;
 
     std::set<ColliderKeys> components;
     std::string flag;

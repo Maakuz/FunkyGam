@@ -84,10 +84,10 @@ void MovingEntity::stopJump(float haltForce)
 
 void MovingEntity::handleCollision(const Entity* collider)
 {
-    if (collider->getCollisionBox().hasComponent(CollisionBox::ColliderKeys::ground))
+    if (collider->getCollider().hasComponent(Collider::ColliderKeys::ground))
     {
         //walking on ground
-        if (this->momentum.y > 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getUp(), this->collisionBox.getDown()))
+        if (this->momentum.y > 0 && collider->getCollider().intersects(collider->getCollider().getUp(), this->collider.getDown()))
         {
             this->momentum.y = 0;
             this->pos.y = collider->up() - this->height();
@@ -95,19 +95,19 @@ void MovingEntity::handleCollision(const Entity* collider)
         }
 
         //smackin into roof
-        if (this->momentum.y < 0 && collider->getCollisionBox().intersects(collider->getCollisionBox().getDown(), this->collisionBox.getUp()))
+        if (this->momentum.y < 0 && collider->getCollider().intersects(collider->getCollider().getDown(), this->collider.getUp()))
         {
             this->momentum.y = 0;
             this->pos.y = collider->down();
         }
 
-        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getLeft(), this->collisionBox.getRight()))
+        if (collider->getCollider().intersects(collider->getCollider().getLeft(), this->collider.getRight()))
         {
             this->momentum.x *= -0.5f;
             this->pos.x = collider->left() - this->width();
         }
 
-        if (collider->getCollisionBox().intersects(collider->getCollisionBox().getRight(), this->collisionBox.getLeft()))
+        if (collider->getCollider().intersects(collider->getCollider().getRight(), this->collider.getLeft()))
         {
             this->momentum.x *= -0.5f;
             this->pos.x = collider->right();
@@ -119,13 +119,6 @@ void MovingEntity::handleCollision(const Entity* collider)
 
 void MovingEntity::addCollisionMomentum(sf::Vector2f colliderMomentum, sf::Vector2f colliderPos, float colliderMass)
 {
-    float v1 = length(this->momentum);
-    float v2 = length(colliderMomentum);
-    float v1new = ((this->mass - colliderMass) / (this->mass + colliderMass) * v1) + (2 * colliderMass / (this->mass + colliderMass) * v2);
-    sf::Vector2f dir = this->pos - colliderPos;
-    normalize(dir);
-    dir.x *= v1new;
-    dir.y *= v1new;
-    this->collisionMomentum = dir;
+    this->collisionMomentum = Collider::calculateCollisionForceOnObject(this->getCenterPos(), colliderPos, this->momentum, colliderMomentum, this->mass, colliderMass);
     this->addedMomentum = true;
 }

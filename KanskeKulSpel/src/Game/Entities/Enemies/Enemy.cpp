@@ -6,7 +6,7 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     :MovingEntity(data, pos)
 {
     this->ui = ui;
-    this->collisionBox.addComponent(CollisionBox::ColliderKeys::character);
+    this->collider.addComponent(Collider::ColliderKeys::character);
     this->roamDecisionCounter = Counter(2500 + rand() % 1000);
     this->timeSincePlayerSeen = Counter(10000);
     this->drawExclamation = Counter(1000);

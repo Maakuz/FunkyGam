@@ -1,9 +1,16 @@
-#include "CollisionBox.h"
+#include "Collider.h"
 #include "Game/Misc/Definitions.h"
 #include "SFML/Graphics.hpp"
-#define EDGE_SIZE TILE_SIZE / 4
+#include "Game/Misc/VectorFunctions.h"
 
-CollisionBox::CollisionBox(AABB collisionBox, bool enabled)
+Collider::AABB::AABB(sf::Vector2f pos, sf::Vector2f size)
+{
+    this->pos = pos;
+    this->size = size;
+}
+
+
+Collider::Collider(AABB collisionBox, bool enabled)
 :box(collisionBox),
 up(collisionBox),
 down(collisionBox),
@@ -15,38 +22,38 @@ right(collisionBox)
     setSides();
 }
 
-CollisionBox::CollisionBox(sf::Vector2f pos, sf::Vector2f size)
-    :CollisionBox(CollisionBox::AABB(pos, size))
+Collider::Collider(sf::Vector2f pos, sf::Vector2f size)
+    :Collider(Collider::AABB(pos, size))
 {
 }
 
-CollisionBox::~CollisionBox()
+Collider::~Collider()
 {
 }
 
-bool CollisionBox::intersects(const AABB & other) const
+bool Collider::intersects(const AABB & other) const
 {
     return (this->box.max().x >= other.min().x && this->box.max().y >= other.min().y &&
         other.max().x >= this->box.min().x && other.max().y >= this->box.min().y);
 }
 
-bool CollisionBox::intersects(const AABB & a, const AABB & b) const
+bool Collider::intersects(const AABB & a, const AABB & b) const
 {
     return (a.max().x >= b.min().x && a.max().y >= b.min().y &&
         b.max().x >= a.min().x && b.max().y >= a.min().y);
 }
 
-bool CollisionBox::intersects(const CollisionBox & other) const
+bool Collider::intersects(const Collider& other) const
 {
     return this->intersects(other.getAABB());
 }
 
-void CollisionBox::addComponent(ColliderKeys key)
+void Collider::addComponent(ColliderKeys key)
 {
     this->components.emplace(key);
 }
 
-bool CollisionBox::hasComponent(ColliderKeys component) const
+bool Collider::hasComponent(ColliderKeys component) const
 {
     if (this->components.count(component))
         return true;
@@ -54,24 +61,37 @@ bool CollisionBox::hasComponent(ColliderKeys component) const
     return false;
 }
 
-void CollisionBox::setAABB(AABB box)
+void Collider::setAABB(AABB box)
 {
     this->box = box;
 
     setSides();
 }
 
-void CollisionBox::setPosition(sf::Vector2f pos)
+void Collider::setPosition(sf::Vector2f pos)
 {
     this->setAABB(AABB(pos, box.size));
 }
 
-void CollisionBox::setSize(sf::Vector2f size)
+void Collider::setSize(sf::Vector2f size)
 {
     this->setAABB(AABB(box.pos, size));
 }
 
-void CollisionBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
+sf::Vector2f Collider::calculateCollisionForceOnObject(sf::Vector2f objPos, sf::Vector2f colliderPos, sf::Vector2f objMomentum, sf::Vector2f colliderMomentum, float objMass, float colliderMass)
+{
+    float v1 = length(objMomentum);
+    float v2 = length(colliderMomentum);
+    float v1new = ((objMass - colliderMass) / (objMass + colliderMass) * v1) + (2 * colliderMass / (objMass + colliderMass) * v2);
+    sf::Vector2f dir = objPos - colliderPos;
+    normalize(dir);
+    dir.x *= v1new;
+    dir.y *= v1new;
+
+    return dir;
+}
+
+void Collider::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     sf::RectangleShape rect(box.size);
     rect.setFillColor(sf::Color::Green);
@@ -99,7 +119,7 @@ void CollisionBox::draw(sf::RenderTarget& target, sf::RenderStates states) const
     }
 }
 
-void CollisionBox::setSides()
+void Collider::setSides()
 {
     this->left = box;
     this->right = box;
@@ -112,13 +132,13 @@ void CollisionBox::setSides()
     down.pos.y = box.max().y - down.size.y;
 
     right.size.x = EDGE_SIZE;
-    right.size.y -= (EDGE_SIZE * 2);
+    right.size.y -= EDGE_SIZE;
 
     right.pos.x = box.max().x - right.size.x;
-    right.pos.y += EDGE_SIZE;
+    right.pos.y += EDGE_SIZE * 0.5f;
 
     left.size.x = EDGE_SIZE;
-    left.size.y -= (EDGE_SIZE * 2);
+    left.size.y -= EDGE_SIZE;
 
-    left.pos.y += EDGE_SIZE;
+    left.pos.y += EDGE_SIZE * 0.5f;
 }

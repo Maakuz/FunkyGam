@@ -36,7 +36,7 @@ public:
     void setParticleEffectID(int effectID) { this->particleEffectID = effectID; };
 
 
-    virtual void handleCollision(const Entity* collider);
+    virtual void handleCollision(const Entity* colliderObj);
     virtual void handleExplosion(const Explosion& explosion) {};
 private:
 
@@ -45,6 +45,9 @@ private:
     sf::Vector2f momentum;
     Explosion explosionData;
     const Entity* thrower;
+
+    bool addedMomentum;
+    sf::Vector2f collisionMomentum;
 
     float armingTime;
     float armingCounter;
@@ -56,6 +59,8 @@ private:
     int damage;
 
     int particleEffectID;
+    
+    void addCollisionMomentum(sf::Vector2f colliderMomentum, sf::Vector2f colliderPos, float colliderMass);
 
     virtual std::istream& readSpecific(std::istream& in);
     virtual std::ostream& writeSpecific(std::ostream& out) const;

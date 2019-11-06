@@ -37,7 +37,7 @@ This item burns baby
 [DescriptionEnd]
 
 RecipeName: Free Sample! - Tiny Flare
-ComponentID:
+ComponentID:u
 ComponentAmount:
 FinishedID: 8
 FinishedCount: -1

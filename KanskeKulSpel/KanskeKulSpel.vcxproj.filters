@@ -30,9 +30,6 @@
     <ClCompile Include="..\External\Include\Imgui\SFML-imgui\imgui-SFML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Collision\CollisionBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game\Collision\CollisionHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -177,11 +174,11 @@
     <ClCompile Include="src\Game\Item\RecipeEditor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Collision\Collider.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Game\Collision\CollisionBox.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game\Collision\CollisionHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -381,6 +378,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Item\RecipeEditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Collision\Collider.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
