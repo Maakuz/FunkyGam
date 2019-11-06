@@ -42,7 +42,9 @@ struct CustomHitbox
     {
         in >> obj.min.x >> obj.min.y;
         in >> obj.max.x >> obj.max.y;
-        in >> obj.flag;
+        std::getline(in, obj.flag);
+        while (obj.flag.size() > 0 && obj.flag[0] == ' ')
+            obj.flag.erase(obj.flag.begin());
 
         return in;
     }

@@ -44,7 +44,7 @@ void Editor::update(sf::Time deltaTime)
 
     tileMenuHandler.update(mousePos, workSpaceMousePos, guiActive);
     tileMenuHandler.queueItems(this->workView);
-    tileStager.stageTiles();
+    tileStager.stageTiles(tileMenuHandler.isOverlayInToolbox());
 
     if (tileMenuHandler.isGridVisible())
         Renderer::queueDrawable(&tileMenuHandler.getGrid());

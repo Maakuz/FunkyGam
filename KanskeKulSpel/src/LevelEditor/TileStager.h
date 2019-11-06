@@ -8,7 +8,7 @@ public:
     TileStager();
     virtual ~TileStager() {};
 
-    void stageTiles();
+    void stageTiles(bool overlayOnToolbox);
     void clearAllQueues();
 
 private:

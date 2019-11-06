@@ -97,6 +97,7 @@ const LevelInfo* HubHandler::changeToNextLevel(int exitTaken)
     if (activeLevel == -1)
         return nullptr;
 
+    levels[activeLevel].unlocked = true;
     return &levels[activeLevel];
 }
 
@@ -203,6 +204,8 @@ void HubHandler::loadLevelInfo()
     }
 
     file.close();
+
+    levels[0].unlocked = true;
 }
 
 void HubHandler::loadInterface()
@@ -417,50 +420,53 @@ void HubHandler::updateMain(sf::Vector2f mousePos)
 
 void HubHandler::updateLevelSelect(sf::Vector2f mousePos)
 {
-    for (int i = 0; i < this->levels.size(); i++)
+    int y = 0;
+    int levelIndex = 0;
+    for (LevelInfo& info : levels)
     {
-        LevelInfo* info = &this->levels[i];
-
-        sf::Vector2f pos = this->listBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
-        info->name.setPosition(pos);
-        info->description.setPosition(this->descriptionBox.getTextPos());
-
-        if (info->name.getGlobalBounds().contains(mousePos) && MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+        if (info.unlocked && info.hasWarp)
         {
-            info->name.setOutlineThickness(1);
+            sf::Vector2f pos = this->listBackground.getTextPos() + sf::Vector2f(0, y * DEFAULT_TEXT_SIZE);
+            info.name.setPosition(pos);
+            info.description.setPosition(this->descriptionBox.getTextPos());
 
-            if (this->selectedLevel != -1 && this->selectedLevel != i)
-                this->levels[this->selectedLevel].name.setOutlineThickness(0);
-            this->selectedLevel = i;
-        }
-    }
-
-    if (selectedLevel != -1)
-    {
-        this->infoBox.setText("Emenies:\nyes");
-
-
-        this->infoBox.appendText("\n\nPossible items:\nitems");
-
-        if (acceptButton.getBounds().contains(mousePos))
-        {
-            acceptButton.setTexture(textureOn);
-
-            if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+            if (info.name.getGlobalBounds().contains(mousePos) && MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
             {
-                activeLevel = levels[selectedLevel].levelID;
-                ui->getInventory()->setQuickslotHidden(false);
+                info.name.setOutlineThickness(1);
+
+                if (this->selectedLevel != -1 && this->selectedLevel != levelIndex)
+                    this->levels[this->selectedLevel].name.setOutlineThickness(0);
+                this->selectedLevel = levelIndex;
             }
-
+            y++;
         }
+
+        if (selectedLevel != -1)
+        {
+            this->infoBox.setText("Emenies:\nyes");
+
+
+            this->infoBox.appendText("\n\nPossible items:\nitems");
+
+            if (acceptButton.getBounds().contains(mousePos))
+            {
+                acceptButton.setTexture(textureOn);
+
+                if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left))
+                {
+                    activeLevel = levels[selectedLevel].levelID;
+                    ui->getInventory()->setQuickslotHidden(false);
+                }
+
+            }
+            else
+                acceptButton.setTexture(textureOff);
+        }
+
         else
-            acceptButton.setTexture(textureOff);
+            acceptButton.setTexture(textureInactive);
+        levelIndex++;
     }
-
-    else
-        acceptButton.setTexture(textureInactive);
-
-
 
 }
 
@@ -599,7 +605,8 @@ void HubHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
         target.draw(infoBox, states);
         target.draw(adventurer, states);
         for (const LevelInfo& level : this->levels)
-            target.draw(level.name, states);
+            if (level.unlocked && level.hasWarp)
+                target.draw(level.name, states);
 
         if (this->selectedLevel != -1)
             target.draw(this->levels[this->selectedLevel].description, states);

@@ -12,6 +12,7 @@ public:
     {
         ground = 501,
         platform = 502,
+        levelWarp = 507,
         levelReturn = 508,
         customTerrain = 999,
         player = 1,

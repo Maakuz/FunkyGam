@@ -15,22 +15,23 @@
 TileMenuHandler::TileMenuHandler() :
     tileBox(TILEMENU_BORDER_SIZE, TILEMENU_BORDER_SIZE + MENU_BAR_HEIGHT, TILE_SIZE* TILEMENU_X_AREA, TILE_SIZE* TILEMENU_Y_AREA, TILEMENU_BORDER_SIZE)
 {
-    tileBox.setColor(sf::Color(0, 100, 200));
-    tileBox.setBorderColor(sf::Color(100, 100, 100));
-    activeTileTexture = 0;
-    offset.x = TILEMENU_BORDER_SIZE;
-    offset.y = TILEMENU_BORDER_SIZE + MENU_BAR_HEIGHT;
+    this->tileBox.setColor(sf::Color(0, 100, 200));
+    this->tileBox.setBorderColor(sf::Color(100, 100, 100));
+    this->activeTileTexture = 0;
+    this->offset.x = TILEMENU_BORDER_SIZE;
+    this->offset.y = TILEMENU_BORDER_SIZE + MENU_BAR_HEIGHT;
 
-    selectingBlocks = false;
-    rightClicking = false;
-    isImportingTexture = false;
-    renderingLights = false;
-    gridVisible = false;
-    turboHitboxOverride = false;
-    activeTileTexture = -1;
+    this->selectingBlocks = false;
+    this->rightClicking = false;
+    this->isImportingTexture = false;
+    this->renderingLights = false;
+    this->gridVisible = false;
+    this->turboHitboxOverride = false;
+    this->overlayInToolBox = false;
+    this->activeTileTexture = -1;
 
-    createTileButtons();
-    infoWindow.fetchInfo("");
+    this->createTileButtons();
+    this->infoWindow.fetchInfo("");
 }
 
 void TileMenuHandler::handleEvent(sf::Event event, bool guiBlock, sf::Vector2i viewPortMousePos)
@@ -45,13 +46,16 @@ void TileMenuHandler::handleMouseEvents(sf::Event event, bool guiBlock, sf::Vect
     switch (event.type)
     {
     case sf::Event::MouseButtonPressed:
-        if (event.mouseButton.button == sf::Mouse::Left && !rightClicking && 
+        if (event.mouseButton.button == sf::Mouse::Left && !rightClicking &&
             !guiBlock && !lightManager.isPlacingLight() && !turboHitboxOverride)
         {
             pressedPos = { event.mouseButton.x, event.mouseButton.y };
 
             if (tileBox.contains(pressedPos.x, pressedPos.y))
+            {
                 selectingBlocks = true;
+                overlayInToolBox = true;
+            }
         }
 
         if (event.mouseButton.button == sf::Mouse::Right && !selectingBlocks && 
@@ -62,6 +66,7 @@ void TileMenuHandler::handleMouseEvents(sf::Event event, bool guiBlock, sf::Vect
                 pressedPos = viewPortMousePos;
 
                 rightClicking = true;
+                overlayInToolBox = false;
             }
         }
         break;

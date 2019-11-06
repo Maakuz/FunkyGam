@@ -5,6 +5,7 @@
 struct LevelInfo : public Info
 {
     int levelID;
+    bool hasWarp;
     std::string levelFileName;
     std::vector<int> gatherables;
     std::vector<int> rareGatherables;

@@ -77,6 +77,7 @@ void InfoWindow::update()
 
                     ImGui::EndChild();
 
+                    ImGui::Checkbox("Has warp point", &info.hasWarpPoint);
 
                     ImGui::EndTabItem();
                 }

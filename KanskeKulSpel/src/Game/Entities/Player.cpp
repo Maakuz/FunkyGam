@@ -26,6 +26,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->maxHealth = 100;
     this->illumination = 0;
     this->jumping = false;
+    this->canReturn = false;
     this->exitReached = -1;
 
     platformPassingCounter.stopValue = 1000;
@@ -166,6 +167,9 @@ void Player::update(float dt, sf::Vector2f mousePos)
             ui->getInventory()->openInventory();
     }
 
+    if (this->canReturn && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+        this->returning = true;
+
     if (this->gatherableInRange != nullptr && KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::E))
     {
         this->gatherableInRange->pluck();
@@ -173,6 +177,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
     }
 
     ui->setHealthPercentage(this->health / float(this->maxHealth));
+    this->canReturn = false;
 }
 
 void Player::reset(sf::Vector2f spawnPoint)
@@ -219,7 +224,10 @@ void Player::handleCollision(const Entity* collider)
     if (collider->getCollider().hasComponent(Collider::ColliderKeys::levelReturn))
         this->returning = true;
 
-    if (collider->getCollider().hasComponent(Collider::ColliderKeys::customTerrain))
+    else if (collider->getCollider().hasComponent(Collider::ColliderKeys::levelWarp))
+        this->canReturn = true;
+
+    else if (collider->getCollider().hasComponent(Collider::ColliderKeys::customTerrain))
     {
         std::string flag = collider->getCollider().getFlag();
         if (flag.compare(0, 4, "exit") == 0)

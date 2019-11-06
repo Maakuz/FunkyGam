@@ -24,8 +24,9 @@ public:
     int getActiveTexture() { return activeTileTexture; };
 
     bool isRenderingLights() const { return renderingLights; };
-    const sf::VertexArray& getGrid() const { return grid; };
     bool isGridVisible() const { return gridVisible; };
+    bool isOverlayInToolbox()const { return overlayInToolBox; };
+    const sf::VertexArray& getGrid() const { return grid; };
     void autosave();
     void load(std::string filename);
 
@@ -78,6 +79,7 @@ private:
     sf::VertexArray grid;
 
     bool selectingBlocks;
+    bool overlayInToolBox;
     bool rightClicking;
     bool erasing;
     bool isImportingTexture;

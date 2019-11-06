@@ -17,6 +17,7 @@ std::istream& operator>>(std::istream& in, LevelInfo& level)
 
     in >> trash >> level.levelFileName;
     in >> trash >> level.levelID;
+    in >> trash >> level.hasWarp;
     
     in >> trash;
     std::getline(in, trash);

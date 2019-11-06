@@ -10,7 +10,7 @@ TileStager::TileStager()
 {
 }
 
-void TileStager::stageTiles()
+void TileStager::stageTiles(bool overlayOnToolbox)
 {
 
     for (sf::RectangleShape& rect : BackgroundQueue::get().getQueue())
@@ -18,8 +18,15 @@ void TileStager::stageTiles()
 
     tileManager.prepareTiles();
 
+
     for (sf::RectangleShape& rect : OverlayQueue::get().getQueue())
-        Renderer::queueUI(&rect);
+    {
+        if (overlayOnToolbox)
+            Renderer::queueUI(&rect);
+
+        else
+            Renderer::queueDrawable(&rect);
+    }
 }
 
 void TileStager::clearAllQueues()

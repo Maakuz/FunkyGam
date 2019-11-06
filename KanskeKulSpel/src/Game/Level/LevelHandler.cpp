@@ -47,6 +47,7 @@ bool LevelHandler::loadLevel(const LevelInfo* level)
     this->generateHitboxes(Collider::ColliderKeys::ground);
     this->generateHitboxes(Collider::ColliderKeys::platform);
     this->generateHitboxes(Collider::ColliderKeys::levelReturn);
+    this->generateHitboxes(Collider::ColliderKeys::levelWarp);
 
     for (CustomHitbox& box : customHitboxes)
     {

@@ -19,6 +19,7 @@ private:
         std::string name;
         std::string description;
         int levelID;
+        bool hasWarpPoint;
         std::string levelFileName;
         std::vector<int> gatherables;
         std::vector<int> rareGatherables;
@@ -38,6 +39,7 @@ private:
 
             in >> trash >> level.levelFileName;
             in >> trash >> level.levelID;
+            in >> trash >> level.hasWarpPoint;
 
             in >> trash;
             std::getline(in, trash);
@@ -95,6 +97,7 @@ private:
             out << "levelName: " << level.name << "\n";
             out << "levelFileName: " << level.levelFileName << "\n";
             out << "levelID: " << level.levelID << "\n";
+            out << "Warp: " << level.hasWarpPoint << "\n";
             out << "Unlocks:";
             for (int i : level.unlockLevels)
                 out << " " << i;

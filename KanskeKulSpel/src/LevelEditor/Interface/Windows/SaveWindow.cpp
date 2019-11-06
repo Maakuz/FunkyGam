@@ -51,6 +51,9 @@ bool SaveWindow::update()
                     {
                         if (directory)
                             iteratePaths(p.path().filename().string(), p.path().string());
+
+                        if (file)
+                            this->fileName = p.path().filename().string();
                     }
                 }
                 

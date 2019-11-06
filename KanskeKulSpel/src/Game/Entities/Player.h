@@ -40,6 +40,7 @@ private:
     bool debugMode;
     bool noClip;
     bool returning;
+    bool canReturn;
     int exitReached;
 
     void move(float dt);
