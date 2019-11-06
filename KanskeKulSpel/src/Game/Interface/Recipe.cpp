@@ -18,7 +18,7 @@ std::istream& operator>>(std::istream& in, Recipe& recipe)
     std::getline(in, trash);
     sstream.str(trash);
 
-    while (!sstream.eof())
+    while (!sstream.eof() && trash.size() > 0)
     {
         int componentID = 0;
         sstream >> componentID;
@@ -30,7 +30,7 @@ std::istream& operator>>(std::istream& in, Recipe& recipe)
     sstream.clear();
     sstream.str(trash);
 
-    while (!sstream.eof())
+    while (!sstream.eof() && trash.size() > 0)
     {
         int componentCount;
         sstream >> componentCount;
@@ -39,6 +39,8 @@ std::istream& operator>>(std::istream& in, Recipe& recipe)
 
     in >> trash >> recipe.resultID;
     in >> trash >> recipe.resultAmount;
+    in >> trash >> recipe.oneTimeRecipe;
+    in >> trash >> recipe.unlocked;
 
     in >> trash;
 
@@ -49,7 +51,7 @@ std::istream& operator>>(std::istream& in, Recipe& recipe)
         description.append(descriptionLine + "\n");
         std::getline(in, descriptionLine);
     }
-
+    description.pop_back();
 
     recipe.name.setString(name);
     recipe.description.setString(description);
@@ -64,7 +66,7 @@ std::ostream& operator<<(std::ostream& out, const Recipe& recipe)
     out << "ComponentID:";
     for (int i = 0; i < recipe.components.size(); i++)
     {
-        out << " " << recipe.components[i] ;
+        out << " " << recipe.components[i];
     }
 
     out << "\nComponentAmount:";
@@ -75,6 +77,8 @@ std::ostream& operator<<(std::ostream& out, const Recipe& recipe)
 
     out << "\nFinishedID: " << recipe.resultID << "\n";
     out << "FinishedCount: " << recipe.resultAmount << "\n";
+    out << "OneTime: " << recipe.oneTimeRecipe << "\n";
+    out << "startUnlocked: " << recipe.unlocked << "\n";
     
 
     out << "[Description]\n";

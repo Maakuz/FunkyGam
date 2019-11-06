@@ -122,3 +122,22 @@ Radius: 0
 Falloff: 0
 Damage 0
 
+[Throwable]
+ID: 8
+TexID: 4
+Name: Tiny Flare
+StackLimit: 999
+EmitterID: -1
+Useable: 1
+[Specific]
+Mass: 0.2
+ArmingTime: 1000
+Bounce: 0.4
+DetonateOnImpact: 0
+Damage: 0
+ParticleEffectID: 6
+[Explosion]
+Type: 0
+Radius: 200
+Falloff: 0
+Damage 0

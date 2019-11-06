@@ -13,7 +13,11 @@ Item::Item(sf::Vector2f pos, const sf::Texture* texture):
 std::istream& operator>>(std::istream& in, Item& item)
 {
     std::string trash;
-    in >> trash >> item.name;
+    in >> trash;
+    std::getline(in, item.name);
+    while (item.name.size() > 0 && item.name[0] == ' ')
+        item.name.erase(item.name.begin());
+
     in >> trash >> item.stackLimit;
     in >> trash >> item.emitterID;
     in >> trash >> item.useable;

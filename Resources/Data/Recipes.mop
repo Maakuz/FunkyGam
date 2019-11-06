@@ -1,11 +1,13 @@
 [Recipes]
-RecipeCount: 3
+RecipeCount: 4
 
 RecipeName: Mix flare
 ComponentID: 4 5
 ComponentAmount: 2 1
 FinishedID: 2
 FinishedCount: 3
+OneTime: 0
+startUnlocked: 0
 [Description]
 Good for illuminationg the surrounding area. It
 also attracts enemies.
@@ -16,6 +18,8 @@ ComponentID: 6 5
 ComponentAmount: 1 1
 FinishedID: 1
 FinishedCount: 2
+OneTime: 0
+startUnlocked: 0
 [Description]
 This is a somewhat powerful bomb. You
 could probably use it to blow up weak stuff.
@@ -26,6 +30,21 @@ ComponentID: 0 2
 ComponentAmount: 1 1
 FinishedID: 7
 FinishedCount: 2
+OneTime: 0
+startUnlocked: 0
 [Description]
 This item burns baby
+[DescriptionEnd]
+
+RecipeName: Free Sample! - Tiny Flare
+ComponentID:
+ComponentAmount:
+FinishedID: 8
+FinishedCount: -1
+OneTime: 1
+startUnlocked: 1
+[Description]
+I have a near infinite stock of small flares. They
+are not very good but they'll give a bit light
+and most enemies don't mind them.
 [DescriptionEnd]

@@ -128,6 +128,10 @@ void RecipeEditor::showRecipeData(EditorRecipe& recipe)
 
     ImGui::InputInt("Items created", &recipe.recipe.resultAmount);
 
+    ImGui::Checkbox("One time recipe", &recipe.recipe.oneTimeRecipe);
+    ImGui::SameLine();
+    ImGui::Checkbox("Starts unlocked", &recipe.recipe.unlocked);
+
     ImGui::InputTextMultiline("Description", &recipe.desc);
 
     ImGui::Separator();

@@ -287,7 +287,7 @@ void InventoryHandler::addItem(int itemID, int amount)
                 slots[i].infinite = true;
                 slots[i].size = 8;
                 slots[i].text.setString("Inf");
-                first = false;
+                first = false;            
             }
 
             else if (slots[i].item && slots[i].item->getID() == itemID && first)
@@ -303,6 +303,7 @@ void InventoryHandler::addItem(int itemID, int amount)
                 removeAt(i);
             }
         }
+        updateQuickslots = true;
     }
 
     else
@@ -344,9 +345,9 @@ void InventoryHandler::addItem(int itemID, int amount)
             else if (i >= ITEM_SLOT_COUNT)
                 amount = 0;
         }
-        if (updateQuickslots)
-            updateQuickslotSprites();
     }
+    if (updateQuickslots)
+        updateQuickslotSprites();
 }
 
 int InventoryHandler::removeItem(int itemID, int amount)

@@ -30,6 +30,14 @@ HubHandler::HubHandler(UIHandler* uiHandler)
             return "unlocked and loaded";
         });
 
+    ConsoleWindow::get().addCommand("reloadRecipes", [&](Arguments args)->std::string
+        {
+
+            loadRecipes();
+
+            return "Recipes reloaded";
+        });
+
     this->infoTextCharacterSize = DEFAULT_TEXT_SIZE;
     this->selectedRecipe = -1;
     this->selectedLevel = -1;
@@ -458,12 +466,13 @@ void HubHandler::updateLevelSelect(sf::Vector2f mousePos)
 
 void HubHandler::updateAlchemy(sf::Vector2f mousePos)
 {
-    int i = 0;
+    int y = 0;
+    int recipeIndex = 0;
     for (Recipe& recipe : recipes)
     {
         if (recipe.unlocked)
         {
-            sf::Vector2f pos = this->listBackground.getTextPos() + sf::Vector2f(0, i * DEFAULT_TEXT_SIZE);
+            sf::Vector2f pos = this->listBackground.getTextPos() + sf::Vector2f(0, y * DEFAULT_TEXT_SIZE);
             recipe.name.setPosition(pos);
             recipe.description.setPosition(this->descriptionBox.getTextPos());
 
@@ -471,12 +480,15 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
             {
                 recipe.name.setOutlineThickness(1);
 
-                if (this->selectedRecipe != -1 && this->selectedRecipe != i)
+                if (this->selectedRecipe != -1 && this->selectedRecipe != y)
                     this->recipes[this->selectedRecipe].name.setOutlineThickness(0);
-                this->selectedRecipe = i;
+
+                recipe.seen = true;
+                this->selectedRecipe = recipeIndex;
             }
-            i++;
+            y++;
         }
+        recipeIndex++;
     }
 
 
@@ -487,6 +499,11 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
 
         this->infoBox.setText("Requires:\n");
 
+        if (recipe->components.empty())
+        {
+            this->infoBox.appendText("Nothing!");
+            craftingClearance = true;
+        }
         for (int i = 0; i < recipe->components.size(); i++)
         {
             this->infoBox.appendText(std::to_string(recipe->componentAmounts[i]) + " ");
@@ -521,6 +538,11 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
 
                     this->ui->getInventory()->addItem(recipe->resultID, recipe->resultAmount);
                     this->ui->getInventory()->sortItems();
+                    if (recipe->oneTimeRecipe)
+                    {
+                        recipe->unlocked = false;
+                        selectedRecipe = -1;
+                    }
                 }
 
             }
