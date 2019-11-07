@@ -298,7 +298,6 @@ void CharacterHandler::calculatePlayerIllumination()
     float finalIllumination = illumination.x + illumination.y + illumination.z;
     finalIllumination *= 0.33 * 100;
     PROFILER_STOP;
-    
     player->setIllumination(finalIllumination);
 }
 

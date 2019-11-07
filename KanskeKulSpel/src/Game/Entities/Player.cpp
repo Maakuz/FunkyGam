@@ -142,8 +142,9 @@ void Player::update(float dt, sf::Vector2f mousePos)
     if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Right))
     {
         sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
+        float distance = std::min(length(direction), 400.f) / 400.f;
         normalize(direction);
-        direction *= this->throwingPower;
+        direction *= this->throwingPower * distance;
 
         int itemID = this->ui->getInventory()->useSelectedItem();
         if (itemID != -1)

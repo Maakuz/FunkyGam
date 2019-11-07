@@ -168,14 +168,11 @@ void Game::updateLevel(float dt)
         this->levelHandler.queueColliders();
         this->collisionHandler.processQueue();
         PROFILER_STOP;
-
-        PROFILER_START("CalcLightLevel");
-        characterHandler.calculatePlayerIllumination();
-        PROFILER_STOP;
     }
 
     this->levelHandler.queueLightsAndShadows();
     this->particleHandler.queueLights();
+    characterHandler.calculatePlayerIllumination();
     Renderer::queueDrawable(&this->levelHandler);
     Renderer::queueDrawable(&this->characterHandler);
     Renderer::queueDrawable(&this->itemHandler);
