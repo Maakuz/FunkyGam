@@ -416,6 +416,7 @@ void InventoryHandler::swapItems(int a, int b)
 
     std::swap(this->slots[a].item, this->slots[b].item);
     std::swap(this->slots[a].size, this->slots[b].size);
+    std::swap(this->slots[a].infinite, this->slots[b].infinite);
 
     this->slots[a].text.setString(std::to_string(this->slots[a].size));
     this->slots[b].text.setString(std::to_string(this->slots[b].size));

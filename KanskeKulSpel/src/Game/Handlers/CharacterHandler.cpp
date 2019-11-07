@@ -188,15 +188,30 @@ void CharacterHandler::loadEnemies()
         file >> trash >> size.x >> size.y;
         file >> trash >> offset.x >> offset.y;
 
-        Grunt* grunt = new Grunt(data, sf::Vector2f(0, 0), ui);
-        grunt->setSize(size);
-        grunt->setEyeLevel(sf::Vector2f(size.x * 0.5f, size.y * 0.2f));
-        grunt->moveSpriteOffset(offset);
+        Enemy* enemy;
 
-        file >> *grunt;
+        switch (i)
+        {
+        case enemy::grunt:
+            enemy = createEnemy<Grunt>(data);
+            break;
+        case enemy::bird:
+            enemy = createEnemy<Bird>(data);
+            break;
+        default:
+            enemy = createEnemy<Grunt>(data);
+            break;
+        }
+
+
+        enemy->setSize(size);
+        enemy->setEyeLevel(sf::Vector2f(size.x * 0.5f, size.y * 0.2f));
+        enemy->moveSpriteOffset(offset);
+
+        file >> *enemy;
 
         file.close();
-        enemyTemplates.push_back(grunt);
+        enemyTemplates.push_back(enemy);
     }
 }
 
