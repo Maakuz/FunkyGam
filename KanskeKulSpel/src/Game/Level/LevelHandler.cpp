@@ -11,7 +11,7 @@
 #define GATHER_POINT 504
 #define RARE_GATHER_POINT 505
 #define PLAYER_SPAWN_POINT 506
-#define LEVEL_END_POINT 507
+#define LEVEL_WARP_POINT 507
 #define LEVEL_RETURN_POINT 508
 #define BREAKABLE_BLOCK 509
 
@@ -402,21 +402,53 @@ std::vector<CustomHitbox> LevelHandler::getShrines()
     return shrines;
 }
 
-sf::Vector2f LevelHandler::findPlayerSpawnPoint()
+sf::Vector2f LevelHandler::findPlayerSpawnPoints(int exitTaken)
 {
     sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
     sf::Vector2f point;
-    for (int i = 0; i < end.y; i++)
+
+
+    if (exitTaken == -1)
     {
-        for (int j = 0; j < end.x; j++)
+        for (int i = 0; i < end.y; i++)
         {
-            if (hitboxData[i][j].tileID == PLAYER_SPAWN_POINT)
+            for (int j = 0; j < end.x; j++)
             {
-                point = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
+                if (hitboxData[i][j].tileID == LEVEL_WARP_POINT)
+                {
+                    point = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
+                }
             }
         }
     }
 
+    else
+    {
+        sf::Vector2f entrance;
+
+        for (const CustomHitbox& box : customHitboxes)
+        {
+            if (box.flag[4] - '0' == exitTaken)
+                entrance = sf::Vector2f(box.min);
+        }
+
+        std::vector<sf::Vector2f> points;
+        for (int i = 0; i < end.y; i++)
+        {
+            for (int j = 0; j < end.x; j++)
+            {
+                if (hitboxData[i][j].tileID == PLAYER_SPAWN_POINT)
+                {
+                    points.push_back(sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y));
+                }
+            }
+        }
+
+        point = points[0];
+        for (sf::Vector2f p : points)
+            if (lengthSquared(point - entrance) > lengthSquared(p - entrance))
+                point = p;
+    }
     return point;
 }
 

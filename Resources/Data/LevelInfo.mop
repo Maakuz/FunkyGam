@@ -19,7 +19,7 @@ levelName: Interesting hole
 levelFileName: Level2.yay
 levelID: 1
 Warp: 1
-Unlocks: 2 3 0
+Unlocks: 3 2 0
 Gatherables: 4 5
 RareGatherables: 6
 [Description]

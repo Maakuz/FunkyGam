@@ -413,8 +413,16 @@ void TileMenuHandler::handleHelpWindow()
             if (ImGui::Checkbox("Differentiate layers", &layerDiffCheck))
                 layerManager.setHighlightLayers(layerDiffCheck);
 
+            static sf::Color gridColor = sf::Color::Red;
+            float vec[4] = {gridColor.r / 255.f, gridColor.g / 255.f, gridColor.b / 255.f, gridColor.a / 255.f};
             if (ImGui::Checkbox("Show grid", &gridVisible))
-                generateGrid(sf::Color::Red);
+                generateGrid(gridColor);
+
+            if (ImGui::ColorEdit4("Grid color", vec))
+            {
+                gridColor = sf::Color(vec[0] * 255, vec[1] * 255, vec[2] * 255, vec[3] * 255);
+                generateGrid(gridColor);
+            }
 
             ImGui::EndTabItem();
         }
