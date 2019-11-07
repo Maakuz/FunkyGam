@@ -113,6 +113,9 @@ void ItemHandler::update(float dt, Player* player)
             if (it->emitter != nullptr)
                 it->emitter->kill();
 
+            if (it->count == -1)
+                oneTimeItemList.emplace(it->item.getName());
+
             unordered_erase(gatherItems, it);
         }
         else
@@ -186,7 +189,7 @@ void ItemHandler::spawnShrines(std::vector<CustomHitbox> shrines)
         while (itemName.size() > 0 && itemName[0] == ' ')
             itemName.erase(itemName.begin());
 
-        if (!itemList.count(itemName))
+        if (!oneTimeItemList.count(itemName))
         {
             for (const Item* item : this->itemTemplates)
             {

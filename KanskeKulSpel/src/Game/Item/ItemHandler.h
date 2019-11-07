@@ -38,7 +38,7 @@ private:
 
     std::vector<sf::Vector2f> gatherPoints;
     std::vector<sf::Vector2f> rareGatherPoints;
-    std::unordered_set<std::string> itemList;
+    std::unordered_set<std::string> oneTimeItemList;
 
     std::vector<GatherItem> gatherItems;
     int gatherRange;
