@@ -162,3 +162,11 @@ Radius: 128
 Falloff: 0.3
 Damage 30
 
+[Item]
+ID: 10
+TexID: 21
+Name: Gloom Shroom
+StackLimit: 10
+EmitterID: 8
+Useable: 0
+

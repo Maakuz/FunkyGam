@@ -1,6 +1,7 @@
 #include "InfoWindow.h"
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
+#include "Game/Item/ItemHandler.h"
 #include <fstream>
 
 void InfoWindow::update()
@@ -45,10 +46,19 @@ void InfoWindow::update()
 
                     ImGui::BeginChild("lootIDchild", sf::Vector2i(250, 200));
 
+                    auto items = ItemHandler::getTemplateVec();
                     for (int i = 0; i < info.gatherables.size(); i++)
                     {
                         std::string label = "LootID #" + std::to_string(i);
-                        ImGui::InputInt(label.c_str(), &info.gatherables[i]);
+                        if (ImGui::BeginCombo(label.c_str(), items->at(info.gatherables[i])->getName().c_str()))
+                        {
+                            for (int j = 0; j < items->size(); j++)
+                            {
+                                if (ImGui::Selectable(items->at(j)->getName().c_str()))
+                                    info.gatherables[i] = j;
+                            }
+                            ImGui::EndCombo();
+                        }
                     }
 
                     if (ImGui::Button("Add loot ID"))
@@ -64,8 +74,16 @@ void InfoWindow::update()
 
                     for (int i = 0; i < info.rareGatherables.size(); i++)
                     {
-                        std::string label = "RareLootID #" + std::to_string(i);
-                        ImGui::InputInt(label.c_str(), &info.rareGatherables[i]);
+                        std::string label = "LootID #" + std::to_string(i);
+                        if (ImGui::BeginCombo(label.c_str(), items->at(info.rareGatherables[i])->getName().c_str()))
+                        {
+                            for (int j = 0; j < items->size(); j++)
+                            {
+                                if (ImGui::Selectable(items->at(j)->getName().c_str()))
+                                    info.rareGatherables[i] = j;
+                            }
+                            ImGui::EndCombo();
+                        }
                     }
 
                     if (ImGui::Button("Add Rare ID"))

@@ -1,6 +1,6 @@
 [Textures]
 Folder: ../Resources/Sprites/
-TextureCount: 21
+TextureCount: 23
 0: cate.png
 1: fish.png
 2: bamb.png
@@ -22,6 +22,9 @@ TextureCount: 21
 18: adventurer.png
 19: exclamation.png
 20: question.png
+21: gloom_shroom.png
+22: flash_flower.png
+23: birb.png
 
 [Fonts]
 Folder: ../Resources/Fonts/

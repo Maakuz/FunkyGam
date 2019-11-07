@@ -17,13 +17,11 @@ public:
 
 private:
     Direction forcedDirection;
-    float chaseSpeed;
-    float idleSpeed;
+
     float attackDistance;
     int damage;
     sf::Vector2f attackMomentum;
     Counter attackChargeTimer;
-    Counter stunCounter;
     Counter searchCounter;
     bool flying;
 

@@ -143,6 +143,7 @@
     <ClCompile Include="src\Game\Collision\Collider.cpp" />
     <ClCompile Include="src\Game\Collision\CollisionHandler.cpp" />
     <ClCompile Include="src\Game\Entities\AnimatedEntity.cpp" />
+    <ClCompile Include="src\Game\Entities\Enemies\Bird.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Enemy.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Grunt.cpp" />
     <ClCompile Include="src\Game\Entities\Entity.cpp" />
@@ -195,6 +196,7 @@
     <ClInclude Include="src\Game\Collision\CollisionHandler.h" />
     <ClInclude Include="src\Game\Collision\Explosion.h" />
     <ClInclude Include="src\Game\Entities\AnimatedEntity.h" />
+    <ClInclude Include="src\Game\Entities\Enemies\Bird.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Enemy.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Grunt.h" />
     <ClInclude Include="src\Game\Entities\Entity.h" />
@@ -262,6 +264,7 @@
     <ClInclude Include="src\LevelEditor\TileMaps.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Resources\Data\bird.mop" />
     <None Include="..\Resources\Data\Grunt.mop" />
     <None Include="..\Resources\Data\HubInterface.mop" />
     <None Include="..\Resources\Data\Items.mop" />

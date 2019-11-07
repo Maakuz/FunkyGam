@@ -20,7 +20,7 @@ levelFileName: Level2.yay
 levelID: 1
 Warp: 1
 Unlocks: 3 2 0
-Gatherables: 4 5
+Gatherables: 10
 RareGatherables: 6
 [Description]
 A hole i think hmm hmm go get it!
@@ -31,7 +31,7 @@ levelName: The hills outside but ID3
 levelFileName: Level3.yay
 levelID: 2
 Warp: 0
-Unlocks: 1
+Unlocks: 0 1
 Gatherables: 2
 RareGatherables: 6
 [Description]

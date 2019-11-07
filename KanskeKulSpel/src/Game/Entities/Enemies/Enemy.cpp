@@ -118,6 +118,9 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
     in >> trash >> enemy.mass;
     in >> trash >> enemy.sightRadius;
     in >> trash >> enemy.sightMultiplier;
+    in >> trash >> enemy.chaseSpeed;
+    in >> trash >> enemy.idleSpeed;
+    in >> trash >> enemy.stunCounter.stopValue;
 
     enemy.health = enemy.maxHealth;
 

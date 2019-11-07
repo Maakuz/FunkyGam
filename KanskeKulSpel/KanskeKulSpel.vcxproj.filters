@@ -177,6 +177,9 @@
     <ClCompile Include="src\Game\Collision\Collider.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Entities\Enemies\Bird.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game\Collision\CollisionHandler.h">
@@ -386,6 +389,9 @@
     <ClInclude Include="src\Game\Item\GatherItem.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Entities\Enemies\Bird.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Data\LoadList.mop" />
@@ -405,6 +411,7 @@
     <None Include="..\Resources\Data\HubInterface.mop" />
     <None Include="..\Resources\Data\LevelInfo.mop" />
     <None Include="..\Resources\Data\Particles.mop" />
+    <None Include="..\Resources\Data\bird.mop" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc\Todo.txt" />

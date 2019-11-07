@@ -233,14 +233,11 @@ std::istream& Grunt::readSpecific(std::istream& in)
 {
     std::string trash;
     in >> trash;
-    in >> trash >> chaseSpeed;
-    in >> trash >> idleSpeed;
     in >> trash >> jumpHeight;
     in >> trash >> attackMomentum.x >> attackMomentum.y;
     in >> trash >> attackDistance;
     in >> trash >> damage;
     in >> trash >> attackChargeTimer.stopValue;
-    in >> trash >> stunCounter.stopValue;
     in >> trash >> searchCounter.stopValue;
     return in;
 }

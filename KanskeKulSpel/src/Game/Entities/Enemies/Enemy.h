@@ -55,9 +55,12 @@ protected:
     sf::Vector2f currentRoamPoint;
     int health;
     int maxHealth;
+    float chaseSpeed;
+    float idleSpeed;
     float sightRadius;
     float sightMultiplier; //How well enemy sees in the dark
     Counter drawQuestion;
+    Counter stunCounter;
     Counter drawExclamation;
     sf::Sprite question;
     sf::Sprite exclamation;

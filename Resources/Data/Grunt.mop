@@ -41,13 +41,13 @@ Health: 100
 Mass: 0.4
 SightRadius: 1500
 Nightvision: 1.2
-[SpecificData]
 ChaseSpeed: 0.04
 IdleSpeed: 0.01
+StunDuration: 2000
+[SpecificData]
 JumpHeight: 12
 AttackRange: 14 9
 DistanceToStartAttacking: 450
 AttackDamage: 35
 AttackChargeDuration: 700
-StunDuration: 2000
 SearchingDuration: 10000 

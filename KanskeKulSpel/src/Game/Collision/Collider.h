@@ -4,7 +4,7 @@
 #include <set>
 #include <string>
 
-//Rename, very confusing. Drawable is only for debug. Remove when sometime
+//Drawable is only for debug. Remove when sometime
 class Collider : public sf::Drawable
 {
 public:

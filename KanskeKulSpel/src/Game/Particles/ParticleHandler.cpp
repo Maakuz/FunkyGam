@@ -3,6 +3,7 @@
 #include <fstream>
 #include "Game/Misc/UnorderedErase.h"
 #include "Game/Misc/Definitions.h"
+#include "Misc/ConsoleWindow.h"
 
 std::vector<Emitter*> ParticleHandler::activeEmitters;
 std::vector<Emitter> ParticleHandler::emitterTemplates;
@@ -11,6 +12,12 @@ std::vector<std::string> ParticleHandler::templateNames;
 
 ParticleHandler::ParticleHandler()
 {
+    ConsoleWindow::get().addCommand("reloadParticles", [&](Arguments args)->std::string 
+        {
+            loadEmitters();
+
+            return "Relodd";
+        });
 }
 
 ParticleHandler::~ParticleHandler()

@@ -1,0 +1,33 @@
+[AnimationData]
+Texture: 23
+Frames: 4 1
+AnimationCount: 2
+
+[Animation1]
+Start: 0 0
+Stop: 3 0
+Idle: 1 0
+Animationspeed: 50
+StartIdle: 1
+
+[Animation2]
+Start: 1 0
+Stop: 1 0
+Idle: 1 0
+Animationspeed: 1000
+StartIdle: 1
+
+[CollisionData]
+Size: 48 20
+Offset: 0 0
+
+[EnemyData]
+Roamlength: 512
+Health: 50
+Mass: 0.3
+SightRadius: 2000
+Nightvision: 1.3
+ChaseSpeed: 0.04
+IdleSpeed: 0.01
+StunDuration: 2000
+[SpecificData]

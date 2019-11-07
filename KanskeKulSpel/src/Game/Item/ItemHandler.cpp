@@ -152,7 +152,7 @@ void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHit
         Emitter* emitter = nullptr;
 
         if (item.getEmitterID() != -1)
-            emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
+            emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos + (item.getSize() / 2.f));
 
         gatherItems.push_back(GatherItem{ emitter, item, 1});
     }
