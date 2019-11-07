@@ -12,6 +12,8 @@ public:
     {
         left,
         right,
+        up,
+        down,
         none
     };
 
@@ -50,6 +52,7 @@ protected:
     float roamDistance;
     State state;
     Direction facingDir;
+    Direction forcedDirection;
     sf::Vector2f eyeLevel;
     Counter timeSincePlayerSeen;
     sf::Vector2f currentRoamPoint;
@@ -65,6 +68,9 @@ protected:
     sf::Sprite question;
     sf::Sprite exclamation;
 
+    void moveLeft();
+    void moveRight();
+
     void desicionTimeOver();
     bool isDesicionTime() const { return this->decisionTime; }
 
@@ -75,6 +81,7 @@ protected:
 private:
     Counter roamDecisionCounter;
     bool decisionTime;
+    int prevHealth;
     sf::Vector2f startPoint;
     sf::Vector2f lastKnownPlayerPos;
 

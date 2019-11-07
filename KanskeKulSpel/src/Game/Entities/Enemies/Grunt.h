@@ -16,8 +16,6 @@ public:
     bool isAttacking()const { return this->flying; };
 
 private:
-    Direction forcedDirection;
-
     float attackDistance;
     int damage;
     sf::Vector2f attackMomentum;
@@ -26,8 +24,7 @@ private:
     bool flying;
 
 
-    void moveLeft();
-    void moveRight();
+
     void updateIdle(float dt);
     void updateChasing(float dt);
     void updateReturning(float dt);

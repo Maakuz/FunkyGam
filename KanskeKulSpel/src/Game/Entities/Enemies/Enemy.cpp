@@ -5,6 +5,7 @@
 Enemy::Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     :MovingEntity(data, pos)
 {
+    this->prevHealth = 0;
     this->ui = ui;
     this->collider.addComponent(Collider::ColliderKeys::character);
     this->roamDecisionCounter = Counter(2500 + rand() % 1000);
@@ -14,7 +15,12 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     this->drawExclamation.counter = 1000;
     this->drawQuestion.counter = 1000;
     this->roamDistance = 0;
-    this->health = 0;
+    this->health = 0;    
+    this->maxHealth = 0;
+    this->chaseSpeed = 0;
+    this->idleSpeed = 0;
+    this->roamDistance = 0;
+    this->walkSpeed = 0;
     this->sightMultiplier = 0;
     this->sightRadius = 0;
     this->decisionTime = true;
@@ -22,6 +28,7 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     this->lastKnownPlayerPos = pos;
     this->state = State::idle;
     this->facingDir = Direction::none;
+    this->forcedDirection = Direction::none;
     this->eyeLevel.x = data.spriteSheet->getSize().x / data.frameCount.x / 2.f;
     this->eyeLevel.y = data.spriteSheet->getSize().y / data.frameCount.y * 0.2;
     this->question.setTexture(*TextureHandler::get().getTexture(20));
@@ -44,6 +51,10 @@ void Enemy::update(float dt)
     this->exclamation.setPosition(pos);
     this->question.setPosition(pos);
 
+    if (this->health != this->prevHealth)
+        ui->displayEnemyDamage(float(health) / maxHealth);
+
+    this->prevHealth = this->health;
 
     MovingEntity::update(dt);
 }
@@ -88,7 +99,23 @@ sf::Vector2f Enemy::getEyePos() const
     return this->pos + this->eyeLevel;
 }
 
-void Enemy::desicionTimeOver() 
+void Enemy::moveLeft()
+{
+    this->acceleration.x = -1;
+    this->facingDir = Direction::left;
+    if (!this->isFlippedHorizontally())
+        this->flipHorizontally();
+}
+
+void Enemy::moveRight()
+{
+    this->acceleration.x = 1;
+    if (this->isFlippedHorizontally())
+        this->flipHorizontally();
+    this->facingDir = Direction::right;
+}
+
+void Enemy::desicionTimeOver()
 { 
     this->decisionTime = false;
     this->roamDecisionCounter.reset();
@@ -123,6 +150,7 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
     in >> trash >> enemy.stunCounter.stopValue;
 
     enemy.health = enemy.maxHealth;
+    enemy.prevHealth = enemy.maxHealth;
 
     enemy.readSpecific(in);
     return in;

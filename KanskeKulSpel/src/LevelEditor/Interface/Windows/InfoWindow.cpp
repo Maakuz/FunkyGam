@@ -2,7 +2,13 @@
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
 #include "Game/Item/ItemHandler.h"
+#include "Game/Handlers/CharacterHandler.h"
 #include <fstream>
+
+InfoWindow::InfoWindow()
+{
+    currentInfo = -1; 
+}
 
 void InfoWindow::update()
 {
@@ -36,8 +42,8 @@ void InfoWindow::update()
                     if (ImGui::Button("Add exit"))
                         info.unlockLevels.push_back(0);
 
-                    std::string buttonLabel = "Delete #" + std::to_string(info.unlockLevels.size());
-                    if (ImGui::Button(buttonLabel.c_str()))
+                    std::string buttonLabel = "Delete #" + std::to_string(info.unlockLevels.size() - 1);
+                    if (!info.unlockLevels.empty() && ImGui::Button(buttonLabel.c_str()))
                         info.unlockLevels.pop_back();
 
                     ImGui::EndChild();
@@ -61,11 +67,11 @@ void InfoWindow::update()
                         }
                     }
 
-                    if (ImGui::Button("Add loot ID"))
+                    if (ImGui::Button("Add loot"))
                         info.gatherables.push_back(0);
 
-                    buttonLabel = "Delete #" + std::to_string(info.gatherables.size());
-                    if (ImGui::Button(buttonLabel.c_str()))
+                    buttonLabel = "Delete #" + std::to_string(info.gatherables.size() - 1);
+                    if (!info.gatherables.empty() && ImGui::Button(buttonLabel.c_str()))
                         info.gatherables.pop_back();
 
                     ImGui::EndChild();
@@ -86,12 +92,38 @@ void InfoWindow::update()
                         }
                     }
 
-                    if (ImGui::Button("Add Rare ID"))
+                    if (ImGui::Button("Add Rare loot"))
                         info.rareGatherables.push_back(0);
 
-                    buttonLabel = "Delete #" + std::to_string(info.rareGatherables.size());
-                    if (ImGui::Button(buttonLabel.c_str()))
+                    buttonLabel = "Delete #" + std::to_string(info.rareGatherables.size() - 1);
+                    if (!info.rareGatherables.empty() && ImGui::Button(buttonLabel.c_str()))
                         info.rareGatherables.pop_back();
+
+                    ImGui::EndChild();
+
+                    ImGui::SameLine();
+                    ImGui::BeginChild("Enemieschilsd", sf::Vector2i(250, 200));
+
+                    for (int i = 0; i < info.enemies.size(); i++)
+                    {
+                        std::string label = "Enemy #" + std::to_string(i);
+                        if (ImGui::BeginCombo(label.c_str(), CharacterHandler::ENEMIES[info.enemies[i]].c_str()))
+                        {
+                            for (int j = 0; j < CharacterHandler::ENEMY_TEMPLATE_COUNT; j++)
+                            {
+                                if (ImGui::Selectable(CharacterHandler::ENEMIES[j].c_str()))
+                                    info.enemies[i] = j;
+                            }
+                            ImGui::EndCombo();
+                        }
+                    }
+
+                    if (ImGui::Button("Add Enemy"))
+                        info.enemies.push_back(0);
+
+                    buttonLabel = "Delete #" + std::to_string(info.enemies.size() - 1);
+                    if (!info.enemies.empty() && ImGui::Button(buttonLabel.c_str()))
+                        info.enemies.pop_back();
 
                     ImGui::EndChild();
 

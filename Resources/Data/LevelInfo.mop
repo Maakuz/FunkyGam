@@ -9,6 +9,7 @@ Warp: 1
 Unlocks: 1
 Gatherables: 4 5
 RareGatherables: 6
+Enemies: 1
 [Description]
 An enemy has been spotted just outside
 on the hills. Investigate!
@@ -22,6 +23,7 @@ Warp: 1
 Unlocks: 3 2 0
 Gatherables: 10
 RareGatherables: 6
+Enemies:
 [Description]
 A hole i think hmm hmm go get it!
 [DescriptionEnd]
@@ -34,6 +36,7 @@ Warp: 0
 Unlocks: 0 1
 Gatherables: 2
 RareGatherables: 6
+Enemies:
 [Description]
 An enemy has been spotted just outside
 on the hills. Investigate!
@@ -49,6 +52,7 @@ Warp: 0
 Unlocks: 1
 Gatherables: 1
 RareGatherables: 6
+Enemies:
 [Description]
 An enemy has been spotted just outside
 on the hills. Investigate!

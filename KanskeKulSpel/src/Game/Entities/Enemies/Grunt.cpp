@@ -7,17 +7,11 @@
 Grunt::Grunt(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     :Enemy(data, pos, ui)
 {
-    this->roamDistance = 64;
-    this->idleSpeed = 0.005f;
-    this->walkSpeed = idleSpeed;
-    this->chaseSpeed = 0.01f;
-    this->state = State::idle;
     this->flying = false;
     this->forcedDirection = Direction::none;
-
+    this->damage = 0;
     this->attackDistance = 64;
     this->attackChargeTimer = Counter(1000);
-    this->stunCounter = Counter(500);
     this->collider.addComponent(Collider::ColliderKeys::grunt);
 }
 
@@ -84,23 +78,6 @@ void Grunt::update(float dt)
     Enemy::update(dt);
 }
 
-
-void Grunt::moveLeft()
-{
-    this->acceleration.x = -1;
-    this->facingDir = Direction::left;
-    if (!this->isFlippedHorizontally())
-        this->flipHorizontally();
-}
-
-void Grunt::moveRight()
-{
-    this->acceleration.x = 1;
-    if (this->isFlippedHorizontally())
-        this->flipHorizontally();
-    this->facingDir = Direction::right;
-}
-
 void Grunt::updateIdle(float dt)
 {
     if (isDesicionTime() && this->forcedDirection == Direction::none)
@@ -131,7 +108,6 @@ void Grunt::updateIdle(float dt)
 
     else if (isDesicionTime())
     {
-        printCon("End");
         if (this->forcedDirection == Direction::right)
             moveRight();
 
@@ -299,9 +275,6 @@ void Grunt::handleCollision(const Entity* collider)
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(collider);
         this->health -= throwable->getDamage();
-        ui->displayEnemyDamage(float(health) / maxHealth);
-
-        printCon(std::to_string(this->health));
     }
 }
 
@@ -311,7 +284,6 @@ void Grunt::handleExplosion(const Explosion& explosion)
     {
         int damage = explosion.calculateDamage(this->getCenterPos());
         this->health -= damage;
-        ui->displayEnemyDamage(float(health)/maxHealth);
     }
 
     if (state != State::stunned && state != State::chasing && state != State::attacking)

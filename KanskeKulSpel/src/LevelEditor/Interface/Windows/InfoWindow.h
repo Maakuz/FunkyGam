@@ -7,7 +7,7 @@
 class InfoWindow
 {
 public:
-    InfoWindow() {};
+    InfoWindow();
     ~InfoWindow() {};
 
     void update();
@@ -24,6 +24,7 @@ private:
         std::vector<int> gatherables;
         std::vector<int> rareGatherables;
         std::vector<int> unlockLevels;
+        std::vector<int> enemies;
 
         friend std::istream& operator>>(std::istream& in, LevelInfo& level)
         {
@@ -45,7 +46,7 @@ private:
             std::getline(in, trash);
             sstream.str(trash);
 
-            while (!sstream.eof())
+            while (!sstream.eof() && trash.size() > 0)
             {
                 int unlock = 0;
                 sstream >> unlock;
@@ -57,7 +58,7 @@ private:
             sstream.clear();
             sstream.str(trash);
 
-            while (!sstream.eof())
+            while (!sstream.eof() && trash.size() > 0)
             {
                 int itemID;
                 sstream >> itemID;
@@ -68,11 +69,22 @@ private:
             std::getline(in, trash);
             sstream.clear();
             sstream.str(trash);
-            while (!sstream.eof())
+            while (!sstream.eof() && trash.size() > 0)
             {
                 int itemID;
                 sstream >> itemID;
                 level.rareGatherables.push_back(itemID);
+            }
+
+            in >> trash;
+            std::getline(in, trash);
+            sstream.clear();
+            sstream.str(trash);
+            while (!sstream.eof() && trash.size() > 0)
+            {
+                int enemyID;
+                sstream >> enemyID;
+                level.enemies.push_back(enemyID);
             }
 
             in >> trash;
@@ -84,6 +96,8 @@ private:
                 level.description.append(descriptionLine + "\n");
                 std::getline(in, descriptionLine);
             }
+
+            level.description.pop_back();
 
             return in;
         }
@@ -113,9 +127,14 @@ private:
                 out << " " << i;
             out << "\n";
 
+            out << "Enemies:";
+            for (int i : level.enemies)
+                out << " " << i;
+            out << "\n";
+
 
             out << "[Description]\n";
-            out << level.description;
+            out << level.description << "\n";
             out << "[DescriptionEnd]\n";
 
             return out;

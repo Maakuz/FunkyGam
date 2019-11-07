@@ -14,6 +14,7 @@ public:
 
 private:
 
+
     void updateIdle(float dt);
     void updateChasing(float dt);
     void updateReturning(float dt);

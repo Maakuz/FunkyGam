@@ -4,13 +4,14 @@
 #include "Game/Misc/Line.h"
 #include "Renderer/DebugDrawable.h"
 #include "Game/Entities/Enemies/Bird.h"
+#include "Game/Level/Level.h"
 #include <vector>
 
 class CharacterHandler : public sf::Drawable, public DebugDrawable
 {
 public:
     static const int ENEMY_TEMPLATE_COUNT = 2;
-    const std::string ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop" };
+    static const std::string ENEMIES[ENEMY_TEMPLATE_COUNT];
     enum enemy
     {
         grunt = 0,
@@ -23,7 +24,7 @@ public:
     void initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint);
     void loadPlayer();
     void loadEnemies();
-    void spawnEnemies();
+    void spawnEnemies(const LevelInfo* info);
     void update(float dt, sf::Vector2f mousePos);
     void queueColliders();
 

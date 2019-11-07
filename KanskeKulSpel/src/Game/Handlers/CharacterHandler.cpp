@@ -9,6 +9,8 @@
 #include "Misc/Profiler.h"
 #include "Game/Misc/Definitions.h"
 
+const std::string CharacterHandler::ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop" };
+
 CharacterHandler::CharacterHandler(UIHandler* uiHandler)
 {
     player = nullptr;
@@ -21,7 +23,7 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
     loadPlayer();
     loadEnemies();
 
-    ConsoleWindow::get().addCommand("charResetEnemies", [&](Arguments args)->std::string {
+    /*ConsoleWindow::get().addCommand("charResetEnemies", [&](Arguments args)->std::string {
         enemies.clear();
         spawnEnemies();
 
@@ -33,7 +35,7 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
         spawnEnemies();
 
         return "Enemies has been reloaded.";
-        });
+        });*/
 
     ConsoleWindow::get().addCommand("charReloadPlayer", [&](Arguments args)->std::string {
         loadPlayer();
@@ -215,7 +217,7 @@ void CharacterHandler::loadEnemies()
     }
 }
 
-void CharacterHandler::spawnEnemies()
+void CharacterHandler::spawnEnemies(const LevelInfo* info)
 {
     for (Enemy* enemy : enemies)
         delete enemy;
@@ -224,9 +226,23 @@ void CharacterHandler::spawnEnemies()
 
     for (const sf::Vector2f& point : spawnPoints)
     {
-        Grunt* grunt = new Grunt(*(Grunt*)enemyTemplates[enemy::grunt]);
-        grunt->spawn(point - sf::Vector2f(0, grunt->getSize().y));
-        enemies.push_back(grunt);
+        int i = rand() % info->enemies.size();
+        Enemy* enemy;
+        switch (info->enemies[i])
+        {
+        case enemy::grunt:
+            enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[enemy::grunt]));
+            break;
+        case enemy::bird:
+            enemy = new Bird(*dynamic_cast<Bird*>(enemyTemplates[enemy::bird]));
+            break;
+        default:
+            enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[enemy::grunt]));
+            break;
+        }        
+
+        enemy->spawn(point - sf::Vector2f(0, enemy->getSize().y));
+        enemies.push_back(enemy);
     }
 }
 
@@ -247,6 +263,10 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
             Grunt* g = dynamic_cast<Grunt*>((*it));
             if (g)
                 g->update(dt);
+
+            Bird* b = dynamic_cast<Bird*>((*it));
+            if (b)
+                b->update(dt);
 
             it++;
         }

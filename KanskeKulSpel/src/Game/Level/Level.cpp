@@ -23,7 +23,7 @@ std::istream& operator>>(std::istream& in, LevelInfo& level)
     std::getline(in, trash);
     sstream.str(trash);
 
-    while (!sstream.eof())
+    while (!sstream.eof() && trash.size() > 0)
     {
         int unlock = 0;
         sstream >> unlock;
@@ -35,7 +35,7 @@ std::istream& operator>>(std::istream& in, LevelInfo& level)
     sstream.clear();
     sstream.str(trash);
 
-    while (!sstream.eof())
+    while (!sstream.eof() && trash.size() > 0)
     {
         int itemID;
         sstream >> itemID;
@@ -46,11 +46,22 @@ std::istream& operator>>(std::istream& in, LevelInfo& level)
     std::getline(in, trash);
     sstream.clear();
     sstream.str(trash);
-    while (!sstream.eof())
+    while (!sstream.eof() && trash.size() > 0)
     {
         int itemID;
         sstream >> itemID;
         level.rareGatherables.push_back(itemID);
+    }
+
+    in >> trash;
+    std::getline(in, trash);
+    sstream.clear();
+    sstream.str(trash);
+    while (!sstream.eof() && trash.size() > 0)
+    {
+        int enemyID;
+        sstream >> enemyID;
+        level.enemies.push_back(enemyID);
     }
 
     in >> trash;
@@ -62,7 +73,7 @@ std::istream& operator>>(std::istream& in, LevelInfo& level)
         description.append(descriptionLine + "\n");
         std::getline(in, descriptionLine);
     }
-
+    description.pop_back();
 
     level.name.setString(name);
     level.description.setString(description);
