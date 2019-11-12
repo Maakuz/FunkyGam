@@ -35,6 +35,8 @@ public:
     int getParticleEffectID()const { return particleEffectID; };
     void setParticleEffectID(int effectID) { this->particleEffectID = effectID; };
 
+    //Careful with this, could crash if thrower is gone
+    const Entity* getThrower()const { return this->thrower; }; 
 
     virtual void handleCollision(const Entity* colliderObj);
     virtual void handleExplosion(const Explosion& explosion) {};

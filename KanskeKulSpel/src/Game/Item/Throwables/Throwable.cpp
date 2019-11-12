@@ -68,7 +68,6 @@ void Throwable::handleCollision(const Entity* colliderObj)
         return;
 
     if (colliderObj->getCollider().hasComponent(Collider::ColliderKeys::ground) ||
-        colliderObj->getCollider().hasComponent(Collider::ColliderKeys::platform) ||
         colliderObj->getCollider().hasComponent(Collider::ColliderKeys::character))
     {
         if (colliderObj->getCollider().intersects(colliderObj->getCollider().getLeft(), this->collider.getAABB()))

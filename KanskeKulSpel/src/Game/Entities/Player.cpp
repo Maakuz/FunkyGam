@@ -191,27 +191,27 @@ void Player::reset(sf::Vector2f spawnPoint)
     this->momentum.y = 0;
 }
 
-void Player::handleCollision(const Entity* collider)
+void Player::handleCollision(const Entity* colliderEntity)
 {
     if (!noClip)
     {
-        if (momentum.y > 0 && collider->getCollider().hasComponent(Collider::ColliderKeys::platform))
+        if (momentum.y > 0 && colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::platform))
         {
             //walking on ground
-            if (collider->getCollider().intersects(collider->getCollider().getUp(), this->collider.getDown()))
+            if (colliderEntity->getCollider().intersects(colliderEntity->getCollider().getUp(), this->collider.getDown()))
             {
                 if (platformPassingCounter.isTimeUp())
                 {
                     this->momentum.y = 0;
-                    this->pos.y = collider->up() - this->height();
+                    this->pos.y = colliderEntity->up() - this->height();
                     grounded = true;
                 }
             }
         }
 
-        else if (collider->getCollider().hasComponent(Collider::ColliderKeys::grunt))
+        else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::grunt))
         {
-            const Grunt* ptr = dynamic_cast<const Grunt*>(collider);
+            const Grunt* ptr = dynamic_cast<const Grunt*>(colliderEntity);
             if (ptr->isAttacking())
             {
                 addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
@@ -219,20 +219,36 @@ void Player::handleCollision(const Entity* collider)
             }
         }
 
-        MovingEntity::handleCollision(collider);
+        MovingEntity::handleCollision(colliderEntity);
     }
 
-    if (collider->getCollider().hasComponent(Collider::ColliderKeys::levelReturn))
+    if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::levelReturn))
         this->returning = true;
 
-    else if (collider->getCollider().hasComponent(Collider::ColliderKeys::levelWarp))
+    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::levelWarp))
         this->canReturn = true;
 
-    else if (collider->getCollider().hasComponent(Collider::ColliderKeys::customTerrain))
+    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::customTerrain))
     {
-        std::string flag = collider->getCollider().getFlag();
+        std::string flag = colliderEntity->getCollider().getFlag();
         if (flag.compare(0, 4, "exit") == 0)
             this->exitReached = flag[4] - '0';
+    }
+
+    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::throwable))
+    {
+        const Throwable* throwable = dynamic_cast<const Throwable*>(colliderEntity);
+        if (throwable->getThrower() != this)
+            this->health -= throwable->getDamage();
+    }
+}
+
+void Player::handleExplosion(const Explosion& explosion)
+{
+    if (explosion.damage > 0)
+    {
+        int damage = explosion.calculateDamage(this->getCenterPos());
+        this->health -= damage;
     }
 }
 

@@ -27,7 +27,7 @@ public:
     void setGatherableInRange(GatherItem* item) { this->gatherableInRange = item; };
 
     virtual void handleCollision(const Entity* collider);
-    virtual void handleExplosion(const Explosion& explosion) {};
+    virtual void handleExplosion(const Explosion& explosion);
 
 private:
     Counter platformPassingCounter;
