@@ -4,8 +4,16 @@
 enum ExplosionType 
 {
     basic = 0,
-    flash = 1
+    flash = 1,
+    bird = 2
 };
+
+namespace ExplosionStrings
+{
+    const int TYPE_COUNT = 3;
+    const std::string types[TYPE_COUNT] = { "Basic", "Flash", "bird" };
+}
+
 struct Explosion
 {
     sf::Vector2f center;

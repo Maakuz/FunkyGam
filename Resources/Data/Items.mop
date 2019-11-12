@@ -170,3 +170,23 @@ StackLimit: 10
 EmitterID: 8
 Useable: 0
 
+[Throwable]
+ID: 11
+TexID: 2
+Name: Bird_bomb
+StackLimit: 0
+EmitterID: -1
+Useable: 1
+[Specific]
+Mass: 0.17
+ArmingTime: 500
+Bounce: 0.61
+DetonateOnImpact: 0
+Damage: 5
+ParticleEffectID: 7
+[Explosion]
+Type: 2
+Radius: 64
+Falloff: 0.4
+Damage 10
+

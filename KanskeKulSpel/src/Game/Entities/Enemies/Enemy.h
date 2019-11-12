@@ -70,6 +70,8 @@ protected:
 
     void moveLeft();
     void moveRight();
+    void faceLeft();
+    void faceRight();
 
     void desicionTimeOver();
     bool isDesicionTime() const { return this->decisionTime; }

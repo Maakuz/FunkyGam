@@ -14,6 +14,7 @@ MovingEntity::MovingEntity(AnimationData data, sf::Vector2f pos)
     this->grounded = false;
     this->addedMomentum = false;
     this->jumping = false;
+    this->ignoringGravity = false;
 }
 
 void MovingEntity::update(float dt)
@@ -33,20 +34,21 @@ void MovingEntity::update(float dt)
         grounded = false;
     }
 
+    if (!ignoringGravity)
+        momentum.y += GRAVITY * dt * this->mass;
 
     if (grounded)
     {
-        momentum.x += acceleration.x * walkSpeed * dt;
-        momentum.x *= floorRes;
+        momentum += acceleration * walkSpeed * dt;
+        momentum *= floorRes;
     }
     else
     {
-        momentum.x += acceleration.x * walkSpeed * dt * airMobility;
-        momentum.x *= airRes;
+        momentum += acceleration * walkSpeed * dt * airMobility;
+        momentum *= airRes;
     }
 
-    momentum.y += GRAVITY * dt * this->mass;
-    momentum.y *= airRes;
+
 
     this->pos += momentum;
     

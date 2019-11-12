@@ -9,7 +9,7 @@ Warp: 1
 Unlocks: 1
 Gatherables: 4 5
 RareGatherables: 6
-Enemies: 1
+Enemies: 0
 [Description]
 An enemy has been spotted just outside
 on the hills. Investigate!
@@ -36,7 +36,7 @@ Warp: 0
 Unlocks: 0 1
 Gatherables: 2
 RareGatherables: 6
-Enemies:
+Enemies: 1
 [Description]
 An enemy has been spotted just outside
 on the hills. Investigate!

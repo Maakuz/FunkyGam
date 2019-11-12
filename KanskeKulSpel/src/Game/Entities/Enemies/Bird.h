@@ -13,7 +13,14 @@ public:
     virtual void handleExplosion(const Explosion& explosion);
 
 private:
+    bool inBombingRange;
+    bool forcedDirResolved;
+    bool startBombing;
+    Counter bombsPerAttack;
+    Counter attackCounter;
+    Counter bombCounter;
 
+    sf::Vector2f attackDestination;
 
     void updateIdle(float dt);
     void updateChasing(float dt);

@@ -166,14 +166,13 @@ void ItemEditor::showThrowableData(Throwable* item)
     }
 
     ImGui::Separator();
-    const std::string types[2] = {"Basic", "Flash"};
     ExplosionType selected = item->getExplosion().type;
-    if (ImGui::BeginCombo("Explosion type", types[selected].c_str()))
+    if (ImGui::BeginCombo("Explosion type", ExplosionStrings::types[selected].c_str()))
     {
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < ExplosionStrings::TYPE_COUNT; i++)
         {
-            if (ImGui::Selectable(types[i].c_str()))
+            if (ImGui::Selectable(ExplosionStrings::types[i].c_str()))
                 item->getExplosionPtr()->type = ExplosionType(i);
         }
 

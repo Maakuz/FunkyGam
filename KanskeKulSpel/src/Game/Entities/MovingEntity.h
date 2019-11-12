@@ -12,6 +12,7 @@ public:
     float getMass()const { return this->mass; };
 
 protected:
+    void setIgnoreGravity(bool ignoringGravity) { this->ignoringGravity = ignoringGravity; };
     void jump();
     //momentum.y = momentum.y * haltforce 
     void stopJump(float haltForce = 0);
@@ -32,6 +33,7 @@ protected:
     bool grounded;
 
 private:
+    bool ignoringGravity;
     float floorRes;
     float airRes;
     float airMobility;

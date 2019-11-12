@@ -115,6 +115,20 @@ void Enemy::moveRight()
     this->facingDir = Direction::right;
 }
 
+void Enemy::faceLeft()
+{
+    this->facingDir = Direction::left;
+    if (!this->isFlippedHorizontally())
+        this->flipHorizontally();
+}
+
+void Enemy::faceRight()
+{
+    if (this->isFlippedHorizontally())
+        this->flipHorizontally();
+    this->facingDir = Direction::right;
+}
+
 void Enemy::desicionTimeOver()
 { 
     this->decisionTime = false;
@@ -148,7 +162,9 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
     in >> trash >> enemy.chaseSpeed;
     in >> trash >> enemy.idleSpeed;
     in >> trash >> enemy.stunCounter.stopValue;
+    in >> trash >> enemy.roamDecisionCounter.stopValue;
 
+    enemy.roamDecisionCounter.stopValue += rand() % 1000;
     enemy.health = enemy.maxHealth;
     enemy.prevHealth = enemy.maxHealth;
 

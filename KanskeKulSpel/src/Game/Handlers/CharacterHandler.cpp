@@ -258,16 +258,15 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
                 (*it)->getState() == Enemy::State::chasing ||
                 (*it)->getState() == Enemy::State::searching ||
                 (*it)->getState() == Enemy::State::returning)
-                this->updateEnemyLineOfSight((*it));
+                this->updateEnemyLineOfSight(*it);
 
-            Grunt* g = dynamic_cast<Grunt*>((*it));
+            Grunt* g = dynamic_cast<Grunt*>(*it);
             if (g)
                 g->update(dt);
 
-            Bird* b = dynamic_cast<Bird*>((*it));
+            Bird* b = dynamic_cast<Bird*>(*it);
             if (b)
                 b->update(dt);
-
             it++;
         }
 
@@ -336,6 +335,48 @@ void CharacterHandler::calculatePlayerIllumination()
     player->setIllumination(finalIllumination);
 }
 
+void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
+{
+    sf::Vector2f pos = enemy->getEyePos();
+    if ((enemy->getFacingDir() == Enemy::Direction::left && pos.x > player->getPosition().x)
+        || (enemy->getFacingDir() == Enemy::Direction::right && pos.x <= player->getPosition().x)
+        || enemy->getState() == Enemy::State::chasing)
+    {
+        bool playerHidden = false;
+        sf::Vector2f dir = this->player->getCenterPos() - pos;
+        float distance = length(dir);
+        normalize(dir);
+
+        if (enemy->getSightRadius() < distance)
+            playerHidden = true;
+
+        else if (enemy->getVisionRatingAt(distance) + player->getIllumination() < 100)
+            playerHidden = true;
+
+        for (size_t i = 0; i < occluders->size() && !playerHidden; i++)
+        {
+            float t = findIntersectionPoint(pos, dir, occluders->at(i).p1, occluders->at(i).p2);
+            if (abs(t + 1) > EPSYLONE && t < distance)
+            {
+                playerHidden = true;
+            }
+        }
+
+        if (!playerHidden)
+        {
+            enemy->notifyEnemy(player->getPosition() + (player->getSize() / 2.f));
+        }
+    }
+}
+
+void CharacterHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    target.draw(*player, states);
+
+    for (Enemy* enemy : enemies)
+        target.draw(*enemy, states);
+}
+
 void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (drawHitboxes)
@@ -384,46 +425,4 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
         target.draw(arr, states);
 
     }
-}
-
-void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
-{
-    sf::Vector2f pos = enemy->getEyePos();
-    if ((enemy->getFacingDir() == Enemy::Direction::left && pos.x > player->getPosition().x)
-        || (enemy->getFacingDir() == Enemy::Direction::right && pos.x <= player->getPosition().x)
-        || enemy->getState() == Enemy::State::chasing)
-    {
-        bool playerHidden = false;
-        sf::Vector2f dir = this->player->getCenterPos() - pos;
-        float distance = length(dir);
-        normalize(dir);
-
-        if (enemy->getSightRadius() < distance)
-            playerHidden = true;
-
-        else if (enemy->getVisionRatingAt(distance) + player->getIllumination() < 100)
-            playerHidden = true;
-
-        for (size_t i = 0; i < occluders->size() && !playerHidden; i++)
-        {
-            float t = findIntersectionPoint(pos, dir, occluders->at(i).p1, occluders->at(i).p2);
-            if (abs(t + 1) > EPSYLONE && t < distance)
-            {
-                playerHidden = true;
-            }
-        }
-
-        if (!playerHidden)
-        {
-            enemy->notifyEnemy(player->getPosition() + (player->getSize() / 2.f));
-        }
-    }
-}
-
-void CharacterHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-    target.draw(*player, states);
-
-    for (Enemy* enemy : enemies)
-        target.draw(*enemy, states);
 }

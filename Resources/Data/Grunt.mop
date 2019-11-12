@@ -44,6 +44,7 @@ Nightvision: 1.2
 ChaseSpeed: 0.04
 IdleSpeed: 0.01
 StunDuration: 2000
+descisionInterval: 2500
 [SpecificData]
 JumpHeight: 12
 AttackRange: 14 9
