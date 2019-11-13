@@ -29,12 +29,11 @@ bool Fireball::isComplete() const
 void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest)
 {
     this->pos = pos;
-    this->destination = dest;
-
     this->distance = std::min(length(pos - dest), maxTravelDistance);
     this->direction = dest - pos;
     normalize(this->direction);
 
+    this->destination = pos + (direction * distance);
     trail = ParticleHandler::addEmitter(trailEmitterID, pos);
 }
 
