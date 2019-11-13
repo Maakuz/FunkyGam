@@ -1,12 +1,12 @@
 [Fireball]
-TexID: 0
+TexID: 24
 Name: Fireball
 [Specific]
-Damage: 0
-MaximumTravel: 0
-Radius: 0
-MinCharge: 0
-MaxCharge: 0
-TrailEmitterID: 0
+Damage: 30
+MaximumTravel: 600
+Radius: 100
+MinCharge: 300
+MaxCharge: 1000
+TrailEmitterID: 1
 ImpactEmitterID: 0
 
