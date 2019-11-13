@@ -1,6 +1,8 @@
 #include "Fireball.h"
 #include "Game/Particles/ParticleHandler.h"
 #include "Game/Misc/VectorFunctions.h"
+#include "Game/Misc/Definitions.h"
+#include "Game/Collision/CollisionHandler.h"
 #include "Misc/ConsoleWindow.h"
 
 Fireball::Fireball(sf::Vector2f pos)
@@ -38,9 +40,19 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest)
 
 void Fireball::update(float dt)
 {
-    float velocity = length(this->pos - this->destination) / distance;
-    pos += direction * velocity * dt * topSpeed;
+    float velocity = (1 - powf((length(this->pos - this->destination) / distance), 6))* dt * topSpeed;
+    pos += direction * velocity;
     trail->setEmitterPos(pos);
+
+    printfCon("%f", velocity);
+    if (velocity < 0.5f)
+    {
+        this->impacted = true;
+        this->explosion.center = this->pos;
+        trail->kill();
+        CollisionHandler::queueExplosion(this->explosion);
+        ParticleHandler::addEmitter(this->impactEmitterID, this->pos);
+    }
 }
 
 void Fireball::handleCollision(const Entity* collider)

@@ -194,17 +194,20 @@ void Emitter::handleCollision(const std::vector<Entity*>* entities)
     for (const Entity* entity : *entities)
     {
         const Collider collider = entity->getCollider();
-        for (int i = 0; i < particles.size(); i++)
+        if (collider.hasComponent(Collider::ColliderKeys::ground))
         {
-            sf::Vector2f pos = vertexArray[i * 4].position;
-
-            if (collider.contains(pos))
+            for (int i = 0; i < particles.size(); i++)
             {
-                if (Collider::contains(collider.getLeft(), pos) || Collider::contains(collider.getRight(), pos))
-                    particles[i]->velocity.x *= -0.5f;
+                sf::Vector2f pos = vertexArray[i * 4].position;
 
-                if (Collider::contains(collider.getDown(), pos) || Collider::contains(collider.getUp(), pos))
-                    particles[i]->velocity.y *= -0.5f;
+                if (collider.contains(pos))
+                {
+                    if (Collider::contains(collider.getLeft(), pos) || Collider::contains(collider.getRight(), pos))
+                        particles[i]->velocity.x *= -0.5f;
+
+                    if (Collider::contains(collider.getDown(), pos) || Collider::contains(collider.getUp(), pos))
+                        particles[i]->velocity.y *= -0.5f;
+                }
             }
         }
     }

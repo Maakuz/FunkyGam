@@ -3,10 +3,12 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <stdarg.h>
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
 
 #define printCon(x) ConsoleWindow::get().printText(std::string(x))
+#define printfCon(x, ...) ConsoleWindow::get().printf(x, __VA_ARGS__)
 
 typedef std::vector<std::string> Arguments;
 class ConsoleWindow
@@ -29,6 +31,39 @@ public:
     void printText(std::string text)
     {
         addLog(text, colors.fromOutsideColor);
+    }
+
+    void printf(const char* format, ...)
+    {
+        va_list listPtr;
+        va_start(listPtr, format);
+
+        std::string str(format);
+        std::string finalStr;
+        for (int i = 0; i < str.size(); i++)
+        {
+            if (str[i] == '%')
+            {
+                char type = str[++i];
+
+                if (type == 'f')
+                {
+                    finalStr += std::to_string(va_arg(listPtr, double));
+                }
+                else if (type == 'd')
+                    finalStr += std::to_string(va_arg(listPtr, int));
+
+                else if (type == 'b')
+                    finalStr += std::to_string(va_arg(listPtr, bool));                  
+            }
+
+            else
+                finalStr += str[i];
+        }
+
+        va_end(listPtr);
+
+        printText(finalStr);
     }
 
     void update(bool setFocusOnTextbox)

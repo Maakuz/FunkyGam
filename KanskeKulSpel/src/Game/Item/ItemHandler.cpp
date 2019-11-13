@@ -132,9 +132,7 @@ void ItemHandler::update(float dt, Player* player)
             unordered_erase(spells, spells.begin() + i--);
 
         else
-        {
             spells[i]->update(dt);
-        }
     }
 
     GatherItem* inRange = nullptr;
