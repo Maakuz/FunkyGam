@@ -6,7 +6,7 @@
 class Entity : public sf::Drawable
 {
 public:
-    Entity(sf::Vector2f pos, const sf::Texture * texture);
+    Entity(sf::Vector2f pos, const sf::Texture * texture = nullptr);
     ~Entity() {};
 
     void addCollision(Collider::AABB aabb);

@@ -150,6 +150,8 @@
     <ClCompile Include="src\Game\Item\Item.cpp" />
     <ClCompile Include="src\Game\Item\ItemEditor.cpp" />
     <ClCompile Include="src\Game\Item\RecipeEditor.cpp" />
+    <ClCompile Include="src\Game\Item\Spell\Fireball.cpp" />
+    <ClCompile Include="src\Game\Item\Spell\Spell.cpp" />
     <ClCompile Include="src\Game\Item\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game\Entities\MovingEntity.cpp" />
     <ClCompile Include="src\Game\Entities\Player.cpp" />
@@ -205,6 +207,8 @@
     <ClInclude Include="src\Game\Item\ItemEditor.h" />
     <ClInclude Include="src\Game\Interface\Recipe.h" />
     <ClInclude Include="src\Game\Item\RecipeEditor.h" />
+    <ClInclude Include="src\Game\Item\Spell\Fireball.h" />
+    <ClInclude Include="src\Game\Item\Spell\Spell.h" />
     <ClInclude Include="src\Game\Item\Throwables\Throwable.h" />
     <ClInclude Include="src\Game\Entities\MovingEntity.h" />
     <ClInclude Include="src\Game\Entities\Player.h" />
@@ -273,6 +277,7 @@
     <None Include="..\Resources\Data\Particles.mop" />
     <None Include="..\Resources\Data\Player.mop" />
     <None Include="..\Resources\Data\Recipes.mop" />
+    <None Include="..\Resources\Data\Spells.mop" />
     <None Include="..\Resources\Data\StartItems.mop" />
     <None Include="..\Resources\Shaders\GaussianHor.frag" />
     <None Include="..\Resources\Shaders\GaussianVert.frag" />

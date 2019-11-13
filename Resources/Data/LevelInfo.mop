@@ -33,7 +33,7 @@ levelName: The hills outside but ID3
 levelFileName: Level3.yay
 levelID: 2
 Warp: 0
-Unlocks: 0 1
+Unlocks: 0 1 3
 Gatherables: 2
 RareGatherables: 6
 Enemies: 1
@@ -49,12 +49,11 @@ levelName: The hills outside
 levelFileName: Level4.yay
 levelID: 3
 Warp: 0
-Unlocks: 1
+Unlocks: 0 0 2
 Gatherables: 1
 RareGatherables: 6
 Enemies:
 [Description]
-An enemy has been spotted just outside
-on the hills. Investigate!
+Wizards house§
 [DescriptionEnd]
 

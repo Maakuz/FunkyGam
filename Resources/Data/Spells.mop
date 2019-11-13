@@ -1,0 +1,12 @@
+[Fireball]
+TexID: 0
+Name: Fireball
+[Specific]
+Damage: 0
+MaximumTravel: 0
+Radius: 0
+MinCharge: 0
+MaxCharge: 0
+TrailEmitterID: 0
+ImpactEmitterID: 0
+

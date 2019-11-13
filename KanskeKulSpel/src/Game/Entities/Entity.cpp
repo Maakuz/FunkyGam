@@ -5,10 +5,18 @@ Entity::Entity(sf::Vector2f pos, const sf::Texture * texture)
 {
     flipped = false;
     this->pos = pos;
-    this->size = (sf::Vector2f)texture->getSize();
     sprite.setPosition(pos);
-    sprite.setTexture(*texture, true);
-    addCollision();
+
+    if (texture)
+    {
+        this->size = (sf::Vector2f)texture->getSize();
+        sprite.setTexture(*texture, true);
+        addCollision();
+    }
+
+    else
+        addCollision(Collider::AABB(pos, sf::Vector2f(0, 0)));
+
 }
 
 void Entity::addCollision(Collider::AABB aabb)
@@ -124,5 +132,6 @@ void Entity::updateSpritePosition()
 
 void Entity::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(this->sprite, states);
+    if (sprite.getTexture() != nullptr)
+        target.draw(this->sprite, states);
 }

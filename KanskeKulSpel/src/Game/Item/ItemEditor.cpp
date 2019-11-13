@@ -10,11 +10,13 @@ ItemEditor::ItemEditor()
 {
     this->open = false;
     currentItem = -1;
+    currentSpell = -1;
 }
 
 ItemEditor::~ItemEditor()
 {
     clearItems();
+    clearSpells();
 }
 
 void ItemEditor::openWindow()
@@ -22,11 +24,34 @@ void ItemEditor::openWindow()
     open = true;
 
     readItems();
+    readSpells();
 }
 
 void ItemEditor::update()
 {
     ImGui::Begin("Item Editor", &this->open);
+
+    if (ImGui::BeginTabBar("tabbaritems"))
+    {
+        if (ImGui::BeginTabItem("Items"))
+        {
+            updateItems();
+            ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Spells"))
+        {
+            updateSpells();
+            ImGui::EndTabItem();
+        }
+
+        ImGui::EndTabBar();
+    }
+    ImGui::End();
+}
+
+void ItemEditor::updateItems()
+{
     if (!items.empty())
     {
         if (ImGui::BeginCombo("Select item", this->items[this->currentItem]->getName().c_str()))
@@ -78,7 +103,34 @@ void ItemEditor::update()
         this->items.erase(items.begin() + currentItem);
         this->currentItem = this->items.size() - 1;
     }
-    ImGui::End();
+
+}
+
+void ItemEditor::updateSpells()
+{
+    if (!spells.empty())
+    {
+        if (ImGui::BeginCombo("Select spell", this->spells[this->currentSpell]->getName().c_str()))
+        {
+            for (int i = 0; i < spells.size(); i++)
+            {
+                if (ImGui::Selectable(spells[i]->getName().c_str()))
+                    this->currentSpell = i;
+            }
+
+
+            ImGui::EndCombo();
+        }
+
+        Fireball* fireball = dynamic_cast<Fireball*>(spells[currentSpell]);
+        if (fireball)
+            showFireballData(fireball);
+       
+
+    }
+
+    if (ImGui::Button("save"))
+        writeSpells();
 }
 
 void ItemEditor::showItemData(Item* item)
@@ -194,6 +246,80 @@ void ItemEditor::showThrowableData(Throwable* item)
     item->getExplosionPtr()->damage = bombdamage;
 }
 
+void ItemEditor::showFireballData(Fireball* fireball)
+{
+    std::string name = fireball->getName();
+    ImGui::InputText("Name", &name);
+    fireball->setName(name);
+
+    const std::vector<sf::Texture>* textures = TextureHandler::get().getTextureVec();
+    int currentTexture = TextureHandler::get().getIDForTexture(fireball->getTexture());
+    if (ImGui::BeginCombo("Select texture", TextureHandler::get().getTextureName(currentTexture).c_str()))
+    {
+        for (int i = 0; i < textures->size(); i++)
+        {
+            if (ImGui::Selectable(TextureHandler::get().getTextureName(i).c_str()))
+                fireball->setTexture(&textures->at(i));
+        }
+        ImGui::EndCombo();
+    }
+
+    const std::vector<Emitter>* emitters = ParticleHandler::getEmitterTemplates();
+    int currentTrailEmitter = fireball->getTrailEmitterID();
+    if (ImGui::BeginCombo("Select trail emitter", ParticleHandler::getEmitterName(currentTrailEmitter).c_str()))
+    {
+
+        for (int i = 0; i < emitters->size(); i++)
+        {
+            if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
+                fireball->setTrailEmitterID(i);
+        }
+
+        if (ImGui::Selectable("None"))
+            fireball->setTrailEmitterID(-1);
+
+        ImGui::EndCombo();
+    }
+
+    int currentImpactEmitter = fireball->getImpactEmitterID();
+    if (ImGui::BeginCombo("Select impact emitter", ParticleHandler::getEmitterName(currentImpactEmitter).c_str()))
+    {
+
+        for (int i = 0; i < emitters->size(); i++)
+        {
+            if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
+                fireball->setImpactEmitterID(i);
+        }
+
+        if (ImGui::Selectable("None"))
+            fireball->setImpactEmitterID(-1);
+
+        ImGui::EndCombo();
+    }
+
+    int damage = fireball->getDamage();
+    ImGui::DragInt("Damage", &damage, 1, 0, 10000);
+    fireball->setDamage(damage);
+
+    float radius = fireball->getRadius();
+    ImGui::DragFloat("Explosion radius", &radius, 1, 0, 100000);
+    fireball->setRadius(radius);
+
+    float maxTravel = fireball->getMaxTravelDistance();
+    ImGui::DragFloat("Maximum distance", &maxTravel, 1, 0, 100000);
+    fireball->setMaxTravelDistance(maxTravel);
+
+    int minCharge = fireball->getMinCharge();
+    ImGui::DragInt("Minimum charge time", &minCharge, 1, 0, 10000);
+    fireball->setMinCharge(minCharge);
+
+    int maxCharge = fireball->getMaxCharge();
+    ImGui::DragInt("Maximum charge time", &maxCharge, 1, 0, 10000);
+    fireball->setMaxCharge(maxCharge);
+
+
+}
+
 void ItemEditor::readItems()
 {
     clearItems();
@@ -245,6 +371,44 @@ void ItemEditor::readItems()
     this->currentItem = this->items.size() - 1;
 }
 
+void ItemEditor::readSpells()
+{
+    clearSpells();
+    std::ifstream file(DATA_PATH "Spells.mop");
+
+    if (!file.is_open())
+    {
+        printCon("File not found, editing unavailible");
+        closeWindow();
+    }
+
+    else
+    {
+        while (!file.eof())
+        {
+            std::string spellType;
+            std::string trash;
+            int texID;
+
+            file >> spellType;
+            file >> trash >> texID;
+
+            if (spellType == "[Fireball]")
+            {
+                Fireball* spell = new Fireball(sf::Vector2f(), TextureHandler::get().getTexture(texID));
+                file >> *spell;
+                this->spells.push_back(spell);
+            }
+        }
+
+
+
+        file.close();
+    }
+
+    this->currentSpell = this->spells.size() - 1;
+}
+
 void ItemEditor::writeItems()
 {
     std::ofstream file(DATA_PATH "Items.mop");
@@ -278,10 +442,42 @@ void ItemEditor::writeItems()
     file.close();
 }
 
+void ItemEditor::writeSpells()
+{
+    std::ofstream file(DATA_PATH "Spells.mop");
+
+    if (!file.is_open())
+    {
+        printCon("File not found, editing unavailible");
+        closeWindow();
+    }
+
+    for (Spell* spell : spells)
+    {
+        Fireball* fireball = dynamic_cast<Fireball*>(spell);
+        if (fireball)
+        {
+            file << "[Fireball]\n";
+            file << "TexID: " << TextureHandler::get().getIDForTexture(fireball->getTexture()) << "\n";
+            file << *fireball << "\n";
+        }
+    }
+
+    file.close();
+}
+
 void ItemEditor::clearItems()
 {
     for (Item* item : items)
         delete item;
 
     items.clear();
+}
+
+void ItemEditor::clearSpells()
+{
+    for (Spell* spell : spells)
+        delete spell;
+
+    spells.clear();
 }

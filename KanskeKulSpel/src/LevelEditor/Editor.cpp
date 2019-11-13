@@ -32,7 +32,7 @@ void Editor::update(sf::Time deltaTime)
         autoSaveCounter = 0;
         tileMenuHandler.autosave();
     }
-
+    
     tileStager.clearAllQueues();
 
     this->workView.setSize(WIN_WIDTH * zoom, WIN_HEIGHT * zoom);
