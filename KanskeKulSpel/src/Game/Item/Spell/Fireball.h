@@ -1,14 +1,15 @@
 #pragma once
 #include "Spell.h"
+#include "Game/Particles/Emitter.h"
 
 class Fireball : public Spell
 {
 public:
-    Fireball(sf::Vector2f pos, const sf::Texture* texture);
+    Fireball(sf::Vector2f pos);
     ~Fireball() { };
 
     virtual bool isComplete() const;
-    virtual void cast();
+    virtual void cast(sf::Vector2f pos, sf::Vector2f dest);
     virtual void update(float dt);
 
     virtual void handleCollision(const Entity* collider);
@@ -38,12 +39,22 @@ public:
     float getRadius() const { return this->radius; };
     void setRadius(float radius) { this->radius = radius; };
 
+    float getTopSpeed() const { return this->topSpeed; };
+    void setTopSpeed(float topSpeed) { this->topSpeed = topSpeed; };
+
 private:
     int damage;
     float maxTravelDistance;
+    float topSpeed;
     float radius;
     int minCharge;
     int maxCharge;
     int trailEmitterID;
     int impactEmitterID;
+
+    Emitter* trail;
+    sf::Vector2f destination;
+    sf::Vector2f direction;
+    float distance;
+    bool impacted;
 };

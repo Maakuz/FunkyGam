@@ -22,6 +22,7 @@ Throwable::Throwable(sf::Vector2f momentum, sf::Vector2f pos, const sf::Texture*
     this->particleEffectID = 0;
     this->damage = 0;
     this->thrower = nullptr;
+    this->addedMomentum = false;
 }
 
 void Throwable::update(float dt)

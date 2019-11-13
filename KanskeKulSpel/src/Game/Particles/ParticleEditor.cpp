@@ -45,6 +45,9 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
             ImGui::DragInt4("Color Deviation", variables.colorDev, 1, 0, 255);
             ImGui::DragFloat("Friction", &variables.friction, 0.001, 0, 2);
             ImGui::DragFloat("Jitter", &variables.jitter, 0.001, 0, 1);
+            ImGui::Checkbox("Enable gravity", &variables.gravityOn);
+            ImGui::Checkbox("Enable collision", &variables.collisionOn);
+            ImGui::DragFloat("Gravity", &variables.gravity, 0.0001f, -1, 1, "%4f");
 
             ImGui::EndTabItem();
         }
@@ -120,11 +123,17 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
 
             ImGui::EndTabItem();
         }
+
+        if (ImGui::BeginTabItem("Experimental"))
+        {
+            if (ImGui::Button("save all!!!"))
+                saveAll();
+
+            ImGui::EndTabItem();
+        }
         ImGui::EndTabBar();
 
         ImGui::DragInt3("Background color", variables.clearColor, 1, 0, 255);
-        ImGui::Checkbox("Enable gravity", &variables.gravityOn);
-        ImGui::SameLine();
         ImGui::Checkbox("Enable light", &lightOn);
         ImGui::SameLine();
         ImGui::Checkbox("Repeating", &repeating);
@@ -263,7 +272,9 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
     emitto.setInitialParticles(variables.initailParticles);
     emitto.setParticlesPerSpawn(variables.pps);
     emitto.setSize(variables.size);
-    emitto.enableGravity(variables.gravityOn);
+    emitto.setAffectedByGravity(variables.gravityOn);
+    emitto.setGravity(variables.gravity);
+    emitto.setColliding(variables.collisionOn);
     emitto.setAngle(variables.angle);
     emitto.setConeSize(variables.cone);
     emitto.setFriction(variables.friction);
@@ -334,6 +345,40 @@ void ParticleEditor::save()
             saveParticleList();
         }
     }
+}
+
+void ParticleEditor::saveAll()
+{
+    for (int i = 0; i < fileNames.size(); i++)
+    {
+        load(i);
+
+        std::ofstream file(emitterFolder + fileNames[i]);
+
+        if (!file.is_open())
+        {
+            printf("oof\n");
+        }
+
+        else
+        {
+            file << emitto;
+            file.close();
+
+            bool exists = false;
+            for (std::string str : fileNames)
+                if (str == emitterName)
+                    exists = true;
+
+            if (!exists)
+            {
+                fileNames.push_back(emitterName);
+                this->currentEmitter = fileNames.size() - 1;
+                saveParticleList();
+            }
+        }
+    }
+
 }
 
 void ParticleEditor::load(int id)
@@ -438,7 +483,11 @@ void ParticleEditor::restart(Emitter* emitter)
     variables = { 30000, 3000, 50, 2, 500, 5, 0, 360,
         sf::Color::Green.r, sf::Color::Green.g, sf::Color::Green.b, sf::Color::Green.a,
         0, 0, 0, 0,
-        0, 0, 0, sf::Vector2f(2, 5), false, 0, 1, 50 };
+        0, 0, 0, 
+        sf::Vector2f(2, 5), 
+        false, 0.1f, //Gravity
+        false,
+        0, 1, 50 };
 
     sf::Color color(variables.color[0], variables.color[1], variables.color[2], variables.color[3]);
 

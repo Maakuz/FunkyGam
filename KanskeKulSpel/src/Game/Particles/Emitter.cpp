@@ -4,7 +4,7 @@
 Emitter::Emitter(sf::Vector2f pos, sf::Vector2f particleSize, sf::Color color, 
     float spawnRate, float particleSpeed, float particleLife, float emitterLife, 
     int initialParticles, int particlesPerSpawn, int startAngle, int spread, 
-    float frictionValue, float jitterAmount)
+    float frictionValue, float jitterAmount, float gravity, bool hasCollision)
 {
     this->pos = pos;
     this->speed = particleSpeed;
@@ -18,6 +18,8 @@ Emitter::Emitter(sf::Vector2f pos, sf::Vector2f particleSize, sf::Color color,
     this->emitterCone = spread;
     this->frictionValue = frictionValue;
     this->jitterAmount = jitterAmount;
+    this->gravity = gravity;
+    this->colliding = hasCollision;
 
     this->affectedByGravity = false;
     this->particlesHasLight = false; // might be dangerous for framerate to turn on
@@ -61,6 +63,9 @@ Emitter& Emitter::operator=(const Emitter& other)
     colorDeviation = other.colorDeviation;
 
     affectedByGravity = other.affectedByGravity;
+    gravity = other.gravity;
+
+    colliding = other.colliding;
 
     immortalEmitter = other.immortalEmitter;
 
@@ -149,7 +154,7 @@ void Emitter::update(float dt)
         else
         {
             if (this->affectedByGravity)
-                particle->velocity.y += 0.01f * dt;
+                particle->velocity.y += this->gravity * dt;
 
             particle->velocity *= frictionValue;
 
@@ -307,6 +312,8 @@ std::ostream& operator<<(std::ostream& out, const Emitter& emitter)
     out << (int)emitter.color.r << " " << (int)emitter.color.g << " " << (int)emitter.color.b << " " << (int)emitter.color.a << "\n";
     out << (int)emitter.colorDeviation.r << " " << (int)emitter.colorDeviation.g << " " << (int)emitter.colorDeviation.b << " " << (int)emitter.color.a << "\n";
     out << emitter.affectedByGravity << "\n";
+    out << emitter.gravity << "\n";
+    out << emitter.colliding << "\n";
     out << emitter.jitterAmount << "\n";
     out << emitter.frictionValue << "\n";
     out << emitter.particlesHasLight << "\n";
@@ -344,6 +351,8 @@ std::istream& operator>>(std::istream& in, Emitter& emitter)
     in >> color[0] >> color[1] >> color[2] >> color[3];
     emitter.colorDeviation = sf::Color(color[0], color[1], color[2], color[3]);
     in >> emitter.affectedByGravity;
+    in >> emitter.gravity;
+    in >> emitter.colliding;
     in >> emitter.jitterAmount;
     in >> emitter.frictionValue;
     in >> emitter.particlesHasLight;

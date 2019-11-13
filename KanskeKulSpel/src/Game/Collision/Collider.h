@@ -21,6 +21,7 @@ public:
         character = 4,
         grunt = 5,
         gatherable = 6,
+        spell = 7
     };
 
     struct AABB

@@ -190,3 +190,13 @@ Radius: 64
 Falloff: 0.4
 Damage 10
 
+[Tome]
+ID: 12
+TexID: 24
+Name: Fireball Tome
+StackLimit: 1
+EmitterID: 5
+Useable: 1
+[Specific]
+SpellInvoked: Fireball
+

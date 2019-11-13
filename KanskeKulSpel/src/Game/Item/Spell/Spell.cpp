@@ -1,9 +1,8 @@
 #include "Spell.h"
 
-Spell::Spell(sf::Vector2f pos, const sf::Texture* texture) :
-    Entity(pos, texture)
+Spell::Spell(sf::Vector2f pos) :
+    Entity(pos)
 {
-    this->obtained = false;
 }
 
 std::istream& operator>>(std::istream& in, Spell& spell)

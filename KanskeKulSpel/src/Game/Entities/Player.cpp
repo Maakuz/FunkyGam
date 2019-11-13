@@ -140,16 +140,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
     MovingEntity::update(dt);
 
     if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Right))
-    {
-        sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
-        float distance = std::min(length(direction), 400.f) / 400.f;
-        normalize(direction);
-        direction *= this->throwingPower * distance;
-
-        int itemID = this->ui->getInventory()->useSelectedItem();
-        if (itemID != -1)
-            ItemHandler::addThrowable(itemID, this->pos, direction, this);
-    }
+        useItem(mousePos);
 
     for (int i = 0; i < 5; i++)
     {
@@ -309,6 +300,27 @@ void Player::debugMove(float dt)
 
     momentum.y = acceleration.y * dt;
     momentum.y *= 0.97;
+}
+
+void Player::useItem(sf::Vector2f mousePos)
+{
+    int itemID = this->ui->getInventory()->useSelectedItem();
+    if (itemID != -1)
+    {
+        if (dynamic_cast<const Throwable*>(ItemHandler::getTemplate(itemID)))
+        {
+            sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
+            float distance = std::min(length(direction), 400.f) / 400.f;
+            normalize(direction);
+            direction *= this->throwingPower * distance;
+
+
+            ItemHandler::addThrowable(itemID, this->pos, direction, this);
+        }
+
+        else if (dynamic_cast<const Tome*>(ItemHandler::getTemplate(itemID)))
+            ItemHandler::addSpell(itemID, this->pos, mousePos);
+    }
 }
 
 std::istream& operator>>(std::istream& in, Player& player)

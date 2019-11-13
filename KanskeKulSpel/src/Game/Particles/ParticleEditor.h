@@ -39,6 +39,8 @@ private:
         int clearColor[3];
         sf::Vector2f size;
         bool gravityOn;
+        float gravity;
+        bool collisionOn;
         float jitter;
         float friction;
         float particleLightRadius;
@@ -60,6 +62,8 @@ private:
             in >> variables.color[0] >> variables.color[1] >> variables.color[2] >> variables.color[3];
             in >> variables.colorDev[0] >> variables.colorDev[1] >> variables.colorDev[2] >> variables.colorDev[3];
             in >> variables.gravityOn;
+            in >> variables.gravity;
+            in >> variables.collisionOn;
             in >> variables.jitter;
             in >> variables.friction;
             in >> variables.hasLight;
@@ -71,6 +75,7 @@ private:
     PlayVariables variables;
 
     void save();
+    void saveAll();
     void load(int id);
     void getParticleList();
     void saveParticleList();

@@ -85,7 +85,13 @@ public:
         }
     };
 
-    Emitter(sf::Vector2f pos = sf::Vector2f(0, 0), sf::Vector2f particleSize = sf::Vector2f(1, 1), sf::Color color = sf::Color::White, float spawnRate = 500, float particleSpeed = 1, float particleLife = 0, float emitterLife = 0, int initialParticles = 0, int particlesPerSpawn = 1, int startAngle = 0, int spread = 360, float frictionValue = 1, float jitterAmount = 0);
+    Emitter(sf::Vector2f pos = sf::Vector2f(0, 0), sf::Vector2f particleSize = sf::Vector2f(1, 1),
+        sf::Color color = sf::Color::White, float spawnRate = 500, float particleSpeed = 1,
+        float particleLife = 0, float emitterLife = 0, int initialParticles = 0, 
+        int particlesPerSpawn = 1, int startAngle = 0, int spread = 360, 
+        float frictionValue = 1, float jitterAmount = 0, float gravity = 0.1f,
+        bool hasCollision = false);
+
     Emitter(const Emitter& other);
     Emitter& operator=(const Emitter& other);
     ~Emitter();
@@ -117,11 +123,14 @@ public:
     void setJitter(float value) { this->jitterAmount = value; };
     void kill();
 
-    //USE RESPONSIBLY
     void setParticleHasLight(bool hasLight);
     void setParticleLightRadius(float radius) { this->particleLightRadius = radius; };
 
-    void enableGravity(bool isAffectedByGravity) { this->affectedByGravity = isAffectedByGravity; };
+    void setAffectedByGravity(bool affectedByGravity) { this->affectedByGravity = affectedByGravity; };
+    void setGravity(float gravity) { this->gravity = gravity; };
+
+    void setColliding(bool hasCollision) { this->colliding = hasCollision; };
+    bool isColliding()const { return colliding; };
 
     void setEmitterPos(sf::Vector2f pos);
     sf::Vector2f getEmitterPos() const { return this->pos; };
@@ -162,8 +171,10 @@ private:
     sf::Color colorDeviation;
 
     bool affectedByGravity;
+    float gravity;
 
     bool immortalEmitter;
+    bool colliding;
 
     bool emitterDead;
 

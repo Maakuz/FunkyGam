@@ -46,5 +46,6 @@ private:
 
     void move(float dt);
     void debugMove(float dt);
+    void useItem(sf::Vector2f mousePos);
 
 };

@@ -30,6 +30,16 @@ HubHandler::HubHandler(UIHandler* uiHandler)
             return "unlocked and loaded";
         });
 
+    ConsoleWindow::get().addCommand("unlockAllLevels", [&](Arguments args)->std::string
+        {
+
+            for (LevelInfo& info: levels)
+                info.unlocked = true;
+
+            return "unlocked and loaded";
+        });
+
+
     ConsoleWindow::get().addCommand("reloadRecipes", [&](Arguments args)->std::string
         {
 

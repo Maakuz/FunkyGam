@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_set>
+#include <unordered_map>
 #include "Game/Item/Throwables/Throwable.h"
 #include "Game/Level/Level.h"
 #include "Game/Entities/Player.h"
@@ -9,6 +10,8 @@
 #include "Renderer/DebugDrawable.h"
 #include "Misc/Structs.h"
 #include "GatherItem.h"
+#include "Game/Item/Spell/Fireball.h"
+#include "Game/Item/Spell/Tome.h"
 
 class ItemHandler : public sf::Drawable, public DebugDrawable
 {
@@ -25,6 +28,7 @@ public:
     void queueColliders();
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);
+    static void addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination);
     static const Item* getTemplate(int itemID);
     static const std::vector<const Item*>* getTemplateVec() { return &itemTemplates; };
     static const std::unordered_set<int>* getFoundItems() { return &foundItems; };
@@ -33,7 +37,9 @@ public:
 private:
     UIHandler* ui;
     static std::vector<Throwable> throwables;
+    static std::vector<Spell*> spells;
     static std::vector<const Item*> itemTemplates;
+    static std::unordered_map<std::string, const Spell*> spellTemplates;
     static std::unordered_set<int> foundItems;
 
     std::vector<sf::Vector2f> gatherPoints;
@@ -45,9 +51,11 @@ private:
     
     bool drawHitboxes;
 
-    void loadThrowables(std::ifstream& file);
-    void loadGatherables(std::ifstream& file);
+    void loadThrowable(std::ifstream& file);
+    void loadGatherable(std::ifstream& file);
+    void loadTome(std::ifstream& file);
     void spawnShrines(std::vector<CustomHitbox> shrines);
 
+    void clearTemplates();
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

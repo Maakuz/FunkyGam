@@ -67,10 +67,12 @@ void ItemEditor::updateItems()
         }
 
         Throwable* throwable = dynamic_cast<Throwable*>(items[currentItem]);
+        Tome* tome = dynamic_cast<Tome*>(items[currentItem]);
         if (throwable)
-        {
             showThrowableData(throwable);
-        }
+
+        if (tome)
+            showTomeData(tome);
 
         else
             showItemData(items[currentItem]);
@@ -84,6 +86,17 @@ void ItemEditor::updateItems()
         Item* item = new Item(sf::Vector2f(), items[currentItem]->getTexture());
         this->items.push_back(item);
         item->setID(this->items.size() - 1);
+        this->currentItem = this->items.size() - 1;
+    }
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Create Tome"))
+    {
+        Tome* item = new Tome(sf::Vector2f(), items[currentItem]->getTexture());
+        this->items.push_back(item);
+        item->setID(this->items.size() - 1);
+        item->setUseable(true);
         this->currentItem = this->items.size() - 1;
     }
 
@@ -246,23 +259,20 @@ void ItemEditor::showThrowableData(Throwable* item)
     item->getExplosionPtr()->damage = bombdamage;
 }
 
+void ItemEditor::showTomeData(Tome* item)
+{
+    showItemData(item);
+
+    std::string spell = item->getSpell();
+    ImGui::InputText("Spell name", &spell);
+    item->setSpell(spell);
+}
+
 void ItemEditor::showFireballData(Fireball* fireball)
 {
     std::string name = fireball->getName();
     ImGui::InputText("Name", &name);
     fireball->setName(name);
-
-    const std::vector<sf::Texture>* textures = TextureHandler::get().getTextureVec();
-    int currentTexture = TextureHandler::get().getIDForTexture(fireball->getTexture());
-    if (ImGui::BeginCombo("Select texture", TextureHandler::get().getTextureName(currentTexture).c_str()))
-    {
-        for (int i = 0; i < textures->size(); i++)
-        {
-            if (ImGui::Selectable(TextureHandler::get().getTextureName(i).c_str()))
-                fireball->setTexture(&textures->at(i));
-        }
-        ImGui::EndCombo();
-    }
 
     const std::vector<Emitter>* emitters = ParticleHandler::getEmitterTemplates();
     int currentTrailEmitter = fireball->getTrailEmitterID();
@@ -308,6 +318,10 @@ void ItemEditor::showFireballData(Fireball* fireball)
     float maxTravel = fireball->getMaxTravelDistance();
     ImGui::DragFloat("Maximum distance", &maxTravel, 1, 0, 100000);
     fireball->setMaxTravelDistance(maxTravel);
+
+    float tops = fireball->getTopSpeed();
+    ImGui::DragFloat("Top speed", &tops, 0.001, 0, 100000);
+    fireball->setTopSpeed(tops);
 
     int minCharge = fireball->getMinCharge();
     ImGui::DragInt("Minimum charge time", &minCharge, 1, 0, 10000);
@@ -361,6 +375,15 @@ void ItemEditor::readItems()
             }
 
 
+            if (itemType == "[Tome]")
+            {
+                Tome* item = new Tome(sf::Vector2f(), TextureHandler::get().getTexture(texID));
+                item->setID(id);
+                file >> *item;
+                this->items.push_back(item);
+            }
+
+
         }
 
 
@@ -388,14 +411,12 @@ void ItemEditor::readSpells()
         {
             std::string spellType;
             std::string trash;
-            int texID;
 
             file >> spellType;
-            file >> trash >> texID;
 
             if (spellType == "[Fireball]")
             {
-                Fireball* spell = new Fireball(sf::Vector2f(), TextureHandler::get().getTexture(texID));
+                Fireball* spell = new Fireball(sf::Vector2f());
                 file >> *spell;
                 this->spells.push_back(spell);
             }
@@ -421,13 +442,22 @@ void ItemEditor::writeItems()
 
     for (Item* item : items)
     {
-        Throwable* ptr = dynamic_cast<Throwable*>(item);
-        if (ptr)
+        Throwable* thrw = dynamic_cast<Throwable*>(item);
+        Tome* tome = dynamic_cast<Tome*>(item);
+        if (thrw)
         {
             file << "[Throwable]\n";
-            file << "ID: " << ptr->getID() << "\n";
-            file << "TexID: " << TextureHandler::get().getIDForTexture(ptr->getTexture()) << "\n";
-            file << *ptr << "\n";
+            file << "ID: " << thrw->getID() << "\n";
+            file << "TexID: " << TextureHandler::get().getIDForTexture(thrw->getTexture()) << "\n";
+            file << *thrw << "\n";
+        }
+
+        else if (tome)
+        {
+            file << "[Tome]\n";
+            file << "ID: " << tome->getID() << "\n";
+            file << "TexID: " << TextureHandler::get().getIDForTexture(tome->getTexture()) << "\n";
+            file << *tome << "\n";
         }
 
         else
@@ -458,7 +488,6 @@ void ItemEditor::writeSpells()
         if (fireball)
         {
             file << "[Fireball]\n";
-            file << "TexID: " << TextureHandler::get().getIDForTexture(fireball->getTexture()) << "\n";
             file << *fireball << "\n";
         }
     }

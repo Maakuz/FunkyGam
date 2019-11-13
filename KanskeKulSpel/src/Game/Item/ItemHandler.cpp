@@ -9,7 +9,9 @@
 #include <sstream>
 
 std::vector<Throwable> ItemHandler::throwables;
+std::vector<Spell*> ItemHandler::spells;
 std::vector<const Item*> ItemHandler::itemTemplates;
+std::unordered_map<std::string, const Spell*> ItemHandler::spellTemplates;
 std::unordered_set<int> ItemHandler::foundItems;
 
 
@@ -49,15 +51,15 @@ ItemHandler::ItemHandler(UIHandler* uiHandler)
 
 ItemHandler::~ItemHandler()
 {
-    for (const Item* item : itemTemplates)
-        delete item;
+    clearTemplates();
+
+    for (Spell* spell : spells)
+        delete spell;
 }
 
 void ItemHandler::loadTemplates()
 {
-    for (const Item* item : itemTemplates)
-        delete item;
-    itemTemplates.clear();
+    clearTemplates();
 
     std::ifstream file(DATA_PATH "Items.mop");
     if (!file.is_open())
@@ -72,10 +74,37 @@ void ItemHandler::loadTemplates()
         file >> type;
 
         if (type == "[Throwable]")
-            loadThrowables(file);
+            loadThrowable(file);
 
         else if (type == "[Item]")
-            loadGatherables(file);
+            loadGatherable(file);
+
+        else if (type == "[Tome]")
+            loadTome(file);
+    }
+
+    file.close();
+
+    file.open(DATA_PATH "Spells.mop");
+    if (!file.is_open())
+    {
+        system("Pause");
+        exit(-44);
+    }
+
+    while (!file.eof())
+    {
+        std::string spellType;
+        std::string trash;
+
+        file >> spellType;
+
+        if (spellType == "[Fireball]")
+        {
+            Fireball* spell = new Fireball(sf::Vector2f());
+            file >> *spell;
+            this->spellTemplates.emplace(spell->getName(), spell);
+        }
     }
 
     file.close();
@@ -94,6 +123,17 @@ void ItemHandler::update(float dt, Player* player)
         else
         {
             throwables[i].update(dt);
+        }
+    }
+
+    for (int i = 0; i < spells.size(); i++)
+    {
+        if (spells[i]->isComplete())
+            unordered_erase(spells, spells.begin() + i--);
+
+        else
+        {
+            spells[i]->update(dt);
         }
     }
 
@@ -229,12 +269,29 @@ void ItemHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, 
     throwables.push_back(item);
 }
 
+void ItemHandler::addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination)
+{
+    const Tome* tome = dynamic_cast<const Tome*>(itemTemplates[tomeID]);
+
+    if (tome)
+    {
+        const Fireball* fire = dynamic_cast<const Fireball*>(spellTemplates[tome->getSpell()]);
+
+        if (fire)
+        {
+            Fireball* newFire = new Fireball(*fire);
+            newFire->cast(pos, destination);
+            spells.push_back(newFire);
+        }
+    }
+}
+
 const Item* ItemHandler::getTemplate(int itemID)
 {
     return itemTemplates[itemID];
 }
 
-void ItemHandler::loadThrowables(std::ifstream& file)
+void ItemHandler::loadThrowable(std::ifstream& file)
 {
     std::string trash;
 
@@ -252,7 +309,7 @@ void ItemHandler::loadThrowables(std::ifstream& file)
     itemTemplates.push_back(throwable);
 }
 
-void ItemHandler::loadGatherables(std::ifstream& file)
+void ItemHandler::loadGatherable(std::ifstream& file)
 {
     std::string trash;
 
@@ -268,6 +325,36 @@ void ItemHandler::loadGatherables(std::ifstream& file)
     item->addCollisionComponent(Collider::ColliderKeys::gatherable);
 
     itemTemplates.push_back(item);
+}
+
+void ItemHandler::loadTome(std::ifstream& file)
+{
+    std::string trash;
+
+    int itemID;
+    int textureID;
+
+    file >> trash >> itemID;
+    file >> trash >> textureID;
+    Tome* item = new Tome(sf::Vector2f(), TextureHandler::get().getTexture(textureID));
+
+    file >> *item;
+    item->setID(itemID);
+    item->addCollisionComponent(Collider::ColliderKeys::gatherable);
+
+    itemTemplates.push_back(item);
+}
+
+void ItemHandler::clearTemplates()
+{
+    for (const Item* item : itemTemplates)
+        delete item;
+
+    for (auto& pair : spellTemplates)
+        delete pair.second;
+
+    itemTemplates.clear();
+    spellTemplates.clear();
 }
 
 void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const

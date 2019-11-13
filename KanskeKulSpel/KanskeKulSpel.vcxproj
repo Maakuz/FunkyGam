@@ -152,6 +152,7 @@
     <ClCompile Include="src\Game\Item\RecipeEditor.cpp" />
     <ClCompile Include="src\Game\Item\Spell\Fireball.cpp" />
     <ClCompile Include="src\Game\Item\Spell\Spell.cpp" />
+    <ClCompile Include="src\Game\Item\Spell\Tome.cpp" />
     <ClCompile Include="src\Game\Item\Throwables\Throwable.cpp" />
     <ClCompile Include="src\Game\Entities\MovingEntity.cpp" />
     <ClCompile Include="src\Game\Entities\Player.cpp" />
@@ -209,6 +210,7 @@
     <ClInclude Include="src\Game\Item\RecipeEditor.h" />
     <ClInclude Include="src\Game\Item\Spell\Fireball.h" />
     <ClInclude Include="src\Game\Item\Spell\Spell.h" />
+    <ClInclude Include="src\Game\Item\Spell\Tome.h" />
     <ClInclude Include="src\Game\Item\Throwables\Throwable.h" />
     <ClInclude Include="src\Game\Entities\MovingEntity.h" />
     <ClInclude Include="src\Game\Entities\Player.h" />

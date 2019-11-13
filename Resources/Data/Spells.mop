@@ -1,9 +1,9 @@
 [Fireball]
-TexID: 24
 Name: Fireball
 [Specific]
 Damage: 30
 MaximumTravel: 600
+TopSpeed: 0.5
 Radius: 100
 MinCharge: 300
 MaxCharge: 1000

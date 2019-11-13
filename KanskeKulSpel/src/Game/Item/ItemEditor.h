@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Item.h"
+#include "Game/Item/Spell/Tome.h"
 #include "Throwables/Throwable.h"
 #include "Spell/Fireball.h"
 
@@ -26,6 +27,7 @@ private:
 
     void showItemData(Item* item);
     void showThrowableData(Throwable* item);
+    void showTomeData(Tome* item);
     void showFireballData(Fireball* fireball);
 
     void readItems();
