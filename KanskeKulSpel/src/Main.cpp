@@ -96,7 +96,6 @@ int main()
             return "Framerate is now " + std::to_string(framerate);
         });
 
-
     ConsoleWindow::get().addCommand("editLevel", [&](Arguments args)->std::string
         {
             state = State::editor;
@@ -134,8 +133,17 @@ int main()
                 ProfilerActive = !ProfilerActive;
 
 
+            if (e.type == sf::Event::LostFocus)
+            {
+                game.pause();
+                editor.pause();
+            }
 
-
+            if (e.type == sf::Event::GainedFocus)
+            {
+                game.resume();
+                editor.resume();
+            }
 
             if (state == State::editor)
                 editor.handleEvents(e);

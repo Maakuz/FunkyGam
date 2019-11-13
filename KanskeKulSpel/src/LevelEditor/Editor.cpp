@@ -13,6 +13,7 @@ Editor::Editor(const sf::RenderWindow* window) :
     this->window = window;
     this->workView = sf::View(sf::FloatRect(0, 0, WIN_WIDTH, WIN_HEIGHT));
     this->guiActive = false;
+    this->paused = false;
     this->zoom = 1;
 }
 
@@ -40,9 +41,12 @@ void Editor::update(sf::Time deltaTime)
     workSpaceMousePos = (sf::Vector2i)window->mapPixelToCoords(mousePos);
     guiActive = ImGui::IsAnyItemHovered() || ImGui::IsAnyWindowHovered();
 
-    scrollScreen(dt);
+    if (!paused)
+    {
+        scrollScreen(dt);
+        tileMenuHandler.update(mousePos, workSpaceMousePos, guiActive);
+    }
 
-    tileMenuHandler.update(mousePos, workSpaceMousePos, guiActive);
     tileMenuHandler.queueItems(this->workView);
     tileStager.stageTiles(tileMenuHandler.isOverlayInToolbox());
 
@@ -54,13 +58,16 @@ void Editor::update(sf::Time deltaTime)
 
 void Editor::handleEvents(sf::Event e)
 {
-    if (e.type == sf::Event::MouseWheelMoved)
-        this->zoom -= (e.mouseWheelScroll.wheel / 10.f);
+    if (!paused)
+    {
+        if (e.type == sf::Event::MouseWheelMoved)
+            this->zoom -= (e.mouseWheelScroll.wheel / 10.f);
 
-    if (zoom < 1)
-        zoom = 1;
+        if (zoom < 1)
+            zoom = 1;
 
-    tileMenuHandler.handleEvent(e, guiActive, workSpaceMousePos);
+        tileMenuHandler.handleEvent(e, guiActive, workSpaceMousePos);
+    }
 }
 
 void Editor::scrollScreen(float dt)

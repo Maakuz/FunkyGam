@@ -27,6 +27,9 @@ public:
     const sf::View& getView() { return view; };
     const LevelInfo* getCurrentLevel()const { return hubHandler.getActiveLevel(); };
     void resetAfterEditing();
+    void pause() { this->paused = true; };
+    void resume() { this->paused = false; };
+
 private:
     void updateHub(float dt);
     void updateLevel(float dt);

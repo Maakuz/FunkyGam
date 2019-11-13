@@ -14,8 +14,9 @@ public:
     void handleEvents(sf::Event e);
     const sf::View& getView() { return workView; };
 
+    void pause() { this->paused = true; };
+    void resume() { this->paused = false; };
 private:
-    void scrollScreen(float dt);
 
     const sf::RenderWindow* window;
     TileMenuHandler tileMenuHandler;
@@ -23,5 +24,8 @@ private:
     sf::View workView;
     float zoom;
     bool guiActive;
+    bool paused;
     sf::Vector2i workSpaceMousePos;
+
+    void scrollScreen(float dt);
 };
