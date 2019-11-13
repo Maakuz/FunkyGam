@@ -74,7 +74,7 @@ public:
             {
                 Entry* entry = new Entry();
                 entry->name = title;
-                entry->prev = currentEntry;
+                entry->prev = currentEntry;-
                 entry->timer.restart();
                 currentEntry->entries.insert({ title, entry });
                 currentEntry = entry;
@@ -145,7 +145,7 @@ private:
     float counter;
     int iterations;
     float scroll;
-    sf::Color baseColors[2];
+    sf::Color baseColors[3];
 
     Profiler()
     {
@@ -164,6 +164,7 @@ private:
         scroll = 0;
         baseColors[0] = sf::Color(50, 255, 50);
         baseColors[1] = sf::Color(255, 50, 50);
+        baseColors[2] = sf::Color(50, 50, 255);
     }
 
     void recursivelyBuildList(Entry* entry, sf::Vector2f pos, sf::Color col)
