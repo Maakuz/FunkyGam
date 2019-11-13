@@ -17,6 +17,7 @@ public:
     static void queueExplosion(Explosion explosion);
     static void queueBreakable(BreakableTerrain* terrain);
 
+    static const std::vector<Entity*>* getStaticColliders() { return &staticColliders; };
 private:
     static std::vector<Entity*> colliders;
     static std::vector<Entity*> staticColliders;

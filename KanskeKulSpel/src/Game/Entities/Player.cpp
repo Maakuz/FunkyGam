@@ -189,7 +189,7 @@ void Player::handleCollision(const Entity* colliderEntity)
         if (momentum.y > 0 && colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::platform))
         {
             //walking on ground
-            if (colliderEntity->getCollider().intersects(colliderEntity->getCollider().getUp(), this->collider.getDown()))
+            if (Collider::intersects(colliderEntity->getCollider().getUp(), this->collider.getDown()))
             {
                 if (platformPassingCounter.isTimeUp())
                 {

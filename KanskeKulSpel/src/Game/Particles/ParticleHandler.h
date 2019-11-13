@@ -12,7 +12,7 @@ public:
 
     void update(float dt);
     void queueLights();
-
+    void handleCollision();
     void loadEmitters();
     void reset();
 

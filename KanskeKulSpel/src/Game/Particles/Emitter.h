@@ -2,6 +2,7 @@
 #include <sstream>
 #include "SFML/Graphics.hpp"
 #include "Renderer/Lighting/Light.h"
+#include "Game/Entities/Entity.h"
 
 struct Particle
 {
@@ -98,6 +99,7 @@ public:
 
     void update(float dt);
     void queueLights();
+    void handleCollision(const std::vector<Entity*>* entities);
 
     friend std::ostream& operator<<(std::ostream& out, const Emitter& emitter);
     friend std::istream& operator>>(std::istream& in, Emitter& emitter);

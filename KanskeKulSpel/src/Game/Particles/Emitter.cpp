@@ -189,6 +189,27 @@ void Emitter::queueLights()
         LightQueue::get().queue(light.light);
 }
 
+void Emitter::handleCollision(const std::vector<Entity*>* entities)
+{
+    for (const Entity* entity : *entities)
+    {
+        const Collider collider = entity->getCollider();
+        for (int i = 0; i < particles.size(); i++)
+        {
+            sf::Vector2f pos = vertexArray[i * 4].position;
+
+            if (collider.contains(pos))
+            {
+                if (Collider::contains(collider.getLeft(), pos) || Collider::contains(collider.getRight(), pos))
+                    particles[i]->velocity.x *= -0.5f;
+
+                if (Collider::contains(collider.getDown(), pos) || Collider::contains(collider.getUp(), pos))
+                    particles[i]->velocity.y *= -0.5f;
+            }
+        }
+    }
+}
+
 void Emitter::setParticleLifeSpan(float lifespan)
 {
     this->particleLifespan = lifespan;

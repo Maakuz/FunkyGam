@@ -49,8 +49,11 @@ public:
     ~Collider();
 
     bool intersects(const AABB& other) const;
-    bool intersects(const AABB& a, const AABB& b) const;
     bool intersects(const Collider& other) const;
+    static bool intersects(const AABB& a, const AABB& b);
+
+    bool contains(const sf::Vector2f point) const;
+    static bool contains(const AABB& aabb, sf::Vector2f point);
 
     void addComponent(ColliderKeys key);
 

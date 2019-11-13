@@ -4,6 +4,7 @@
 #include "Game/Misc/UnorderedErase.h"
 #include "Game/Misc/Definitions.h"
 #include "Misc/ConsoleWindow.h"
+#include "Game/Collision/CollisionHandler.h"
 
 std::vector<Emitter*> ParticleHandler::activeEmitters;
 std::vector<Emitter> ParticleHandler::emitterTemplates;
@@ -47,6 +48,14 @@ void ParticleHandler::queueLights()
 {
     for (Emitter* emitter : this->activeEmitters)
         emitter->queueLights();
+}
+
+void ParticleHandler::handleCollision()
+{ 
+    for (Emitter* emitter : this->activeEmitters)
+        if (emitter->isColliding())
+            emitter->handleCollision(CollisionHandler::getStaticColliders());
+
 }
 
 void ParticleHandler::loadEmitters()

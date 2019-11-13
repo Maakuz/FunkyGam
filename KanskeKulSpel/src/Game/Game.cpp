@@ -166,6 +166,9 @@ void Game::updateLevel(float dt)
         this->itemHandler.queueColliders();
         this->characterHandler.queueColliders();
         this->levelHandler.queueColliders();
+        PROFILER_START("Part_Collision");
+        this->particleHandler.handleCollision();
+        PROFILER_STOP;
         this->collisionHandler.processQueue();
         PROFILER_STOP;
     }

@@ -37,7 +37,7 @@ bool Collider::intersects(const AABB & other) const
         other.max().x >= this->box.min().x && other.max().y >= this->box.min().y);
 }
 
-bool Collider::intersects(const AABB & a, const AABB & b) const
+bool Collider::intersects(const AABB & a, const AABB & b)
 {
     return (a.max().x >= b.min().x && a.max().y >= b.min().y &&
         b.max().x >= a.min().x && b.max().y >= a.min().y);
@@ -46,6 +46,18 @@ bool Collider::intersects(const AABB & a, const AABB & b) const
 bool Collider::intersects(const Collider& other) const
 {
     return this->intersects(other.getAABB());
+}
+
+bool Collider::contains(const sf::Vector2f point) const
+{
+    return this->box.min().x < point.x && this->box.max().x > point.x &&
+        this->box.min().y < point.y && this->box.max().y > point.y;
+}
+
+bool Collider::contains(const AABB& aabb, sf::Vector2f point)
+{
+    return aabb.min().x < point.x && aabb.max().x > point.x &&
+        aabb.min().y < point.y && aabb.max().y > point.y;
 }
 
 void Collider::addComponent(ColliderKeys key)
