@@ -8,7 +8,6 @@ Fireball::Fireball(sf::Vector2f pos)
 {
     this->damage = 0;
     this->maxTravelDistance = 0;
-    this->radius = 0;
     this->minCharge = 0;
     this->maxCharge = 0;
     this->trailEmitterID = 0;
@@ -40,13 +39,13 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest)
 void Fireball::update(float dt)
 {
     float velocity = length(this->pos - this->destination) / distance;
-    printCon(std::to_string(velocity));
     pos += direction * velocity * dt * topSpeed;
     trail->setEmitterPos(pos);
 }
 
 void Fireball::handleCollision(const Entity* collider)
 {
+
 }
 
 void Fireball::handleExplosion(const Explosion& explosion)
@@ -60,11 +59,17 @@ std::istream& Fireball::readSpecific(std::istream& in)
     in >> trash >> damage;
     in >> trash >> maxTravelDistance;
     in >> trash >> topSpeed;
-    in >> trash >> radius;
     in >> trash >> minCharge;
     in >> trash >> maxCharge;
     in >> trash >> trailEmitterID;
     in >> trash >> impactEmitterID;
+    in >> trash;
+    in >> trash >> explosion.damage;
+    in >> trash >> explosion.radius;
+    in >> trash >> explosion.falloff;
+    int type;
+    in >> trash >> type;
+    explosion.type = ExplosionType(type);
 
     return in;
 }
@@ -72,14 +77,18 @@ std::istream& Fireball::readSpecific(std::istream& in)
 std::ostream& Fireball::writeSpecific(std::ostream& out) const
 {
     out << "[Specific]\n";
-    out << "Damage: " << damage << "\n";
+    out << "TickDamage: " << damage << "\n";
     out << "MaximumTravel: " << maxTravelDistance << "\n";
     out << "TopSpeed: " << topSpeed << "\n";
-    out << "Radius: " << radius << "\n";
     out << "MinCharge: " << minCharge << "\n";
     out << "MaxCharge: " << maxCharge << "\n";
     out << "TrailEmitterID: " << trailEmitterID << "\n";
     out << "ImpactEmitterID: " << impactEmitterID << "\n";
+    out << "[Explosion]" << "\n";
+    out << "Damage: " << explosion.damage << "\n";
+    out << "Radius: " << explosion.radius << "\n";
+    out << "Falloff: " << explosion.falloff << "\n";
+    out << "Type: " << (int)explosion.type << "\n";
 
     return out;
 }

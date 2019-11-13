@@ -71,7 +71,7 @@ void ItemEditor::updateItems()
         if (throwable)
             showThrowableData(throwable);
 
-        if (tome)
+        else if (tome)
             showTomeData(tome);
 
         else
@@ -192,6 +192,31 @@ void ItemEditor::showItemData(Item* item)
     item->setStackLimit(stackLimit);
 }
 
+void ItemEditor::showExplosionData(Explosion* explosion)
+{
+    ImGui::Separator();
+    ExplosionType selected = explosion->type;
+    if (ImGui::BeginCombo("Explosion type", ExplosionStrings::types[selected].c_str()))
+    {
+
+        for (int i = 0; i < ExplosionStrings::TYPE_COUNT; i++)
+        {
+            if (ImGui::Selectable(ExplosionStrings::types[i].c_str()))
+                explosion->type = ExplosionType(i);
+        }
+
+        ImGui::EndCombo();
+    }
+
+    ImGui::DragFloat("Exposion radius", &explosion->radius, 1, 0, 100000);
+
+    ImGui::DragFloat("Exposion falloff", &explosion->falloff, 0.01, 0, 1);
+    if (ImGui::IsItemHovered())
+        ImGui::SetTooltip("How far in percentages the blast deal full damage");
+
+    ImGui::DragInt("Exposion damage, negative damage heals", &explosion->damage, 1, -100000, 100000);
+}
+
 void ItemEditor::showThrowableData(Throwable* item)
 {
     showItemData(item);
@@ -230,33 +255,7 @@ void ItemEditor::showThrowableData(Throwable* item)
         ImGui::EndCombo();
     }
 
-    ImGui::Separator();
-    ExplosionType selected = item->getExplosion().type;
-    if (ImGui::BeginCombo("Explosion type", ExplosionStrings::types[selected].c_str()))
-    {
-
-        for (int i = 0; i < ExplosionStrings::TYPE_COUNT; i++)
-        {
-            if (ImGui::Selectable(ExplosionStrings::types[i].c_str()))
-                item->getExplosionPtr()->type = ExplosionType(i);
-        }
-
-        ImGui::EndCombo();
-    }
-
-    int radius = item->getExplosion().radius;
-    ImGui::DragInt("Exposion radius", &radius, 1, 0, 100000);
-    item->getExplosionPtr()->radius = radius;
-
-    float falloff = item->getExplosion().falloff;
-    ImGui::DragFloat("Exposion falloff", &falloff, 0.01, 0, 1);
-    item->getExplosionPtr()->falloff = falloff;
-    if (ImGui::IsItemHovered())
-        ImGui::SetTooltip("How far in percentages the blast deal full damage");
-
-    int bombdamage = item->getExplosion().damage;
-    ImGui::DragInt("Exposion damage, negative damage heals", &bombdamage, 1, -100000, 100000);
-    item->getExplosionPtr()->damage = bombdamage;
+    showExplosionData(item->getExplosionPtr());
 }
 
 void ItemEditor::showTomeData(Tome* item)
@@ -311,10 +310,6 @@ void ItemEditor::showFireballData(Fireball* fireball)
     ImGui::DragInt("Damage", &damage, 1, 0, 10000);
     fireball->setDamage(damage);
 
-    float radius = fireball->getRadius();
-    ImGui::DragFloat("Explosion radius", &radius, 1, 0, 100000);
-    fireball->setRadius(radius);
-
     float maxTravel = fireball->getMaxTravelDistance();
     ImGui::DragFloat("Maximum distance", &maxTravel, 1, 0, 100000);
     fireball->setMaxTravelDistance(maxTravel);
@@ -331,7 +326,7 @@ void ItemEditor::showFireballData(Fireball* fireball)
     ImGui::DragInt("Maximum charge time", &maxCharge, 1, 0, 10000);
     fireball->setMaxCharge(maxCharge);
 
-
+    showExplosionData(fireball->getExplosionPtr());
 }
 
 void ItemEditor::readItems()

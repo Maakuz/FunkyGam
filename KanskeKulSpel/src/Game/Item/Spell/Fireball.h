@@ -36,21 +36,20 @@ public:
     float getMaxTravelDistance() const { return this->maxTravelDistance; };
     void setMaxTravelDistance(float maxTravelDistance) { this->maxTravelDistance = maxTravelDistance; };
 
-    float getRadius() const { return this->radius; };
-    void setRadius(float radius) { this->radius = radius; };
-
     float getTopSpeed() const { return this->topSpeed; };
     void setTopSpeed(float topSpeed) { this->topSpeed = topSpeed; };
+
+    Explosion* getExplosionPtr() { return &explosion; };
 
 private:
     int damage;
     float maxTravelDistance;
     float topSpeed;
-    float radius;
     int minCharge;
     int maxCharge;
     int trailEmitterID;
     int impactEmitterID;
+    Explosion explosion;
 
     Emitter* trail;
     sf::Vector2f destination;

@@ -26,6 +26,7 @@ private:
     sf::Vector2f pos;
 
     void showItemData(Item* item);
+    void showExplosionData(Explosion* explosion);
     void showThrowableData(Throwable* item);
     void showTomeData(Tome* item);
     void showFireballData(Fireball* fireball);
