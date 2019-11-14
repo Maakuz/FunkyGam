@@ -6,7 +6,7 @@ class Spell : public Entity
 public:
     Spell(sf::Vector2f pos);
     virtual bool isComplete() const = 0;
-    virtual void cast(sf::Vector2f pos, sf::Vector2f dest) = 0;
+    virtual void cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime) = 0;
     virtual void update(float dt) = 0;
 
     virtual std::istream& readSpecific(std::istream& in) =0;

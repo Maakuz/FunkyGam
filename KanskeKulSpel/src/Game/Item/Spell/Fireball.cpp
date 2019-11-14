@@ -27,7 +27,7 @@ bool Fireball::isComplete() const
     return impacted;
 }
 
-void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest)
+void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 {
     this->pos = pos;
     this->distance = std::min(length(pos - dest), maxTravelDistance);

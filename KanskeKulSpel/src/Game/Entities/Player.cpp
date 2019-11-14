@@ -15,19 +15,24 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
 {
     this->collider.addComponent(Collider::ColliderKeys::player);
     this->collider.addComponent(Collider::ColliderKeys::character);
-    this->walkSpeed = 0.05f;
-    this->jumpHeight = 5.3f;
-    this->mass = 0.166f;
-    this->grounded = false;
+    this->ui = uiHandler;
+    this->walkSpeed = 0;
+    this->jumpHeight = 0;
+    this->mass = 0;
+    this->health = 0;
+    this->illumination = 0;
+    this->maxHealth = 0;
+    this->throwingPower = 0;
+    this->channelTime = 0;
+    this->exitReached = -1;
     this->debugMode = false;
     this->noClip = false;
-    this->ui = uiHandler;
-    this->health = 100;
-    this->maxHealth = 100;
-    this->illumination = 0;
     this->jumping = false;
+    this->grounded = false;
     this->canReturn = false;
-    this->exitReached = -1;
+    this->returning = false;
+    this->channelling = false;
+    this->gatherableInRange = nullptr;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
@@ -139,25 +144,9 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
     MovingEntity::update(dt);
 
-    if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Right))
-        useItem(mousePos);
+    updateItems(dt, mousePos);
 
-    for (int i = 0; i < 5; i++)
-    {
-        if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(27 + i))) //keys 1 to 5
-        {
-            ui->getInventory()->setSelectedItem(i);
-        }
-    }
 
-    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::I))
-    {
-        if (ui->getInventory()->isInventoryOpen())
-            ui->getInventory()->closeInventory();
-
-        else
-            ui->getInventory()->openInventory();
-    }
 
     if (this->canReturn && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
         this->returning = true;
@@ -172,75 +161,16 @@ void Player::update(float dt, sf::Vector2f mousePos)
     this->canReturn = false;
 }
 
-void Player::reset(sf::Vector2f spawnPoint)
+void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
 {
     setPosition(spawnPoint);
     this->returning = false;
     this->exitReached = -1;
-    this->health = this->maxHealth;
     this->momentum.x = 0;
     this->momentum.y = 0;
-}
 
-void Player::handleCollision(const Entity* colliderEntity)
-{
-    if (!noClip)
-    {
-        if (momentum.y > 0 && colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::platform))
-        {
-            //walking on ground
-            if (Collider::intersects(colliderEntity->getCollider().getUp(), this->collider.getDown()))
-            {
-                if (platformPassingCounter.isTimeUp())
-                {
-                    this->momentum.y = 0;
-                    this->pos.y = colliderEntity->up() - this->height();
-                    grounded = true;
-                }
-            }
-        }
-
-        else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::grunt))
-        {
-            const Grunt* ptr = dynamic_cast<const Grunt*>(colliderEntity);
-            if (ptr->isAttacking())
-            {
-                addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
-                health -= ptr->getDamage();
-            }
-        }
-
-        MovingEntity::handleCollision(colliderEntity);
-    }
-
-    if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::levelReturn))
-        this->returning = true;
-
-    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::levelWarp))
-        this->canReturn = true;
-
-    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::customTerrain))
-    {
-        std::string flag = colliderEntity->getCollider().getFlag();
-        if (flag.compare(0, 4, "exit") == 0)
-            this->exitReached = flag[4] - '0';
-    }
-
-    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::throwable))
-    {
-        const Throwable* throwable = dynamic_cast<const Throwable*>(colliderEntity);
-        if (throwable->getThrower() != this)
-            this->health -= throwable->getDamage();
-    }
-}
-
-void Player::handleExplosion(const Explosion& explosion)
-{
-    if (explosion.damage > 0)
-    {
-        int damage = explosion.calculateDamage(this->getCenterPos());
-        this->health -= damage;
-    }
+    if (fillHealth)
+        this->health = this->maxHealth;
 }
 
 void Player::move(float dt)
@@ -302,24 +232,118 @@ void Player::debugMove(float dt)
     momentum.y *= 0.97;
 }
 
-void Player::useItem(sf::Vector2f mousePos)
+void Player::updateItems(float dt, sf::Vector2f mousePos)
 {
-    int itemID = this->ui->getInventory()->useSelectedItem();
-    if (itemID != -1)
+    if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Button::Right))
     {
-        if (dynamic_cast<const Throwable*>(ItemHandler::getTemplate(itemID)))
+        int itemID = this->ui->getInventory()->useSelectedItem();
+        if (itemID != -1)
         {
-            sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
-            float distance = std::min(length(direction), 400.f) / 400.f;
-            normalize(direction);
-            direction *= this->throwingPower * distance;
+            if (dynamic_cast<const Throwable*>(ItemHandler::getTemplate(itemID)))
+            {
+                sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
+                float distance = std::min(length(direction), 400.f) / 400.f;
+                normalize(direction);
+                direction *= this->throwingPower * distance;
 
 
-            ItemHandler::addThrowable(itemID, this->pos, direction, this);
+                ItemHandler::addThrowable(itemID, this->pos, direction, this);
+            }
+
+            else if (dynamic_cast<const Tome*>(ItemHandler::getTemplate(itemID)))
+            {
+                this->channelling = true;
+                channelTime = 0;
+            }
+        }
+    }
+
+    if (channelling)
+        channelTime += dt;
+
+    if (channelling && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
+    {
+        channelling = false;
+        ItemHandler::addSpell(this->ui->getInventory()->getSelectedItemID(), getCenterPos(), mousePos, channelTime);
+    }
+
+    for (int i = 0; i < 5; i++)
+    {
+        if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(27 + i))) //keys 1 to 5
+        {
+            ui->getInventory()->setSelectedItem(i);
+            this->channelling = false;
+        }
+    }
+
+    if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::I))
+    {
+        if (ui->getInventory()->isInventoryOpen())
+            ui->getInventory()->closeInventory();
+
+        else
+            ui->getInventory()->openInventory();
+    }
+}
+
+void Player::handleCollision(const Entity* colliderEntity)
+{
+    if (!noClip)
+    {
+        if (momentum.y > 0 && colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::platform))
+        {
+            //walking on ground
+            if (Collider::intersects(colliderEntity->getCollider().getUp(), this->collider.getDown()))
+            {
+                if (platformPassingCounter.isTimeUp())
+                {
+                    this->momentum.y = 0;
+                    this->pos.y = colliderEntity->up() - this->height();
+                    grounded = true;
+                }
+            }
         }
 
-        else if (dynamic_cast<const Tome*>(ItemHandler::getTemplate(itemID)))
-            ItemHandler::addSpell(itemID, this->pos, mousePos);
+        else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::grunt))
+        {
+            const Grunt* ptr = dynamic_cast<const Grunt*>(colliderEntity);
+            if (ptr->isAttacking())
+            {
+                addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
+                health -= ptr->getDamage();
+            }
+        }
+
+        MovingEntity::handleCollision(colliderEntity);
+    }
+
+    if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::levelReturn))
+        this->returning = true;
+
+    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::levelWarp))
+        this->canReturn = true;
+
+    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::customTerrain))
+    {
+        std::string flag = colliderEntity->getCollider().getFlag();
+        if (flag.compare(0, 4, "exit") == 0)
+            this->exitReached = flag[4] - '0';
+    }
+
+    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::throwable))
+    {
+        const Throwable* throwable = dynamic_cast<const Throwable*>(colliderEntity);
+        if (throwable->getThrower() != this)
+            this->health -= throwable->getDamage();
+    }
+}
+
+void Player::handleExplosion(const Explosion& explosion)
+{
+    if (explosion.damage > 0)
+    {
+        int damage = explosion.calculateDamage(this->getCenterPos());
+        this->health -= damage;
     }
 }
 

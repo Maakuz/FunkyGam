@@ -28,7 +28,7 @@ public:
     void queueColliders();
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);
-    static void addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination);
+    static void addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination, float channelTime);
     static const Item* getTemplate(int itemID);
     static const std::vector<const Item*>* getTemplateVec() { return &itemTemplates; };
     static const std::unordered_set<int>* getFoundItems() { return &foundItems; };

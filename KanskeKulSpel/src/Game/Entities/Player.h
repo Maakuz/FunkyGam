@@ -16,7 +16,7 @@ public:
     friend std::istream& operator>>(std::istream& in, Player& player);
 
     void update(float dt, sf::Vector2f mousePos);
-    void reset(sf::Vector2f spawnPoint);
+    void reset(sf::Vector2f spawnPoint, bool fillHealth = true);
 
     void setIllumination(float illumination) { this->illumination = illumination; };
     float getIllumination() const { return illumination; };
@@ -42,10 +42,12 @@ private:
     bool noClip;
     bool returning;
     bool canReturn;
+    bool channelling;
+    float channelTime;
     int exitReached;
 
     void move(float dt);
     void debugMove(float dt);
-    void useItem(sf::Vector2f mousePos);
+    void updateItems(float dt, sf::Vector2f mousePos);
 
 };

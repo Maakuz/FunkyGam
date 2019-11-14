@@ -270,7 +270,7 @@ void ItemHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, 
     throwables.push_back(item);
 }
 
-void ItemHandler::addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination)
+void ItemHandler::addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination, float channelTime)
 {
     const Tome* tome = dynamic_cast<const Tome*>(itemTemplates[tomeID]);
 
@@ -281,7 +281,7 @@ void ItemHandler::addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destinatio
         if (fire)
         {
             Fireball* newFire = new Fireball(*fire);
-            newFire->cast(pos, destination);
+            newFire->cast(pos, destination, channelTime);
             spells.push_back(newFire);
         }
     }

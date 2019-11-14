@@ -9,7 +9,7 @@ public:
     ~Fireball() { };
 
     virtual bool isComplete() const;
-    virtual void cast(sf::Vector2f pos, sf::Vector2f dest);
+    virtual void cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime);
     virtual void update(float dt);
 
     virtual void handleCollision(const Entity* collider);
@@ -49,7 +49,6 @@ private:
     int maxCharge;
     int trailEmitterID;
     int impactEmitterID;
-    int chargeEmitterID;
     Explosion explosion;
 
     Emitter* trail;

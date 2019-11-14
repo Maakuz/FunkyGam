@@ -13,6 +13,10 @@ public:
     std::string getSpell() const { return spell; };
     void setSpell(std::string spell) { this->spell = spell; };
 
+    int getChannelEmitter() const { return channelEmitterID; };
+    void setChannelEmitter(int emitterID) { this->channelEmitterID = emitterID; };
+
 private:
     std::string spell;
+    int channelEmitterID;
 };
