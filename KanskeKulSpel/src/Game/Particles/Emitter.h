@@ -57,14 +57,18 @@ public:
     struct EmitterLight
     {
         sf::Vector2f offset;
+        sf::Vector2f initialOffset;
         sf::Vector3f initialColor;
+        float initialRadius;
         Light* light;
 
         EmitterLight(sf::Vector2f emitterPos, float radius, sf::Vector3f color, sf::Vector2f offset = sf::Vector2f(0, 0))
         {
             light = new Light(emitterPos + offset, radius, color);
             this->offset = offset;
+            this->initialOffset = offset;
             this->initialColor = color;
+            this->initialRadius = radius;
         }
 
         EmitterLight(const EmitterLight& other)
@@ -82,7 +86,113 @@ public:
             this->light = new Light(other.light->pos, other.light->radius, other.light->color);
             this->offset = other.offset;
             this->initialColor = other.initialColor;
+            this->initialOffset = other.initialOffset;
+            this->initialRadius = other.initialRadius;
             return *this;
+        }
+    };
+
+    struct KeyFrame
+    {
+        float timeStamp;
+
+        int particlesPerSpawn;
+        float particleLifespan;
+        float speed;
+        float spawnRate;
+        int emitterAngle;
+        int emitterCone;
+        sf::Vector2f size;
+        sf::Color color;
+        sf::Color colorDeviation;
+        bool affectedByGravity;
+        float gravity;
+        float particleLightRadius;
+        float jitterAmount;
+        float frictionValue;
+        std::vector<EmitterLight> lights;
+        
+        KeyFrame(float timeStamp = 0)
+        {
+            this->timeStamp = timeStamp;
+            this->particleLifespan = 0;
+            this->particleLightRadius = 0;
+            this->particlesPerSpawn = 0;
+            this->spawnRate = 0;
+            this->speed = 0;
+            this->emitterAngle = 0;
+            this->emitterCone = 0;
+            this->affectedByGravity = 0;
+            this->gravity = 0;
+            this->jitterAmount = 0;
+            this->frictionValue = 0;
+        }
+
+        friend std::ostream& operator<<(std::ostream& out, const KeyFrame& frame)
+        {
+            out << frame.timeStamp << "\n";
+            out << frame.particlesPerSpawn << "\n";
+            out << frame.particleLifespan << "\n";
+            out << frame.speed << "\n";
+            out << frame.spawnRate << "\n";
+            out << frame.emitterAngle << "\n";
+            out << frame.emitterCone << "\n";
+            out << frame.size.x << " " << frame.size.y << "\n";
+            out << (int)frame.color.r << " " << (int)frame.color.g << " " << (int)frame.color.b << " " << (int)frame.color.a << "\n";
+            out << (int)frame.colorDeviation.r << " " << (int)frame.colorDeviation.g << " " << (int)frame.colorDeviation.b << " " << (int)frame.color.a << "\n";
+            out << frame.affectedByGravity << "\n";
+            out << frame.gravity << "\n";
+            out << frame.jitterAmount << "\n";
+            out << frame.frictionValue << "\n";
+            out << frame.particleLightRadius << "\n";
+            out << frame.lights.size() << "\n";
+
+            for (size_t i = 0; i < frame.lights.size(); i++)
+            {
+                out << frame.lights[i].offset.x << " " << frame.lights[i].offset.y << "\n";
+                out << frame.lights[i].light->radius << "\n";
+                out << frame.lights[i].initialColor.x << " " << frame.lights[i].initialColor.y << " " << frame.lights[i].initialColor.z << "\n";
+            }
+
+            return out;
+        }
+        
+        friend std::istream& operator>>(std::istream& in, KeyFrame& frame)
+        {
+            int col[4] = {0};
+            int lightCount = 0;
+            in >> frame.timeStamp;
+            in >> frame.particlesPerSpawn;
+            in >> frame.particleLifespan;
+            in >> frame.speed;
+            in >> frame.spawnRate;
+            in >> frame.emitterAngle;
+            in >> frame.emitterCone;
+            in >> frame.size.x >> frame.size.y;
+            in >> col[0] >> col[1] >> col[2] >> col[3];
+            frame.color = sf::Color(col[0], col[1], col[2], col[3]);
+            in >> col[0] >> col[1] >> col[2] >> col[3];
+            frame.colorDeviation = sf::Color(col[0], col[1], col[2], col[3]);
+            in >> frame.affectedByGravity;
+            in >> frame.gravity;
+            in >> frame.jitterAmount;
+            in >> frame.frictionValue;
+            in >> frame.particleLightRadius;
+            in >> lightCount;
+
+            frame.lights.clear();
+            for (int i = 0; i < lightCount; i++)
+            {
+                sf::Vector2f offset;
+                float radius;
+                sf::Vector3f color;
+                in >> offset.x >> offset.y;
+                in >> radius;
+                in >> color.x >> color.y >> color.z;
+
+                frame.lights.push_back(Emitter::EmitterLight(sf::Vector2f(), radius, color, offset));
+            }
+            return in;
         }
     };
 
@@ -100,36 +210,23 @@ public:
     void update(float dt);
     void queueLights();
     void handleCollision(const std::vector<Entity*>* entities);
+    void kill();
 
     friend std::ostream& operator<<(std::ostream& out, const Emitter& emitter);
     friend std::istream& operator>>(std::istream& in, Emitter& emitter);
 
-    void setParticleLifeSpan(float lifespan);
     void setEmitterLifeSpan(float lifespan);
 
-    void addLight(sf::Vector2f offset, float radius, sf::Vector3f color);
-    std::vector<EmitterLight>* getLights() { return &this->lights; };
+    KeyFrame* getKeyFramePtr(int frame) { return &keyFrames[frame]; };
+    int getKeyFrameCount() const { return keyFrames.size(); };
+    void addKeyFrame(int pos);
+    void removeKeyFrame(int frame) { keyFrames.erase(keyFrames.begin() + frame); };
 
-    int getNrOfParticles() const { return particles.size(); };
+    int getParticleCount() const { return particles.size(); };
 
-    void setSpeed(float speed) { this->speed = speed; };
-    void setSpawnRate(float spawnRate) { this->spawnRate = spawnRate; };
     void setInitialParticles(int amount) { this->initialParticles = amount; };
-    void setParticlesPerSpawn(int amount) { this->particlesPerSpawn = amount; };
-    void setAngle(int angle) { this->emitterAngle = angle; };
-    void setConeSize(int size) { this->emitterCone = size; };
-    void setSize(sf::Vector2f size) { this->size = size; };
-    void setColor(sf::Color color) { this->color = color; };
-    void setColorDeviation(sf::Color color) { this->colorDeviation = color; };
-    void setFriction(float value) { this->frictionValue = value; };
-    void setJitter(float value) { this->jitterAmount = value; };
-    void kill();
 
     void setParticleHasLight(bool hasLight);
-    void setParticleLightRadius(float radius) { this->particleLightRadius = radius; };
-
-    void setAffectedByGravity(bool affectedByGravity) { this->affectedByGravity = affectedByGravity; };
-    void setGravity(float gravity) { this->gravity = gravity; };
 
     void setColliding(bool hasCollision) { this->colliding = hasCollision; };
     bool isColliding()const { return colliding; };
@@ -145,8 +242,11 @@ public:
 
     void reset();
 private:
+    std::vector<KeyFrame> keyFrames;
+    int prev;
+    int next;
 
-    std::vector<EmitterLight> lights;
+    float elapsedTime;
 
     sf::Vector2f pos;
 
@@ -154,41 +254,21 @@ private:
     std::vector<sf::Vertex> vertexArray;
 
     int initialParticles;
-    int particlesPerSpawn;
 
     float lifespan;
     float lifespanCounter;
 
-    float particleLifespan;
-    float speed;
-
-    float spawnRate;
     float spawnCounter;
-
-    int emitterAngle;
-    int emitterCone;
-
-    sf::Vector2f size;
-    sf::Color color;
-    sf::Color colorDeviation;
-
-    bool affectedByGravity;
-    float gravity;
 
     bool immortalEmitter;
     bool colliding;
 
     bool emitterDead;
 
-    bool particlesHasLight; //HIGHLY EXPERIMENTAL MAYBE LEAVE THIS AT FALSE FOREVER
-    float particleLightRadius;
-
-
-    float jitterAmount;
-    float frictionValue;
-
+    bool particlesHasLight;
 
     void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
-    void addParticle();
+    void addParticle(float lerp);
+    void lerpLights(float lerp);
 };

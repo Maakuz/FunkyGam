@@ -7,6 +7,8 @@ public:
     ParticleEditor();
     ~ParticleEditor() {};
 
+    ParticleEditor(const ParticleEditor&) = delete;
+
     void update(sf::Vector2f mousePosWorld, float dt);
     void openWindow();
     void closeWindow();
@@ -26,24 +28,20 @@ private:
     int currentEmitter;
     Emitter emitto;
 
+    int selectedKeyFrame;
+
     bool repeating;
     bool lightOn;
     float zoomLevel;
 
     struct PlayVariables
     {
-        float lifeSpan, particleLife, spawnRate, speed;
-        int initailParticles, pps, angle, cone;
-        int color[4];
-        int colorDev[4];
+        float lifeSpan;
+        int initailParticles;
+        float color[4];
+        float colorDev[4];
         int clearColor[3];
-        sf::Vector2f size;
-        bool gravityOn;
-        float gravity;
         bool collisionOn;
-        float jitter;
-        float friction;
-        float particleLightRadius;
         bool hasLight;
 
         friend std::istream& operator>>(std::istream& in, PlayVariables& variables)
@@ -51,23 +49,9 @@ private:
             std::string trash;
             in >> trash >> trash;
             in >> variables.initailParticles;
-            in >> variables.pps;
             in >> variables.lifeSpan;
-            in >> variables.particleLife;
-            in >> variables.speed;
-            in >> variables.spawnRate;
-            in >> variables.angle;
-            in >> variables.cone;
-            in >> variables.size.x >> variables.size.y;
-            in >> variables.color[0] >> variables.color[1] >> variables.color[2] >> variables.color[3];
-            in >> variables.colorDev[0] >> variables.colorDev[1] >> variables.colorDev[2] >> variables.colorDev[3];
-            in >> variables.gravityOn;
-            in >> variables.gravity;
             in >> variables.collisionOn;
-            in >> variables.jitter;
-            in >> variables.friction;
             in >> variables.hasLight;
-            in >> variables.particleLightRadius;
             return in;
         };
     };

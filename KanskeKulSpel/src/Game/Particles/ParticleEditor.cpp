@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 #include "Renderer/Renderer.h"
+#include "Misc/ConsoleWindow.h"
 
 namespace fs = std::filesystem;
 
@@ -18,6 +19,7 @@ ParticleEditor::ParticleEditor()
     zoomLevel = 1;
     color = sf::Color(variables.color[0], variables.color[1], variables.color[2], variables.color[3]);
     this->currentEmitter = -1;
+    this->selectedKeyFrame = 0;
 }
 
 void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
@@ -29,25 +31,69 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
     {
         ImGui::Begin("Pickle a Particle", &this->open);
         ImGui::BeginTabBar("Lekrutan");
+
+        if (emitto.getKeyFrameCount() > 0)
+        {
+            if (ImGui::BeginCombo("Keyframe", std::to_string(selectedKeyFrame).c_str()))
+            {
+                for (int i = 0; i < emitto.getKeyFrameCount(); i++)
+                {
+                    if (ImGui::Selectable(std::to_string(i).c_str()))
+                        selectedKeyFrame = i;
+                }
+
+
+                ImGui::EndCombo();
+            }
+        }
+        Emitter::KeyFrame* frame = emitto.getKeyFramePtr(selectedKeyFrame);
+
+        ImGui::Separator();
+
         if (ImGui::BeginTabItem("Particles"))
         {
-            ImGui::DragFloat("Particle lifespan", &variables.particleLife, 1, 0, INT_MAX);
             ImGui::DragFloat("Emitter lifespan", &variables.lifeSpan, 1, 0, INT_MAX);
-            ImGui::DragFloat("Particle speed", &variables.speed, 0.01f, 0, INT_MAX);
-            ImGui::DragFloat("Spawn rate", &variables.spawnRate, 1, 0, INT_MAX);
-            ImGui::DragInt("Initial particles", &variables.initailParticles, 1, 0, INT_MAX);
-            ImGui::DragInt("Particle per spawn", &variables.pps, 1, 1, INT_MAX);
-            ImGui::DragFloat("Size x", &variables.size.x, 0.05f, 0, INT_MAX);
-            ImGui::DragFloat("Size y", &variables.size.y, 0.05f, 0, INT_MAX);
-            ImGui::DragInt("Angle", &variables.angle, 1, 0, 360);
-            ImGui::DragInt("Cone", &variables.cone, 1, 1, 360);
-            ImGui::DragInt4("Color", variables.color, 1, 0, 255);
-            ImGui::DragInt4("Color Deviation", variables.colorDev, 1, 0, 255);
-            ImGui::DragFloat("Friction", &variables.friction, 0.001, 0, 2);
-            ImGui::DragFloat("Jitter", &variables.jitter, 0.001, 0, 1);
-            ImGui::Checkbox("Enable gravity", &variables.gravityOn);
             ImGui::Checkbox("Enable collision", &variables.collisionOn);
-            ImGui::DragFloat("Gravity", &variables.gravity, 0.0001f, -1, 1, "%4f");
+            ImGui::DragInt("Initial particles", &variables.initailParticles, 1, 0, INT_MAX);
+            ImGui::Separator();
+
+            variables.color[0] = frame->color.r / 255.f;
+            variables.color[1] = frame->color.g / 255.f;
+            variables.color[2] = frame->color.b / 255.f;
+            variables.color[3] = frame->color.a / 255.f;
+
+            variables.colorDev[0] = frame->colorDeviation.r / 255.f;
+            variables.colorDev[1] = frame->colorDeviation.g / 255.f;
+            variables.colorDev[2] = frame->colorDeviation.b / 255.f;
+            variables.colorDev[3] = frame->colorDeviation.a / 255.f;
+
+            ImGui::DragFloat("Particle lifespan", &frame->particleLifespan, 1, 0, INT_MAX);
+            ImGui::DragFloat("Particle speed", &frame->speed, 0.01f, 0, INT_MAX);
+            ImGui::DragFloat("Spawn rate", &frame->spawnRate, 1, 0, INT_MAX);
+            ImGui::DragInt("Particle per spawn", &frame->particlesPerSpawn, 1, 1, INT_MAX);
+            ImGui::DragFloat("Size x", &frame->size.x, 0.05f, 0, INT_MAX);
+            ImGui::DragFloat("Size y", &frame->size.y, 0.05f, 0, INT_MAX);
+            ImGui::DragInt("Angle", &frame->emitterAngle, 1, 0, 360);
+            ImGui::DragInt("Cone", &frame->emitterCone, 1, 1, 360);
+            ImGui::ColorEdit4("Color", variables.color);
+            ImGui::ColorEdit4("Color Deviation", variables.colorDev);
+            ImGui::DragFloat("Friction", &frame->frictionValue, 0.001, 0, 2);
+            ImGui::DragFloat("Jitter", &frame->jitterAmount, 0.001, 0, 1);
+            ImGui::Checkbox("Enable gravity", &frame->affectedByGravity);
+            ImGui::DragFloat("Gravity", &frame->gravity, 0.0001f, -1, 1, "%4f");
+
+            color.r = variables.color[0] * 255;
+            color.g = variables.color[1] * 255;
+            color.b = variables.color[2] * 255;
+            color.a = variables.color[3] * 255;
+            frame->color = color;
+
+            color.r = variables.colorDev[0] * 255;
+            color.g = variables.colorDev[1] * 255;
+            color.b = variables.colorDev[2] * 255;
+            color.a = variables.colorDev[3] * 255;
+            frame->colorDeviation = color;
+
 
             ImGui::EndTabItem();
         }
@@ -56,28 +102,31 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
         {
             if (ImGui::Button("Add light"))
             {
-                emitto.addLight(sf::Vector2f(0, 0), 100, sf::Vector3f(1, 1, 1));
+                Emitter::EmitterLight light(emitto.getEmitterPos(), 100, sf::Vector3f(1, 1, 1));
+                frame->lights.push_back(light);
             }
 
-            ImGui::DragFloat("Particle light radius", &variables.particleLightRadius, 1, 0, 200);
+            ImGui::DragFloat("Particle light radius", &frame->particleLightRadius, 1, 0, 200);
+            ImGui::Separator();
             ImGui::Separator();
             ImGui::BeginChild("LightList", sf::Vector2i(0, -200));
-
-            for (size_t i = 0; i < emitto.getLights()->size(); i++)
+            
+            for (size_t i = 0; i < frame->lights.size(); i++)
             {
                 std::string collabel = "color " + std::to_string(i);
                 std::string poslabel = "pos " + std::to_string(i);
                 std::string radiuslabel = "radius " + std::to_string(i);
 
-                Emitter::EmitterLight* light = &emitto.getLights()->at(i);
+                Emitter::EmitterLight* light = &frame->lights[i];
 
                 float col[3] = { light->initialColor.x, light->initialColor.y, light->initialColor.z };
-                float pos[2] = { light->offset.x, light->offset.y };
-                float radius = light->light->radius;
+                float pos[2] = { light->initialOffset.x, light->initialOffset.y };
+                float radius = light->initialRadius;
 
                 //Gotta make a new light if radius is altered. Thanks shadows
                 if (ImGui::DragFloat(radiuslabel.c_str(), &radius, 1, 10, 3000))
                 {
+                    light->initialRadius = radius;
                     delete light->light;
                     light->light = new Light(light->offset, radius, light->initialColor);
                 }
@@ -96,15 +145,48 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
                 ImGui::Separator();
 
 
-                light->offset.x = pos[0];
-                light->offset.y = pos[1];
-                light->light->pos = emitto.getEmitterPos() + light->offset;
+                light->initialOffset.x = pos[0];
+                light->initialOffset.y = pos[1];
+                light->light->pos = emitto.getEmitterPos() + light->initialOffset;
             }
 
 
             ImGui::EndChild();
             ImGui::Separator();
 
+
+            ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Keyframes"))
+        {
+            float min = 0;
+            ImGui::BeginChild("Achildname", sf::Vector2f(0, -200));
+            for (int i = 0; i < emitto.getKeyFrameCount(); i++)
+            {
+                if (i > 0)
+                    min = emitto.getKeyFramePtr(i - 1)->timeStamp + 1;
+
+                    emitto.getKeyFramePtr(i)->timeStamp = std::max(min, emitto.getKeyFramePtr(i)->timeStamp);
+
+                std::string label = "Timestamp #" + std::to_string(i);
+                ImGui::DragFloat(label.c_str(), &emitto.getKeyFramePtr(i)->timeStamp, 1, min, 1000000);
+            }
+            ImGui::EndChild();
+            ImGui::Separator();
+            if (ImGui::Button("Add keyframe"))
+                emitto.addKeyFrame(++selectedKeyFrame);
+
+
+            if (emitto.getKeyFrameCount() > 1)
+            {
+                ImGui::SameLine();
+                if (ImGui::Button("Remove keyframe"))
+                {
+                    emitto.removeKeyFrame(selectedKeyFrame--);
+                    selectedKeyFrame = std::max(selectedKeyFrame, 0);
+                }
+            }
 
             ImGui::EndTabItem();
         }
@@ -133,6 +215,7 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
         }
         ImGui::EndTabBar();
 
+        ImGui::Separator();
         ImGui::DragInt3("Background color", variables.clearColor, 1, 0, 255);
         ImGui::Checkbox("Enable light", &lightOn);
         ImGui::SameLine();
@@ -143,7 +226,7 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
 
         ImGui::Text("Emitter: %s,", fileNames[currentEmitter].c_str());
         ImGui::SameLine();
-        ImGui::Text("Particles: %d,", emitto.getNrOfParticles());
+        ImGui::Text("Particles: %d,", emitto.getParticleCount());
         ImGui::SameLine();
         ImGui::Text("Microseconds to update: %d", particleUpdateTime.asMicroseconds());
 
@@ -162,9 +245,7 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
 
         ImGui::SameLine();
         if (ImGui::Button("New!"))
-        {
             restart(&emitto);
-        }
 
         ImGui::SameLine();
         static bool deleteWindowOpen = false;
@@ -265,21 +346,10 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
         if (emitto.isVeryDead())
             emitto.reset();
 
-    emitto.setParticleLifeSpan(variables.particleLife);
     emitto.setEmitterLifeSpan(variables.lifeSpan);
-    emitto.setSpeed(variables.speed);
-    emitto.setSpawnRate(variables.spawnRate);
     emitto.setInitialParticles(variables.initailParticles);
-    emitto.setParticlesPerSpawn(variables.pps);
-    emitto.setSize(variables.size);
-    emitto.setAffectedByGravity(variables.gravityOn);
-    emitto.setGravity(variables.gravity);
     emitto.setColliding(variables.collisionOn);
-    emitto.setAngle(variables.angle);
-    emitto.setConeSize(variables.cone);
-    emitto.setFriction(variables.friction);
-    emitto.setJitter(variables.jitter);
-    emitto.setParticleLightRadius(variables.particleLightRadius);
+
 
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::T))
@@ -289,17 +359,7 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
     emitto.update(dt);
     particleUpdateTime = updateTimer.getElapsedTime();
 
-    color.r = variables.color[0];
-    color.g = variables.color[1];
-    color.b = variables.color[2];
-    color.a = variables.color[3];
-    emitto.setColor(color);
 
-    color.r = variables.colorDev[0];
-    color.g = variables.colorDev[1];
-    color.b = variables.colorDev[2];
-    color.a = variables.colorDev[3];
-    emitto.setColorDeviation(color);
 
     emitto.queueLights();
     Renderer::queueDrawable(&emitto);
@@ -480,18 +540,13 @@ sf::VertexArray ParticleEditor::generateGrid(sf::Color color, float size)
 
 void ParticleEditor::restart(Emitter* emitter)
 {
-    variables = { 30000, 3000, 50, 2, 500, 5, 0, 360,
-        sf::Color::Green.r, sf::Color::Green.g, sf::Color::Green.b, sf::Color::Green.a,
+    variables = { 30000, 30,
+        0, 255, 0, 255,
         0, 0, 0, 0,
         0, 0, 0, 
-        sf::Vector2f(2, 5), 
-        false, 0.1f, //Gravity
         false,
-        0, 1, 50 };
+        false};
 
-    sf::Color color(variables.color[0], variables.color[1], variables.color[2], variables.color[3]);
-
-
-    *emitter = Emitter(sf::Vector2f(500, 500), variables.size, color, variables.spawnRate, variables.speed, variables.particleLife, variables.lifeSpan, variables.initailParticles, variables.pps);
+    *emitter = Emitter(sf::Vector2f(500, 500), sf::Vector2f(1, 1), color, 5, 5, 5, variables.lifeSpan, variables.initailParticles, 5);
 
 }
