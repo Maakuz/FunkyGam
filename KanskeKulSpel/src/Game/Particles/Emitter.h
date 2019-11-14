@@ -216,6 +216,10 @@ public:
     friend std::istream& operator>>(std::istream& in, Emitter& emitter);
 
     void setEmitterLifeSpan(float lifespan);
+    float getEmitterLifeSpan()const { return lifespan; };
+    void setElapsedTime(float time);
+    float getElapsedTime() const { return elapsedTime; };
+    void setFreeze(bool freeze) { this->freezeTime = freeze; };
 
     KeyFrame* getKeyFramePtr(int frame) { return &keyFrames[frame]; };
     int getKeyFrameCount() const { return keyFrames.size(); };
@@ -256,7 +260,6 @@ private:
     int initialParticles;
 
     float lifespan;
-    float lifespanCounter;
 
     float spawnCounter;
 
@@ -264,6 +267,7 @@ private:
     bool colliding;
 
     bool emitterDead;
+    bool freezeTime;
 
     bool particlesHasLight;
 

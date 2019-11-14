@@ -48,6 +48,17 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
         }
         Emitter::KeyFrame* frame = emitto.getKeyFramePtr(selectedKeyFrame);
 
+        float elapsedTime = emitto.getElapsedTime();
+        float max = std::max(emitto.getEmitterLifeSpan(), emitto.getKeyFramePtr(emitto.getKeyFrameCount() - 1)->timeStamp) + 1;
+        
+        if (ImGui::SliderFloat("Timelapse", &elapsedTime, 0, max))
+            emitto.setElapsedTime(elapsedTime);
+
+        ImGui::SameLine();
+        static bool freeze = false;
+        if (ImGui::Checkbox("Freeze", &freeze))
+            emitto.setFreeze(freeze);
+
         ImGui::Separator();
 
         if (ImGui::BeginTabItem("Particles"))
@@ -461,6 +472,7 @@ void ParticleEditor::load(int id)
         file.close();
         emitto.reset();
         this->currentEmitter = id;
+        this->selectedKeyFrame = 0;
     }
 }
 

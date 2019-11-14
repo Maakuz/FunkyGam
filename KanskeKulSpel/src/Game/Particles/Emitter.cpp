@@ -13,6 +13,7 @@ Emitter::Emitter(sf::Vector2f pos, sf::Vector2f particleSize, sf::Color color,
     this->elapsedTime = 0;
     this->prev = 0;
     this->next = 0;
+    this->freezeTime = false;
 
     KeyFrame frame(0);
 
@@ -55,7 +56,6 @@ Emitter& Emitter::operator=(const Emitter& other)
     initialParticles = other.initialParticles;
 
     lifespan = other.lifespan;
-    lifespanCounter = other.lifespanCounter;
 
 
     spawnCounter = other.spawnCounter;
@@ -90,7 +90,8 @@ Emitter::~Emitter()
 
 void Emitter::update(float dt)
 {
-    elapsedTime += dt;
+    if (!freezeTime)
+        elapsedTime += dt;
 
     if (keyFrames[next].timeStamp < elapsedTime)
     {
@@ -115,8 +116,7 @@ void Emitter::update(float dt)
 
     if (!immortalEmitter)
     {
-        this->lifespanCounter += dt;
-        if (this->lifespanCounter > this->lifespan)
+        if (this->elapsedTime > this->lifespan)
         {
             this->emitterDead = true;
             for (KeyFrame& frame : keyFrames)
@@ -315,6 +315,21 @@ void Emitter::setEmitterLifeSpan(float lifespan)
     }
 }
 
+void Emitter::setElapsedTime(float time)
+{
+    prev = 0;
+    next = 0;
+    this->elapsedTime = time;
+    for (int i = 0; i < keyFrames.size() && next == 0; i++)
+    {
+        if (keyFrames[i].timeStamp < elapsedTime)
+            prev = i;
+
+        else
+            next = i;
+    }
+}
+
 void Emitter::addKeyFrame(int pos)
 {
     KeyFrame next = keyFrames[pos - 1];
@@ -325,7 +340,7 @@ void Emitter::addKeyFrame(int pos)
 void Emitter::kill()
 {
     this->immortalEmitter = false;
-    this->lifespanCounter = this->lifespan + 1;
+    this->elapsedTime = this->lifespan + 1;
 }
 
 //USE RESPONSIBLY
@@ -351,7 +366,6 @@ bool Emitter::isVeryDead() const
 void Emitter::reset()
 {
     this->spawnCounter = 0;
-    this->lifespanCounter = 0;
     this->emitterDead = false;
     this->elapsedTime = 0;
     this->next = 0; //if this does not exist we have problems'
