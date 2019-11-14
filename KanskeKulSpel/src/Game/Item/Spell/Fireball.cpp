@@ -40,12 +40,12 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest)
 
 void Fireball::update(float dt)
 {
-    float velocity = (1 - powf((length(this->pos - this->destination) / distance), 6))* dt * topSpeed;
+    float t = std::max(0.f, 1 - (length(this->pos - this->destination) / distance));
+    float velocity = (1 - powf(t, 6))* dt * topSpeed;
     pos += direction * velocity;
     trail->setEmitterPos(pos);
 
-    printfCon("%f", velocity);
-    if (velocity < 0.5f)
+    if (velocity < 0.2f)
     {
         this->impacted = true;
         this->explosion.center = this->pos;

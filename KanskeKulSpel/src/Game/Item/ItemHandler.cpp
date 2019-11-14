@@ -129,7 +129,10 @@ void ItemHandler::update(float dt, Player* player)
     for (int i = 0; i < spells.size(); i++)
     {
         if (spells[i]->isComplete())
+        {
+            delete spells[i];
             unordered_erase(spells, spells.begin() + i--);
+        }
 
         else
             spells[i]->update(dt);

@@ -137,7 +137,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
             closestPoint = nullptr;
 
             //Open or close all with the same angle
-            do 
+            do
             {
                 if (open.count(point->parent))
                 {
@@ -155,42 +155,45 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
             } while (point < points.end() && abs((point - 1)->angle - point->angle) < EPSYLONE);
 
             //do stuff
-            sf::Vector2f dir = (point - 1)->p - light->pos;
-            normalize(dir);
-            Line* newClosest = findClosestLine(open, light->pos, dir);
-
-            if (closestPoint)
+            if (!open.empty())
             {
-                sf::Vector2f p2 = origo + (closestPoint->p - light->pos);
-                tri.setPoint(2, p2);
-                triangles.push_back(tri);
+                sf::Vector2f dir = (point - 1)->p - light->pos;
+                normalize(dir);
+                Line* newClosest = findClosestLine(open, light->pos, dir);
 
-                sf::Vector2f p1;
-                float t = findIntersectionPoint(light->pos, dir, newClosest->p1, newClosest->p2);
+                if (closestPoint)
+                {
+                    sf::Vector2f p2 = origo + (closestPoint->p - light->pos);
+                    tri.setPoint(2, p2);
+                    triangles.push_back(tri);
 
-                p1 = origo + (dir * t);
-                tri.setPoint(1, p1);
+                    sf::Vector2f p1;
+                    float t = findIntersectionPoint(light->pos, dir, newClosest->p1, newClosest->p2);
 
-                closestPoint = nullptr;
+                    p1 = origo + (dir * t);
+                    tri.setPoint(1, p1);
+
+                    closestPoint = nullptr;
+                }
+
+                else if (newClosest != closest)
+                {
+                    sf::Vector2f p2;
+                    float t = findIntersectionPoint(light->pos, dir, closest->p1, closest->p2);
+
+                    p2 = origo + (dir * t);
+                    tri.setPoint(2, p2);
+                    triangles.push_back(tri);
+
+                    sf::Vector2f p1;
+                    t = findIntersectionPoint(light->pos, dir, newClosest->p1, newClosest->p2);
+                    p1 = origo + (dir * t);
+                    tri.setPoint(1, p1);
+
+                }
+
+                closest = newClosest;
             }
-
-            else if (newClosest != closest)
-            {
-                sf::Vector2f p2;
-                float t = findIntersectionPoint(light->pos, dir, closest->p1, closest->p2);
-
-                p2 = origo + (dir * t);
-                tri.setPoint(2, p2);
-                triangles.push_back(tri);
-
-                sf::Vector2f p1;
-                t = findIntersectionPoint(light->pos, dir, newClosest->p1, newClosest->p2);
-                p1 = origo + (dir * t);
-                tri.setPoint(1, p1);
-
-            }
-
-            closest = newClosest;
         }
         //End case
         tri.setPoint(2, firstPos);

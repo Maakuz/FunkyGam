@@ -3,14 +3,14 @@ Name: Fireball
 [Specific]
 TickDamage: 3
 MaximumTravel: 600
-TopSpeed: 0.5
+TopSpeed: 1.5
 MinCharge: 300
 MaxCharge: 1000
 TrailEmitterID: 1
 ImpactEmitterID: 0
 [Explosion]
 Damage: 50
-Radius: 100
+Radius: 200
 Falloff: 0.3
 Type: 0
 

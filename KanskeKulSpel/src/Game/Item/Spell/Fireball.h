@@ -49,6 +49,7 @@ private:
     int maxCharge;
     int trailEmitterID;
     int impactEmitterID;
+    int chargeEmitterID;
     Explosion explosion;
 
     Emitter* trail;
