@@ -48,7 +48,7 @@ private:
 
     int exitReached;
 
-    void move(float dt);
+    void updateMove(float dt);
     void debugMove(float dt);
     void updateItems(float dt, sf::Vector2f mousePos);
 

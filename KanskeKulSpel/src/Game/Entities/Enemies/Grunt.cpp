@@ -119,8 +119,8 @@ void Grunt::updateIdle(float dt)
         this->desicionTimeOver();
     }
 
-    sf::Vector2f roampointToPos = this->pos - this->currentRoamPoint;
-    if (length(this->pos - this->currentRoamPoint) > this->roamDistance)
+    sf::Vector2f roampointToPos = this->getPosition() - this->currentRoamPoint;
+    if (length(this->getPosition() - this->currentRoamPoint) > this->roamDistance)
     {
         if (roampointToPos.x > 0)
             forcedDirection = Direction::left;
@@ -142,18 +142,18 @@ void Grunt::updateChasing(float dt)
         this->searchCounter.reset();
     }
 
-    if (this->getLastKnownPos().x < this->pos.x)
+    if (this->getLastKnownPos().x < this->getPosition().x)
     {
         moveLeft();
     }
 
-    else if (this->getLastKnownPos().x >= this->pos.x)
+    else if (this->getLastKnownPos().x >= this->getPosition().x)
     {
         moveRight();
     }
 
 
-    if (lengthSquared(pos + eyeLevel - getLastKnownPos()) < this->attackDistance * this->attackDistance)
+    if (lengthSquared(getPosition() + eyeLevel - getLastKnownPos()) < this->attackDistance * this->attackDistance)
     {
         if (timeSincePlayerSeen < 200)
         {
@@ -162,7 +162,7 @@ void Grunt::updateChasing(float dt)
         }
     }
 
-    if(timeSincePlayerSeen > 200 && abs(pos.x - getLastKnownPos().x) < 10)
+    if(timeSincePlayerSeen > 200 && abs(getPosition().x - getLastKnownPos().x) < 10)
     {
         drawQuestion.reset();
         state = State::searching;
@@ -173,17 +173,17 @@ void Grunt::updateChasing(float dt)
 
 void Grunt::updateReturning(float dt)
 {
-    if (this->currentRoamPoint.x < this->pos.x)
+    if (this->currentRoamPoint.x < this->getPosition().x)
     {
         moveLeft();
     }
 
-    else if (this->currentRoamPoint.x >= this->pos.x)
+    else if (this->currentRoamPoint.x >= this->getPosition().x)
     {
         moveRight();
     }
 
-    if (abs(pos.x - currentRoamPoint.x) < 10)
+    if (abs(getPosition().x - currentRoamPoint.x) < 10)
     {
         state = State::idle;
     }
@@ -226,7 +226,7 @@ void Grunt::handleCollision(const Entity* collider)
         if (this->momentum.y > 0 && collider->getCollider().intersects(collider->getCollider().getUp(), this->collider.getDown()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider->up() - this->height();
+            setY(collider->up() - this->height());
             grounded = true;
 
             if (flying)
@@ -240,20 +240,20 @@ void Grunt::handleCollision(const Entity* collider)
         if (collider->getCollider().intersects(collider->getCollider().getDown(), this->collider.getUp()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider->down();
+            setY(collider->down());
         }
 
         if (collider->getCollider().intersects(collider->getCollider().getLeft(), this->collider.getRight()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider->left() - this->width();
+            setX(collider->left() - this->width());
             this->jump();
         }
 
         if (collider->getCollider().intersects(collider->getCollider().getRight(), this->collider.getLeft()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider->right();
+            setX(collider->right());
             this->jump();
         }
     }
@@ -293,7 +293,7 @@ void Grunt::handleExplosion(const Explosion& explosion)
         this->drawQuestion.reset();
         searchCounter.reset();
 
-        if (explosion.center.x < this->pos.x)
+        if (explosion.center.x < this->getPosition().x)
             this->moveLeft();
 
         else

@@ -16,7 +16,6 @@ Entity::Entity(sf::Vector2f pos, const sf::Texture * texture)
 
     else
         addCollision(Collider::AABB(pos, sf::Vector2f(0, 0)));
-
 }
 
 void Entity::addCollision(Collider::AABB aabb)
@@ -41,6 +40,7 @@ void Entity::addCollision(Collider::AABB aabb)
 
     collider.setAABB(aabb);
     this->size = aabb.size;
+    this->centerPos = this->pos + (this->size * 0.5f);
 }
 
 void Entity::addCollision()
@@ -68,12 +68,29 @@ void Entity::setSize(sf::Vector2f size)
     this->size = size;
     this->spriteOffset.y = -(abs(sprite.getTextureRect().height)-size.y);
     collider.setSize(size);
+    this->centerPos = this->pos + (this->size * 0.5f);
+}
+
+void Entity::move(sf::Vector2f offset)
+{
+    setPosition(this->pos + offset);
 }
 
 void Entity::setPosition(sf::Vector2f pos)
 {
     this->pos = pos;
+    this->centerPos = this->pos + (this->size * 0.5f);
     updateSpritePosition();
+}
+
+void Entity::setX(float xPos)
+{
+    setPosition(sf::Vector2f(xPos, this->pos.y));
+}
+
+void Entity::setY(float yPos)
+{
+    setPosition(sf::Vector2f(this->pos.x, yPos));
 }
 
 void Entity::setSpriteOffset(sf::Vector2f offset)
@@ -84,14 +101,6 @@ void Entity::setSpriteOffset(sf::Vector2f offset)
 void Entity::moveSpriteOffset(sf::Vector2f distance)
 {
     this->spriteOffset += distance;
-}
-
-sf::Vector2f Entity::getCenterPos() const
-{
-    sf::Vector2f center;
-    center.x = this->pos.x + (this->size.x / 2);
-    center.y = this->pos.y + (this->size.y / 2);
-    return center;
 }
 
 float Entity::left() const

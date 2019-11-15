@@ -50,7 +50,7 @@ void MovingEntity::update(float dt)
 
 
 
-    this->pos += momentum;
+    this->move(momentum);
     
     this->updateSpritePosition();
 
@@ -92,7 +92,7 @@ void MovingEntity::handleCollision(const Entity* collider)
         if (this->momentum.y > 0 && collider->getCollider().intersects(collider->getCollider().getUp(), this->collider.getDown()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider->up() - this->height();
+            setY(collider->up() - this->height());
             grounded = true;
         }
 
@@ -100,19 +100,19 @@ void MovingEntity::handleCollision(const Entity* collider)
         if (this->momentum.y < 0 && collider->getCollider().intersects(collider->getCollider().getDown(), this->collider.getUp()))
         {
             this->momentum.y = 0;
-            this->pos.y = collider->down();
+            setY(collider->down());
         }
 
         if (collider->getCollider().intersects(collider->getCollider().getLeft(), this->collider.getRight()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider->left() - this->width();
+            setX(collider->left() - this->width());
         }
 
         if (collider->getCollider().intersects(collider->getCollider().getRight(), this->collider.getLeft()))
         {
             this->momentum.x *= -0.5f;
-            this->pos.x = collider->right();
+            setX(collider->right());
         }
     }
 

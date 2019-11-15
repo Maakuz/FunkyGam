@@ -34,7 +34,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 
     else
     {
-        this->pos = pos;
+        this->setPosition(pos);
         this->distance = std::min(length(pos - dest), maxTravelDistance);
         this->direction = dest - pos;
         normalize(this->direction);
@@ -46,18 +46,18 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 
 void Fireball::update(float dt)
 {
-    float t = std::max(0.f, 1 - (length(this->pos - this->destination) / distance));
+    float t = std::max(0.f, 1 - (length(this->getPosition() - this->destination) / distance));
     float velocity = (1 - powf(t, 6))* dt * topSpeed;
-    pos += direction * velocity;
-    trail->setEmitterPos(pos);
+    move(direction * velocity);
+    trail->setEmitterPos(getPosition());
 
     if (velocity < 0.2f)
     {
         this->complete = true;
-        this->explosion.center = this->pos;
+        this->explosion.center = this->getPosition();
         trail->kill();
         CollisionHandler::queueExplosion(this->explosion);
-        ParticleHandler::addEmitter(this->impactEmitterID, this->pos);
+        ParticleHandler::addEmitter(this->impactEmitterID, this->getPosition());
     }
 }
 

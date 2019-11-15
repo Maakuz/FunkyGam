@@ -217,6 +217,9 @@ public:
     void handleCollision(const std::vector<Entity*>* entities);
     void kill();
 
+    //The kill is quicker, the function is probably slower
+    void killQuick();
+
     friend std::ostream& operator<<(std::ostream& out, const Emitter& emitter);
     friend std::istream& operator>>(std::istream& in, Emitter& emitter);
 

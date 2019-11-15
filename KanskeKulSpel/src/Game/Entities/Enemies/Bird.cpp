@@ -105,8 +105,8 @@ void Bird::updateIdle(float dt)
         this->desicionTimeOver();
     }
 
-    sf::Vector2f roampointToPos = this->pos - this->currentRoamPoint;
-    if (length(this->pos - this->currentRoamPoint) > this->roamDistance && !forcedDirResolved)
+    sf::Vector2f roampointToPos = this->getPosition() - this->currentRoamPoint;
+    if (length(this->getPosition() - this->currentRoamPoint) > this->roamDistance && !forcedDirResolved)
     {
         forcedDirection = Direction::right;
         forcedDirResolved = false;
@@ -200,7 +200,7 @@ void Bird::handleCollision(const Entity* collider)
             this->acceleration.x *= -1;
             this->facingDir = Direction::left;
             this->flipHorizontally();
-            this->pos.x = collider->left() - this->width();
+            this->setX(collider->left() - this->width());
             this->jump();
         }
 
@@ -210,7 +210,7 @@ void Bird::handleCollision(const Entity* collider)
             this->acceleration.x *= -1;
             this->facingDir = Direction::right;
             this->flipHorizontally();
-            this->pos.x = collider->right();
+            this->setX(collider->right());
             this->jump();
         }
 
@@ -220,7 +220,7 @@ void Bird::handleCollision(const Entity* collider)
         {
             this->momentum.y = 0;
             this->acceleration.y *= -1;
-            this->pos.y = collider->up() - this->height();
+            this->setY(collider->up() - this->height());
             grounded = true;
         }
 
@@ -229,7 +229,7 @@ void Bird::handleCollision(const Entity* collider)
         {
             this->momentum.y = 0;
             this->acceleration.y *= -1;
-            this->pos.y = collider->down();
+            this->setY(collider->down());
         }
     }
 

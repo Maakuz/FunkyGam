@@ -54,7 +54,7 @@ void SpellComp::killEmitter()
 {
     if (channelEmitter)
     {
-        channelEmitter->kill();
+        channelEmitter->killQuick();
         channelEmitter = nullptr;
     }
 }

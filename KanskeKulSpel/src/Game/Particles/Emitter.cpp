@@ -330,6 +330,14 @@ void Emitter::kill()
     this->elapsedTime = this->lifespan + 1;
 }
 
+void Emitter::killQuick()
+{
+    this->kill();
+
+    for (Particle* particle : this->particles)
+        particle->lifespan = std::min(particle->lifespan, 100.f);
+}
+
 //USE RESPONSIBLY
 void Emitter::setParticleHasLight(bool hasLight)
 { 

@@ -71,7 +71,7 @@ void Enemy::notifyEnemy(sf::Vector2f playerPos)
 
 void Enemy::spawn(sf::Vector2f pos)
 {
-    this->pos = pos;
+    this->setPosition(pos);
     this->startPoint = pos;
     this->lastKnownPlayerPos = pos;
     this->currentRoamPoint = pos;
@@ -96,7 +96,7 @@ float Enemy::getVisionRatingAt(float distance) const
 
 sf::Vector2f Enemy::getEyePos() const
 {
-    return this->pos + this->eyeLevel;
+    return this->getPosition() + this->eyeLevel;
 }
 
 void Enemy::moveLeft()

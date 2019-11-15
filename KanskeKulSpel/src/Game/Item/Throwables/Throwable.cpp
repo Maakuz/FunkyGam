@@ -43,12 +43,12 @@ void Throwable::update(float dt)
     {
         detonated = true;
         this->explosionData.center = getCenterPos();
-        ParticleHandler::addEmitter(this->particleEffectID, this->pos + (this->getSize() / 2.f));
+        ParticleHandler::addEmitter(this->particleEffectID, this->getPosition() + (this->getSize() / 2.f));
     }
 
     momentum.y += GRAVITY * dt * this->mass;
 
-    this->pos += momentum;
+    move(momentum);
 
     this->updateSpritePosition();
 }
@@ -74,26 +74,26 @@ void Throwable::handleCollision(const Entity* colliderObj)
         if (colliderObj->getCollider().intersects(colliderObj->getCollider().getLeft(), this->collider.getAABB()))
         {
             this->momentum.x *= -bounce;
-            this->pos.x = colliderObj->getPosition().x - this->getSize().x;
+            setX(colliderObj->getPosition().x - this->getSize().x);
         }
 
         else if (colliderObj->getCollider().intersects(colliderObj->getCollider().getRight(), this->collider.getAABB()))
         {
             this->momentum.x *= -bounce;
-            this->pos.x = colliderObj->getPosition().x + colliderObj->getSize().x;
+            setX(colliderObj->getPosition().x + colliderObj->getSize().x);
         }
 
         else if (this->momentum.y > 0 && colliderObj->getCollider().intersects(colliderObj->getCollider().getUp(), this->collider.getAABB()))
         {
             this->momentum.y *= -bounce;
             this->momentum.x *= 0.96f;
-            this->pos.y = colliderObj->getPosition().y - this->getSize().y;
+            setY(colliderObj->getPosition().y - this->getSize().y);
         }
 
         else if (colliderObj->getCollider().intersects(colliderObj->getCollider().getDown(), this->collider.getAABB()))
         {
             this->momentum.y *= bounce;
-            this->pos.y = colliderObj->getPosition().y + colliderObj->getSize().y;
+            setY(colliderObj->getPosition().y + colliderObj->getSize().y);
         }
     }
 
@@ -111,7 +111,7 @@ void Throwable::addCollisionMomentum(sf::Vector2f colliderMomentum, sf::Vector2f
 {
     this->collisionMomentum = Collider::calculateCollisionForceOnObject(this->getCenterPos(), colliderPos, this->momentum, colliderMomentum, this->mass, colliderMass);
     this->addedMomentum = true;
-    this->pos += colliderMomentum;
+    this->move(colliderMomentum);
 }
 
 std::istream& Throwable::readSpecific(std::istream& in)

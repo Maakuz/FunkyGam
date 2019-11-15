@@ -18,14 +18,23 @@ public:
     virtual void flipHorizontally();
 
     const Collider& getCollider() const { return this->collider; };
+
     sf::Vector2f getSize() const { return this->size; };
     void setSize(sf::Vector2f size);
+
+    void move(sf::Vector2f offset);
     void setPosition(sf::Vector2f pos);
+    void setX(float xPos);
+    void setY(float yPos);
     sf::Vector2f getPosition() const { return this->pos; };
+
     void setSpriteOffset(sf::Vector2f offset);
     sf::Vector2f getSpriteOffset() const { return this->spriteOffset; };
     void moveSpriteOffset(sf::Vector2f distance);
-    sf::Vector2f getCenterPos() const;
+
+    sf::Vector2f getCenterPos() const { return this->centerPos; };
+    const sf::Vector2f* getCenterPosPtr() const { return &this->centerPos; };
+
     const sf::Texture* getTexture() const { return this->sprite.getTexture(); };
 
     //Might need to do more stuff if dimensions are changed
@@ -49,13 +58,16 @@ protected:
     void updateSpritePosition();
     
     Collider collider;
-    sf::Vector2f pos;
     
+    const sf::Vector2f* getPosPtr() const { return &this->pos; };
+
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
 
+    sf::Vector2f pos;
     sf::Vector2f spriteOffset;
     sf::Vector2f size;
+    sf::Vector2f centerPos;
     bool flipped;
     sf::Sprite sprite;
 };

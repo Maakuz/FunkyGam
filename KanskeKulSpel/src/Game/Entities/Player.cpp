@@ -13,7 +13,7 @@
 #define TESTING false
 
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
-    :MovingEntity(data, pos), spellComp(&this->pos)
+    :MovingEntity(data, pos), spellComp(this->getCenterPosPtr())
 {
     this->collider.addComponent(Collider::ColliderKeys::player);
     this->collider.addComponent(Collider::ColliderKeys::character);
@@ -37,33 +37,33 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
     
-    static sf::Vector2f* posP = &this->pos; //testing
-    ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
-        {
-            if (args.size() >= 2)
-            {
-                try
-                {
-                    int x = std::stoi(args[0]);
-                    int y = std::stoi(args[1]);
+    //static sf::Vector2f* posP = this->getPosPtr(); //testing
+    //ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
+    //    {
+    //        if (args.size() >= 2)
+    //        {
+    //            try
+    //            {
+    //                int x = std::stoi(args[0]);
+    //                int y = std::stoi(args[1]);
 
-                    posP->x = x;
-                    posP->y = y;
-                }
-                catch (const std::exception & e)
-                {
-                    std::string ret = "Not valid coordinates. ";
-                    ret.append(e.what());
-                    return ret;
-                }
-            }
+    //                posP->x = x;
+    //                posP->y = y;
+    //            }
+    //            catch (const std::exception & e)
+    //            {
+    //                std::string ret = "Not valid coordinates. ";
+    //                ret.append(e.what());
+    //                return ret;
+    //            }
+    //        }
 
-            else
-                return "missing argument int x, int y";
+    //        else
+    //            return "missing argument int x, int y";
 
 
-            return "Position set";
-        });
+    //        return "Position set";
+    //    });
 
     ConsoleWindow::get().addCommand("debugMode", [&](Arguments args)->std::string
         {
@@ -131,7 +131,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
     }
 
     if (!noClip)
-        this->move(dt);
+        this->updateMove(dt);
 
     else
         this->debugMove(dt);
@@ -173,7 +173,7 @@ void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
         this->health = this->maxHealth;
 }
 
-void Player::move(float dt)
+void Player::updateMove(float dt)
 {
     this->acceleration.x = 0;
     this->acceleration.y = 0;
@@ -241,12 +241,12 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
         {
             if (dynamic_cast<const Throwable*>(ItemHandler::getTemplate(itemID)))
             {
-                sf::Vector2f direction = mousePos - this->pos - sf::Vector2f(16, 10);
+                sf::Vector2f direction = mousePos - this->getPosition() - sf::Vector2f(16, 10);
                 float distance = std::min(length(direction), 400.f) / 400.f;
                 normalize(direction);
                 direction *= this->throwingPower * distance;
 
-                ProjectileHandler::addThrowable(itemID, this->pos, direction, this);
+                ProjectileHandler::addThrowable(itemID, this->getPosition(), direction, this);
             }
 
             else if (dynamic_cast<const Tome*>(ItemHandler::getTemplate(itemID)))
@@ -292,7 +292,7 @@ void Player::handleCollision(const Entity* colliderEntity)
                 if (platformPassingCounter.isTimeUp())
                 {
                     this->momentum.y = 0;
-                    this->pos.y = colliderEntity->up() - this->height();
+                    this->setY(colliderEntity->up() - this->height());
                     grounded = true;
                 }
             }
