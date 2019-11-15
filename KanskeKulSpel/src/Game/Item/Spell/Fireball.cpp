@@ -15,7 +15,7 @@ Fireball::Fireball(sf::Vector2f pos)
     this->trailEmitterID = 0;
     this->impactEmitterID = 0;
     this->trail = nullptr;
-    this->impacted = false;
+    this->complete = false;
     this->distance = 0;
     this->topSpeed = 0;
 
@@ -24,18 +24,24 @@ Fireball::Fireball(sf::Vector2f pos)
 
 bool Fireball::isComplete() const
 {
-    return impacted;
+    return complete;
 }
 
 void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 {
-    this->pos = pos;
-    this->distance = std::min(length(pos - dest), maxTravelDistance);
-    this->direction = dest - pos;
-    normalize(this->direction);
+    if (channelTime < this->minCharge)
+        this->complete = true;
 
-    this->destination = pos + (direction * distance);
-    trail = ParticleHandler::addEmitter(trailEmitterID, pos);
+    else
+    {
+        this->pos = pos;
+        this->distance = std::min(length(pos - dest), maxTravelDistance);
+        this->direction = dest - pos;
+        normalize(this->direction);
+
+        this->destination = pos + (direction * distance);
+        trail = ParticleHandler::addEmitter(trailEmitterID, pos);
+    }
 }
 
 void Fireball::update(float dt)
@@ -47,7 +53,7 @@ void Fireball::update(float dt)
 
     if (velocity < 0.2f)
     {
-        this->impacted = true;
+        this->complete = true;
         this->explosion.center = this->pos;
         trail->kill();
         CollisionHandler::queueExplosion(this->explosion);

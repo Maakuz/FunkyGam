@@ -79,11 +79,12 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
             variables.colorDev[3] = frame->colorDeviation.a / 255.f;
 
             ImGui::DragFloat("Particle lifespan", &frame->particleLifespan, 1, 0, INT_MAX);
-            ImGui::DragFloat("Particle speed", &frame->speed, 0.01f, 0, INT_MAX);
+            ImGui::DragFloat("Particle speed", &frame->speed, 0.01f, -INT_MAX, INT_MAX);
             ImGui::DragFloat("Spawn rate", &frame->spawnRate, 1, 0, INT_MAX);
             ImGui::DragInt("Particle per spawn", &frame->particlesPerSpawn, 1, 1, INT_MAX);
             ImGui::DragFloat("Size x", &frame->size.x, 0.05f, 0, INT_MAX);
             ImGui::DragFloat("Size y", &frame->size.y, 0.05f, 0, INT_MAX);
+            ImGui::DragFloat("Offset", &frame->offset, 1, 0);
             ImGui::DragInt("Angle", &frame->emitterAngle, 1, 0, 360);
             ImGui::DragInt("Cone", &frame->emitterCone, 1, 1, 360);
             ImGui::ColorEdit4("Color", variables.color);
@@ -559,6 +560,6 @@ void ParticleEditor::restart(Emitter* emitter)
         false,
         false};
 
-    *emitter = Emitter(sf::Vector2f(500, 500), sf::Vector2f(1, 1), color, 5, 5, 5, variables.lifeSpan, variables.initailParticles, 5);
+    *emitter = Emitter();
 
 }

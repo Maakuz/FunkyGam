@@ -2,13 +2,10 @@
 #include "Renderer/Lighting/LightQueue.h"
 #include "Misc/ConsoleWindow.h"
 
-Emitter::Emitter(sf::Vector2f pos, sf::Vector2f particleSize, sf::Color color, 
-    float spawnRate, float particleSpeed, float particleLife, float emitterLife, 
-    int initialParticles, int particlesPerSpawn, int startAngle, int spread, 
-    float frictionValue, float jitterAmount, float gravity, bool hasCollision)
+Emitter::Emitter()
 {
-    this->colliding = hasCollision;
-    this->initialParticles = initialParticles;
+    this->colliding = false;
+    this->initialParticles = 0;
     this->particlesHasLight = false;
     this->elapsedTime = 0;
     this->prev = 0;
@@ -18,25 +15,25 @@ Emitter::Emitter(sf::Vector2f pos, sf::Vector2f particleSize, sf::Color color,
     KeyFrame frame(0);
 
     this->pos = pos;
-    frame.speed = particleSpeed;
-    frame.spawnRate = spawnRate;
-    frame.size = particleSize;
-    frame.particleLifespan = particleLife;
-    frame.color = color;
-    frame.particlesPerSpawn = particlesPerSpawn;
-    frame.emitterAngle = startAngle;
-    frame.emitterCone = spread;
-    frame.frictionValue = frictionValue;
-    frame.jitterAmount = jitterAmount;
-    frame.gravity = gravity;
+    frame.speed = 1;
+    frame.spawnRate = 100;
+    frame.size = sf::Vector2f(1, 1);
+    frame.particleLifespan = 3000;
+    frame.color = sf::Color::Green;
+    frame.particlesPerSpawn = 1;
+    frame.emitterAngle = 0;
+    frame.emitterCone = 360;
+    frame.frictionValue = 1;
+    frame.jitterAmount = 0;
+    frame.gravity = 0;
+    frame.offset = 0;
 
     frame.affectedByGravity = false;
     frame.particleLightRadius = 50;
-    frame.particleLifespan = particleLife;
 
     keyFrames.push_back(frame);
 
-    this->setEmitterLifeSpan(emitterLife);
+    this->setEmitterLifeSpan(0);
     this->reset();
 }
 
@@ -50,22 +47,13 @@ Emitter& Emitter::operator=(const Emitter& other)
     keyFrames = other.keyFrames;
 
     pos = other.pos;
-
     vertexArray = other.vertexArray;
-
     initialParticles = other.initialParticles;
-
     lifespan = other.lifespan;
-
-
     spawnCounter = other.spawnCounter;
-
     colliding = other.colliding;
-
     immortalEmitter = other.immortalEmitter;
-
     emitterDead = other.emitterDead;
-
     particlesHasLight = other.particlesHasLight;
 
     this->prev = 0;
@@ -93,7 +81,7 @@ void Emitter::update(float dt)
     if (!freezeTime)
         elapsedTime += dt;
 
-    if (keyFrames[next].timeStamp < elapsedTime)
+    while (keyFrames[next].timeStamp < elapsedTime && prev < keyFrames.size() - 1)
     {
         prev = next;
         if (next < keyFrames.size() - 1)
@@ -108,7 +96,6 @@ void Emitter::update(float dt)
     lerpLights(lerp);
     int spawnRate = ((1-lerp) * keyFrames[prev].spawnRate) + (lerp * keyFrames[next].spawnRate);
     int particlesPerSpawn = ((1 - lerp) * keyFrames[prev].particlesPerSpawn) + (lerp * keyFrames[next].particlesPerSpawn);
-    int particleLifespan = ((1 - lerp) * keyFrames[prev].particleLifespan) + (lerp * keyFrames[next].particleLifespan);
     bool affectedByGravity = keyFrames[prev].affectedByGravity;
     float gravity = ((1 - lerp) * keyFrames[prev].gravity) + (lerp * keyFrames[next].gravity);
     float frictionValue = ((1 - lerp) * keyFrames[prev].frictionValue) + (lerp * keyFrames[next].frictionValue);
@@ -147,7 +134,7 @@ void Emitter::update(float dt)
 
         particle->lifespan -= dt;
 
-        if (particlesHasLight && particle->lifespan / particleLifespan < 0.1)
+        if (particlesHasLight && particle->lifespan / particle->lifespanMax < 0.1)
         {
             particle->light->color.x *= 0.90f;
             particle->light->color.y *= 0.90f;
@@ -269,8 +256,8 @@ void Emitter::lerpLights(float lerp)
 
             finalVec->at(i).light->pos = this->pos + finalVec->at(i).offset;
 
-            finalVec->at(i).light->color = ((1 - lerp) * keyFrames[prev].lights[i].light->color)
-                + (lerp * keyFrames[next].lights[i].light->color);
+            finalVec->at(i).light->color = ((1 - lerp) * keyFrames[prev].lights[i].initialColor)
+                + (lerp * keyFrames[next].lights[i].initialColor);
 
             finalVec->at(i).light->radius = ((1 - lerp) * keyFrames[prev].lights[i].initialRadius)
                     + (lerp * keyFrames[next].lights[i].initialRadius);
@@ -402,7 +389,8 @@ void Emitter::addParticle(float lerp)
     int particleLightRadius = ((1 - lerp) * keyFrames[prev].particleLightRadius) + (lerp * keyFrames[next].particleLightRadius);
     float particleLifespan = ((1 - lerp) * keyFrames[prev].particleLifespan) + (lerp * keyFrames[next].particleLifespan);
     float speed = ((1 - lerp) * keyFrames[prev].speed) + (lerp * keyFrames[next].speed);
-    
+    float offset = ((1 - lerp) * keyFrames[prev].offset) + (lerp * keyFrames[next].offset);
+
     sf::Color colorDeviation;
     colorDeviation.r = ((1 - lerp) * keyFrames[prev].colorDeviation.r) + (lerp * keyFrames[next].colorDeviation.r);
     colorDeviation.g = ((1 - lerp) * keyFrames[prev].colorDeviation.g) + (lerp * keyFrames[next].colorDeviation.g);
@@ -419,7 +407,10 @@ void Emitter::addParticle(float lerp)
 
     float angle = ((std::rand() % emitterCone) + emitterAngle) * 3.14f / 180.f;
     float randSpeed = ((std::rand() % 25) / 100.f) + speed;
-    Particle* particle = new Particle(sf::Vector2f(randSpeed * std::cos(angle), randSpeed * std::sin(angle)), color, particleLifespan);
+    sf::Vector2f dir(std::cos(angle), std::sin(angle));
+    sf::Vector2f startPos = this->pos + (dir * offset);
+    Particle* particle = new Particle(randSpeed * dir, color, particleLifespan);
+
     if (colorDeviation.r != 0)
         particle->color.r += std::rand() % (int)colorDeviation.r;
     if (colorDeviation.g != 0)
@@ -429,14 +420,14 @@ void Emitter::addParticle(float lerp)
 
     //oh bobby i'm scared
     if (particlesHasLight)
-        particle->light = new Light_NoShadow(this->pos, particleLightRadius, sf::Vector3f(particle->color.r / 255.f, particle->color.g / 255.f, particle->color.b / 255.f));
+        particle->light = new Light_NoShadow(startPos, particleLightRadius, sf::Vector3f(particle->color.r / 255.f, particle->color.g / 255.f, particle->color.b / 255.f));
 
     particles.push_back(particle);
 
-    vertexArray.push_back(sf::Vertex(this->pos + sf::Vector2f(-size.x, -size.y), particle->color));
-    vertexArray.push_back(sf::Vertex(this->pos + sf::Vector2f(size.x, -size.y), particle->color));
-    vertexArray.push_back(sf::Vertex(this->pos + sf::Vector2f(size.x, size.y), particle->color));
-    vertexArray.push_back(sf::Vertex(this->pos + sf::Vector2f(-size.x, size.y), particle->color));
+    vertexArray.push_back(sf::Vertex(startPos + sf::Vector2f(-size.x, -size.y), particle->color));
+    vertexArray.push_back(sf::Vertex(startPos + sf::Vector2f(size.x, -size.y), particle->color));
+    vertexArray.push_back(sf::Vertex(startPos + sf::Vector2f(size.x, size.y), particle->color));
+    vertexArray.push_back(sf::Vertex(startPos + sf::Vector2f(-size.x, size.y), particle->color));
 
 }
 

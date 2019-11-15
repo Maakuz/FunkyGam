@@ -10,12 +10,14 @@ struct Particle
     sf::Color color;
 
     float lifespan;
+    float lifespanMax;
     Light_NoShadow* light;
     Particle(sf::Vector2f velocity, sf::Color color, float life)
     {
         this->velocity = velocity;
         this->color = color;
         this->lifespan = life;
+        this->lifespanMax = life;
         this->light = nullptr;
     }
     Particle(const Particle& other)
@@ -32,6 +34,7 @@ struct Particle
         this->velocity = other.velocity;
         this->color = other.color;
         this->lifespan = other.lifespan;
+        this->lifespanMax = other.lifespanMax;
 
         if (other.light != nullptr)
         {
@@ -110,6 +113,7 @@ public:
         float particleLightRadius;
         float jitterAmount;
         float frictionValue;
+        float offset;
         std::vector<EmitterLight> lights;
         
         KeyFrame(float timeStamp = 0)
@@ -144,6 +148,9 @@ public:
             out << frame.gravity << "\n";
             out << frame.jitterAmount << "\n";
             out << frame.frictionValue << "\n";
+            out << frame.offset << "\n";
+
+
             out << frame.particleLightRadius << "\n";
             out << frame.lights.size() << "\n";
 
@@ -177,6 +184,9 @@ public:
             in >> frame.gravity;
             in >> frame.jitterAmount;
             in >> frame.frictionValue;
+            in >> frame.offset;
+
+
             in >> frame.particleLightRadius;
             in >> lightCount;
 
@@ -196,12 +206,7 @@ public:
         }
     };
 
-    Emitter(sf::Vector2f pos = sf::Vector2f(0, 0), sf::Vector2f particleSize = sf::Vector2f(1, 1),
-        sf::Color color = sf::Color::White, float spawnRate = 500, float particleSpeed = 1,
-        float particleLife = 0, float emitterLife = 0, int initialParticles = 0, 
-        int particlesPerSpawn = 1, int startAngle = 0, int spread = 360, 
-        float frictionValue = 1, float jitterAmount = 0, float gravity = 0.1f,
-        bool hasCollision = false);
+    Emitter();
 
     Emitter(const Emitter& other);
     Emitter& operator=(const Emitter& other);

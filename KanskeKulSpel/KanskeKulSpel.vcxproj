@@ -142,6 +142,7 @@
     <ClCompile Include="..\External\Include\Imgui\SFML-imgui\imgui-SFML.cpp" />
     <ClCompile Include="src\Game\Collision\Collider.cpp" />
     <ClCompile Include="src\Game\Collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\Game\Components\SpellComp.cpp" />
     <ClCompile Include="src\Game\Entities\AnimatedEntity.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Bird.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Enemy.cpp" />
@@ -149,6 +150,7 @@
     <ClCompile Include="src\Game\Entities\Entity.cpp" />
     <ClCompile Include="src\Game\Item\Item.cpp" />
     <ClCompile Include="src\Game\Item\ItemEditor.cpp" />
+    <ClCompile Include="src\Game\Item\ProjectileHandler.cpp" />
     <ClCompile Include="src\Game\Item\RecipeEditor.cpp" />
     <ClCompile Include="src\Game\Item\Spell\Fireball.cpp" />
     <ClCompile Include="src\Game\Item\Spell\Spell.cpp" />
@@ -198,6 +200,7 @@
     <ClInclude Include="src\Game\Collision\Collider.h" />
     <ClInclude Include="src\Game\Collision\CollisionHandler.h" />
     <ClInclude Include="src\Game\Collision\Explosion.h" />
+    <ClInclude Include="src\Game\Components\SpellComp.h" />
     <ClInclude Include="src\Game\Entities\AnimatedEntity.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Bird.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Enemy.h" />
@@ -207,6 +210,7 @@
     <ClInclude Include="src\Game\Item\Item.h" />
     <ClInclude Include="src\Game\Item\ItemEditor.h" />
     <ClInclude Include="src\Game\Interface\Recipe.h" />
+    <ClInclude Include="src\Game\Item\ProjectileHandler.h" />
     <ClInclude Include="src\Game\Item\RecipeEditor.h" />
     <ClInclude Include="src\Game\Item\Spell\Fireball.h" />
     <ClInclude Include="src\Game\Item\Spell\Spell.h" />

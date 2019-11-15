@@ -4,6 +4,7 @@
 #include "Game/Interface/UIHandler.h"
 #include "Game/Item/Item.h"
 #include "Game/Item/GatherItem.h"
+#include "Game/Components/SpellComp.h"
 #include <istream>
 
 class Player : public MovingEntity 
@@ -38,12 +39,13 @@ private:
     int maxHealth;
     float throwingPower;
 
+    SpellComp spellComp;
+
     bool debugMode;
     bool noClip;
     bool returning;
     bool canReturn;
-    bool channelling;
-    float channelTime;
+
     int exitReached;
 
     void move(float dt);

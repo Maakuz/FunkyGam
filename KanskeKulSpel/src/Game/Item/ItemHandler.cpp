@@ -8,18 +8,13 @@
 #include "Game/Misc/VectorFunctions.h"
 #include <sstream>
 
-std::vector<Throwable> ItemHandler::throwables;
-std::vector<Spell*> ItemHandler::spells;
 std::vector<const Item*> ItemHandler::itemTemplates;
-std::unordered_map<std::string, const Spell*> ItemHandler::spellTemplates;
 std::unordered_set<int> ItemHandler::foundItems;
-
 
 ItemHandler::ItemHandler(UIHandler* uiHandler)
 {
     this->ui = uiHandler;
     this->gatherRange = 64;
-    this->drawHitboxes = false;
     ConsoleWindow::get().addCommand("reloadItems", [&](Arguments args)->std::string 
         {
             loadTemplates();
@@ -36,25 +31,11 @@ ItemHandler::ItemHandler(UIHandler* uiHandler)
 
             return "Gather range is now " + args[0] + "!";
         });
-
-    ConsoleWindow::get().addCommand("itemShowHitboxes", [&](Arguments args)->std::string
-        {
-            if (args.empty())
-                return "Missing argument 0 or 1";
-
-            drawHitboxes = std::stoi(args[0]);
-
-
-            return "Hitboxes on mby";
-        });
 }
 
 ItemHandler::~ItemHandler()
 {
     clearTemplates();
-
-    for (Spell* spell : spells)
-        delete spell;
 }
 
 void ItemHandler::loadTemplates()
@@ -84,60 +65,10 @@ void ItemHandler::loadTemplates()
     }
 
     file.close();
-
-    file.open(DATA_PATH "Spells.mop");
-    if (!file.is_open())
-    {
-        system("Pause");
-        exit(-44);
-    }
-
-    while (!file.eof())
-    {
-        std::string spellType;
-        std::string trash;
-
-        file >> spellType;
-
-        if (spellType == "[Fireball]")
-        {
-            Fireball* spell = new Fireball(sf::Vector2f());
-            file >> *spell;
-            this->spellTemplates.emplace(spell->getName(), spell);
-        }
-    }
-
-    file.close();
-
 }
 
 void ItemHandler::update(float dt, Player* player)
 {
-    for (int i = 0; i < throwables.size(); i++)
-    {
-        if (throwables[i].hasDetonated())
-        {
-            CollisionHandler::queueExplosion(throwables[i].getExplosion());
-            unordered_erase(throwables, throwables.begin() + i--);
-        }
-        else
-        {
-            throwables[i].update(dt);
-        }
-    }
-
-    for (int i = 0; i < spells.size(); i++)
-    {
-        if (spells[i]->isComplete())
-        {
-            delete spells[i];
-            unordered_erase(spells, spells.begin() + i--);
-        }
-
-        else
-            spells[i]->update(dt);
-    }
-
     GatherItem* inRange = nullptr;
     auto it = gatherItems.begin();
     while (!gatherItems.empty() && it != gatherItems.end())
@@ -257,36 +188,6 @@ void ItemHandler::spawnShrines(std::vector<CustomHitbox> shrines)
     }
 }
 
-void ItemHandler::queueColliders()
-{
-    for (Throwable& proj : this->throwables)
-        CollisionHandler::queueCollider(&proj);
-}
-
-void ItemHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower)
-{
-    Throwable item(*dynamic_cast<const Throwable*>(itemTemplates[id]));
-    item.throwItem(pos, momentum, thrower);
-    throwables.push_back(item);
-}
-
-void ItemHandler::addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination, float channelTime)
-{
-    const Tome* tome = dynamic_cast<const Tome*>(itemTemplates[tomeID]);
-
-    if (tome)
-    {
-        const Fireball* fire = dynamic_cast<const Fireball*>(spellTemplates[tome->getSpell()]);
-
-        if (fire)
-        {
-            Fireball* newFire = new Fireball(*fire);
-            newFire->cast(pos, destination, channelTime);
-            spells.push_back(newFire);
-        }
-    }
-}
-
 const Item* ItemHandler::getTemplate(int itemID)
 {
     return itemTemplates[itemID];
@@ -351,25 +252,16 @@ void ItemHandler::clearTemplates()
     for (const Item* item : itemTemplates)
         delete item;
 
-    for (auto& pair : spellTemplates)
-        delete pair.second;
-
     itemTemplates.clear();
-    spellTemplates.clear();
 }
 
 void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
-    for (const Throwable& throwable : this->throwables)
-        target.draw(throwable, states);
-
     for (const GatherItem& item : this->gatherItems)
         target.draw(item.item, states);
 }
 
 void ItemHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    if (drawHitboxes)
-        for (const Throwable& throwable : this->throwables)
-            target.draw(throwable.getCollider(), states);
+
 }

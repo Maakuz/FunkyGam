@@ -22,6 +22,7 @@ Game::Game(const sf::RenderWindow* window) :
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
     particleHandler.loadEmitters();
     itemHandler.loadTemplates();
+    projectileHandler.loadTemplates();
     uiHandler.initialize();
 
     ConsoleWindow::get().addCommand("openItemEditor", [&](Arguments args)->std::string 
@@ -133,6 +134,7 @@ void Game::updateLevel(float dt)
 
         PROFILER_START("projectileUpdate");
         this->itemHandler.update(dt, characterHandler.getPlayer());
+        this->projectileHandler.update(dt, characterHandler.getPlayer());
         PROFILER_STOP;
 
         PROFILER_START("particleUpdate");
@@ -163,7 +165,7 @@ void Game::updateLevel(float dt)
         PROFILER_STOP;
 
         PROFILER_START("Collision");
-        this->itemHandler.queueColliders();
+        this->projectileHandler.queueColliders();
         this->characterHandler.queueColliders();
         this->levelHandler.queueColliders();
         PROFILER_START("Part_Collision");
@@ -179,12 +181,13 @@ void Game::updateLevel(float dt)
     Renderer::queueDrawable(&this->levelHandler);
     Renderer::queueDrawable(&this->characterHandler);
     Renderer::queueDrawable(&this->itemHandler);
+    Renderer::queueDrawable(&this->projectileHandler);
     Renderer::queueDrawable(&this->particleHandler);
     Renderer::queueUI(&this->uiHandler);
 
     Renderer::queueDebug(&this->characterHandler);
     Renderer::queueDebug(&this->levelHandler);
-    Renderer::queueDebug(&this->itemHandler);
+    Renderer::queueDebug(&this->projectileHandler);
 }
 
 void Game::loadLevel(const LevelInfo* level)

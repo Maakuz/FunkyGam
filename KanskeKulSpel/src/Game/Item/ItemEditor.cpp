@@ -265,6 +265,20 @@ void ItemEditor::showTomeData(Tome* item)
     std::string spell = item->getSpell();
     ImGui::InputText("Spell name", &spell);
     item->setSpell(spell);
+
+    const std::vector<Emitter>* emitters = ParticleHandler::getEmitterTemplates();
+    int currentEmitter = item->getChannelEmitter();
+    if (ImGui::BeginCombo("Select channell emitter", ParticleHandler::getEmitterName(currentEmitter).c_str()))
+    {
+
+        for (int i = 0; i < emitters->size(); i++)
+        {
+            if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
+                item->setChannelEmitter(i);
+        }
+
+        ImGui::EndCombo();
+    }
 }
 
 void ItemEditor::showFireballData(Fireball* fireball)

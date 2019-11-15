@@ -5,13 +5,15 @@
 #include "Renderer/Lighting/LightQueue.h"
 #include "Imgui/imgui.h"
 #include "Game/Item/ItemHandler.h"
+#include "Game/Item/ProjectileHandler.h"
+#include "Game/Particles/ParticleHandler.h"
 #include "Misc/ConsoleWindow.h"
 #include "Enemies/Grunt.h"
 
 #define TESTING false
 
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
-:MovingEntity(data, pos)
+    :MovingEntity(data, pos), spellComp(&this->pos)
 {
     this->collider.addComponent(Collider::ColliderKeys::player);
     this->collider.addComponent(Collider::ColliderKeys::character);
@@ -23,7 +25,6 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->illumination = 0;
     this->maxHealth = 0;
     this->throwingPower = 0;
-    this->channelTime = 0;
     this->exitReached = -1;
     this->debugMode = false;
     this->noClip = false;
@@ -31,7 +32,6 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->grounded = false;
     this->canReturn = false;
     this->returning = false;
-    this->channelling = false;
     this->gatherableInRange = nullptr;
 
     platformPassingCounter.stopValue = 1000;
@@ -145,7 +145,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
     MovingEntity::update(dt);
 
     updateItems(dt, mousePos);
-
+    spellComp.update(dt);
 
 
     if (this->canReturn && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
@@ -246,25 +246,19 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
                 normalize(direction);
                 direction *= this->throwingPower * distance;
 
-
-                ItemHandler::addThrowable(itemID, this->pos, direction, this);
+                ProjectileHandler::addThrowable(itemID, this->pos, direction, this);
             }
 
             else if (dynamic_cast<const Tome*>(ItemHandler::getTemplate(itemID)))
             {
-                this->channelling = true;
-                channelTime = 0;
+                spellComp.startChannelling(itemID);
             }
         }
     }
 
-    if (channelling)
-        channelTime += dt;
-
-    if (channelling && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
+    if (spellComp.isChannelling()  && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
     {
-        channelling = false;
-        ItemHandler::addSpell(this->ui->getInventory()->getSelectedItemID(), getCenterPos(), mousePos, channelTime);
+        spellComp.castSpell(mousePos);
     }
 
     for (int i = 0; i < 5; i++)
@@ -272,7 +266,7 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
         if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(27 + i))) //keys 1 to 5
         {
             ui->getInventory()->setSelectedItem(i);
-            this->channelling = false;
+            spellComp.stopChannelling();
         }
     }
 

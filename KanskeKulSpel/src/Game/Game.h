@@ -4,6 +4,7 @@
 #include "Collision/CollisionHandler.h"
 #include "Level/LevelHandler.h"
 #include "Game/Item/ItemHandler.h"
+#include "Game/Item/ProjectileHandler.h"
 #include "Particles/ParticleHandler.h"
 #include "Interface/UIHandler.h"
 #include "Interface/HubHandler.h"
@@ -44,10 +45,12 @@ private:
     CollisionHandler collisionHandler;
     LevelHandler levelHandler;
     ItemHandler itemHandler;
+    ProjectileHandler projectileHandler;
     ParticleHandler particleHandler;
     CharacterHandler characterHandler;
     UIHandler uiHandler;
     HubHandler hubHandler;
+
     ItemEditor itemEditor;
     ParticleEditor particleEditor;
     RecipeEditor recipeEditor;

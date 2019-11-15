@@ -199,4 +199,5 @@ EmitterID: 5
 Useable: 1
 [Specific]
 SpellInvoked: Fireball
+channellID: 10
 

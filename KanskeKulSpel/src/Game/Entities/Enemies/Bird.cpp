@@ -1,5 +1,5 @@
 #include "Bird.h"
-#include "Game/Item/ItemHandler.h"
+#include "Game/Item/ProjectileHandler.h"
 #include "Misc/ConsoleWindow.h"
 
 Bird::Bird(AnimationData data, sf::Vector2f pos, UIHandler* ui)
@@ -177,7 +177,7 @@ void Bird::updateAttack(float dt)
 
     if (startBombing && bombCounter.update(dt))
     {
-        ItemHandler::addThrowable(11, getCenterPos(), this->momentum, this);
+        ProjectileHandler::addThrowable(11, getCenterPos(), this->momentum, this);
         bombCounter.reset();
 
         if (bombsPerAttack.update(1))

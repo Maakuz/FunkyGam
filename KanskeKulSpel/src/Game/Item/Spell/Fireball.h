@@ -55,5 +55,5 @@ private:
     sf::Vector2f destination;
     sf::Vector2f direction;
     float distance;
-    bool impacted;
+    bool complete;
 };
