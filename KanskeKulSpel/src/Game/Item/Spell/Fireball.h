@@ -33,6 +33,12 @@ public:
     int getImpactEmitterID() const { return this->impactEmitterID; };
     void setImpactEmitterID(int impactEmitterID) { this->impactEmitterID = impactEmitterID; };
 
+    int getFullTrailEmitterID() const { return this->fullTrailEmitterID; };
+    void setFullTrailEmitterID(int fullTrailEmitterID) { this->fullTrailEmitterID = fullTrailEmitterID; };
+
+    int getFullImpactEmitterID() const { return this->fullImpactEmitterID; };
+    void setFullImpactEmitterID(int fullImpactEmitterID) { this->fullImpactEmitterID = fullImpactEmitterID; };
+
     float getMaxTravelDistance() const { return this->maxTravelDistance; };
     void setMaxTravelDistance(float maxTravelDistance) { this->maxTravelDistance = maxTravelDistance; };
 
@@ -42,18 +48,23 @@ public:
     Explosion* getExplosionPtr() { return &explosion; };
 
 private:
+    int minCharge;
+    int maxCharge;
+    
     int damage;
     float maxTravelDistance;
     float topSpeed;
-    int minCharge;
-    int maxCharge;
     int trailEmitterID;
     int impactEmitterID;
     Explosion explosion;
+
+    int fullTrailEmitterID;
+    int fullImpactEmitterID;
 
     Emitter* trail;
     sf::Vector2f destination;
     sf::Vector2f direction;
     float distance;
     bool complete;
+    bool fullCharge;
 };

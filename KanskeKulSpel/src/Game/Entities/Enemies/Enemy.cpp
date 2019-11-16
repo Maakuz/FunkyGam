@@ -15,8 +15,6 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     this->drawExclamation.counter = 1000;
     this->drawQuestion.counter = 1000;
     this->roamDistance = 0;
-    this->health = 0;    
-    this->maxHealth = 0;
     this->chaseSpeed = 0;
     this->idleSpeed = 0;
     this->roamDistance = 0;
@@ -35,7 +33,7 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui)
     this->exclamation.setTexture(*TextureHandler::get().getTexture(19));
 }
 
-void Enemy::update(float dt)
+void Enemy::updateEnemy(float dt)
 {
     if (this->roamDecisionCounter.update(dt))
     {
@@ -51,10 +49,10 @@ void Enemy::update(float dt)
     this->exclamation.setPosition(pos);
     this->question.setPosition(pos);
 
-    if (this->health != this->prevHealth)
-        ui->displayEnemyDamage(float(health) / maxHealth);
+    if (this->health.getHealth() != this->prevHealth)
+        ui->displayEnemyDamage(float(health.getHealth()) / health.getMaxHealth());
 
-    this->prevHealth = this->health;
+    this->prevHealth = this->health.getHealth();
 
     MovingEntity::update(dt);
 }
@@ -81,7 +79,7 @@ void Enemy::spawn(sf::Vector2f pos)
 
 bool Enemy::isAlive()
 {
-    return this->health > 0;
+    return this->health.isAlive();
 }
 
 float Enemy::getVisionRatingAt(float distance) const
@@ -149,13 +147,12 @@ void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const
 std::istream& operator>>(std::istream& in, Enemy& enemy)
 {
     std::string trash;
-
-    while (trash != "[EnemyData]")
-        in >> trash;
+    int health = 0;
+    in >> trash;
 
 
     in >> trash >> enemy.roamDistance;
-    in >> trash >> enemy.maxHealth;
+    in >> trash >> health;
     in >> trash >> enemy.mass;
     in >> trash >> enemy.sightRadius;
     in >> trash >> enemy.sightMultiplier;
@@ -165,8 +162,9 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
     in >> trash >> enemy.roamDecisionCounter.stopValue;
 
     enemy.roamDecisionCounter.stopValue += rand() % 1000;
-    enemy.health = enemy.maxHealth;
-    enemy.prevHealth = enemy.maxHealth;
+    enemy.health.setMaxHealth(health);
+    enemy.health.fillHealth();
+    enemy.prevHealth = health;
 
     enemy.readSpecific(in);
     return in;

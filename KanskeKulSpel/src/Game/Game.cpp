@@ -48,6 +48,18 @@ Game::Game(const sf::RenderWindow* window) :
 
             return "Ready your recipe!";
         });
+
+    ConsoleWindow::get().addCommand("setLevel", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg int levelID";
+            
+            int level = std::stoi(args[0]);
+
+            loadLevel(hubHandler.changeToLevel(level));
+
+            return "Warrrrp!";
+        });
 }
 
 Game::~Game()

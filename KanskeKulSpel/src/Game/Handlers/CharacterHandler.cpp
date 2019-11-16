@@ -260,13 +260,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
                 (*it)->getState() == Enemy::State::returning)
                 this->updateEnemyLineOfSight(*it);
 
-            Grunt* g = dynamic_cast<Grunt*>(*it);
-            if (g)
-                g->update(dt);
-
-            Bird* b = dynamic_cast<Bird*>(*it);
-            if (b)
-                b->update(dt);
+            (*it)->update(dt);
             it++;
         }
 
@@ -274,6 +268,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
         {
             delete *it;
             unordered_erase(enemies, it);
+            ui->hideEnemyDamage();
         }
     }
 }
@@ -289,13 +284,6 @@ void CharacterHandler::queueColliders()
 //Shadows are not considered at all and that might be a good thing
 void CharacterHandler::calculatePlayerIllumination()
 {
-    /*PROFILER_START("Copy"); //Into the hall of shame with you
-    sf::Image image = illuminationTexture->copyToImage();
-    sf::Color lightLevel = image.getPixel(0, 0);
-    float oldIllumination = lightLevel.r + lightLevel.g + lightLevel.b;
-    oldIllumination *= 0.33f / 2.55f;
-    PROFILER_STOP*/;
-
     PROFILER_START("Calculate");
     sf::Vector3f illumination(0, 0, 0);
     for (int i = 0; i < LightQueue::get().getQueue().size(); i++)

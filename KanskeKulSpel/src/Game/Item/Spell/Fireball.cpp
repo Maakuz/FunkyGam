@@ -14,7 +14,11 @@ Fireball::Fireball(sf::Vector2f pos)
     this->maxCharge = 0;
     this->trailEmitterID = 0;
     this->impactEmitterID = 0;
+    this->fullImpactEmitterID = 0;
+    this->fullTrailEmitterID = 0;
+
     this->trail = nullptr;
+    this->maxCharge = false;
     this->complete = false;
     this->distance = 0;
     this->topSpeed = 0;
@@ -32,7 +36,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
     if (channelTime < this->minCharge)
         this->complete = true;
 
-    else
+    else if (channelTime > this->minCharge && channelTime < this->maxCharge)
     {
         this->setPosition(pos);
         this->distance = std::min(length(pos - dest), maxTravelDistance);
@@ -41,6 +45,25 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 
         this->destination = pos + (direction * distance);
         trail = ParticleHandler::addEmitter(trailEmitterID, pos);
+    }
+
+    else
+    {
+        this->fullCharge = true;
+        this->topSpeed *= 1.7f;
+        this->damage *= 1.2f;
+        this->maxTravelDistance *= 1.5f;
+
+        this->explosion.damage *= 1.5f;
+        this->explosion.radius *= 1.5f;
+
+        this->setPosition(pos);
+        this->distance = std::min(length(pos - dest), maxTravelDistance);
+        this->direction = dest - pos;
+        normalize(this->direction);
+
+        this->destination = pos + (direction * distance);
+        this->trail = ParticleHandler::addEmitter(fullTrailEmitterID, pos);
     }
 }
 
@@ -57,7 +80,12 @@ void Fireball::update(float dt)
         this->explosion.center = this->getPosition();
         trail->kill();
         CollisionHandler::queueExplosion(this->explosion);
-        ParticleHandler::addEmitter(this->impactEmitterID, this->getPosition());
+
+        if (!fullCharge)
+            ParticleHandler::addEmitter(this->impactEmitterID, this->getPosition());
+
+        else
+            ParticleHandler::addEmitter(this->fullImpactEmitterID, this->getPosition());
     }
 }
 
@@ -81,13 +109,9 @@ std::istream& Fireball::readSpecific(std::istream& in)
     in >> trash >> maxCharge;
     in >> trash >> trailEmitterID;
     in >> trash >> impactEmitterID;
-    in >> trash;
-    in >> trash >> explosion.damage;
-    in >> trash >> explosion.radius;
-    in >> trash >> explosion.falloff;
-    int type;
-    in >> trash >> type;
-    explosion.type = ExplosionType(type);
+    in >> trash >> fullTrailEmitterID;
+    in >> trash >> fullImpactEmitterID;
+    in >> explosion;
 
     return in;
 }
@@ -102,11 +126,9 @@ std::ostream& Fireball::writeSpecific(std::ostream& out) const
     out << "MaxCharge: " << maxCharge << "\n";
     out << "TrailEmitterID: " << trailEmitterID << "\n";
     out << "ImpactEmitterID: " << impactEmitterID << "\n";
-    out << "[Explosion]" << "\n";
-    out << "Damage: " << explosion.damage << "\n";
-    out << "Radius: " << explosion.radius << "\n";
-    out << "Falloff: " << explosion.falloff << "\n";
-    out << "Type: " << (int)explosion.type << "\n";
+    out << "FullTrailEmitterID: " << fullTrailEmitterID << "\n";
+    out << "FullImpactEmitterID: " << fullImpactEmitterID << "\n";
+    out << explosion << "\n";
 
     return out;
 }

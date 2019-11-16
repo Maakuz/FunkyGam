@@ -14,6 +14,7 @@ public:
 
     void displayNewItem(int item);
     void displayEnemyDamage(float percentage);
+    void hideEnemyDamage();
 
     const sf::View& getView() const { return this->view; };
 

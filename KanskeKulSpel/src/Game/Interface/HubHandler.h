@@ -14,6 +14,7 @@ public:
     void update(float dt, sf::Vector2f mousePos);
     const LevelInfo* getActiveLevel()const;
     const LevelInfo* changeToNextLevel(int exitTaken);
+    const LevelInfo* changeToLevel(int levelID);
     void reset();
     void reload();
 

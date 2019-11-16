@@ -102,6 +102,11 @@ void UIHandler::displayEnemyDamage(float percentage)
     enemyHealthBar[2].texCoords.x = HEALTH_START_BOTTOM + (HEALTH_LENGTH * percentage);
 }
 
+void UIHandler::hideEnemyDamage()
+{
+    showEnemyHealth.counter = showEnemyHealth.stopValue;
+}
+
 void UIHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(inventory, states);

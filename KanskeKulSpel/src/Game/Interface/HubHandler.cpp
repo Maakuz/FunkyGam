@@ -111,6 +111,20 @@ const LevelInfo* HubHandler::changeToNextLevel(int exitTaken)
     return &levels[activeLevel];
 }
 
+const LevelInfo* HubHandler::changeToLevel(int levelID)
+{
+    this->activeLevel = levelID;
+
+    if (activeLevel == -1)
+        return nullptr;
+
+    if (activeLevel >= levels.size())
+        activeLevel = levels.size() - 1;
+
+    levels[activeLevel].unlocked = true;
+    return &levels[activeLevel];
+}
+
 void HubHandler::reset()
 {
     if (selectedLevel != -1)

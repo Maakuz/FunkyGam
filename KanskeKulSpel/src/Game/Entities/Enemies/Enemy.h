@@ -2,6 +2,7 @@
 #include "../MovingEntity.h"
 #include "Game/Misc/Counter.h"
 #include "Game/Interface/UIHandler.h"
+#include "Game/Components/HealthComp.h"
 #include <fstream>
 
 
@@ -32,7 +33,7 @@ public:
 
     friend std::istream& operator>>(std::istream& in, Enemy& enemy);
 
-    virtual void update(float dt);
+    virtual void update(float dt) = 0;
     void notifyEnemy(sf::Vector2f playerPos);
     void spawn(sf::Vector2f pos);
 
@@ -56,8 +57,7 @@ protected:
     sf::Vector2f eyeLevel;
     Counter timeSincePlayerSeen;
     sf::Vector2f currentRoamPoint;
-    int health;
-    int maxHealth;
+    HealthComp health;
     float chaseSpeed;
     float idleSpeed;
     float sightRadius;
@@ -78,6 +78,7 @@ protected:
 
     sf::Vector2f getStartPoint() const { return this->startPoint; }
     void setStartPoint(sf::Vector2f point) { this->startPoint = point; }
+    void updateEnemy(float dt);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:

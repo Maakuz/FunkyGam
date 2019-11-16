@@ -298,8 +298,18 @@ void ItemEditor::showFireballData(Fireball* fireball)
                 fireball->setTrailEmitterID(i);
         }
 
-        if (ImGui::Selectable("None"))
-            fireball->setTrailEmitterID(-1);
+        ImGui::EndCombo();
+    }
+
+    currentTrailEmitter = fireball->getFullTrailEmitterID();
+    if (ImGui::BeginCombo("Select big trail emitter", ParticleHandler::getEmitterName(currentTrailEmitter).c_str()))
+    {
+
+        for (int i = 0; i < emitters->size(); i++)
+        {
+            if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
+                fireball->setFullTrailEmitterID(i);
+        }
 
         ImGui::EndCombo();
     }
@@ -314,8 +324,19 @@ void ItemEditor::showFireballData(Fireball* fireball)
                 fireball->setImpactEmitterID(i);
         }
 
-        if (ImGui::Selectable("None"))
-            fireball->setImpactEmitterID(-1);
+        ImGui::EndCombo();
+    }
+
+
+    currentImpactEmitter = fireball->getFullImpactEmitterID();
+    if (ImGui::BeginCombo("Select big impact emitter", ParticleHandler::getEmitterName(currentImpactEmitter).c_str()))
+    {
+
+        for (int i = 0; i < emitters->size(); i++)
+        {
+            if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
+                fireball->setFullImpactEmitterID(i);
+        }
 
         ImGui::EndCombo();
     }

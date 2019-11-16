@@ -21,9 +21,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     this->walkSpeed = 0;
     this->jumpHeight = 0;
     this->mass = 0;
-    this->health = 0;
     this->illumination = 0;
-    this->maxHealth = 0;
     this->throwingPower = 0;
     this->exitReached = -1;
     this->debugMode = false;
@@ -37,33 +35,31 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
     
-    //static sf::Vector2f* posP = this->getPosPtr(); //testing
-    //ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
-    //    {
-    //        if (args.size() >= 2)
-    //        {
-    //            try
-    //            {
-    //                int x = std::stoi(args[0]);
-    //                int y = std::stoi(args[1]);
+    ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
+        {
+            if (args.size() >= 2)
+            {
+                try
+                {
+                    int x = std::stoi(args[0]);
+                    int y = std::stoi(args[1]);
 
-    //                posP->x = x;
-    //                posP->y = y;
-    //            }
-    //            catch (const std::exception & e)
-    //            {
-    //                std::string ret = "Not valid coordinates. ";
-    //                ret.append(e.what());
-    //                return ret;
-    //            }
-    //        }
+                    setPosition(sf::Vector2f(x, y));
+                }
+                catch (const std::exception & e)
+                {
+                    std::string ret = "Not valid coordinates. ";
+                    ret.append(e.what());
+                    return ret;
+                }
+            }
 
-    //        else
-    //            return "missing argument int x, int y";
+            else
+                return "missing argument int x, int y";
 
 
-    //        return "Position set";
-    //    });
+            return "Position set";
+        });
 
     ConsoleWindow::get().addCommand("debugMode", [&](Arguments args)->std::string
         {
@@ -97,7 +93,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
                 {
                     int x = std::stoi(args[0]);
 
-                    health = x;
+                    healthComp.setHealth(x);
                 }
                 catch (const std::exception & e)
                 {
@@ -157,7 +153,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
         this->ui->getInventory()->addItem(this->gatherableInRange->item.getID(), this->gatherableInRange->count);
     }
 
-    ui->setHealthPercentage(this->health / float(this->maxHealth));
+    ui->setHealthPercentage(this->healthComp.getHealth() / float(this->healthComp.getMaxHealth()));
     this->canReturn = false;
 }
 
@@ -170,7 +166,7 @@ void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
     this->momentum.y = 0;
 
     if (fillHealth)
-        this->health = this->maxHealth;
+        this->healthComp.fillHealth();
 }
 
 void Player::updateMove(float dt)
@@ -304,7 +300,7 @@ void Player::handleCollision(const Entity* colliderEntity)
             if (ptr->isAttacking())
             {
                 addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
-                health -= ptr->getDamage();
+                healthComp.takeDamage(ptr->getDamage());
             }
         }
 
@@ -328,7 +324,7 @@ void Player::handleCollision(const Entity* colliderEntity)
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(colliderEntity);
         if (throwable->getThrower() != this)
-            this->health -= throwable->getDamage();
+            this->healthComp.takeDamage(throwable->getDamage());
     }
 }
 
@@ -337,22 +333,24 @@ void Player::handleExplosion(const Explosion& explosion)
     if (explosion.damage > 0)
     {
         int damage = explosion.calculateDamage(this->getCenterPos());
-        this->health -= damage;
+        this->healthComp.takeDamage(damage);
     }
 }
 
 std::istream& operator>>(std::istream& in, Player& player)
 {
     std::string trash;
-    while (trash != "[PlayerData]")
-        in >> trash;
+    int health = 0;
+    in >> trash;
 
     in >> trash >> player.walkSpeed;
     in >> trash >> player.jumpHeight;
     in >> trash >> player.mass;
-    in >> trash >> player.health;
+    in >> trash >> health;
     in >> trash >> player.throwingPower;
-    player.maxHealth = player.health;
+
+    player.healthComp.setMaxHealth(health);
+    player.healthComp.setHealth(health);
 
     return in;
 }

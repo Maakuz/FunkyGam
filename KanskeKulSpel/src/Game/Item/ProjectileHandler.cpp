@@ -23,6 +23,14 @@ ProjectileHandler::ProjectileHandler()
 
             return "Hitboxes on mby";
         });
+
+    ConsoleWindow::get().addCommand("reloadSpells", [&](Arguments args)->std::string
+        {
+
+            loadTemplates();
+
+            return "relod";
+        });
 }
 
 ProjectileHandler::~ProjectileHandler()

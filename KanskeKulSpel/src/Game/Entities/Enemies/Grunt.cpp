@@ -75,7 +75,7 @@ void Grunt::update(float dt)
         break;
     }
 
-    Enemy::update(dt);
+    Enemy::updateEnemy(dt);
 }
 
 void Grunt::updateIdle(float dt)
@@ -274,7 +274,7 @@ void Grunt::handleCollision(const Entity* collider)
     if (collider->getCollider().hasComponent(Collider::ColliderKeys::throwable))
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(collider);
-        this->health -= throwable->getDamage();
+        this->health.takeDamage(throwable->getDamage());
     }
 }
 
@@ -283,7 +283,7 @@ void Grunt::handleExplosion(const Explosion& explosion)
     if (explosion.damage > 0)
     {
         int damage = explosion.calculateDamage(this->getCenterPos());
-        this->health -= damage;
+        this->health.takeDamage(damage);
     }
 
     if (state != State::stunned && state != State::chasing && state != State::attacking)

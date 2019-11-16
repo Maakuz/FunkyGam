@@ -5,6 +5,7 @@
 #include "Game/Item/Item.h"
 #include "Game/Item/GatherItem.h"
 #include "Game/Components/SpellComp.h"
+#include "Game/Components/HealthComp.h"
 #include <istream>
 
 class Player : public MovingEntity 
@@ -21,7 +22,7 @@ public:
 
     void setIllumination(float illumination) { this->illumination = illumination; };
     float getIllumination() const { return illumination; };
-    bool isAlive() const { return this->health > 0; };
+    bool isAlive() const { return this->healthComp.isAlive(); };
     bool isReturning() const { return this->returning; };
     int getExitReached() const { return this->exitReached; };
 
@@ -35,11 +36,11 @@ private:
     UIHandler* ui;
     GatherItem* gatherableInRange;
     float illumination;
-    int health;
-    int maxHealth;
+
     float throwingPower;
 
     SpellComp spellComp;
+    HealthComp healthComp;
 
     bool debugMode;
     bool noClip;

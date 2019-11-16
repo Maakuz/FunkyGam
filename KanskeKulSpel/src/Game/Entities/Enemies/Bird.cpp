@@ -59,7 +59,7 @@ void Bird::update(float dt)
         break;
     }
 
-    Enemy::update(dt);
+    Enemy::updateEnemy(dt);
 }
 
 
@@ -237,7 +237,7 @@ void Bird::handleCollision(const Entity* collider)
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(collider);
         if (throwable->getID() != 11) //is immune to birdbombs
-            this->health -= throwable->getDamage();
+            this->health.takeDamage(throwable->getDamage());
     }
 }
 
@@ -246,8 +246,7 @@ void Bird::handleExplosion(const Explosion& explosion)
     if (explosion.damage > 0 && explosion.type != ExplosionType::bird)
     {
         int damage = explosion.calculateDamage(this->getCenterPos());
-        this->health -= damage;
-        ui->displayEnemyDamage(float(health) / maxHealth);
+        this->health.takeDamage(damage);
     }
 }
 
