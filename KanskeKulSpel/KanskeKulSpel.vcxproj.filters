@@ -198,6 +198,12 @@
     <ClCompile Include="src\Game\Components\HealthComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Misc\LuaScript.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Misc\ConsoleWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game\Collision\CollisionHandler.h">
@@ -426,6 +432,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Components\HealthComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Entities\Enemies\Bosses\FishMonger.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Misc\LuaScript.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

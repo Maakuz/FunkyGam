@@ -3,6 +3,7 @@
 #include "Game/Misc/Definitions.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Item/ItemHandler.h"
+#include "Imgui/misc/cpp/imgui_stdlib.h"
 
 RecipeEditor::RecipeEditor()
 {

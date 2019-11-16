@@ -98,8 +98,8 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>F:\SPELTJOSAN\KanskeKulSpel\External\SFML-2.5.1\lib;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Opengl32.lib;sfml-system-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-graphics-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>F:\SPELTJOSAN\KanskeKulSpel\External\SFML-2.5.1\lib;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64;F:\SPELTJOSAN\KanskeKulSpel\External\lua;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Opengl32.lib;sfml-system-d.lib;sfml-window-d.lib;sfml-audio-d.lib;sfml-graphics-d.lib;Lua.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -130,8 +130,8 @@
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>F:\SPELTJOSAN\KanskeKulSpel\External\SFML-2.5.1\lib;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>Opengl32.lib;sfml-system.lib;sfml-window.lib;sfml-audio.lib;sfml-graphics.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>F:\SPELTJOSAN\KanskeKulSpel\External\SFML-2.5.1\lib;C:\Program Files (x86)\Microsoft SDKs\Windows\v7.1A\Lib\x64;F:\SPELTJOSAN\KanskeKulSpel\External\lua;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>Opengl32.lib;sfml-system.lib;sfml-window.lib;sfml-audio.lib;sfml-graphics.lib;Lua.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -168,6 +168,8 @@
     <ClCompile Include="src\Game\Particles\ParticleHandler.cpp" />
     <ClCompile Include="src\LevelEditor\Interface\Windows\InfoWindow.cpp" />
     <ClCompile Include="src\LevelEditor\TileStager.cpp" />
+    <ClCompile Include="src\Misc\ConsoleWindow.cpp" />
+    <ClCompile Include="src\Misc\LuaScript.cpp" />
     <ClCompile Include="src\Renderer\ShaderHandler.cpp" />
     <ClCompile Include="src\Renderer\Lighting\ShadowHandler.cpp" />
     <ClCompile Include="src\Game\Handlers\TextureHandler.cpp" />
@@ -205,6 +207,7 @@
     <ClInclude Include="src\Game\Components\SpellComp.h" />
     <ClInclude Include="src\Game\Entities\AnimatedEntity.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Bird.h" />
+    <ClInclude Include="src\Game\Entities\Enemies\Bosses\FishMonger.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Enemy.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Grunt.h" />
     <ClInclude Include="src\Game\Entities\Entity.h" />
@@ -231,6 +234,7 @@
     <ClInclude Include="src\LevelEditor\Queues\ToolTileQueue.h" />
     <ClInclude Include="src\LevelEditor\TileStager.h" />
     <ClInclude Include="src\Misc\GlobalDefinitions.h" />
+    <ClInclude Include="src\Misc\LuaScript.h" />
     <ClInclude Include="src\Renderer\ShaderHandler.h" />
     <ClInclude Include="src\Renderer\Lighting\ShadowHandler.h" />
     <ClInclude Include="src\Game\Handlers\TextureHandler.h" />

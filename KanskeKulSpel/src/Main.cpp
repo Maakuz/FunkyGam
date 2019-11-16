@@ -8,6 +8,8 @@
 #include "Renderer/Renderer.h"
 #include "Game/Handlers/TextureHandler.h"
 #include "LevelEditor/Editor.h"
+#include "Misc/LuaScript.h"
+
 
 enum class State 
 {
@@ -27,6 +29,7 @@ int main()
 
     bool printscreen = false;
 
+    LuaScript test("testscript");
 
 
 
