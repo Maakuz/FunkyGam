@@ -8,8 +8,6 @@
 #include "Renderer/Renderer.h"
 #include "Game/Handlers/TextureHandler.h"
 #include "LevelEditor/Editor.h"
-#include "Misc/LuaScript.h"
-
 
 enum class State 
 {
@@ -28,10 +26,6 @@ int main()
     sf::Color clearColor(0, 100, 155);
 
     bool printscreen = false;
-
-    LuaScript test("testscript");
-
-
 
     srand((int)time(0));
 
