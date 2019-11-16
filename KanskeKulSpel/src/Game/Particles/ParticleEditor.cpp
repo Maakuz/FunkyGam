@@ -32,25 +32,22 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
         ImGui::Begin("Pickle a Particle", &this->open);
         ImGui::BeginTabBar("Lekrutan");
 
-        if (emitto.getKeyFrameCount() > 0)
+        selectedKeyFrame = emitto.getPrev();
+
+        ImGui::Text("Current frame: %d", selectedKeyFrame);
+
+        if (ImGui::InputInt("Step to prev/next", &selectedKeyFrame, 1, 1))
         {
-            if (ImGui::BeginCombo("Keyframe", std::to_string(selectedKeyFrame).c_str()))
-            {
-                for (int i = 0; i < emitto.getKeyFrameCount(); i++)
-                {
-                    if (ImGui::Selectable(std::to_string(i).c_str()))
-                        selectedKeyFrame = i;
-                }
+            selectedKeyFrame = std::max(0, selectedKeyFrame);
+            selectedKeyFrame = std::min(emitto.getKeyFrameCount() - 1, selectedKeyFrame);
 
-
-                ImGui::EndCombo();
-            }
+            emitto.setElapsedTime(emitto.getKeyFramePtr(selectedKeyFrame)->timeStamp + 1);
         }
+
         Emitter::KeyFrame* frame = emitto.getKeyFramePtr(selectedKeyFrame);
 
         float elapsedTime = emitto.getElapsedTime();
         float max = std::max(emitto.getEmitterLifeSpan(), emitto.getKeyFramePtr(emitto.getKeyFrameCount() - 1)->timeStamp) + 1;
-        
         if (ImGui::SliderFloat("Timelapse", &elapsedTime, 0, max))
             emitto.setElapsedTime(elapsedTime);
 
@@ -92,6 +89,8 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
             ImGui::DragFloat("Friction", &frame->frictionValue, 0.001, 0, 2);
             ImGui::DragFloat("Jitter", &frame->jitterAmount, 0.001, 0, 1);
             ImGui::Checkbox("Enable gravity", &frame->affectedByGravity);
+            ImGui::SameLine();
+            ImGui::Checkbox("Follows center", &frame->followsCenter);
             ImGui::DragFloat("Gravity", &frame->gravity, 0.0001f, -1, 1, "%4f");
 
             color.r = variables.color[0] * 255;

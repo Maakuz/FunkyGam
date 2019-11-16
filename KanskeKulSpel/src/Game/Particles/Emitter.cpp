@@ -11,6 +11,7 @@ Emitter::Emitter()
     this->prev = 0;
     this->next = 0;
     this->freezeTime = false;
+    this->moved = false;
 
     KeyFrame frame(0);
 
@@ -28,6 +29,7 @@ Emitter::Emitter()
     frame.gravity = 0;
     frame.offset = 0;
 
+    frame.followsCenter = false;
     frame.affectedByGravity = false;
     frame.particleLightRadius = 50;
 
@@ -97,6 +99,7 @@ void Emitter::update(float dt)
     int spawnRate = ((1-lerp) * keyFrames[prev].spawnRate) + (lerp * keyFrames[next].spawnRate);
     int particlesPerSpawn = ((1 - lerp) * keyFrames[prev].particlesPerSpawn) + (lerp * keyFrames[next].particlesPerSpawn);
     bool affectedByGravity = keyFrames[prev].affectedByGravity;
+    bool followsCenter = keyFrames[prev].followsCenter;
     float gravity = ((1 - lerp) * keyFrames[prev].gravity) + (lerp * keyFrames[next].gravity);
     float frictionValue = ((1 - lerp) * keyFrames[prev].frictionValue) + (lerp * keyFrames[next].frictionValue);
     float jitterAmount = ((1 - lerp) * keyFrames[prev].jitterAmount) + (lerp * keyFrames[next].jitterAmount);
@@ -172,15 +175,23 @@ void Emitter::update(float dt)
 
             for (size_t j = 0; j < 4; j++)
             {
+                if (followsCenter && moved)
+                    vertexArray[p + j].position += (pos - prevPos);
+
                 vertexArray[p + j].position += particle->velocity;
             }
 
-            if (particlesHasLight) //plz dont kill me frames
+            if (particlesHasLight) 
             {
+                if (followsCenter && moved)
+                    particles[i]->light->pos += (pos - prevPos);
+
                 particles[i]->light->pos += particle->velocity;
             }
         }
     }
+
+    this->moved = false;
 }
 
 void Emitter::queueLights()
@@ -347,6 +358,8 @@ void Emitter::setParticleHasLight(bool hasLight)
 
 void Emitter::setEmitterPos(sf::Vector2f pos)
 { 
+    this->moved = true;
+    this->prevPos = this->pos;
     this->pos = pos; 
     for (KeyFrame& frame : keyFrames)
         for (EmitterLight& light : frame.lights)

@@ -109,6 +109,7 @@ public:
         sf::Color color;
         sf::Color colorDeviation;
         bool affectedByGravity;
+        bool followsCenter;
         float gravity;
         float particleLightRadius;
         float jitterAmount;
@@ -145,6 +146,7 @@ public:
             out << (int)frame.color.r << " " << (int)frame.color.g << " " << (int)frame.color.b << " " << (int)frame.color.a << "\n";
             out << (int)frame.colorDeviation.r << " " << (int)frame.colorDeviation.g << " " << (int)frame.colorDeviation.b << " " << (int)frame.color.a << "\n";
             out << frame.affectedByGravity << "\n";
+            out << frame.followsCenter << "\n";
             out << frame.gravity << "\n";
             out << frame.jitterAmount << "\n";
             out << frame.frictionValue << "\n";
@@ -181,6 +183,7 @@ public:
             in >> col[0] >> col[1] >> col[2] >> col[3];
             frame.colorDeviation = sf::Color(col[0], col[1], col[2], col[3]);
             in >> frame.affectedByGravity;
+            in >> frame.followsCenter;
             in >> frame.gravity;
             in >> frame.jitterAmount;
             in >> frame.frictionValue;
@@ -235,7 +238,8 @@ public:
     void removeKeyFrame(int frame) { keyFrames.erase(keyFrames.begin() + frame); };
 
     int getParticleCount() const { return particles.size(); };
-
+    int getPrev() const { return this->prev; };
+    int getNext() const { return this->next; };
     void setInitialParticles(int amount) { this->initialParticles = amount; };
 
     void setParticleHasLight(bool hasLight);
@@ -261,6 +265,8 @@ private:
     float elapsedTime;
 
     sf::Vector2f pos;
+    sf::Vector2f prevPos;
+    bool moved;
 
     std::vector<Particle*> particles;
     std::vector<sf::Vertex> vertexArray;
