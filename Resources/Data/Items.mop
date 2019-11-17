@@ -152,14 +152,14 @@ Useable: 1
 [Specific]
 Mass: 0.25
 ArmingTime: 1000
-Bounce: 0.35
+Bounce: 0.13
 DetonateOnImpact: 0
 Damage: 5
 ParticleEffectID: 7
 [Explosion]
 Type: 0
 Radius: 128
-Falloff: 0.3
+Falloff: 0.5
 Damage 30
 
 [Item]

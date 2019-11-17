@@ -4,6 +4,7 @@
 #include "Game/Misc/UnorderedErase.h"
 #include "Game/Item/ItemHandler.h"
 #include "Misc/ConsoleWindow.h"
+#include <fstream>
 
 std::vector<Throwable> ProjectileHandler::throwables;
 std::vector<Spell*> ProjectileHandler::spells;
@@ -110,7 +111,7 @@ void ProjectileHandler::queueColliders()
         CollisionHandler::queueCollider(&proj);
 }
 
-void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower)
+void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Collidable* thrower)
 {
     Throwable item(*dynamic_cast<const Throwable*>(ItemHandler::getTemplate(id)));
     item.throwItem(pos, momentum, thrower);

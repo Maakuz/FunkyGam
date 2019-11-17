@@ -2,6 +2,7 @@
 #include "Game/Collision/CollisionHandler.h"
 #include "TextureHandler.h"
 #include "Game/Entities/Enemies/Grunt.h"
+#include "Game/Entities/Enemies/Bird.h"
 #include "Game/Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Misc/UnorderedErase.h"
@@ -81,7 +82,7 @@ CharacterHandler::~CharacterHandler()
 void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint)
 {
     this->occluders = occluders;
-    this->player->reset(playerSpawnPoint - this->player->getSize());
+    this->player->reset(playerSpawnPoint - this->player->getCollider().getSize());
 }
 
 void CharacterHandler::loadPlayer()
@@ -100,7 +101,7 @@ void CharacterHandler::loadPlayer()
     int textureID;
     sf::Vector2u frameCount;
     int animCount;
-    std::vector<MovingEntity::Animation> animations;
+    std::vector<Animation> animations;
 
     file >> trash;
     file >> trash >> textureID;
@@ -122,18 +123,16 @@ void CharacterHandler::loadPlayer()
         file >> trash >> speed;
         file >> trash >> startIdle;
 
-        animations.push_back(MovingEntity::Animation(start, stop, speed, idle, startIdle));
+        animations.push_back(Animation(start, stop, speed, idle, startIdle));
     }
 
-    MovingEntity::AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
+    AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
 
 
-    this->player = new Player(data, ui, sf::Vector2f(0, 0));
+    this->player = new Player(data, ui, sf::Vector2f(0, 0), sf::Vector2f(32, 92));
 
     file >> *this->player;
 
-    player->setSize(sf::Vector2f(32, 92));
-    player->moveSpriteOffset(sf::Vector2f(-16, 0));
 
     file.close();
 }
@@ -156,7 +155,7 @@ void CharacterHandler::loadEnemies()
         int textureID;
         sf::Vector2u frameCount;
         int animCount;
-        std::vector<MovingEntity::Animation> animations;
+        std::vector<Animation> animations;
 
         file >> trash;
         file >> trash >> textureID;
@@ -178,10 +177,10 @@ void CharacterHandler::loadEnemies()
             file >> trash >> speed;
             file >> trash >> startIdle;
 
-            animations.push_back(MovingEntity::Animation(start, stop, speed, idle, startIdle));
+            animations.push_back(Animation(start, stop, speed, idle, startIdle));
         }
 
-        MovingEntity::AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
+        AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
 
         sf::Vector2f size;
         sf::Vector2f offset;
@@ -195,20 +194,18 @@ void CharacterHandler::loadEnemies()
         switch (i)
         {
         case enemy::grunt:
-            enemy = createEnemy<Grunt>(data);
+            enemy = createEnemy<Grunt>(data, size, offset);
             break;
         case enemy::bird:
-            enemy = createEnemy<Bird>(data);
+            enemy = createEnemy<Bird>(data, size, offset);
             break;
         default:
-            enemy = createEnemy<Grunt>(data);
+            enemy = createEnemy<Grunt>(data, size, offset);
             break;
         }
 
 
-        enemy->setSize(size);
         enemy->setEyeLevel(sf::Vector2f(size.x * 0.5f, size.y * 0.2f));
-        enemy->moveSpriteOffset(offset);
 
         file >> *enemy;
 
@@ -241,7 +238,7 @@ void CharacterHandler::spawnEnemies(const LevelInfo* info)
             break;
         }        
 
-        enemy->spawn(point - sf::Vector2f(0, enemy->getSize().y));
+        enemy->spawn(point - sf::Vector2f(0, enemy->getCollider().getSize().y));
         enemies.push_back(enemy);
     }
 }
@@ -290,7 +287,7 @@ void CharacterHandler::calculatePlayerIllumination()
     {
         Light* light = LightQueue::get().getQueue()[i];
         bool playerOccluded = false;
-        sf::Vector2f dir = this->player->getCenterPos() - light->pos;
+        sf::Vector2f dir = this->player->getCollider().getCenterPos() - light->pos;
         float distance = length(dir);
         normalize(dir);
         if (light->radius < distance)
@@ -331,7 +328,7 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
         || enemy->getState() == Enemy::State::chasing)
     {
         bool playerHidden = false;
-        sf::Vector2f dir = this->player->getCenterPos() - pos;
+        sf::Vector2f dir = this->player->getCollider().getCenterPos() - pos;
         float distance = length(dir);
         normalize(dir);
 
@@ -352,7 +349,7 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 
         if (!playerHidden)
         {
-            enemy->notifyEnemy(player->getPosition() + (player->getSize() / 2.f));
+            enemy->notifyEnemy(player->getPosition() + (player->getCollider().getSize() / 2.f));
         }
     }
 }
@@ -405,7 +402,7 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
             sightradius.setOutlineThickness(1);
 
             sightradius.setRadius(enemy->getSightRadius());
-            sightradius.setPosition(enemy->getCenterPos() - sf::Vector2f(sightradius.getRadius(), sightradius.getRadius()));
+            sightradius.setPosition(enemy->getCollider().getCenterPos() - sf::Vector2f(sightradius.getRadius(), sightradius.getRadius()));
 
             target.draw(sightradius, states);
         }

@@ -1,27 +1,26 @@
-#include "AnimatedEntity.h"
+#include "AnimatedSpriteComp.h"
 
-AnimatedEntity::AnimatedEntity(AnimationData data, sf::Vector2f pos)
-    :Entity(pos, data.spriteSheet)
+AnimatedSpriteComp::AnimatedSpriteComp(AnimationData data, sf::Vector2f pos):
+    SpriteComp(data.spriteSheet, pos)
 {
     setAnimationData(data);
-    this->addCollision();
     this->idle = false;
 }
 
-void AnimatedEntity::flipHorizontally()
+void AnimatedSpriteComp::flipHorizontally()
 {
     texRect.width = abs(texRect.width);
     texRect.height = abs(texRect.height);
     texRect.left = currentFrame.x * texRect.width;
     texRect.top = currentFrame.y * texRect.height;
-    
+
     texRect.left += texRect.width;
     setTextureRect(texRect);
 
-    Entity::flipHorizontally();
+    SpriteComp::flipHorizontally();
 }
 
-void AnimatedEntity::setAnimationData(AnimationData data)
+void AnimatedSpriteComp::setAnimationData(AnimationData data)
 {
     this->data = data;
 
@@ -39,7 +38,7 @@ void AnimatedEntity::setAnimationData(AnimationData data)
     setTextureRect(texRect);
 }
 
-void AnimatedEntity::setAnimation(int animation) 
+void AnimatedSpriteComp::setAnimation(int animation)
 {
     if (data.currentAnimation == animation)
         return;
@@ -60,11 +59,9 @@ void AnimatedEntity::setAnimation(int animation)
         texRect.width = -texRect.width;
     }
     setTextureRect(texRect);
-
-
 }
 
-void AnimatedEntity::pauseAnimation()
+void AnimatedSpriteComp::pauseAnimation()
 {
     currentFrame = data.animations[data.currentAnimation].idleFrame;
 
@@ -83,7 +80,7 @@ void AnimatedEntity::pauseAnimation()
     this->idle = true;
 }
 
-void AnimatedEntity::updateAnimation(float dt)
+void AnimatedSpriteComp::updateAnimation(float dt)
 {
     if (idle)
         return;
@@ -105,18 +102,18 @@ void AnimatedEntity::updateAnimation(float dt)
                 currentFrame = data.animations[data.currentAnimation].startFrame;
             }
         }
-        
+
         texRect.width = abs(texRect.width);
         texRect.height = abs(texRect.height);
         texRect.left = currentFrame.x * texRect.width;
         texRect.top = currentFrame.y * texRect.height;
 
-        if (isFlippedHorizontally()) 
+        if (isFlippedHorizontally())
         {
             texRect.left += texRect.width;
             texRect.width = -texRect.width;
         }
         setTextureRect(texRect);
-        
+
     }
 }

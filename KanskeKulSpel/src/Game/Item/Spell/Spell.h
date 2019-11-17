@@ -1,10 +1,14 @@
 #pragma once
 #include "Game/Entities/Entity.h"
+#include <istream>
+#include <ostream>
+#include <string>
 
 class Spell : public Entity
 {
 public:
     Spell(sf::Vector2f pos);
+    virtual ~Spell() {};
     virtual bool isComplete() const = 0;
     virtual void cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime) = 0;
     virtual void update(float dt) = 0;

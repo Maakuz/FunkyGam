@@ -3,16 +3,17 @@
 #include "Misc/ConsoleWindow.h"
 #include <string>
 #include "Game/Item/Throwables/Throwable.h"
+#include "Game/Entities/Player.h"
 
-Grunt::Grunt(AnimationData data, sf::Vector2f pos, UIHandler* ui)
-    :Enemy(data, pos, ui)
+Grunt::Grunt(AnimationData data, sf::Vector2f pos, UIHandler* ui, sf::Vector2f size, sf::Vector2f offset)
+    :Enemy(data, pos, ui, size, offset)
 {
     this->flying = false;
     this->forcedDirection = Direction::none;
     this->damage = 0;
     this->attackDistance = 64;
     this->attackChargeTimer = Counter(1000);
-    this->collider.addComponent(Collider::ColliderKeys::grunt);
+    this->collider.addComponent(ColliderKeys::grunt);
 }
 
 void Grunt::update(float dt)
@@ -20,28 +21,28 @@ void Grunt::update(float dt)
     switch (state)
     {
     case Enemy::State::idle:
-        setAnimation(0);
-        this->walkSpeed = idleSpeed;
+        sprite.setAnimation(0);
+        this->movement.walkSpeed = idleSpeed;
         updateIdle(dt);
         break;
 
     case Enemy::State::chasing:
-        setAnimation(0);
-        this->walkSpeed = chaseSpeed;
+        sprite.setAnimation(0);
+        this->movement.walkSpeed = chaseSpeed;
         updateChasing(dt);
         break;
 
     case Enemy::State::attacking:
         if (flying)
-            setAnimation(2);
+            sprite.setAnimation(2);
 
         else
-            setAnimation(1);
+            sprite.setAnimation(1);
         updateAttack(dt);
         break;
 
     case Enemy::State::searching:
-        setAnimation(0);
+        sprite.setAnimation(0);
         updateIdle(dt);
         if (searchCounter.update(dt))
         {
@@ -51,13 +52,13 @@ void Grunt::update(float dt)
         break;
 
     case Enemy::State::returning:
-        setAnimation(0);
+        sprite.setAnimation(0);
         updateReturning(dt);
         break;
 
     case Enemy::State::stunned:
-        setAnimation(3);
-        this->acceleration.x = 0;
+        sprite.setAnimation(3);
+        this->movement.acceleration.x = 0;
         if (this->stunCounter.update(dt))
         {
             this->stunCounter.reset();
@@ -87,7 +88,7 @@ void Grunt::updateIdle(float dt)
         switch (r)
         {
         case 0:
-            this->acceleration.x = 0;
+            this->movement.acceleration.x = 0;
             break;
 
         case 1:
@@ -99,7 +100,7 @@ void Grunt::updateIdle(float dt)
             break;
 
         default:
-            this->acceleration.x = 0;
+            this->movement.acceleration.x = 0;
             break;
         }
 
@@ -191,16 +192,16 @@ void Grunt::updateReturning(float dt)
 
 void Grunt::updateAttack(float dt)
 {
-    this->acceleration.x = 0;
+    this->movement.acceleration.x = 0;
     if (attackChargeTimer.update(dt) && !flying)
     {
         if (facingDir == Direction::left)
-            this->momentum = sf::Vector2f(-attackMomentum.x, -attackMomentum.y);
+            this->movement.momentum = sf::Vector2f(-attackMomentum.x, -attackMomentum.y);
 
         else
-            this->momentum = sf::Vector2f(attackMomentum.x, -attackMomentum.y);
+            this->movement.momentum = sf::Vector2f(attackMomentum.x, -attackMomentum.y);
 
-        this->grounded = false;
+        this->movement.grounded = false;
         this->flying = true;
     }
 }
@@ -209,7 +210,7 @@ std::istream& Grunt::readSpecific(std::istream& in)
 {
     std::string trash;
     in >> trash;
-    in >> trash >> jumpHeight;
+    in >> trash >> movement.jumpHeight;
     in >> trash >> attackMomentum.x >> attackMomentum.y;
     in >> trash >> attackDistance;
     in >> trash >> damage;
@@ -218,16 +219,16 @@ std::istream& Grunt::readSpecific(std::istream& in)
     return in;
 }
 
-void Grunt::handleCollision(const Entity* collider)
+void Grunt::handleCollision(const Collidable* collidable)
 {
-    if (collider->getCollider().hasComponent(Collider::ColliderKeys::ground) || collider->getCollider().hasComponent(Collider::ColliderKeys::platform))
+    if (collidable->getCollider().hasComponent(ColliderKeys::ground) || collidable->getCollider().hasComponent(ColliderKeys::platform))
     {
         //walking on ground
-        if (this->momentum.y > 0 && collider->getCollider().intersects(collider->getCollider().getUp(), this->collider.getDown()))
+        if (this->movement.momentum.y > 0 && collidable->getCollider().intersects(collidable->getCollider().getUpBox(), this->collider.getDownBox()))
         {
-            this->momentum.y = 0;
-            setY(collider->up() - this->height());
-            grounded = true;
+            this->movement.momentum.y = 0;
+            this->pos.y = collidable->getCollider().up() - this->collider.height();
+            movement.grounded = true;
 
             if (flying)
             {
@@ -237,43 +238,43 @@ void Grunt::handleCollision(const Entity* collider)
         }
 
         //smackin into roof
-        if (collider->getCollider().intersects(collider->getCollider().getDown(), this->collider.getUp()))
+        if (collidable->getCollider().intersects(collidable->getCollider().getDownBox(), this->collider.getUpBox()))
         {
-            this->momentum.y = 0;
-            setY(collider->down());
+            this->movement.momentum.y = 0;
+            this->pos.y = collidable->getCollider().down();
         }
 
-        if (collider->getCollider().intersects(collider->getCollider().getLeft(), this->collider.getRight()))
+        if (collidable->getCollider().intersects(collidable->getCollider().getLeftBox(), this->collider.getRightBox()))
         {
-            this->momentum.x *= -0.5f;
-            setX(collider->left() - this->width());
-            this->jump();
+            this->movement.momentum.x *= -0.5f;
+            this->pos.x = collidable->getCollider().left() - this->collider.width();
+            this->movement.jump();
         }
 
-        if (collider->getCollider().intersects(collider->getCollider().getRight(), this->collider.getLeft()))
+        if (collidable->getCollider().intersects(collidable->getCollider().getRightBox(), this->collider.getLeftBox()))
         {
-            this->momentum.x *= -0.5f;
-            setX(collider->right());
-            this->jump();
+            this->movement.momentum.x *= -0.5f;
+            this->pos.x = collidable->getCollider().right();
+            this->movement.jump();
         }
     }
 
-    else if (flying && !collider->getCollider().hasComponent(Collider::ColliderKeys::player))
+    else if (flying && !collidable->getCollider().hasComponent(ColliderKeys::player))
     {
         this->flying = false;
         this->state = State::stunned;
     }
 
-    else if (flying && collider->getCollider().hasComponent(Collider::ColliderKeys::player))
+    else if (flying && collidable->getCollider().hasComponent(ColliderKeys::player))
     {
-        const MovingEntity* ptr = dynamic_cast<const MovingEntity*>(collider);
+        const Player* ptr = dynamic_cast<const Player*>(collidable);
         
-        this->addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
+        movement.addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider.getCenterPos(), collidable->getCollider().getCenterPos(), movement.momentum, ptr->getMovementComp().momentum, movement.mass, ptr->getMovementComp().mass));
     }
 
-    if (collider->getCollider().hasComponent(Collider::ColliderKeys::throwable))
+    if (collidable->getCollider().hasComponent(ColliderKeys::throwable))
     {
-        const Throwable* throwable = dynamic_cast<const Throwable*>(collider);
+        const Throwable* throwable = dynamic_cast<const Throwable*>(collidable);
         this->health.takeDamage(throwable->getDamage());
     }
 }
@@ -282,7 +283,7 @@ void Grunt::handleExplosion(const Explosion& explosion)
 {
     if (explosion.damage > 0)
     {
-        int damage = explosion.calculateDamage(this->getCenterPos());
+        int damage = explosion.calculateDamage(this->collider.getCenterPos());
         this->health.takeDamage(damage);
     }
 

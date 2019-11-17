@@ -278,12 +278,12 @@ void Emitter::lerpLights(float lerp)
     }
 }
 
-void Emitter::handleCollision(const std::vector<Entity*>* entities)
+void Emitter::handleCollision(const std::vector<Collidable*>* entities)
 {
-    for (const Entity* entity : *entities)
+    for (const Collidable* entity : *entities)
     {
-        const Collider collider = entity->getCollider();
-        if (collider.hasComponent(Collider::ColliderKeys::ground))
+        const ColliderComp collider = entity->getCollider();
+        if (collider.hasComponent(ColliderKeys::ground))
         {
             for (int i = 0; i < particles.size(); i++)
             {
@@ -291,10 +291,11 @@ void Emitter::handleCollision(const std::vector<Entity*>* entities)
 
                 if (collider.contains(pos))
                 {
-                    if (Collider::contains(collider.getLeft(), pos) || Collider::contains(collider.getRight(), pos))
+                    if (ColliderComp::contains(collider.getLeftBox(), pos) || ColliderComp::contains(collider.getRightBox(), pos))
                         particles[i]->velocity.x *= -0.5f;
 
-                    if (Collider::contains(collider.getDown(), pos) || Collider::contains(collider.getUp(), pos))
+                    if (
+                        ColliderComp::contains(collider.getDownBox(), pos) || ColliderComp::contains(collider.getUpBox(), pos))
                         particles[i]->velocity.y *= -0.5f;
                 }
             }

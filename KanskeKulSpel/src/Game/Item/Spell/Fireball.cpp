@@ -6,7 +6,8 @@
 #include "Misc/ConsoleWindow.h"
 
 Fireball::Fireball(sf::Vector2f pos)
-:Spell(pos)
+    :Spell(pos),
+    collider(sf::Vector2f(32, 32), pos)
 {
     this->damage = 0;
     this->maxTravelDistance = 0;
@@ -16,14 +17,16 @@ Fireball::Fireball(sf::Vector2f pos)
     this->impactEmitterID = 0;
     this->fullImpactEmitterID = 0;
     this->fullTrailEmitterID = 0;
+    this->fullCharge = false;
 
     this->trail = nullptr;
     this->maxCharge = false;
     this->complete = false;
     this->distance = 0;
     this->topSpeed = 0;
+    this->traveledDistance = 0;
 
-    addCollisionComponent(Collider::ColliderKeys::spell);
+    this->collider.addComponent(ColliderKeys::spell);
 }
 
 bool Fireball::isComplete() const
@@ -38,7 +41,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 
     else if (channelTime > this->minCharge && channelTime < this->maxCharge)
     {
-        this->setPosition(pos);
+        this->pos = pos;
         this->distance = std::min(length(pos - dest), maxTravelDistance);
         this->direction = dest - pos;
         normalize(this->direction);
@@ -57,8 +60,9 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
         this->explosion.damage *= 1.5f;
         this->explosion.radius *= 1.5f;
 
-        this->setPosition(pos);
+        this->pos = pos;
         this->distance = std::min(length(pos - dest), maxTravelDistance);
+        this->distance = std::max(length(pos - dest), 64.f);
         this->direction = dest - pos;
         normalize(this->direction);
 
@@ -70,8 +74,9 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 void Fireball::update(float dt)
 {
     float t = std::max(0.f, 1 - (length(this->getPosition() - this->destination) / distance));
-    float velocity = (1 - powf(t, 6))* dt * topSpeed;
-    move(direction * velocity);
+    t = std::min(t, 1.f);
+    float velocity = (1 - powf(t, 6)) * dt * topSpeed;
+    pos += direction * velocity;
     trail->setEmitterPos(getPosition());
 
     if (velocity < 0.2f)
@@ -87,9 +92,16 @@ void Fireball::update(float dt)
         else
             ParticleHandler::addEmitter(this->fullImpactEmitterID, this->getPosition());
     }
+
+    this->traveledDistance += velocity;
+    if (traveledDistance > maxTravelDistance * 5.f)
+    {
+        trail->kill();
+        complete = true;
+    }
 }
 
-void Fireball::handleCollision(const Entity* collider)
+void Fireball::handleCollision(const Collidable* collidable)
 {
 
 }

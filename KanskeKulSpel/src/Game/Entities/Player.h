@@ -1,18 +1,20 @@
 #pragma once
-#include "MovingEntity.h"
 #include "Game/Misc/Counter.h"
 #include "Game/Interface/UIHandler.h"
 #include "Game/Item/Item.h"
 #include "Game/Item/GatherItem.h"
+#include "Game/Entities/Collidable.h"
+#include "Game/Components/MovementComp.h"
+#include "Game/Components/AnimatedSpriteComp.h"
 #include "Game/Components/SpellComp.h"
 #include "Game/Components/HealthComp.h"
 #include <istream>
 
-class Player : public MovingEntity 
+class Player : public Entity, public Collidable, public sf::Drawable
 {
 public:
 
-    Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos = sf::Vector2f(0, 0));
+    Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos = sf::Vector2f(0, 0), sf::Vector2f size = sf::Vector2f(0, 0));
     ~Player() {};
 
     friend std::istream& operator>>(std::istream& in, Player& player);
@@ -28,9 +30,11 @@ public:
 
     void setGatherableInRange(GatherItem* item) { this->gatherableInRange = item; };
 
-    virtual void handleCollision(const Entity* collider);
+    virtual void handleCollision(const Collidable* collider);
     virtual void handleExplosion(const Explosion& explosion);
+    virtual const ColliderComp& getCollider() const { return collider; };
 
+    const MovementComp& getMovementComp() const { return this->movement; };
 private:
     Counter platformPassingCounter;
     UIHandler* ui;
@@ -39,6 +43,9 @@ private:
 
     float throwingPower;
 
+    ColliderComp collider;
+    AnimatedSpriteComp sprite;
+    MovementComp movement;
     SpellComp spellComp;
     HealthComp healthComp;
 
@@ -53,4 +60,5 @@ private:
     void debugMove(float dt);
     void updateItems(float dt, sf::Vector2f mousePos);
 
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

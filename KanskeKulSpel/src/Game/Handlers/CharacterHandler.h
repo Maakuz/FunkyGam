@@ -3,7 +3,6 @@
 #include "Game/Entities/Player.h"
 #include "Game/Misc/Line.h"
 #include "Renderer/DebugDrawable.h"
-#include "Game/Entities/Enemies/Bird.h"
 #include "Game/Level/Level.h"
 #include <vector>
 
@@ -48,15 +47,15 @@ private:
     void updateEnemyLineOfSight(Enemy* enemy);
 
     template <typename EnemyType>
-    EnemyType* createEnemy(AnimatedEntity::AnimationData data);
+    EnemyType* createEnemy(AnimationData data, sf::Vector2f size, sf::Vector2f offset);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 };
 
 template<typename EnemyType> 
-inline EnemyType* CharacterHandler::createEnemy(AnimatedEntity::AnimationData data)
+inline EnemyType* CharacterHandler::createEnemy(AnimationData data, sf::Vector2f size, sf::Vector2f offset)
 {
-    EnemyType* enemy = new EnemyType(data, sf::Vector2f(0, 0), this->ui);
+    EnemyType* enemy = new EnemyType(data, sf::Vector2f(0, 0), this->ui, size, offset);
     return enemy;
 }

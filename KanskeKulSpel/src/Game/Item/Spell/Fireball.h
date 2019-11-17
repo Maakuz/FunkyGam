@@ -1,8 +1,9 @@
 #pragma once
 #include "Spell.h"
 #include "Game/Particles/Emitter.h"
+#include "Game/Entities/Collidable.h"
 
-class Fireball : public Spell
+class Fireball : public Spell, public Collidable
 {
 public:
     Fireball(sf::Vector2f pos);
@@ -12,8 +13,9 @@ public:
     virtual void cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime);
     virtual void update(float dt);
 
-    virtual void handleCollision(const Entity* collider);
+    virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion);
+    virtual const ColliderComp& getCollider()const { return collider; };
 
     virtual std::istream& readSpecific(std::istream& in);
     virtual std::ostream& writeSpecific(std::ostream& out) const;
@@ -48,6 +50,8 @@ public:
     Explosion* getExplosionPtr() { return &explosion; };
 
 private:
+    ColliderComp collider;
+
     int minCharge;
     int maxCharge;
     
@@ -67,4 +71,6 @@ private:
     float distance;
     bool complete;
     bool fullCharge;
+
+    float traveledDistance;
 };

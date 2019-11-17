@@ -1,9 +1,10 @@
 #include "InventoryHandler.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Handlers/TextureHandler.h"
-#include "Game/Item/ItemHandler.h";
+#include "Game/Item/ItemHandler.h"
 #include "Game/Misc/Definitions.h"
 #include "Game/Misc/MouseState.h"
+#include <fstream>
 
 InventoryHandler::InventoryHandler()
 {
@@ -283,7 +284,7 @@ void InventoryHandler::addItem(int itemID, int amount)
             if (slots[i].item == nullptr && first)
             {
                 this->slots[i].item = new Item(*ItemHandler::getTemplate(itemID));
-                this->slots[i].item->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getSize() / 2.f));
+                this->slots[i].item->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getTextureSize() / 2.f));
                 slots[i].infinite = true;
                 slots[i].size = 8;
                 slots[i].text.setString("Inf");
@@ -331,7 +332,7 @@ void InventoryHandler::addItem(int itemID, int amount)
                 else
                 {
                     this->slots[i].item = new Item(*ItemHandler::getTemplate(itemID));
-                    this->slots[i].item->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getSize() / 2.f));
+                    this->slots[i].item->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getTextureSize() / 2.f));
                     int stack = std::min(amount, this->slots[i].item->getStackLimit() - this->slots[i].size);
                     this->slots[i].size += stack;
                     amount -= stack;
@@ -409,10 +410,10 @@ bool InventoryHandler::mergeStacks(int to, int from)
 void InventoryHandler::swapItems(int a, int b)
 {
     if (this->slots[a].item)
-        this->slots[a].item->setPosition(this->slots[b].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[a].item->getSize() / 2.f));
+        this->slots[a].item->setPosition(this->slots[b].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[a].item->getTextureSize() / 2.f));
 
     if (this->slots[b].item)
-        this->slots[b].item->setPosition(this->slots[a].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[b].item->getSize() / 2.f));
+        this->slots[b].item->setPosition(this->slots[a].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[b].item->getTextureSize() / 2.f));
 
     std::swap(this->slots[a].item, this->slots[b].item);
     std::swap(this->slots[a].size, this->slots[b].size);
@@ -433,7 +434,7 @@ void InventoryHandler::updateQuickslotSprites()
         if (this->slots[i].item)
         {
             quickslots[i].sprite.setTexture(*this->slots[i].item->getTexture(), true);
-            quickslots[i].sprite.setPosition(quickslots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (slots[i].item->getSize() / 2.f));
+            quickslots[i].sprite.setPosition(quickslots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (slots[i].item->getTextureSize() / 2.f));
 
             quickslots[i].text.setString(slots[i].text.getString());
         }

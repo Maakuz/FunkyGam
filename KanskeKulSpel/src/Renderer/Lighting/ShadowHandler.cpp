@@ -41,13 +41,14 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
     for (Light* light : lights)
     {
         std::vector<Line> currentLines = this->lines;
+        sf::Vector2f rad = sf::Vector2f(light->shadowMap.getSize()) * 0.5f;
         //For loop this perhaps
-        sf::Vector2f topRight(light->pos.x + light->radius, light->pos.y - light->radius);
-        sf::Vector2f topLeft(light->pos.x - light->radius, light->pos.y - light->radius);
-        sf::Vector2f bottomLeft(light->pos.x - light->radius, light->pos.y + light->radius);
-        sf::Vector2f bottomRight(light->pos.x + light->radius, light->pos.y + light->radius);
+        sf::Vector2f topRight(light->pos.x + rad.x, light->pos.y - rad.y);
+        sf::Vector2f topLeft(light->pos.x - rad.x, light->pos.y - rad.y);
+        sf::Vector2f bottomLeft(light->pos.x - rad.x, light->pos.y + rad.y);
+        sf::Vector2f bottomRight(light->pos.x + rad.x, light->pos.y + rad.y);
 
-        sf::FloatRect bounds(topLeft, sf::Vector2f(light->radius * 2, light->radius * 2));
+        sf::FloatRect bounds(topLeft, sf::Vector2f(light->shadowMap.getSize()));
 
 
         currentLines.push_back(Line(topRight, bottomRight));
@@ -103,7 +104,7 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
 
         sf::ConvexShape tri(3);
         tri.setFillColor(sf::Color::White);
-        sf::Vector2f origo = sf::Vector2f(light->shadowMap.getSize()) * 0.5f; //Could be scary but should work
+        sf::Vector2f origo = rad; //Could be scary but should work
         tri.setPoint(0, origo);
 
         //starting point
@@ -194,6 +195,9 @@ void ShadowHandler::generateShadowMap(sf::RenderTarget& target, sf::Vector2f vie
 
                 closest = newClosest;
             }
+
+            else
+                printfCon("ShadowOpen is empty this should not happen!!");
         }
         //End case
         tri.setPoint(2, firstPos);

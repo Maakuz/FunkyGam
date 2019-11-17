@@ -5,6 +5,7 @@
 #include "Game/Particles/ParticleHandler.h"
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
+#include <fstream>
 
 ItemEditor::ItemEditor()
 {
@@ -104,7 +105,7 @@ void ItemEditor::updateItems()
 
     if (ImGui::Button("Create Throwable"))
     {
-        Throwable* item = new Throwable(sf::Vector2f(), sf::Vector2f(), items[currentItem]->getTexture());
+        Throwable* item = new Throwable(sf::Vector2f(), items[currentItem]->getTexture(), (sf::Vector2f)items[currentItem]->getTexture()->getSize());
         this->items.push_back(item);
         item->setID(this->items.size() - 1);
         item->setUseable(true);
@@ -390,7 +391,7 @@ void ItemEditor::readItems()
 
             if (itemType == "[Throwable]")
             {
-                Throwable* item = new Throwable(sf::Vector2f(), sf::Vector2f(), TextureHandler::get().getTexture(texID));
+                Throwable* item = new Throwable(sf::Vector2f(), TextureHandler::get().getTexture(texID), (sf::Vector2f)TextureHandler::get().getTexture(texID)->getSize());
                 item->setID(id);
                 file >> *item;
                 this->items.push_back(item);

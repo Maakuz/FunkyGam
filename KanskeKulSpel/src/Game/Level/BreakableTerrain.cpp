@@ -1,37 +1,45 @@
 #include "BreakableTerrain.h"
+#include "Game/Misc/Definitions.h"
 
 BreakableTerrain::BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::IntRect texRext)
-    :Entity(pos, texture)
+    :Entity(pos),
+    sprite(texture, pos),
+    spriteOverlay(texture, pos),
+    collider(sf::Vector2f(TILE_SIZE, TILE_SIZE), pos)
 {
-    overlayPresent = false;
-    broken = false;
-    collider.addComponent(Collider::ColliderKeys::ground);
-    setTextureRect(texRext);
-    addCollision();
+    this->broken = false;
+    this->spriteOverlay = nullptr;
+    this->collider.addComponent(ColliderKeys::ground);
+    sprite.setTextureRect(texRext);
     breakThreshold = 25;
+    overlay = false;
 }
 
-void BreakableTerrain::handleCollision(const Entity* collider)
+BreakableTerrain::~BreakableTerrain()
+{
+}
+
+void BreakableTerrain::handleCollision(const Collidable* collider)
 {
 }
 
 void BreakableTerrain::handleExplosion(const Explosion& explosion)
 {
-    if (explosion.calculateDamage(getCenterPos()) > this->breakThreshold)
+    if (explosion.calculateDamage(collider.getCenterPos()) > this->breakThreshold)
         broken = true;
 }
 
 void BreakableTerrain::addOverlay(sf::Texture* texture, sf::IntRect texRext)
 {
-    overlayPresent = true;
-    overlay.setTexture(*texture);
-    overlay.setTextureRect(texRext);
-    overlay.setPosition(this->getPosition());
+    this->spriteOverlay = SpriteComp(texture, getPosition());
+    this->spriteOverlay.setTextureRect(texRext);
+    overlay = true;
 }
 
 void BreakableTerrain::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    Entity::draw(target, states);
-    if (overlayPresent)
-        target.draw(overlay, states);
+    target.draw(sprite, states);
+
+    if (overlay)
+        target.draw(spriteOverlay, states);
 }

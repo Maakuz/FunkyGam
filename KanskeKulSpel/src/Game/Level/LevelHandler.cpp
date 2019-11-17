@@ -44,14 +44,14 @@ bool LevelHandler::loadLevel(const LevelInfo* level)
     if (!success)
         return false;
 
-    this->generateHitboxes(Collider::ColliderKeys::ground);
-    this->generateHitboxes(Collider::ColliderKeys::platform);
-    this->generateHitboxes(Collider::ColliderKeys::levelReturn);
-    this->generateHitboxes(Collider::ColliderKeys::levelWarp);
+    this->generateHitboxes(ColliderKeys::ground);
+    this->generateHitboxes(ColliderKeys::platform);
+    this->generateHitboxes(ColliderKeys::levelReturn);
+    this->generateHitboxes(ColliderKeys::levelWarp);
 
     for (CustomHitbox& box : customHitboxes)
     {
-        Terrain ter(Collider::AABB(sf::Vector2f(box.min), sf::Vector2f(box.max - box.min)), Collider::ColliderKeys::customTerrain, box.flag);
+        Terrain ter(AABB(sf::Vector2f(box.min), sf::Vector2f(box.max - box.min)), ColliderKeys::customTerrain, box.flag);
         terrain.push_back(ter);
     }
     this->createSpites();
@@ -215,7 +215,7 @@ bool LevelHandler::importLevel(const LevelInfo* level)
     return false;
 }
 
-bool LevelHandler::generateHitboxes(Collider::ColliderKeys type)
+bool LevelHandler::generateHitboxes(ColliderKeys type)
 {
     sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
 
@@ -264,7 +264,7 @@ bool LevelHandler::generateHitboxes(Collider::ColliderKeys type)
                         max.x += TILE_SIZE * (bounds.x - 1);
 
 
-                        Terrain ter(Collider::AABB(min, max - min), type);
+                        Terrain ter(AABB(min, max - min), type);
                         terrain.push_back(ter);
                     }
 
@@ -285,7 +285,7 @@ bool LevelHandler::generateHitboxes(Collider::ColliderKeys type)
                     //if other tiles has been found
                     if (horExisits || (1 + i < end.y && hitboxData[i + 1][j].tileID != hitboxData[i][j].tileID))
                     {
-                        Terrain ter(Collider::AABB(min, max - min), type);
+                        Terrain ter(AABB(min, max - min), type);
                         terrain.push_back(ter);
                         open[i][j] = false;
                     }
@@ -318,7 +318,7 @@ bool LevelHandler::generateHitboxes(Collider::ColliderKeys type)
                     }
 
 
-                    Terrain ter = Terrain(Collider::AABB(min, max - min), type);
+                    Terrain ter = Terrain(AABB(min, max - min), type);
                     terrain.push_back(ter);
                 }
             }
@@ -458,7 +458,7 @@ void LevelHandler::generateShadowLines()
     breakableShadowLines.clear();
     for (auto& ter : terrain)
     {
-        if (ter.getCollider().hasComponent(Collider::ColliderKeys::ground))
+        if (ter.getCollider().hasComponent(ColliderKeys::ground))
         {
             Line top(
                 ter.getPosition(),
@@ -485,7 +485,7 @@ void LevelHandler::generateShadowLines()
     //Might be a criminal now
     for (auto& ter : breakableTerrain)
     {
-        if (ter.getCollider().hasComponent(Collider::ColliderKeys::ground))
+        if (ter.getCollider().hasComponent(ColliderKeys::ground))
         {            
              Line top(
                 ter.getPosition(),

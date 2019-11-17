@@ -1,12 +1,15 @@
 #pragma once
-#include "../MovingEntity.h"
+#include "../Entity.h"
 #include "Game/Misc/Counter.h"
 #include "Game/Interface/UIHandler.h"
 #include "Game/Components/HealthComp.h"
+#include "Game/Components/AnimatedSpriteComp.h"
+#include "Game/Components/MovementComp.h"
+#include "Game/Entities/Collidable.h"
 #include <fstream>
 
 
-class Enemy : public MovingEntity
+class Enemy : public Entity, public Collidable, public sf::Drawable
 {
 public:
     enum class Direction
@@ -28,7 +31,7 @@ public:
         stunned
     };
 
-    Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui);
+    Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui, sf::Vector2f size, sf::Vector2f offset);
     ~Enemy() {};
 
     friend std::istream& operator>>(std::istream& in, Enemy& enemy);
@@ -48,6 +51,10 @@ public:
     void setEyeLevel(sf::Vector2f eyeLevel) { this->eyeLevel = eyeLevel; };
     sf::Vector2f getLastKnownPos() const { return this->lastKnownPlayerPos; };
 
+    const MovementComp& getMovementComp() const { return this->movement; };
+
+
+    virtual const ColliderComp& getCollider()const { return collider; };
 protected:
     UIHandler* ui;
     float roamDistance;
@@ -57,7 +64,12 @@ protected:
     sf::Vector2f eyeLevel;
     Counter timeSincePlayerSeen;
     sf::Vector2f currentRoamPoint;
+
     HealthComp health;
+    AnimatedSpriteComp sprite;
+    MovementComp movement;
+    ColliderComp collider;
+
     float chaseSpeed;
     float idleSpeed;
     float sightRadius;

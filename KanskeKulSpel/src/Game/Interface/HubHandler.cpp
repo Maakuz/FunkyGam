@@ -4,6 +4,7 @@
 #include "Game/Misc/Definitions.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Item/ItemHandler.h"
+#include <fstream>
 
 HubHandler::HubHandler(UIHandler* uiHandler)
 {

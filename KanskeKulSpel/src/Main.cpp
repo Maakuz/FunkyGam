@@ -21,7 +21,7 @@ int main()
     int flag = _CrtSetDbgFlag(_CRTDBG_REPORT_FLAG);
     flag |= _CRTDBG_LEAK_CHECK_DF; // Turn on leak-checking bit
     _CrtSetDbgFlag(flag);
-    //_CrtSetBreakAlloc(689); // Comment or un-comment on need basis
+    //_CrtSetBreakAlloc(11120); // Comment or un-comment on need basis
 #endif
     sf::Color clearColor(0, 100, 155);
 

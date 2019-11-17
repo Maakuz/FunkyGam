@@ -2,7 +2,7 @@
 #include <sstream>
 #include "SFML/Graphics.hpp"
 #include "Renderer/Lighting/Light.h"
-#include "Game/Entities/Entity.h"
+#include "Game/Entities/Collidable.h"
 
 struct Particle
 {
@@ -217,7 +217,7 @@ public:
 
     void update(float dt);
     void queueLights();
-    void handleCollision(const std::vector<Entity*>* entities);
+    void handleCollision(const std::vector<Collidable*>* entities);
     void kill();
 
     //The kill is quicker, the function is probably slower

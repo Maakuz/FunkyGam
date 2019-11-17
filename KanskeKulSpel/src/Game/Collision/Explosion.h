@@ -1,4 +1,7 @@
 #pragma once
+#include <istream>
+#include <ostream>
+#include <algorithm>
 #include "SFML/System/Vector2.hpp"
 #include "Game/Misc/VectorFunctions.h"
 enum ExplosionType 

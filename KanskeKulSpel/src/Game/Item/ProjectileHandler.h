@@ -15,13 +15,14 @@ public:
     void loadTemplates();
     void queueColliders();
 
-    static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Entity* thrower);
+    static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Collidable* thrower);
     static void addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination, float channelTime);
 
     virtual void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     bool drawHitboxes;
 
+    Spell* test;
 
     static std::unordered_map<std::string, const Spell*> spellTemplates;
 

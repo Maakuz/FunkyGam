@@ -7,6 +7,7 @@
 #include "Game/Particles/ParticleHandler.h"
 #include "Game/Misc/VectorFunctions.h"
 #include <sstream>
+#include <fstream>
 
 std::vector<const Item*> ItemHandler::itemTemplates;
 std::unordered_set<int> ItemHandler::foundItems;
@@ -92,7 +93,7 @@ void ItemHandler::update(float dt, Player* player)
         }
         else
         {
-            if (length(player->getCenterPos() - it->item.getCenterPos()) < this->gatherRange)
+            if (length(player->getCollider().getCenterPos() - it->item.getTextureCenterPos()) < this->gatherRange)
                 inRange = it._Ptr;
 
             it++;
@@ -118,13 +119,13 @@ void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHit
         Item item(*this->itemTemplates[level->gatherables[i]]);
 
         sf::Vector2f pos = point;
-        pos.y += TILE_SIZE - item.getSize().y;
+        pos.y += TILE_SIZE - item.getTextureSize().y;
 
         item.setPosition(pos);
         Emitter* emitter = nullptr;
 
         if (item.getEmitterID() != -1)
-            emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos + (item.getSize() / 2.f));
+            emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos + (item.getTextureSize() / 2.f));
 
         gatherItems.push_back(GatherItem{ emitter, item, 1});
     }
@@ -136,7 +137,7 @@ void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHit
         Item item(*this->itemTemplates[level->rareGatherables[i]]);
 
         sf::Vector2f pos = point;
-        pos.y += TILE_SIZE - item.getSize().y;
+        pos.y += TILE_SIZE - item.getTextureSize().y;
 
         item.setPosition(pos);
         Emitter* emitter = nullptr;
@@ -170,8 +171,8 @@ void ItemHandler::spawnShrines(std::vector<CustomHitbox> shrines)
                     Item newItem(*item);
 
                     sf::Vector2f pos = sf::Vector2f(box.min);
-                    pos.y += TILE_SIZE - newItem.getSize().y;
-                    pos.x += TILE_SIZE / 2 - newItem.getSize().x / 2.f;
+                    pos.y += TILE_SIZE - newItem.getTextureSize().y;
+                    pos.x += TILE_SIZE / 2 - newItem.getTextureSize().x / 2.f;
 
                     newItem.setPosition(pos);
                     Emitter* emitter = nullptr;
@@ -202,7 +203,7 @@ void ItemHandler::loadThrowable(std::ifstream& file)
 
     file >> trash >> itemID;
     file >> trash >> textureID;
-    Throwable* throwable = new Throwable(sf::Vector2f(), sf::Vector2f(), TextureHandler::get().getTexture(textureID));
+    Throwable* throwable = new Throwable(sf::Vector2f(), TextureHandler::get().getTexture(textureID), (sf::Vector2f)TextureHandler::get().getTexture(textureID)->getSize());
 
     file >> *throwable;
 
@@ -224,7 +225,6 @@ void ItemHandler::loadGatherable(std::ifstream& file)
 
     file >> *item;
     item->setID(itemID);
-    item->addCollisionComponent(Collider::ColliderKeys::gatherable);
 
     itemTemplates.push_back(item);
 }
@@ -242,8 +242,6 @@ void ItemHandler::loadTome(std::ifstream& file)
 
     file >> *item;
     item->setID(itemID);
-    item->addCollisionComponent(Collider::ColliderKeys::gatherable);
-
     itemTemplates.push_back(item);
 }
 

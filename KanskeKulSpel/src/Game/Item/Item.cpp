@@ -1,13 +1,25 @@
 #include "Game/Item/Item.h"
 
 Item::Item(sf::Vector2f pos, const sf::Texture* texture):
-    Entity(pos, texture)
+    Entity(pos),
+    sprite(texture, pos)
 {
     id = 0;
     stackLimit = 0;
     emitterID = -1;
     useable = false;
     obtained = false;
+}
+
+void Item::setPosition(sf::Vector2f pos)
+{
+    this->pos = pos;
+    this->sprite.update(pos);
+}
+
+void Item::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    target.draw(sprite, states);
 }
 
 std::istream& operator>>(std::istream& in, Item& item)

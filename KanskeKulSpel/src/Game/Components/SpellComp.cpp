@@ -4,7 +4,7 @@
 #include "Game/Particles/ParticleHandler.h"
 #include "Game/Item/Spell/Tome.h"
 
-SpellComp::SpellComp(const sf::Vector2f* pos)
+SpellComp::SpellComp(const sf::Vector2f pos)
 {
     this->channelTime = 0;
     this->channelling = false;
@@ -22,7 +22,7 @@ void SpellComp::startChannelling(int tomeID)
 
     int emitterID = dynamic_cast<const Tome*>(ItemHandler::getTemplate(tomeID))->getChannelEmitter();
 
-    this->channelEmitter = ParticleHandler::addEmitter(emitterID, *pos);
+    this->channelEmitter = ParticleHandler::addEmitter(emitterID, pos);
 }
 
 void SpellComp::stopChannelling()
@@ -31,19 +31,21 @@ void SpellComp::stopChannelling()
     killEmitter();
 }
 
-void SpellComp::update(float dt)
+void SpellComp::update(float dt, sf::Vector2f pos)
 {
     if (channelling)
         this->channelTime += dt;
 
     if (channelEmitter)
-        channelEmitter->setEmitterPos(*pos);
+        channelEmitter->setEmitterPos(pos);
+
+    this->pos = pos;
 }
 
 void SpellComp::castSpell(sf::Vector2f dest)
 {
     if (channelling)
-        ProjectileHandler::addSpell(this->tome, *this->pos, dest, this->channelTime);
+        ProjectileHandler::addSpell(this->tome, this->pos, dest, this->channelTime);
 
     channelling = false;
 

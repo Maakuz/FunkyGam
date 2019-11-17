@@ -12,28 +12,30 @@
 
 #define TESTING false
 
-Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
-    :MovingEntity(data, pos), spellComp(this->getCenterPosPtr())
+Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::Vector2f size)
+    :Entity(pos),
+    sprite(data, pos),
+    collider(size, pos),
+    spellComp(collider.getCenterPos())
 {
-    this->collider.addComponent(Collider::ColliderKeys::player);
-    this->collider.addComponent(Collider::ColliderKeys::character);
+    this->collider.addComponent(ColliderKeys::player);
+    this->collider.addComponent(ColliderKeys::character);
     this->ui = uiHandler;
-    this->walkSpeed = 0;
-    this->jumpHeight = 0;
-    this->mass = 0;
     this->illumination = 0;
     this->throwingPower = 0;
     this->exitReached = -1;
     this->debugMode = false;
     this->noClip = false;
-    this->jumping = false;
-    this->grounded = false;
     this->canReturn = false;
     this->returning = false;
     this->gatherableInRange = nullptr;
 
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
+
+    this->sprite.spriteOffset.y = -(abs(sprite.getTextureRect().height) - size.y);
+    this->sprite.spriteOffset.x = -size.x / 2.f;
+
     
     ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
         {
@@ -44,7 +46,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos)
                     int x = std::stoi(args[0]);
                     int y = std::stoi(args[1]);
 
-                    setPosition(sf::Vector2f(x, y));
+                    pos = (sf::Vector2f(x, y));
                 }
                 catch (const std::exception & e)
                 {
@@ -117,9 +119,9 @@ void Player::update(float dt, sf::Vector2f mousePos)
     {
         ImGui::Begin("Player tweaker", &debugMode);
 
-        ImGui::DragFloat("Walk speed", &this->walkSpeed, 0.01, 0, 10000);
-        ImGui::DragFloat("Jump height", &this->jumpHeight, 0.01, 0, 10000);
-        ImGui::DragFloat("Mass", &this->mass, 0.01, 0, 10000);
+        ImGui::DragFloat("Walk speed", &this->movement.walkSpeed, 0.01, 0, 10000);
+        ImGui::DragFloat("Jump height", &this->movement.jumpHeight, 0.01, 0, 10000);
+        ImGui::DragFloat("Mass", &this->movement.mass, 0.01, 0, 10000);
 
         ImGui::Checkbox("Noclip", &noClip);
 
@@ -132,17 +134,19 @@ void Player::update(float dt, sf::Vector2f mousePos)
     else
         this->debugMove(dt);
 
-    if (this->grounded)
-        setAnimation(0);
+    if (this->movement.grounded)
+        sprite.setAnimation(0);
 
     else
-        setAnimation(1);
+        sprite.setAnimation(1);
 
-    MovingEntity::update(dt);
+    this->pos = movement.update(dt, getPosition());
 
     updateItems(dt, mousePos);
-    spellComp.update(dt);
-
+    spellComp.update(dt, collider.getCenterPos());
+    collider.setPosition(getPosition());
+    sprite.updateAnimation(dt);
+    sprite.update(getPosition());
 
     if (this->canReturn && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
         this->returning = true;
@@ -155,15 +159,22 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
     ui->setHealthPercentage(this->healthComp.getHealth() / float(this->healthComp.getMaxHealth()));
     this->canReturn = false;
+
+    if (abs(movement.momentum.x) < this->movement.walkSpeed * 0.75f && !sprite.isIdle())
+        sprite.pauseAnimation();
+
+    else if (abs(movement.momentum.x) > this->movement.walkSpeed * 0.75f)
+        sprite.resumeAnimation();
+
+
 }
 
 void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
 {
-    setPosition(spawnPoint);
+    this->pos = spawnPoint;
     this->returning = false;
     this->exitReached = -1;
-    this->momentum.x = 0;
-    this->momentum.y = 0;
+    this->movement.reset();
 
     if (fillHealth)
         this->healthComp.fillHealth();
@@ -171,36 +182,34 @@ void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
 
 void Player::updateMove(float dt)
 {
-    this->acceleration.x = 0;
-    this->acceleration.y = 0;
+    this->movement.acceleration = sf::Vector2f(0, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        this->acceleration.x = 1;
+        this->movement.acceleration.x = 1;
 
-        if (this->isFlippedHorizontally())
-            this->flipHorizontally();
+        if (this->sprite.isFlippedHorizontally())
+            this->sprite.flipHorizontally();
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        acceleration.x = -1;
+        this->movement.acceleration.x = -1;
 
-        if (!this->isFlippedHorizontally())
-            this->flipHorizontally();
+        if (!this->sprite.isFlippedHorizontally())
+            this->sprite.flipHorizontally();
     }
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        jump();
-        this->jumping = true;
+        movement.jump();
     }
 
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         platformPassingCounter.reset();
 
-    if (this->jumping && !sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-        stopJump(0.3);
+    if (this->movement.isJumping() && !sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        movement.stopJump(0.3);
 
 
     platformPassingCounter.update(dt);
@@ -209,23 +218,19 @@ void Player::updateMove(float dt)
 
 void Player::debugMove(float dt)
 {
-    this->acceleration.x = 0;
-    this->acceleration.y = 0;
+    this->movement.acceleration = sf::Vector2f(0, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        this->acceleration.x = 1;
+        this->movement.acceleration.x = 1;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        acceleration.x = -1;
+        this->movement.acceleration.x = -1;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-        acceleration.y = -1;
+        this->movement.acceleration.y = -1;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-        acceleration.y = 1;
-
-    momentum.y = acceleration.y * dt;
-    momentum.y *= 0.97;
+        this->movement.acceleration.y = 1;
 }
 
 void Player::updateItems(float dt, sf::Vector2f mousePos)
@@ -238,9 +243,10 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
             if (dynamic_cast<const Throwable*>(ItemHandler::getTemplate(itemID)))
             {
                 sf::Vector2f direction = mousePos - this->getPosition() - sf::Vector2f(16, 10);
-                float distance = std::min(length(direction), 400.f) / 400.f;
                 normalize(direction);
-                direction *= this->throwingPower * distance;
+                direction *= (this->throwingPower);
+
+                direction += movement.momentum * 0.5f;
 
                 ProjectileHandler::addThrowable(itemID, this->getPosition(), direction, this);
             }
@@ -276,51 +282,85 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
     }
 }
 
-void Player::handleCollision(const Entity* colliderEntity)
+void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    target.draw(sprite, states);
+}
+
+void Player::handleCollision(const Collidable* colliderEntity)
 {
     if (!noClip)
     {
-        if (momentum.y > 0 && colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::platform))
+        if (movement.momentum.y > 0 && colliderEntity->getCollider().hasComponent(ColliderKeys::platform))
         {
             //walking on ground
-            if (Collider::intersects(colliderEntity->getCollider().getUp(), this->collider.getDown()))
+            if (ColliderComp::intersects(colliderEntity->getCollider().getUpBox(), this->collider.getDownBox()))
             {
                 if (platformPassingCounter.isTimeUp())
                 {
-                    this->momentum.y = 0;
-                    this->setY(colliderEntity->up() - this->height());
-                    grounded = true;
+                    this->movement.momentum.y = 0;
+                    this->pos.y = (colliderEntity->getCollider().up() - collider.height());
+                    this->movement.grounded = true;
                 }
             }
         }
 
-        else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::grunt))
+        else if (colliderEntity->getCollider().hasComponent(ColliderKeys::ground))
+        {
+            //walking on ground
+            if (this->movement.momentum.y > 0 && colliderEntity->getCollider().intersects(colliderEntity->getCollider().getUpBox(), this->collider.getDownBox()))
+            {
+                this->movement.momentum.y = 0;
+                this->pos.y = (colliderEntity->getCollider().up() - this->collider.height());
+                movement.grounded = true;
+            }
+
+            //smackin into roof
+            if (this->movement.momentum.y < 0 && colliderEntity->getCollider().intersects(colliderEntity->getCollider().getDownBox(), this->collider.getUpBox()))
+            {
+                this->movement.momentum.y = 0;
+                this->pos.y = (colliderEntity->getCollider().down());
+            }
+
+            if (colliderEntity->getCollider().intersects(colliderEntity->getCollider().getLeftBox(), this->collider.getRightBox()))
+            {
+                this->movement.momentum.x *= -0.5f;
+                this->pos.x = (colliderEntity->getCollider().left() - this->collider.width());
+            }
+
+            if (colliderEntity->getCollider().intersects(colliderEntity->getCollider().getRightBox(), this->collider.getLeftBox()))
+            {
+                this->movement.momentum.x *= -0.5f;
+                this->pos.x = (colliderEntity->getCollider().right());
+            }
+        }
+
+        else if (colliderEntity->getCollider().hasComponent(ColliderKeys::grunt))
         {
             const Grunt* ptr = dynamic_cast<const Grunt*>(colliderEntity);
             if (ptr->isAttacking())
             {
-                addCollisionMomentum(ptr->getMomentum(), ptr->getCenterPos(), ptr->getMass());
+                
+                movement.addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider.getCenterPos(), colliderEntity->getCollider().getCenterPos(), movement.momentum, ptr->getMovementComp().momentum, movement.mass, ptr->getMovementComp().mass));
                 healthComp.takeDamage(ptr->getDamage());
             }
         }
-
-        MovingEntity::handleCollision(colliderEntity);
     }
 
-    if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::levelReturn))
+    if (colliderEntity->getCollider().hasComponent(ColliderKeys::levelReturn))
         this->returning = true;
 
-    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::levelWarp))
+    else if (colliderEntity->getCollider().hasComponent(ColliderKeys::levelWarp))
         this->canReturn = true;
 
-    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::customTerrain))
+    else if (colliderEntity->getCollider().hasComponent(ColliderKeys::customTerrain))
     {
         std::string flag = colliderEntity->getCollider().getFlag();
         if (flag.compare(0, 4, "exit") == 0)
             this->exitReached = flag[4] - '0';
     }
 
-    else if (colliderEntity->getCollider().hasComponent(Collider::ColliderKeys::throwable))
+    else if (colliderEntity->getCollider().hasComponent(ColliderKeys::throwable))
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(colliderEntity);
         if (throwable->getThrower() != this)
@@ -332,7 +372,7 @@ void Player::handleExplosion(const Explosion& explosion)
 {
     if (explosion.damage > 0)
     {
-        int damage = explosion.calculateDamage(this->getCenterPos());
+        int damage = explosion.calculateDamage(this->collider.getCenterPos());
         this->healthComp.takeDamage(damage);
     }
 }
@@ -343,9 +383,9 @@ std::istream& operator>>(std::istream& in, Player& player)
     int health = 0;
     in >> trash;
 
-    in >> trash >> player.walkSpeed;
-    in >> trash >> player.jumpHeight;
-    in >> trash >> player.mass;
+    in >> trash >> player.movement.walkSpeed;
+    in >> trash >> player.movement.jumpHeight;
+    in >> trash >> player.movement.mass;
     in >> trash >> health;
     in >> trash >> player.throwingPower;
 

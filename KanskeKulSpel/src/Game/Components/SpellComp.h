@@ -4,12 +4,12 @@
 class SpellComp
 {
 public:
-    SpellComp(const sf::Vector2f* pos);
+    SpellComp(sf::Vector2f pos);
     ~SpellComp() {};
 
     void startChannelling(int tomeID);
     void stopChannelling();
-    void update(float dt);
+    void update(float dt, sf::Vector2f pos);
     bool isChannelling() const { return channelling; };
     void castSpell(sf::Vector2f dest);
 
@@ -19,7 +19,7 @@ private:
     float channelTime;
     int tome;
 
-    const sf::Vector2f* pos;
+    sf::Vector2f pos;
 
     void killEmitter();
 };
