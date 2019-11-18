@@ -192,9 +192,9 @@ void Game::updateLevel(float dt)
     this->levelHandler.queueLightsAndShadows();
     this->particleHandler.queueLights();
     characterHandler.calculatePlayerIllumination();
-
-    static Chain chain(300);
-    chain.update(mousePosWorld);
+   
+    static Chain chain = Chain(TextureHandler::get().getTexture(12), sf::Vector2f(700, 400), 5, 10);
+    chain.update(dt, mousePosWorld);
     Renderer::queueDrawable(&chain);
 
     Renderer::queueDrawable(&this->levelHandler);
