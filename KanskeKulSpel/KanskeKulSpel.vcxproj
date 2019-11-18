@@ -147,6 +147,7 @@
     <ClCompile Include="src\Game\Components\MovementComp.cpp" />
     <ClCompile Include="src\Game\Components\SpellComp.cpp" />
     <ClCompile Include="src\Game\Components\SpriteComp.cpp" />
+    <ClCompile Include="src\Game\Entities\Chain.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Bird.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Enemy.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Grunt.cpp" />
@@ -208,6 +209,7 @@
     <ClInclude Include="src\Game\Components\MovementComp.h" />
     <ClInclude Include="src\Game\Components\SpellComp.h" />
     <ClInclude Include="src\Game\Components\SpriteComp.h" />
+    <ClInclude Include="src\Game\Entities\Chain.h" />
     <ClInclude Include="src\Game\Entities\Collidable.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Bird.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Bosses\FishMonger.h" />

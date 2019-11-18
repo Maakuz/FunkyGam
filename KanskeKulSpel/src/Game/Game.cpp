@@ -5,6 +5,7 @@
 #include "Handlers/TextureHandler.h"
 #include "Misc/ConsoleWindow.h"
 #include "Renderer/Renderer.h"
+#include "Game/Entities/Chain.h"
 
 #define DEBUG_MODE true
 
@@ -122,6 +123,7 @@ void Game::updateHub(float dt)
         this->gameState = GameState::States::level;
     }
 
+
     Renderer::queueUI(&this->hubHandler);
     Renderer::queueUI(&this->uiHandler);
 }
@@ -190,6 +192,11 @@ void Game::updateLevel(float dt)
     this->levelHandler.queueLightsAndShadows();
     this->particleHandler.queueLights();
     characterHandler.calculatePlayerIllumination();
+
+    static Chain chain(300);
+    chain.update(mousePosWorld);
+    Renderer::queueDrawable(&chain);
+
     Renderer::queueDrawable(&this->levelHandler);
     Renderer::queueDrawable(&this->characterHandler);
     Renderer::queueDrawable(&this->itemHandler);

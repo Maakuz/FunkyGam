@@ -16,6 +16,10 @@ public:
     void setTextureRect(sf::IntRect rect) { sprite.setTextureRect(rect); };
     const sf::IntRect& getTextureRect() { return this->sprite.getTextureRect(); };
 
+    void setOrigin(sf::Vector2f origin) { sprite.setOrigin(origin); };
+
+    void setRotation(float angle) { this->sprite.setRotation(angle); };
+
     void update(sf::Vector2f pos);
 
     void setTexture(const sf::Texture* texture) { this->sprite.setTexture(*texture); };

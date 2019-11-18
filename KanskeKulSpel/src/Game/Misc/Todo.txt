@@ -1,3 +1,4 @@
 free flare dobbelckick fel
 kollisionsdamage broken om låg bounce?
 fireball closerange är märklig
+chain thingy for tentacles

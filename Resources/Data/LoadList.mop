@@ -1,6 +1,6 @@
 [Textures]
 Folder: ../Resources/Sprites/
-TextureCount: 25
+TextureCount: 26
 0: cate.png
 1: fish.png
 2: bamb.png
@@ -26,6 +26,7 @@ TextureCount: 25
 22: flash_flower.png
 23: birb.png
 24: tome_fireball.png
+25: fishmonger.png
 
 [Fonts]
 Folder: ../Resources/Fonts/
