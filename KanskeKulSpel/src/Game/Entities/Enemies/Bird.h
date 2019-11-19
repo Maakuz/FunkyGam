@@ -4,7 +4,7 @@
 class Bird : public Enemy
 {
 public:
-    Bird(AnimationData data, sf::Vector2f pos, UIHandler* ui, sf::Vector2f size, sf::Vector2f offset);
+    Bird(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset);
     ~Bird();
 
     void update(float dt);

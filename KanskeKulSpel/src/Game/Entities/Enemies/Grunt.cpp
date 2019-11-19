@@ -5,8 +5,8 @@
 #include "Game/Item/Throwables/Throwable.h"
 #include "Game/Entities/Player.h"
 
-Grunt::Grunt(AnimationData data, sf::Vector2f pos, UIHandler* ui, sf::Vector2f size, sf::Vector2f offset)
-    :Enemy(data, pos, ui, size, offset)
+Grunt::Grunt(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset)
+    :Enemy(data, pos, size, offset)
 {
     this->flying = false;
     this->forcedDirection = Direction::none;

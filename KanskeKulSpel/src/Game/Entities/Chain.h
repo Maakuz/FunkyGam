@@ -3,6 +3,7 @@
 #include "SFML/Graphics/VertexArray.hpp"
 #include <vector>
 
+//Verlet simulation
 class Chain : public sf::Drawable
 {
 public:

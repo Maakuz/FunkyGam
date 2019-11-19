@@ -2,13 +2,12 @@
 #include <string>
 #include "Game/Handlers/TextureHandler.h"
 
-Enemy::Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui, sf::Vector2f size, sf::Vector2f offset) :
+Enemy::Enemy(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset) :
     Entity(pos),
     sprite(data, pos),
     collider(size, pos)
 {
     this->prevHealth = 0;
-    this->ui = ui;
     this->collider.addComponent(ColliderKeys::character);
     this->roamDecisionCounter = Counter(2500 + rand() % 1000);
     this->timeSincePlayerSeen = Counter(10000);
@@ -53,9 +52,6 @@ void Enemy::updateEnemy(float dt)
     this->exclamation.setPosition(iconPos);
     this->question.setPosition(iconPos);
 
-    if (this->health.getHealth() != this->prevHealth)
-        ui->displayEnemyDamage(float(health.getHealth()) / health.getMaxHealth());
-
     this->prevHealth = this->health.getHealth();
 
     if (abs(movement.momentum.x) < this->movement.walkSpeed * 0.75f && !sprite.isIdle())
@@ -93,6 +89,16 @@ void Enemy::spawn(sf::Vector2f pos)
 bool Enemy::isAlive()
 {
     return this->health.isAlive();
+}
+
+bool Enemy::isHealthChanged()
+{
+    return health.getHealth() != prevHealth;
+}
+
+float Enemy::getHealthPercentage() const
+{
+    return float(health.getHealth()) / health.getMaxHealth();
 }
 
 float Enemy::getVisionRatingAt(float distance) const

@@ -207,6 +207,9 @@
     <ClCompile Include="src\Game\Entities\Chain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Entities\Enemies\Bosses\FishMonger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game\Collision\CollisionHandler.h">

@@ -2,8 +2,8 @@
 #include "Game/Item/ProjectileHandler.h"
 #include "Misc/ConsoleWindow.h"
 
-Bird::Bird(AnimationData data, sf::Vector2f pos, UIHandler* ui, sf::Vector2f size, sf::Vector2f offset)
-    :Enemy(data, pos, ui, size, offset)
+Bird::Bird(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset)
+    :Enemy(data, pos, size, offset)
 {
     movement.setIgnoreGravity(true);
     this->inBombingRange = false;

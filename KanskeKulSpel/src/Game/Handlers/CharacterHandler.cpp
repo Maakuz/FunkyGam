@@ -257,6 +257,9 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
                 (*it)->getState() == Enemy::State::returning)
                 this->updateEnemyLineOfSight(*it);
 
+            if ((*it)->isHealthChanged())
+                ui->displayEnemyDamage((*it)->getHealthPercentage());
+
             (*it)->update(dt);
             it++;
         }

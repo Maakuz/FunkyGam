@@ -31,7 +31,7 @@ public:
         stunned
     };
 
-    Enemy(AnimationData data, sf::Vector2f pos, UIHandler* ui, sf::Vector2f size, sf::Vector2f offset);
+    Enemy(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset);
     ~Enemy() {};
 
     friend std::istream& operator>>(std::istream& in, Enemy& enemy);
@@ -41,6 +41,8 @@ public:
     void spawn(sf::Vector2f pos);
 
     bool isAlive();
+    bool isHealthChanged();
+    float getHealthPercentage() const;
 
     Direction getFacingDir() const { return this->facingDir; }
     State getState() const { return this->state; }
@@ -56,7 +58,6 @@ public:
 
     virtual const ColliderComp& getCollider()const { return collider; };
 protected:
-    UIHandler* ui;
     float roamDistance;
     State state;
     Direction facingDir;

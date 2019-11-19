@@ -56,6 +56,6 @@ private:
 template<typename EnemyType> 
 inline EnemyType* CharacterHandler::createEnemy(AnimationData data, sf::Vector2f size, sf::Vector2f offset)
 {
-    EnemyType* enemy = new EnemyType(data, sf::Vector2f(0, 0), this->ui, size, offset);
+    EnemyType* enemy = new EnemyType(data, sf::Vector2f(0, 0), size, offset);
     return enemy;
 }
