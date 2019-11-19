@@ -17,11 +17,9 @@ Chain::Chain(std::vector<const sf::Texture*> textures, sf::Vector2f pos, int lin
     initialize(textures, pos, linkCount, stiffness);
 }
 
-void Chain::update(float dt, sf::Vector2f mousePos)
+void Chain::update(float dt)
 {
     points.front().pos = this->pos;
-
-    points.back().pos = mousePos;
 
     for (Point& p : points)
     {
@@ -60,7 +58,7 @@ void Chain::move(Point* p)
     delta *= 0.99f;//Include friction here
     p->prevPos = p->pos;
     p->pos += delta;
-    p->pos.y += 0.3f; //Gravity
+    p->pos.y += (mass * 0.3f); //Gravity
 }
 
 void Chain::constrainLink(Link* l)
@@ -83,6 +81,9 @@ void Chain::initialize(std::vector<const sf::Texture*> textures, sf::Vector2f po
     points.clear();
     this->pos = pos;
     this->stiffness = stiffness;
+    this->mass = 1;
+
+
     points.push_back(Point(pos));
 
     for (int i = 0; i < linkCount; i++)

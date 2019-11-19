@@ -47,19 +47,22 @@ public:
         };
     };
 
-    //If vector is provided the pieces will have
+    //If vector is provided the pieces will have different textures
     Chain(const sf::Texture* texture, sf::Vector2f pos, int linkCount = 5, int stiffness = 10);
     Chain(std::vector<const sf::Texture*> textures, sf::Vector2f pos, int linkCount = 5, int stiffness = 10);
     virtual ~Chain(){};
 
 
-    void update(float dt, sf::Vector2f mousePos);
+    void update(float dt);
+
+    void setMass(float mass) { this->mass = mass; };
 
 private:
     std::vector<Link> links;
     std::vector<Point> points;
     sf::Vector2f pos;
     int stiffness;
+    float mass;
 
     void move(Point* p);
     void constrainLink(Link* l);
