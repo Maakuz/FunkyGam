@@ -9,7 +9,7 @@ void FishMonger::update(float dt)
 {
 }
 
-void FishMonger::handleCollision(const Entity* collider)
+void FishMonger::handleCollision(const Collidable* collidable)
 {
 }
 

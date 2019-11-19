@@ -476,6 +476,7 @@
     <None Include="..\Resources\Data\Particles.mop" />
     <None Include="..\Resources\Data\bird.mop" />
     <None Include="..\Resources\Data\Spells.mop" />
+    <None Include="..\Resources\Data\fishmonger.mop" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc\Todo.txt" />

@@ -2,6 +2,7 @@
 #include "Game/Collision/CollisionHandler.h"
 #include "TextureHandler.h"
 #include "Game/Entities/Enemies/Grunt.h"
+#include "Game/Entities/Enemies/Bosses/FishMonger.h"
 #include "Game/Entities/Enemies/Bird.h"
 #include "Game/Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
@@ -10,7 +11,7 @@
 #include "Misc/Profiler.h"
 #include "Game/Misc/Definitions.h"
 
-const std::string CharacterHandler::ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop" };
+const std::string CharacterHandler::ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop", "fishmonger.mop" };
 
 CharacterHandler::CharacterHandler(UIHandler* uiHandler)
 {
@@ -18,6 +19,7 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
     occluders = nullptr;
     this->drawHitboxes = false;
     this->drawSightlines = false;
+    this->boss = nullptr;
 
     this->ui = uiHandler;
 
@@ -70,7 +72,11 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
 
 CharacterHandler::~CharacterHandler()
 {
-    delete player;
+    if (player)
+        delete player;
+
+    if (boss)
+        delete boss;
 
     for (Enemy* enemy : enemies)
         delete enemy;
@@ -193,11 +199,14 @@ void CharacterHandler::loadEnemies()
 
         switch (i)
         {
-        case enemy::grunt:
+        case EnemyType::grunt:
             enemy = createEnemy<Grunt>(data, size, offset);
             break;
-        case enemy::bird:
+        case EnemyType::bird:
             enemy = createEnemy<Bird>(data, size, offset);
+            break;
+        case EnemyType::fishmonger:
+            enemy = createEnemy<FishMonger>(data, size, offset);
             break;
         default:
             enemy = createEnemy<Grunt>(data, size, offset);
@@ -224,20 +233,8 @@ void CharacterHandler::spawnEnemies(const LevelInfo* info)
     for (const sf::Vector2f& point : spawnPoints)
     {
         int i = rand() % info->enemies.size();
-        Enemy* enemy;
-        switch (info->enemies[i])
-        {
-        case enemy::grunt:
-            enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[enemy::grunt]));
-            break;
-        case enemy::bird:
-            enemy = new Bird(*dynamic_cast<Bird*>(enemyTemplates[enemy::bird]));
-            break;
-        default:
-            enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[enemy::grunt]));
-            break;
-        }        
-
+        
+        Enemy* enemy = spawnEnemy(info->enemies[i]);
         enemy->spawn(point - sf::Vector2f(0, enemy->getCollider().getSize().y));
         enemies.push_back(enemy);
     }
@@ -279,6 +276,34 @@ void CharacterHandler::queueColliders()
 
     for (Enemy* enemy : enemies)
         CollisionHandler::queueCollider(enemy);
+}
+
+void CharacterHandler::spawnBoss(EnemyType enemyType, sf::Vector2f pos)
+{
+    this->boss = spawnEnemy(enemyType);
+    boss->spawn(pos - sf::Vector2f(0, boss->getCollider().getSize().y));
+}
+
+Enemy* CharacterHandler::spawnEnemy(int enemyType)
+{
+    Enemy* enemy;
+    switch (enemyType)
+    {
+    case EnemyType::grunt:
+        enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[EnemyType::grunt]));
+        break;
+    case EnemyType::bird:
+        enemy = new Bird(*dynamic_cast<Bird*>(enemyTemplates[EnemyType::bird]));
+        break;
+    case EnemyType::fishmonger:
+        enemy = new FishMonger(*dynamic_cast<FishMonger*>(enemyTemplates[EnemyType::bird]));
+        break;
+    default:
+        enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[EnemyType::grunt]));
+        break;
+    }
+
+    return enemy;
 }
 
 //Shadows are not considered at all and that might be a good thing

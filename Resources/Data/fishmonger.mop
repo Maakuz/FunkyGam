@@ -1,0 +1,33 @@
+[AnimationData]
+Texture: 1
+Frames: 5 1
+AnimationCount: 1
+
+[Animation1]
+Start: 0 0
+Stop: 4 0
+Idle: 1 0
+Animationspeed: 50
+StartIdle: 1
+
+[CollisionData]
+Size: 64 72
+Offset: -32 0
+
+[EnemyData]
+Roamlength: 256
+Health: 100
+Mass: 0.4
+SightRadius: 1500
+Nightvision: 1.2
+ChaseSpeed: 0.04
+IdleSpeed: 0.01
+StunDuration: 2000
+descisionInterval: 2500
+[SpecificData]
+JumpHeight: 12
+AttackRange: 14 9
+DistanceToStartAttacking: 450
+AttackDamage: 35
+AttackChargeDuration: 700
+SearchingDuration: 10000 

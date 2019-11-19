@@ -9,12 +9,13 @@
 class CharacterHandler : public sf::Drawable, public DebugDrawable
 {
 public:
-    static const int ENEMY_TEMPLATE_COUNT = 2;
+    static const int ENEMY_TEMPLATE_COUNT = 3;
     static const std::string ENEMIES[ENEMY_TEMPLATE_COUNT];
-    enum enemy
+    enum EnemyType
     {
         grunt = 0,
-        bird = 1
+        bird = 1,
+        fishmonger = 2
     };
 
     CharacterHandler(UIHandler* uiHandler);
@@ -27,6 +28,9 @@ public:
     void update(float dt, sf::Vector2f mousePos);
     void queueColliders();
 
+    void spawnBoss(EnemyType enemyType, sf::Vector2f pos);
+    Enemy* spawnEnemy(int enemyType);
+
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
     Player* getPlayer() const { return this->player; };
     void calculatePlayerIllumination();
@@ -36,6 +40,7 @@ private:
     const std::vector<Line>* occluders;
     std::vector<sf::Vector2f> spawnPoints;
     std::vector<Enemy*> enemies;
+    Enemy* boss;
     Player* player;
     UIHandler* ui;
 

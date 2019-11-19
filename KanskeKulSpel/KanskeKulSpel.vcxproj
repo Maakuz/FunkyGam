@@ -286,6 +286,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\Data\bird.mop" />
+    <None Include="..\Resources\Data\fishmonger.mop" />
     <None Include="..\Resources\Data\Grunt.mop" />
     <None Include="..\Resources\Data\HubInterface.mop" />
     <None Include="..\Resources\Data\Items.mop" />
