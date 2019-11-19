@@ -1,7 +1,6 @@
 #include "Game/Item/Item.h"
 
 Item::Item(sf::Vector2f pos, const sf::Texture* texture):
-    Entity(pos),
     sprite(texture, pos)
 {
     id = 0;
@@ -13,8 +12,7 @@ Item::Item(sf::Vector2f pos, const sf::Texture* texture):
 
 void Item::setPosition(sf::Vector2f pos)
 {
-    this->pos = pos;
-    this->sprite.update(pos);
+    this->sprite.setPosition(pos);
 }
 
 void Item::draw(sf::RenderTarget& target, sf::RenderStates states) const

@@ -1,9 +1,9 @@
 #pragma once
-#include "Game/Entities/Entity.h"
 #include "Game/Entities/Collidable.h"
 #include "Game/Components/SpriteComp.h"
+#include "Game/Components/TransformComp.h"
 
-class BreakableTerrain : public Entity, public Collidable, public sf::Drawable
+class BreakableTerrain : public Collidable, public sf::Drawable
 {
 public:
     BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::IntRect texRext);
@@ -19,6 +19,7 @@ private:
     SpriteComp sprite;
     SpriteComp spriteOverlay;
     ColliderComp collider;
+    TransformComp transform;
     
     bool broken;
     bool overlay;

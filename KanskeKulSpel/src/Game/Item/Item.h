@@ -2,11 +2,11 @@
 #include <string>
 #include <istream>
 #include <ostream>
-#include "Game/Entities/Entity.h"
 #include "Game/Components/SpriteComp.h"
+#include "Game/Components/TransformComp.h"
 
 
-class Item : public Entity, public sf::Drawable
+class Item: public sf::Drawable
 {
 public:
     Item(sf::Vector2f pos, const sf::Texture* texture);
@@ -37,7 +37,8 @@ public:
     const sf::Texture* getTexture() const { return this->sprite.getTexture(); };
     void setTexture(const sf::Texture* texture) { this->sprite.setTexture(texture); };
 
-    sf::Vector2f getTextureCenterPos() const { return getPosition() + (sf::Vector2f(sprite.getTexture()->getSize()) / 2.f); };
+    //this only works if origin is unchanged
+    sf::Vector2f getTextureCenterPos() const { return sprite.getPosition() + (sf::Vector2f(sprite.getTexture()->getSize()) / 2.f); };
     sf::Vector2f getTextureSize() const { return sf::Vector2f(sprite.getTexture()->getSize()); };
 
     void setPosition(sf::Vector2f pos);

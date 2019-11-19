@@ -1,5 +1,6 @@
 #pragma once
 #include "Enemy.h"
+#include "Game/Components/AI/GroundAIComp.h"
 
 class Grunt : public Enemy
 {
@@ -9,25 +10,21 @@ public:
 
     void update(float dt);
 
-    virtual void handleCollision(const Collidable* collider);
+    virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion);
 
     int getDamage()const { return this->damage; };
     bool isAttacking()const { return this->flying; };
-
+    
 private:
-    float attackDistance;
     int damage;
     sf::Vector2f attackMomentum;
-    Counter attackChargeTimer;
-    Counter searchCounter;
     bool flying;
+    GroundAIComp ai;
 
+    virtual const AIComp* getAI() const { return &ai; };
+    virtual AIComp* getAI() { return &ai; };
 
-
-    void updateIdle(float dt);
-    void updateChasing(float dt);
-    void updateReturning(float dt);
     void updateAttack(float dt);
     virtual std::istream& readSpecific(std::istream& in);
 };

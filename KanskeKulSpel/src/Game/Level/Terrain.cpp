@@ -1,7 +1,6 @@
 #include "Terrain.h"
 
-Terrain::Terrain(AABB aabb, ColliderKeys type, std::string colliderFlag)
-    :Entity(aabb.pos),
+Terrain::Terrain(AABB aabb, ColliderKeys type, std::string colliderFlag):
     collider(aabb.size, aabb.pos)
 {
     collider.addComponent(ColliderKeys::Static);

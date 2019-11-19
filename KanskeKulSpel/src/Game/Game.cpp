@@ -135,11 +135,11 @@ void Game::updateLevel(float dt)
 
     if (!paused)
     {
-        static Light light(this->characterHandler.getPlayer()->getPosition() + sf::Vector2f(32, 30), 400, sf::Vector3f(0.1f, 0.1f, 0.05f));
-        light.pos = this->characterHandler.getPlayer()->getPosition();
+        static Light light(this->characterHandler.getPlayer()->getMovementComp().transform.pos + sf::Vector2f(32, 30), 400, sf::Vector3f(0.1f, 0.1f, 0.05f));
+        light.pos = this->characterHandler.getPlayer()->getMovementComp().transform.pos;
         LightQueue::get().queue(&light);
 
-        sf::Vector2f center = this->characterHandler.getPlayer()->getPosition();
+        sf::Vector2f center = this->characterHandler.getPlayer()->getMovementComp().transform.pos;
         center.x = std::max(center.x, view.getSize().x / 2);
         center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / 2));
         center.y = std::max(center.y, view.getSize().y / 2);
@@ -215,6 +215,8 @@ void Game::loadLevel(const LevelInfo* level)
     characterHandler.initializeLevel(levelHandler.getShadowLinePtr(), levelHandler.findPlayerSpawnPoints(exitTaken));
     characterHandler.setSpawnPoints(levelHandler.generateEnemySpawnPoints());
     characterHandler.spawnEnemies(level);
+    if (levelHandler.isBossInLevel())
+        characterHandler.setBossSpawner(levelHandler.getBossSpawnerPtr());
     itemHandler.setGatherPoints(levelHandler.generateGatherPoints(), levelHandler.generateRareGatherPoints());
     itemHandler.spawnGatherables(level, levelHandler.getShrines());
 }

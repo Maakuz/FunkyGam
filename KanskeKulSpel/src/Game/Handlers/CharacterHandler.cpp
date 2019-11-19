@@ -10,6 +10,7 @@
 #include "Renderer/Lighting/LightQueue.h"
 #include "Misc/Profiler.h"
 #include "Game/Misc/Definitions.h"
+#include "Game/Item/ItemHandler.h"
 
 const std::string CharacterHandler::ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop", "fishmonger.mop" };
 
@@ -20,6 +21,7 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
     this->drawHitboxes = false;
     this->drawSightlines = false;
     this->boss = nullptr;
+    this->bossSpawner = nullptr;
 
     this->ui = uiHandler;
 
@@ -87,6 +89,7 @@ CharacterHandler::~CharacterHandler()
 
 void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint)
 {
+    this->bossSpawner = nullptr;
     this->occluders = occluders;
     this->player->reset(playerSpawnPoint - this->player->getCollider().getSize());
 }
@@ -242,29 +245,53 @@ void CharacterHandler::spawnEnemies(const LevelInfo* info)
 
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 {
-    this->player->update(dt, mousePos);
-    auto it = enemies.begin();
-    while (!enemies.empty() && it != enemies.end())
+    if (!boss && bossSpawner)
     {
-        if ((*it)->isAlive())
+        bool spawn = true;
+        if (!this->bossSpawner->playerPosCriteria.contains(this->player->getMovementComp().transform.pos))
+            spawn = false;
+
+        if (spawn)
         {
-            if ((*it)->getState() == Enemy::State::idle || 
-                (*it)->getState() == Enemy::State::chasing ||
-                (*it)->getState() == Enemy::State::searching ||
-                (*it)->getState() == Enemy::State::returning)
-                this->updateEnemyLineOfSight(*it);
+            for (const std::string& str : this->bossSpawner->playerItemCriteria)
+            {
+                if (!ItemHandler::isOneTimeItemPickedUp(str))
+                    spawn = false;
+            }
+        }
 
-            if ((*it)->isHealthChanged())
-                ui->displayEnemyDamage((*it)->getHealthPercentage());
+        if (spawn)
+            spawnBoss((EnemyType)bossSpawner->bossID, bossSpawner->pos);
+    }
 
-            (*it)->update(dt);
-            it++;
+    if (boss)
+    {
+        boss->update(dt);
+    }
+
+    this->player->update(dt, mousePos);
+    
+    for (int i = 0; i < enemies.size(); i++)
+    {
+        Enemy* enemy = enemies[i];
+        if (enemy->isAlive())
+        {
+            if (enemy->getState() == AIComp::State::idle || 
+                enemy->getState() == AIComp::State::chasing ||
+                enemy->getState() == AIComp::State::searching ||
+                enemy->getState() == AIComp::State::returning)
+                this->updateEnemyLineOfSight(enemy);
+
+            if (enemy->isHealthChanged())
+                ui->displayEnemyDamage(enemy->getHealthPercentage());
+
+            enemy->update(dt);
         }
 
         else
         {
-            delete *it;
-            unordered_erase(enemies, it);
+            delete enemy;
+            unordered_erase(enemies, enemies.begin() + i--);
             ui->hideEnemyDamage();
         }
     }
@@ -278,9 +305,17 @@ void CharacterHandler::queueColliders()
         CollisionHandler::queueCollider(enemy);
 }
 
+void CharacterHandler::setBossSpawner(const BossSpawner* bossSpawner) 
+{ 
+    this->bossSpawner = bossSpawner;
+}
+
 void CharacterHandler::spawnBoss(EnemyType enemyType, sf::Vector2f pos)
 {
-    this->boss = spawnEnemy(enemyType);
+    if (boss)
+        delete boss;
+
+    this->boss = dynamic_cast<Boss*>(spawnEnemy(enemyType));
     boss->spawn(pos - sf::Vector2f(0, boss->getCollider().getSize().y));
 }
 
@@ -296,7 +331,7 @@ Enemy* CharacterHandler::spawnEnemy(int enemyType)
         enemy = new Bird(*dynamic_cast<Bird*>(enemyTemplates[EnemyType::bird]));
         break;
     case EnemyType::fishmonger:
-        enemy = new FishMonger(*dynamic_cast<FishMonger*>(enemyTemplates[EnemyType::bird]));
+        enemy = new FishMonger(*dynamic_cast<FishMonger*>(enemyTemplates[EnemyType::fishmonger]));
         break;
     default:
         enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[EnemyType::grunt]));
@@ -351,9 +386,9 @@ void CharacterHandler::calculatePlayerIllumination()
 void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 {
     sf::Vector2f pos = enemy->getEyePos();
-    if ((enemy->getFacingDir() == Enemy::Direction::left && pos.x > player->getPosition().x)
-        || (enemy->getFacingDir() == Enemy::Direction::right && pos.x <= player->getPosition().x)
-        || enemy->getState() == Enemy::State::chasing)
+    if ((enemy->getFacingDir() == AIComp::Direction::left && pos.x > player->getMovementComp().transform.pos.x)
+        || (enemy->getFacingDir() == AIComp::Direction::right && pos.x <= player->getMovementComp().transform.pos.x)
+        || enemy->getState() == AIComp::State::chasing)
     {
         bool playerHidden = false;
         sf::Vector2f dir = this->player->getCollider().getCenterPos() - pos;
@@ -377,7 +412,7 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 
         if (!playerHidden)
         {
-            enemy->notifyEnemy(player->getPosition() + (player->getCollider().getSize() / 2.f));
+            enemy->notifyEnemy(player->getMovementComp().transform.pos + (player->getCollider().getSize() / 2.f));
         }
     }
 }
@@ -385,6 +420,10 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 void CharacterHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(*player, states);
+
+    if (boss)
+        target.draw(*boss, states);
+
 
     for (Enemy* enemy : enemies)
         target.draw(*enemy, states);
@@ -409,8 +448,8 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
             sf::Vertex v;
             switch (enemy->getState())
             {
-            case Enemy::State::chasing:
-            case Enemy::State::attacking:
+            case AIComp::State::chasing:
+            case AIComp::State::attacking:
                 color = sf::Color::Red;
                 break;
             default:

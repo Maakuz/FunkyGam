@@ -1,5 +1,6 @@
 #pragma once
 #include "SFML/System/Vector2.hpp"
+#include "TransformComp.h"
 #include <istream>
 
 class MovementComp
@@ -10,7 +11,7 @@ public:
 
     void reset();
 
-    virtual sf::Vector2f update(float dt, sf::Vector2f pos);
+    virtual void update(float dt);
 
     void jump();
     //momentum.y = momentum.y * haltforce 
@@ -22,6 +23,7 @@ public:
 
     bool isJumping() const { return jumping; };
 
+    TransformComp transform;
     sf::Vector2f acceleration;
     sf::Vector2f momentum;
 

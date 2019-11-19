@@ -1,8 +1,7 @@
 #include "BreakableTerrain.h"
 #include "Game/Misc/Definitions.h"
 
-BreakableTerrain::BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::IntRect texRext)
-    :Entity(pos),
+BreakableTerrain::BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::IntRect texRext):
     sprite(texture, pos),
     spriteOverlay(texture, pos),
     collider(sf::Vector2f(TILE_SIZE, TILE_SIZE), pos)
@@ -13,6 +12,7 @@ BreakableTerrain::BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::I
     sprite.setTextureRect(texRext);
     breakThreshold = 25;
     overlay = false;
+    transform.pos = pos;
 }
 
 BreakableTerrain::~BreakableTerrain()
@@ -31,7 +31,7 @@ void BreakableTerrain::handleExplosion(const Explosion& explosion)
 
 void BreakableTerrain::addOverlay(sf::Texture* texture, sf::IntRect texRext)
 {
-    this->spriteOverlay = SpriteComp(texture, getPosition());
+    this->spriteOverlay = SpriteComp(texture, transform.pos);
     this->spriteOverlay.setTextureRect(texRext);
     overlay = true;
 }

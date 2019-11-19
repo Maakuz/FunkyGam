@@ -1,10 +1,10 @@
 #pragma once
-#include "Game/Entities/Entity.h"
 #include <istream>
 #include <ostream>
 #include <string>
+#include "Game/Components/TransformComp.h"
 
-class Spell : public Entity
+class Spell
 {
 public:
     Spell(sf::Vector2f pos);
@@ -21,6 +21,9 @@ public:
 
     std::string getName() const { return name; };
     void setName(std::string name) { this->name = name; };
+
+protected:
+    TransformComp transform;
 
 private:
     std::string name;

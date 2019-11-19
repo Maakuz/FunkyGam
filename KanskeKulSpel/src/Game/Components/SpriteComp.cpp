@@ -18,7 +18,7 @@ void SpriteComp::flipHorizontally()
     flipped = !flipped;
 }
 
-void SpriteComp::update(sf::Vector2f pos)
+void SpriteComp::setPosition(sf::Vector2f pos)
 {
     this->sprite.setPosition(pos + spriteOffset);
 }

@@ -20,7 +20,9 @@ public:
 
     void setRotation(float angle) { this->sprite.setRotation(angle); };
 
-    void update(sf::Vector2f pos);
+    void setPosition(sf::Vector2f pos);
+
+    sf::Vector2f getPosition()const { return sprite.getPosition(); };
 
     void setTexture(const sf::Texture* texture) { this->sprite.setTexture(*texture); };
     const sf::Texture* getTexture() const { return this->sprite.getTexture(); };

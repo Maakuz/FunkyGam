@@ -41,7 +41,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 
     else if (channelTime > this->minCharge && channelTime < this->maxCharge)
     {
-        this->pos = pos;
+        this->transform.pos = pos;
         this->distance = std::min(length(pos - dest), maxTravelDistance);
         this->direction = dest - pos;
         normalize(this->direction);
@@ -60,7 +60,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
         this->explosion.damage *= 1.5f;
         this->explosion.radius *= 1.5f;
 
-        this->pos = pos;
+        this->transform.pos = pos;
         this->distance = std::min(length(pos - dest), maxTravelDistance);
         this->distance = std::max(length(pos - dest), 64.f);
         this->direction = dest - pos;
@@ -73,24 +73,24 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 
 void Fireball::update(float dt)
 {
-    float t = std::max(0.f, 1 - (length(this->getPosition() - this->destination) / distance));
+    float t = std::max(0.f, 1 - (length(this->transform.pos - this->destination) / distance));
     t = std::min(t, 1.f);
     float velocity = (1 - powf(t, 6)) * dt * topSpeed;
-    pos += direction * velocity;
-    trail->setEmitterPos(getPosition());
+    transform.pos += direction * velocity;
+    trail->setEmitterPos(transform.pos);
 
     if (velocity < 0.2f)
     {
         this->complete = true;
-        this->explosion.center = this->getPosition();
+        this->explosion.center = this->transform.pos;
         trail->kill();
         CollisionHandler::queueExplosion(this->explosion);
 
         if (!fullCharge)
-            ParticleHandler::addEmitter(this->impactEmitterID, this->getPosition());
+            ParticleHandler::addEmitter(this->impactEmitterID, this->transform.pos);
 
         else
-            ParticleHandler::addEmitter(this->fullImpactEmitterID, this->getPosition());
+            ParticleHandler::addEmitter(this->fullImpactEmitterID, this->transform.pos);
     }
 
     this->traveledDistance += velocity;

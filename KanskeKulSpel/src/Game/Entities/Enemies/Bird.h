@@ -1,5 +1,6 @@
 #pragma once
 #include "Enemy.h"
+#include "Game/Components/AI/FlyingAIComp.h"
 
 class Bird : public Enemy
 {
@@ -14,18 +15,15 @@ public:
 
 private:
     bool inBombingRange;
-    bool forcedDirResolved;
     bool startBombing;
     Counter bombsPerAttack;
-    Counter attackCounter;
     Counter bombCounter;
+    FlyingAIComp ai;
 
-    sf::Vector2f attackDestination;
-
-    void updateIdle(float dt);
-    void updateChasing(float dt);
-    void updateReturning(float dt);
     void updateAttack(float dt);
 
+    virtual const AIComp* getAI() const { return &ai; };
+    virtual AIComp* getAI() { return &ai; };
+    
     virtual std::istream& readSpecific(std::istream& in);
 };

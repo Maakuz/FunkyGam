@@ -37,17 +37,17 @@ void Throwable::update(float dt)
     {
         detonated = true;
         this->explosionData.center = getTextureCenterPos();
-        ParticleHandler::addEmitter(this->particleEffectID, this->getPosition() + (this->collider.getSize() / 2.f));
+        ParticleHandler::addEmitter(this->particleEffectID, this->movement.transform.pos + (this->collider.getSize() / 2.f));
     }
 
-    this->pos = (movement.update(dt, this->pos));
-    this->sprite.update(pos);
-    this->collider.setPosition(pos);
+    movement.update(dt);
+    this->sprite.setPosition(movement.transform.pos);
+    this->collider.setPosition(movement.transform.pos);
 }
 
 void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Collidable* thrower)
 {
-    this->pos = pos;
+    this->movement.transform.pos = pos;
     this->movement.momentum = momentum;
     this->thrower = thrower;
 }
@@ -66,26 +66,26 @@ void Throwable::handleCollision(const Collidable* collidable)
         if (collidable->getCollider().intersects(collidable->getCollider().getLeftBox(), this->collider.getAABB()))
         {
             this->movement.momentum.x *= -bounce;
-            this->pos.x = (collidable->getCollider().left() - this->collider.width());
+            this->movement.transform.pos.x = (collidable->getCollider().left() - this->collider.width());
         }
 
         else if (collidable->getCollider().intersects(collidable->getCollider().getRightBox(), this->collider.getAABB()))
         {
             this->movement.momentum.x *= -bounce;
-            this->pos.x = (collidable->getCollider().right());
+            this->movement.transform.pos.x = (collidable->getCollider().right());
         }
 
         else if (this->movement.momentum.y > 0 && collidable->getCollider().intersects(collidable->getCollider().getUpBox(), this->collider.getAABB()))
         {
             this->movement.momentum.y *= -bounce;
             this->movement.momentum.x *= 0.96f;
-            this->pos.y = collidable->getCollider().up() - this->collider.height();
+            this->movement.transform.pos.y = collidable->getCollider().up() - this->collider.height();
         }
 
         else if (collidable->getCollider().intersects(collidable->getCollider().getDownBox(), this->collider.getAABB()))
         {
             this->movement.momentum.y *= bounce;
-            this->pos.y = (collidable->getCollider().down());
+            this->movement.transform.pos.y = (collidable->getCollider().down());
         }
     }
 

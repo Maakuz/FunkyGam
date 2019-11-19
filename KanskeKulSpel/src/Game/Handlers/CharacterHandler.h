@@ -1,7 +1,8 @@
 #pragma once
-#include "Game/Entities/Enemies/Enemy.h"
+#include "Game/Entities/Enemies/Bosses/Boss.h"
 #include "Game/Entities/Player.h"
 #include "Game/Misc/Line.h"
+#include "Game/Misc/BossSpawner.h"
 #include "Renderer/DebugDrawable.h"
 #include "Game/Level/Level.h"
 #include <vector>
@@ -18,6 +19,8 @@ public:
         fishmonger = 2
     };
 
+
+
     CharacterHandler(UIHandler* uiHandler);
     ~CharacterHandler();
 
@@ -27,9 +30,7 @@ public:
     void spawnEnemies(const LevelInfo* info);
     void update(float dt, sf::Vector2f mousePos);
     void queueColliders();
-
-    void spawnBoss(EnemyType enemyType, sf::Vector2f pos);
-    Enemy* spawnEnemy(int enemyType);
+    void setBossSpawner(const BossSpawner* bossSpawner);
 
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
     Player* getPlayer() const { return this->player; };
@@ -40,7 +41,9 @@ private:
     const std::vector<Line>* occluders;
     std::vector<sf::Vector2f> spawnPoints;
     std::vector<Enemy*> enemies;
-    Enemy* boss;
+
+    const BossSpawner* bossSpawner;
+    Boss* boss;
     Player* player;
     UIHandler* ui;
 
@@ -49,6 +52,10 @@ private:
    
 
     std::vector<Enemy*> enemyTemplates;
+
+    void spawnBoss(EnemyType enemyType, sf::Vector2f pos);
+    Enemy* spawnEnemy(int enemyType);
+
     void updateEnemyLineOfSight(Enemy* enemy);
 
     template <typename EnemyType>

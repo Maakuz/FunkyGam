@@ -1,36 +1,17 @@
 #pragma once
-#include "../Entity.h"
 #include "Game/Misc/Counter.h"
 #include "Game/Interface/UIHandler.h"
 #include "Game/Components/HealthComp.h"
 #include "Game/Components/AnimatedSpriteComp.h"
 #include "Game/Components/MovementComp.h"
+#include "Game/Components/AI/AIComp.h"
 #include "Game/Entities/Collidable.h"
 #include <fstream>
 
 
-class Enemy : public Entity, public Collidable, public sf::Drawable
+class Enemy : public Collidable, public sf::Drawable
 {
 public:
-    enum class Direction
-    {
-        left,
-        right,
-        up,
-        down,
-        none
-    };
-
-    enum class State
-    {
-        idle,
-        chasing,
-        attacking,
-        searching,
-        returning,
-        stunned
-    };
-
     Enemy(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset);
     ~Enemy() {};
 
@@ -44,63 +25,35 @@ public:
     bool isHealthChanged();
     float getHealthPercentage() const;
 
-    Direction getFacingDir() const { return this->facingDir; }
-    State getState() const { return this->state; }
-    float getSightRadius() const { return this->sightRadius; }
+    AIComp::Direction getFacingDir() const { return this->getAI()->facingDir; }
+    AIComp::State getState() const { return this->getAI()->getState(); }
+    float getSightRadius() const { return this->getAI()->sightRadius; }
     float getVisionRatingAt(float distance) const;
 
     sf::Vector2f getEyePos() const;
-    void setEyeLevel(sf::Vector2f eyeLevel) { this->eyeLevel = eyeLevel; };
-    sf::Vector2f getLastKnownPos() const { return this->lastKnownPlayerPos; };
+    void setEyeLevel(sf::Vector2f eyeLevel) { this->getAI()->eyeLevel = eyeLevel; };
+    sf::Vector2f getLastKnownPos() const { return this->getAI()->lastKnownPlayerPos; };
 
-    const MovementComp& getMovementComp() const { return this->movement; };
+    const MovementComp& getMovementComp() const { return this->getAI()->movement; };
 
 
-    virtual const ColliderComp& getCollider()const { return collider; };
+    virtual const ColliderComp& getCollider()const { return getAI()->collider; };
 protected:
-    float roamDistance;
-    State state;
-    Direction facingDir;
-    Direction forcedDirection;
-    sf::Vector2f eyeLevel;
-    Counter timeSincePlayerSeen;
-    sf::Vector2f currentRoamPoint;
-
     HealthComp health;
     AnimatedSpriteComp sprite;
-    MovementComp movement;
-    ColliderComp collider;
-
-    float chaseSpeed;
-    float idleSpeed;
-    float sightRadius;
-    float sightMultiplier; //How well enemy sees in the dark
-    Counter drawQuestion;
-    Counter stunCounter;
-    Counter drawExclamation;
     sf::Sprite question;
     sf::Sprite exclamation;
+    Counter drawExclamation;
+    Counter drawQuestion;
 
-    void moveLeft();
-    void moveRight();
-    void faceLeft();
-    void faceRight();
-
-    void desicionTimeOver();
-    bool isDesicionTime() const { return this->decisionTime; }
-
-    sf::Vector2f getStartPoint() const { return this->startPoint; }
-    void setStartPoint(sf::Vector2f point) { this->startPoint = point; }
     void updateEnemy(float dt);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
-    Counter roamDecisionCounter;
-    bool decisionTime;
     int prevHealth;
-    sf::Vector2f startPoint;
-    sf::Vector2f lastKnownPlayerPos;
+
+    virtual const AIComp* getAI() const = 0;
+    virtual AIComp* getAI() = 0;
 
     virtual std::istream& readSpecific(std::istream& in) = 0;
-
 };

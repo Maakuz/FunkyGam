@@ -10,7 +10,7 @@
 #include "Game/Components/HealthComp.h"
 #include <istream>
 
-class Player : public Entity, public Collidable, public sf::Drawable
+class Player :public Collidable, public sf::Drawable
 {
 public:
 

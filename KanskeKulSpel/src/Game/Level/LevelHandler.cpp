@@ -1,5 +1,6 @@
 #include "LevelHandler.h"
 #include <fstream>
+#include <sstream>
 #include "Game/Misc/Definitions.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Misc/UnorderedErase.h"
@@ -17,7 +18,9 @@
 
 LevelHandler::LevelHandler()
 {
+    this->bossInLevel = false;
     this->drawCollision = false;
+
     ConsoleWindow::get().addCommand("levelShowCollision", [&](Arguments args)->std::string 
         {
             if (args.empty())
@@ -39,6 +42,7 @@ LevelHandler::~LevelHandler()
 bool LevelHandler::loadLevel(const LevelInfo* level)
 {
     terrain.clear();
+    bossInLevel = false;
 
     bool success = this->importLevel(level);
     if (!success)
@@ -51,8 +55,17 @@ bool LevelHandler::loadLevel(const LevelInfo* level)
 
     for (CustomHitbox& box : customHitboxes)
     {
-        Terrain ter(AABB(sf::Vector2f(box.min), sf::Vector2f(box.max - box.min)), ColliderKeys::customTerrain, box.flag);
-        terrain.push_back(ter);
+        if (box.flag.compare(0, 4, "boss") == 0)
+        {
+            bossInLevel = true;
+            generateBossSpawner(box);
+        }
+
+        else
+        {
+            Terrain ter(AABB(sf::Vector2f(box.min), sf::Vector2f(box.max - box.min)), ColliderKeys::customTerrain, box.flag);
+            terrain.push_back(ter);
+        }
     }
     this->createSpites();
     this->generateShadowLines();
@@ -461,19 +474,19 @@ void LevelHandler::generateShadowLines()
         if (ter.getCollider().hasComponent(ColliderKeys::ground))
         {
             Line top(
-                ter.getPosition(),
-                sf::Vector2f(ter.getPosition().x + ter.getCollider().getAABB().size.x, ter.getPosition().y));
+                ter.getCollider().getAABB().pos,
+                sf::Vector2f(ter.getCollider().getAABB().pos.x + ter.getCollider().getAABB().size.x, ter.getCollider().getAABB().pos.y));
 
             Line right(
-                sf::Vector2f(ter.getPosition().x + ter.getCollider().getAABB().size.x, ter.getPosition().y),
-                sf::Vector2f(ter.getPosition().x + ter.getCollider().getAABB().size.x, ter.getPosition().y + ter.getCollider().getAABB().size.y));
+                sf::Vector2f(ter.getCollider().getAABB().pos.x + ter.getCollider().getAABB().size.x, ter.getCollider().getAABB().pos.y),
+                sf::Vector2f(ter.getCollider().getAABB().pos.x + ter.getCollider().getAABB().size.x, ter.getCollider().getAABB().pos.y + ter.getCollider().getAABB().size.y));
 
             Line bottom(
-                sf::Vector2f(ter.getPosition().x + ter.getCollider().getAABB().size.x, ter.getPosition().y + ter.getCollider().getAABB().size.y),
-                sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollider().getAABB().size.y));
+                sf::Vector2f(ter.getCollider().getAABB().pos.x + ter.getCollider().getAABB().size.x, ter.getCollider().getAABB().pos.y + ter.getCollider().getAABB().size.y),
+                sf::Vector2f(ter.getCollider().getAABB().pos.x, ter.getCollider().getAABB().pos.y + ter.getCollider().getAABB().size.y));
 
-            Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollider().getAABB().size.y),
-                ter.getPosition());
+            Line left(sf::Vector2f(ter.getCollider().getAABB().pos.x, ter.getCollider().getAABB().pos.y + ter.getCollider().getAABB().size.y),
+                ter.getCollider().getAABB().pos);
 
             this->shadowLines.push_back(top);
             this->shadowLines.push_back(right);
@@ -488,19 +501,19 @@ void LevelHandler::generateShadowLines()
         if (ter.getCollider().hasComponent(ColliderKeys::ground))
         {            
              Line top(
-                ter.getPosition(),
-                sf::Vector2f(ter.getPosition().x + ter.getCollider().getAABB().size.x, ter.getPosition().y));
+                ter.getCollider().getAABB().pos,
+                sf::Vector2f(ter.getCollider().getAABB().pos.x + ter.getCollider().getAABB().size.x, ter.getCollider().getAABB().pos.y));
 
             Line right(
-                sf::Vector2f(ter.getPosition().x + ter.getCollider().getAABB().size.x, ter.getPosition().y),
-                sf::Vector2f(ter.getPosition().x + ter.getCollider().getAABB().size.x, ter.getPosition().y + ter.getCollider().getAABB().size.y));
+                sf::Vector2f(ter.getCollider().getAABB().pos.x + ter.getCollider().getAABB().size.x, ter.getCollider().getAABB().pos.y),
+                sf::Vector2f(ter.getCollider().getAABB().pos.x + ter.getCollider().getAABB().size.x, ter.getCollider().getAABB().pos.y + ter.getCollider().getAABB().size.y));
 
             Line bottom(
-                sf::Vector2f(ter.getPosition().x + ter.getCollider().getAABB().size.x, ter.getPosition().y + ter.getCollider().getAABB().size.y),
-                sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollider().getAABB().size.y));
+                sf::Vector2f(ter.getCollider().getAABB().pos.x + ter.getCollider().getAABB().size.x, ter.getCollider().getAABB().pos.y + ter.getCollider().getAABB().size.y),
+                sf::Vector2f(ter.getCollider().getAABB().pos.x, ter.getCollider().getAABB().pos.y + ter.getCollider().getAABB().size.y));
 
-            Line left(sf::Vector2f(ter.getPosition().x, ter.getPosition().y + ter.getCollider().getAABB().size.y),
-                ter.getPosition());
+            Line left(sf::Vector2f(ter.getCollider().getAABB().pos.x, ter.getCollider().getAABB().pos.y + ter.getCollider().getAABB().size.y),
+                ter.getCollider().getAABB().pos);
 
 
             std::vector<Line> lines;
@@ -571,6 +584,41 @@ void LevelHandler::createSpites()
     }
 }
 
+void LevelHandler::generateBossSpawner(const CustomHitbox& box)
+{
+    std::stringstream sstream(box.flag);
+    std::string str;
+    this->bossSpawner.playerItemCriteria.clear();
+    this->bossSpawner.pos = sf::Vector2f(box.min);
+    this->bossSpawner.playerPosCriteria = sf::FloatRect(sf::Vector2f(box.min), sf::Vector2f(box.max));
+
+    //Boss flag
+    sstream >> str;
+
+    sstream >> str;
+    this->bossSpawner.bossID = std::stoi(str);
+
+    while (!sstream.eof())
+    {
+        sstream >> str;
+
+        if (str == "has")
+        {
+            sstream >> str;
+            std::string item = str;
+            sstream >> str;
+            while (str != ";")
+            {
+                item += " ";
+                item += str;
+                sstream >> str;
+            }
+
+            this->bossSpawner.playerItemCriteria.push_back(item);
+        }
+    }
+}
+
 void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     //target.draw(this->backgroundSprite, states);
@@ -584,3 +632,4 @@ void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
     for (const BreakableTerrain& ter : breakableTerrain)
         target.draw(ter, states);
 }
+

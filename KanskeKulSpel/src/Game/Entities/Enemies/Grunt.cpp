@@ -6,33 +6,32 @@
 #include "Game/Entities/Player.h"
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset)
-    :Enemy(data, pos, size, offset)
+    :Enemy(data, pos, size, offset),
+    ai(pos, size)
 {
-    this->flying = false;
-    this->forcedDirection = Direction::none;
     this->damage = 0;
-    this->attackDistance = 64;
-    this->attackChargeTimer = Counter(1000);
-    this->collider.addComponent(ColliderKeys::grunt);
+    this->ai.attackDistance = 64;
+    this->ai.eyeLevel.x = data.spriteSheet->getSize().x / data.frameCount.x / 2.f;
+    this->ai.eyeLevel.y = data.spriteSheet->getSize().y / data.frameCount.y * 0.2;
+    this->ai.collider.addComponent(ColliderKeys::character);
+    this->ai.collider.addComponent(ColliderKeys::grunt);
 }
 
 void Grunt::update(float dt)
 {
-    switch (state)
+    switch (ai.getState())
     {
-    case Enemy::State::idle:
+    case AIComp::State::idle:
         sprite.setAnimation(0);
-        this->movement.walkSpeed = idleSpeed;
-        updateIdle(dt);
+        ai.updateIdle(dt, &sprite);
         break;
 
-    case Enemy::State::chasing:
+    case AIComp::State::chasing:
         sprite.setAnimation(0);
-        this->movement.walkSpeed = chaseSpeed;
-        updateChasing(dt);
+        ai.updateChasing(dt, &sprite);
         break;
 
-    case Enemy::State::attacking:
+    case AIComp::State::attacking:
         if (flying)
             sprite.setAnimation(2);
 
@@ -41,168 +40,49 @@ void Grunt::update(float dt)
         updateAttack(dt);
         break;
 
-    case Enemy::State::searching:
+    case AIComp::State::searching:
         sprite.setAnimation(0);
-        updateIdle(dt);
-        if (searchCounter.update(dt))
-        {
-            this->currentRoamPoint = getStartPoint();
-            this->state = State::returning;
-        }
+
+        if (ai.searchCounter < 1)
+            drawQuestion.reset();
+
+        ai.updateSearch(dt, &sprite);
+        
         break;
 
-    case Enemy::State::returning:
+    case AIComp::State::returning:
         sprite.setAnimation(0);
-        updateReturning(dt);
+        ai.updateReturn(dt, &sprite);
         break;
 
-    case Enemy::State::stunned:
+    case AIComp::State::stunned:
         sprite.setAnimation(3);
-        this->movement.acceleration.x = 0;
-        if (this->stunCounter.update(dt))
-        {
-            this->stunCounter.reset();
-
-            if (!timeSincePlayerSeen.isTimeUp())
-                this->state = State::chasing;
-
-            else
-            {
-                this->state = State::searching;
-                this->currentRoamPoint = getLastKnownPos();
-                this->searchCounter.reset();
-            }
-        }
+        ai.updateStunned(dt, &sprite);
         break;
     }
 
     Enemy::updateEnemy(dt);
 }
 
-void Grunt::updateIdle(float dt)
-{
-    if (isDesicionTime() && this->forcedDirection == Direction::none)
-    {
-        int r = rand() % 3;
-        printCon(std::to_string(r));
-        switch (r)
-        {
-        case 0:
-            this->movement.acceleration.x = 0;
-            break;
-
-        case 1:
-            moveLeft();
-            break;
-
-        case 2:
-            moveRight();
-            break;
-
-        default:
-            this->movement.acceleration.x = 0;
-            break;
-        }
-
-        desicionTimeOver();
-    }
-
-    else if (isDesicionTime())
-    {
-        if (this->forcedDirection == Direction::right)
-            moveRight();
-
-        else
-            moveLeft();
-
-        this->forcedDirection = Direction::none;
-
-        this->desicionTimeOver();
-    }
-
-    sf::Vector2f roampointToPos = this->getPosition() - this->currentRoamPoint;
-    if (length(this->getPosition() - this->currentRoamPoint) > this->roamDistance)
-    {
-        if (roampointToPos.x > 0)
-            forcedDirection = Direction::left;
-
-        else
-            forcedDirection = Direction::right;
-    }
-
-
-}
-
-void Grunt::updateChasing(float dt)
-{
-    if (timeSincePlayerSeen.isTimeUp()) //will sort of mitigating stuck enemies looking silly
-    {
-        drawQuestion.reset();
-        state = State::searching;
-        this->currentRoamPoint = getLastKnownPos();
-        this->searchCounter.reset();
-    }
-
-    if (this->getLastKnownPos().x < this->getPosition().x)
-    {
-        moveLeft();
-    }
-
-    else if (this->getLastKnownPos().x >= this->getPosition().x)
-    {
-        moveRight();
-    }
-
-
-    if (lengthSquared(getPosition() + eyeLevel - getLastKnownPos()) < this->attackDistance * this->attackDistance)
-    {
-        if (timeSincePlayerSeen < 200)
-        {
-            state = State::attacking;
-            this->attackChargeTimer.reset();
-        }
-    }
-
-    if(timeSincePlayerSeen > 200 && abs(getPosition().x - getLastKnownPos().x) < 10)
-    {
-        drawQuestion.reset();
-        state = State::searching;
-        this->currentRoamPoint = getLastKnownPos();
-        this->searchCounter.reset();
-    }
-}
-
-void Grunt::updateReturning(float dt)
-{
-    if (this->currentRoamPoint.x < this->getPosition().x)
-    {
-        moveLeft();
-    }
-
-    else if (this->currentRoamPoint.x >= this->getPosition().x)
-    {
-        moveRight();
-    }
-
-    if (abs(getPosition().x - currentRoamPoint.x) < 10)
-    {
-        state = State::idle;
-    }
-}
-
 void Grunt::updateAttack(float dt)
 {
-    this->movement.acceleration.x = 0;
-    if (attackChargeTimer.update(dt) && !flying)
+    this->ai.movement.acceleration.x = 0;
+    if (ai.attackChargeTimer.update(dt) && !flying)
     {
-        if (facingDir == Direction::left)
-            this->movement.momentum = sf::Vector2f(-attackMomentum.x, -attackMomentum.y);
+        if (ai.facingDir == AIComp::Direction::left)
+            this->ai.movement.momentum = sf::Vector2f(-attackMomentum.x, -attackMomentum.y);
 
         else
-            this->movement.momentum = sf::Vector2f(attackMomentum.x, -attackMomentum.y);
+            this->ai.movement.momentum = sf::Vector2f(attackMomentum.x, -attackMomentum.y);
 
-        this->movement.grounded = false;
+        this->ai.movement.grounded = false;
         this->flying = true;
+    }
+
+    if (flying && ai.movement.grounded)
+    {
+        this->flying = false;
+        ai.setState(AIComp::State::chasing);
     }
 }
 
@@ -210,66 +90,30 @@ std::istream& Grunt::readSpecific(std::istream& in)
 {
     std::string trash;
     in >> trash;
-    in >> trash >> movement.jumpHeight;
+    in >> trash >> ai.movement.jumpHeight;
     in >> trash >> attackMomentum.x >> attackMomentum.y;
-    in >> trash >> attackDistance;
+    in >> trash >> ai.attackDistance;
     in >> trash >> damage;
-    in >> trash >> attackChargeTimer.stopValue;
-    in >> trash >> searchCounter.stopValue;
+    in >> trash >> ai.attackChargeTimer.stopValue;
+    in >> trash >> ai.searchCounter.stopValue;
     return in;
 }
 
 void Grunt::handleCollision(const Collidable* collidable)
 {
-    if (collidable->getCollider().hasComponent(ColliderKeys::ground) || collidable->getCollider().hasComponent(ColliderKeys::platform))
-    {
-        //walking on ground
-        if (this->movement.momentum.y > 0 && collidable->getCollider().intersects(collidable->getCollider().getUpBox(), this->collider.getDownBox()))
-        {
-            this->movement.momentum.y = 0;
-            this->pos.y = collidable->getCollider().up() - this->collider.height();
-            movement.grounded = true;
+    ai.handleCollision(collidable);
 
-            if (flying)
-            {
-                state = State::chasing;
-                flying = false;
-            }
-        }
-
-        //smackin into roof
-        if (collidable->getCollider().intersects(collidable->getCollider().getDownBox(), this->collider.getUpBox()))
-        {
-            this->movement.momentum.y = 0;
-            this->pos.y = collidable->getCollider().down();
-        }
-
-        if (collidable->getCollider().intersects(collidable->getCollider().getLeftBox(), this->collider.getRightBox()))
-        {
-            this->movement.momentum.x *= -0.5f;
-            this->pos.x = collidable->getCollider().left() - this->collider.width();
-            this->movement.jump();
-        }
-
-        if (collidable->getCollider().intersects(collidable->getCollider().getRightBox(), this->collider.getLeftBox()))
-        {
-            this->movement.momentum.x *= -0.5f;
-            this->pos.x = collidable->getCollider().right();
-            this->movement.jump();
-        }
-    }
-
-    else if (flying && !collidable->getCollider().hasComponent(ColliderKeys::player))
+    if (flying && !collidable->getCollider().hasComponent(ColliderKeys::player))
     {
         this->flying = false;
-        this->state = State::stunned;
+        this->ai.setState(AIComp::State::stunned);
     }
 
     else if (flying && collidable->getCollider().hasComponent(ColliderKeys::player))
     {
         const Player* ptr = dynamic_cast<const Player*>(collidable);
         
-        movement.addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider.getCenterPos(), collidable->getCollider().getCenterPos(), movement.momentum, ptr->getMovementComp().momentum, movement.mass, ptr->getMovementComp().mass));
+        ai.movement.addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(ai.collider.getCenterPos(), collidable->getCollider().getCenterPos(), ai.movement.momentum, ptr->getMovementComp().momentum, ai.movement.mass, ptr->getMovementComp().mass));
     }
 
     if (collidable->getCollider().hasComponent(ColliderKeys::throwable))
@@ -283,29 +127,29 @@ void Grunt::handleExplosion(const Explosion& explosion)
 {
     if (explosion.damage > 0)
     {
-        int damage = explosion.calculateDamage(this->collider.getCenterPos());
+        int damage = explosion.calculateDamage(this->ai.collider.getCenterPos());
         this->health.takeDamage(damage);
     }
 
-    if (state != State::stunned && state != State::chasing && state != State::attacking)
+    if (ai.getState() != AIComp::State::stunned && ai.getState() != AIComp::State::chasing && ai.getState() != AIComp::State::attacking)
     {
-        this->currentRoamPoint = explosion.center;
-        this->state = State::searching;
+        this->ai.currentRoamPoint = explosion.center;
+        ai.setState(AIComp::State::searching);
         this->drawQuestion.reset();
-        searchCounter.reset();
+        ai.searchCounter.reset();
 
-        if (explosion.center.x < this->getPosition().x)
-            this->moveLeft();
+        if (explosion.center.x < this->ai.movement.transform.pos.x)
+            this->ai.moveLeft(&sprite);
 
         else
-            moveRight();
+            ai.moveRight(&sprite);
     }
 
     switch (explosion.type)
     {
     case ExplosionType::flash:
-        state = State::stunned;
-        stunCounter.reset();
+        ai.setState(AIComp::State::stunned);
+        ai.stunCounter.reset();
         break;
 
     default:

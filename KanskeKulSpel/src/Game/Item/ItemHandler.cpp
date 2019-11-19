@@ -11,6 +11,7 @@
 
 std::vector<const Item*> ItemHandler::itemTemplates;
 std::unordered_set<int> ItemHandler::foundItems;
+std::unordered_set<std::string> ItemHandler::oneTimeItemList;
 
 ItemHandler::ItemHandler(UIHandler* uiHandler)
 {
@@ -71,32 +72,30 @@ void ItemHandler::loadTemplates()
 void ItemHandler::update(float dt, Player* player)
 {
     GatherItem* inRange = nullptr;
-    auto it = gatherItems.begin();
-    while (!gatherItems.empty() && it != gatherItems.end())
+    for (int i = 0; i < gatherItems.size(); i++)
     {
-        if (it->item.isObtained())
+        GatherItem* item = &gatherItems[i];
+        if (item->item.isObtained())
         {
-            int id = it->item.getID();
+            int id = item->item.getID();
             if (!foundItems.count(id))
             {
                 ui->displayNewItem(id);
                 foundItems.insert(id);
             }
 
-            if (it->emitter != nullptr)
-                it->emitter->kill();
+            if (item->emitter != nullptr)
+                item->emitter->kill();
 
-            if (it->count == -1)
-                oneTimeItemList.emplace(it->item.getName());
+            if (item->count == -1)
+                oneTimeItemList.emplace(item->item.getName());
 
-            unordered_erase(gatherItems, it);
+            unordered_erase(gatherItems, gatherItems.begin() + i--);
         }
         else
         {
-            if (length(player->getCollider().getCenterPos() - it->item.getTextureCenterPos()) < this->gatherRange)
-                inRange = it._Ptr;
-
-            it++;
+            if (length(player->getCollider().getCenterPos() - item->item.getTextureCenterPos()) < this->gatherRange)
+                inRange = item;
         }
     }
 
@@ -257,6 +256,11 @@ void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
     for (const GatherItem& item : this->gatherItems)
         target.draw(item.item, states);
+}
+
+bool ItemHandler::isOneTimeItemPickedUp(std::string item)
+{
+    return oneTimeItemList.count(item);
 }
 
 void ItemHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const

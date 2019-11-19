@@ -28,6 +28,7 @@ public:
     static const Item* getTemplate(int itemID);
     static const std::vector<const Item*>* getTemplateVec() { return &itemTemplates; };
     static const std::unordered_set<int>* getFoundItems() { return &foundItems; };
+    static bool isOneTimeItemPickedUp(std::string item);
 
     virtual void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
@@ -35,10 +36,10 @@ private:
 
     static std::vector<const Item*> itemTemplates;
     static std::unordered_set<int> foundItems;
+    static std::unordered_set<std::string> oneTimeItemList;
 
     std::vector<sf::Vector2f> gatherPoints;
     std::vector<sf::Vector2f> rareGatherPoints;
-    std::unordered_set<std::string> oneTimeItemList;
 
     std::vector<GatherItem> gatherItems;
     int gatherRange;

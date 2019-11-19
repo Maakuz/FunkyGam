@@ -141,8 +141,11 @@
     <ClCompile Include="..\External\Include\Imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="..\External\Include\Imgui\SFML-imgui\imgui-SFML.cpp" />
     <ClCompile Include="src\Game\Collision\CollisionHandler.cpp" />
+    <ClCompile Include="src\Game\Components\AI\AIComp.cpp" />
+    <ClCompile Include="src\Game\Components\AI\FlyingAIComp.cpp" />
     <ClCompile Include="src\Game\Components\AnimatedSpriteComp.cpp" />
     <ClCompile Include="src\Game\Components\ColliderComp.cpp" />
+    <ClCompile Include="src\Game\Components\AI\GroundAIComp.cpp" />
     <ClCompile Include="src\Game\Components\HealthComp.cpp" />
     <ClCompile Include="src\Game\Components\MovementComp.cpp" />
     <ClCompile Include="src\Game\Components\SpellComp.cpp" />
@@ -204,19 +207,23 @@
   <ItemGroup>
     <ClInclude Include="src\Game\Collision\CollisionHandler.h" />
     <ClInclude Include="src\Game\Collision\Explosion.h" />
+    <ClInclude Include="src\Game\Components\AI\AIComp.h" />
+    <ClInclude Include="src\Game\Components\AI\FlyingAIComp.h" />
     <ClInclude Include="src\Game\Components\AnimatedSpriteComp.h" />
     <ClInclude Include="src\Game\Components\ColliderComp.h" />
+    <ClInclude Include="src\Game\Components\AI\GroundAIComp.h" />
     <ClInclude Include="src\Game\Components\HealthComp.h" />
     <ClInclude Include="src\Game\Components\MovementComp.h" />
     <ClInclude Include="src\Game\Components\SpellComp.h" />
     <ClInclude Include="src\Game\Components\SpriteComp.h" />
+    <ClInclude Include="src\Game\Components\TransformComp.h" />
     <ClInclude Include="src\Game\Entities\Chain.h" />
     <ClInclude Include="src\Game\Entities\Collidable.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Bird.h" />
+    <ClInclude Include="src\Game\Entities\Enemies\Bosses\Boss.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Bosses\FishMonger.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Enemy.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Grunt.h" />
-    <ClInclude Include="src\Game\Entities\Entity.h" />
     <ClInclude Include="src\Game\Item\GatherItem.h" />
     <ClInclude Include="src\Game\Item\Item.h" />
     <ClInclude Include="src\Game\Item\ItemEditor.h" />
@@ -232,6 +239,7 @@
     <ClInclude Include="src\Game\GameState.h" />
     <ClInclude Include="src\Game\Handlers\CharacterHandler.h" />
     <ClInclude Include="src\Game\Item\ItemHandler.h" />
+    <ClInclude Include="src\Game\Misc\BossSpawner.h" />
     <ClInclude Include="src\Game\Particles\ParticleEditor.h" />
     <ClInclude Include="src\Game\Particles\ParticleHandler.h" />
     <ClInclude Include="src\LevelEditor\Interactables\ActiveTile.h" />

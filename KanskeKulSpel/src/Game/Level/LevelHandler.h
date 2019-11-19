@@ -7,6 +7,7 @@
 #include "Renderer/Lighting/Light.h"
 #include "Renderer/DebugDrawable.h"
 #include "Game/Level/Level.h"
+#include "Game/Misc/BossSpawner.h"
 #include "Misc/Structs.h"
 #include <vector>
 
@@ -28,6 +29,8 @@ public:
     void queueColliders();
     void queueLightsAndShadows();
 
+    bool isBossInLevel() const { return bossInLevel; };
+
     sf::Vector2i getDimensions() const { return this->dimensions; }
 
     std::vector<sf::Vector2f> generateEnemySpawnPoints();
@@ -36,7 +39,7 @@ public:
     std::vector<CustomHitbox> getShrines();
     sf::Vector2f findPlayerSpawnPoints(int exitTaken);
     const std::vector<Line>* getShadowLinePtr() const { return &this->shadowLines; }
-    
+    const BossSpawner* getBossSpawnerPtr() const { return &this->bossSpawner; };
     void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
     typedef std::vector<std::vector<Tile>> Layer;
@@ -60,6 +63,8 @@ private:
     std::vector<Tilemap> tilemaps;
 
     bool drawCollision;
+    bool bossInLevel;
+    BossSpawner bossSpawner;
 
     bool importLevel(const LevelInfo* level);
     bool generateHitboxes(ColliderKeys type);
@@ -67,6 +72,7 @@ private:
     void createSpites();
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+    void generateBossSpawner(const CustomHitbox& box);
 
 
 };

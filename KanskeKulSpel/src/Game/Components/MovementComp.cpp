@@ -24,7 +24,7 @@ void MovementComp::reset()
     this->momentum = sf::Vector2f(0, 0);
 }
 
-sf::Vector2f MovementComp::update(float dt, sf::Vector2f pos)
+void MovementComp::update(float dt)
 {
     if (addedMomentum)
     {
@@ -57,9 +57,7 @@ sf::Vector2f MovementComp::update(float dt, sf::Vector2f pos)
 
 
 
-    pos += momentum;
-
-    return pos;
+    transform.pos += momentum;
 }
 
 void MovementComp::jump()

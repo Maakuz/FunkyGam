@@ -13,8 +13,7 @@
 #define TESTING false
 
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::Vector2f size)
-    :Entity(pos),
-    sprite(data, pos),
+    :sprite(data, pos),
     collider(size, pos),
     spellComp(collider.getCenterPos())
 {
@@ -140,13 +139,13 @@ void Player::update(float dt, sf::Vector2f mousePos)
     else
         sprite.setAnimation(1);
 
-    this->pos = movement.update(dt, getPosition());
+    movement.update(dt);
 
     updateItems(dt, mousePos);
     spellComp.update(dt, collider.getCenterPos());
-    collider.setPosition(getPosition());
+    collider.setPosition(movement.transform.pos);
     sprite.updateAnimation(dt);
-    sprite.update(getPosition());
+    sprite.setPosition(movement.transform.pos);
 
     if (this->canReturn && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
         this->returning = true;
@@ -171,7 +170,7 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
 void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
 {
-    this->pos = spawnPoint;
+    this->movement.transform.pos = spawnPoint;
     this->returning = false;
     this->exitReached = -1;
     this->movement.reset();
@@ -242,13 +241,13 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
         {
             if (dynamic_cast<const Throwable*>(ItemHandler::getTemplate(itemID)))
             {
-                sf::Vector2f direction = mousePos - this->getPosition() - sf::Vector2f(16, 10);
+                sf::Vector2f direction = mousePos - this->movement.transform.pos - sf::Vector2f(16, 10);
                 normalize(direction);
                 direction *= (this->throwingPower);
 
                 direction += movement.momentum * 0.5f;
 
-                ProjectileHandler::addThrowable(itemID, this->getPosition(), direction, this);
+                ProjectileHandler::addThrowable(itemID, this->movement.transform.pos, direction, this);
             }
 
             else if (dynamic_cast<const Tome*>(ItemHandler::getTemplate(itemID)))
@@ -299,7 +298,7 @@ void Player::handleCollision(const Collidable* colliderEntity)
                 if (platformPassingCounter.isTimeUp())
                 {
                     this->movement.momentum.y = 0;
-                    this->pos.y = (colliderEntity->getCollider().up() - collider.height());
+                    this->movement.transform.pos.y = (colliderEntity->getCollider().up() - collider.height());
                     this->movement.grounded = true;
                 }
             }
@@ -311,7 +310,7 @@ void Player::handleCollision(const Collidable* colliderEntity)
             if (this->movement.momentum.y > 0 && colliderEntity->getCollider().intersects(colliderEntity->getCollider().getUpBox(), this->collider.getDownBox()))
             {
                 this->movement.momentum.y = 0;
-                this->pos.y = (colliderEntity->getCollider().up() - this->collider.height());
+                this->movement.transform.pos.y = (colliderEntity->getCollider().up() - this->collider.height());
                 movement.grounded = true;
             }
 
@@ -319,19 +318,19 @@ void Player::handleCollision(const Collidable* colliderEntity)
             if (this->movement.momentum.y < 0 && colliderEntity->getCollider().intersects(colliderEntity->getCollider().getDownBox(), this->collider.getUpBox()))
             {
                 this->movement.momentum.y = 0;
-                this->pos.y = (colliderEntity->getCollider().down());
+                this->movement.transform.pos.y = (colliderEntity->getCollider().down());
             }
 
             if (colliderEntity->getCollider().intersects(colliderEntity->getCollider().getLeftBox(), this->collider.getRightBox()))
             {
                 this->movement.momentum.x *= -0.5f;
-                this->pos.x = (colliderEntity->getCollider().left() - this->collider.width());
+                this->movement.transform.pos.x = (colliderEntity->getCollider().left() - this->collider.width());
             }
 
             if (colliderEntity->getCollider().intersects(colliderEntity->getCollider().getRightBox(), this->collider.getLeftBox()))
             {
                 this->movement.momentum.x *= -0.5f;
-                this->pos.x = (colliderEntity->getCollider().right());
+                this->movement.transform.pos.x = (colliderEntity->getCollider().right());
             }
         }
 

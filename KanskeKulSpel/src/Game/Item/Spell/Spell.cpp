@@ -1,8 +1,8 @@
 #include "Spell.h"
 
-Spell::Spell(sf::Vector2f pos) :
-    Entity(pos)
+Spell::Spell(sf::Vector2f pos)
 {
+    transform.pos = pos;
 }
 
 std::istream& operator>>(std::istream& in, Spell& spell)
