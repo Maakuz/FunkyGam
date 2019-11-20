@@ -9,6 +9,8 @@ extern "C"
 #include "LUA/lualib.h"
 }
 
+#define SCRIPT_PATH "../Resources/Data/Scripts/"
+
 class LuaScript
 {
 public:

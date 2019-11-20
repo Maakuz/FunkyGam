@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Entities/Enemies/Bosses/Boss.h"
+#include "Game/Entities/Enemies/Enemy.h"
 #include "Game/Entities/Player.h"
 #include "Game/Misc/Line.h"
 #include "Game/Misc/BossSpawner.h"
@@ -10,13 +11,19 @@
 class CharacterHandler : public sf::Drawable, public DebugDrawable
 {
 public:
-    static const int ENEMY_TEMPLATE_COUNT = 3;
+    static const int ENEMY_TEMPLATE_COUNT = 2;
     static const std::string ENEMIES[ENEMY_TEMPLATE_COUNT];
     enum EnemyType
     {
         grunt = 0,
-        bird = 1,
-        fishmonger = 2
+        bird = 1
+    };
+
+    static const int BOSS_TEMPLATE_COUNT = 1;
+    static const std::string BOSSES[BOSS_TEMPLATE_COUNT];
+    enum BossType
+    {
+        fishmonger = 0
     };
 
 
@@ -52,8 +59,9 @@ private:
    
 
     std::vector<Enemy*> enemyTemplates;
+    std::vector<Boss*> bossTemplates;
 
-    void spawnBoss(EnemyType enemyType, sf::Vector2f pos);
+    void spawnBoss(BossType bossType, sf::Vector2f pos);
     Enemy* spawnEnemy(int enemyType);
 
     void updateEnemyLineOfSight(Enemy* enemy);

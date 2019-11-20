@@ -201,7 +201,7 @@ inline void ConsoleWindow::runCommand(std::string command)
         history.insert(history.begin(), command);
 
 
-        addLog(commands[found](args), colors.commandColor);
+        addLog(command + " - " + commands[found](args), colors.commandColor);
     }
 
     else

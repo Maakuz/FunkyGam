@@ -53,7 +53,8 @@ public:
     Chain(std::vector<const sf::Texture*> textures, sf::Vector2f pos, int linkCount = 5, int stiffness = 10);
     virtual ~Chain(){};
 
-
+    int getLinkCount()const { return this->links.size(); };
+    void setPos(sf::Vector2f pos, int link);
     void update(float dt);
 
     void setMass(float mass) { this->mass = mass; };
@@ -61,7 +62,6 @@ public:
 private:
     std::vector<Link> links;
     std::vector<Point> points;
-    sf::Vector2f pos;
     int stiffness;
     float mass;
 

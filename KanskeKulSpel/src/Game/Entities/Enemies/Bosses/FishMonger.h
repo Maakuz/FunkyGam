@@ -3,6 +3,7 @@
 #include "Game/Entities/Enemies/Bosses/Boss.h"
 #include "Game/Components/AnimatedSpriteComp.h"
 #include "Game/Components/AI/GroundAIComp.h"
+#include "Game/Entities/Chain.h"
 
 class FishMonger : public Boss
 {
@@ -11,15 +12,17 @@ public:
     ~FishMonger() {};
 
     virtual void update(float dt);
-    virtual bool isInterrupting() { return true; };
 
     virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion);
 private:
-    virtual std::istream& readSpecific(std::istream& in);
-    GroundAIComp groundMove;
-    //LuaScript ai;
+    LuaScript ai;
 
-    virtual const AIComp* getAI() const { return &groundMove; };
-    virtual AIComp* getAI() { return &groundMove; };
+    sf::Vector2f armAnchor;
+    Chain leftArm;
+    Chain rightArm;
+
+    virtual std::istream& readSpecific(std::istream& in);
+
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

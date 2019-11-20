@@ -110,6 +110,8 @@ int main()
 
     bool debugActive = false;
     bool debugActivePrev = false;
+
+    game.runAutoCommands();
     while (wandow.isOpen())
     {
         sf::Event e;

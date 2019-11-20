@@ -24,6 +24,8 @@ public:
     Game(const sf::RenderWindow* window);
     ~Game();
 
+    void runAutoCommands();
+
     void update(float dt);
     const sf::View& getView() { return view; };
     const LevelInfo* getCurrentLevel()const { return hubHandler.getActiveLevel(); };

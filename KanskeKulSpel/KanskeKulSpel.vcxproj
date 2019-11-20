@@ -152,6 +152,7 @@
     <ClCompile Include="src\Game\Components\SpriteComp.cpp" />
     <ClCompile Include="src\Game\Entities\Chain.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Bird.cpp" />
+    <ClCompile Include="src\Game\Entities\Enemies\Bosses\Boss.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Bosses\FishMonger.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Enemy.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Grunt.cpp" />
@@ -297,6 +298,7 @@
     <None Include="..\Resources\Data\fishmonger.mop" />
     <None Include="..\Resources\Data\Grunt.mop" />
     <None Include="..\Resources\Data\HubInterface.mop" />
+    <None Include="..\Resources\Data\AutoCommands.mop" />
     <None Include="..\Resources\Data\Items.mop" />
     <None Include="..\Resources\Data\LevelInfo.mop" />
     <None Include="..\Resources\Data\LoadList.mop" />

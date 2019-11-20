@@ -23,6 +23,8 @@ public:
     void printText(std::string text);
     void printf(const char* format, ...);
     void update(bool setFocusOnTextbox);
+    void runCommand(std::string command);
+
 private:
     struct Command
     {
@@ -80,7 +82,6 @@ private:
     int textEditCallbackComplete(ImGuiInputTextCallbackData* data);
 
 
-    void runCommand(std::string command);
     void addLog(std::string string, sf::Color color = sf::Color::White);
     void clearLog();
     void listAllCommands();

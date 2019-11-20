@@ -219,6 +219,9 @@
     <ClCompile Include="src\Game\Components\AI\FlyingAIComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Entities\Enemies\Bosses\Boss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game\Collision\CollisionHandler.h">
@@ -501,6 +504,7 @@
     <None Include="..\Resources\Data\bird.mop" />
     <None Include="..\Resources\Data\Spells.mop" />
     <None Include="..\Resources\Data\fishmonger.mop" />
+    <None Include="..\Resources\Data\AutoCommands.mop" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="src\Misc\Todo.txt" />

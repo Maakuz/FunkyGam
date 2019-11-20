@@ -17,10 +17,14 @@ Chain::Chain(std::vector<const sf::Texture*> textures, sf::Vector2f pos, int lin
     initialize(textures, pos, linkCount, stiffness);
 }
 
+void Chain::setPos(sf::Vector2f pos, int point)
+{
+    if (point >= 0 && point < points.size())
+        points[point].pos = pos;
+}
+
 void Chain::update(float dt)
 {
-    points.front().pos = this->pos;
-
     for (Point& p : points)
     {
         move(&p);
@@ -79,7 +83,6 @@ void Chain::initialize(std::vector<const sf::Texture*> textures, sf::Vector2f po
 {
     links.clear();
     points.clear();
-    this->pos = pos;
     this->stiffness = stiffness;
     this->mass = 1;
 

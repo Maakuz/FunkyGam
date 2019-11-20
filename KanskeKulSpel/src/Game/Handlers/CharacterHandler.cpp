@@ -12,7 +12,8 @@
 #include "Game/Misc/Definitions.h"
 #include "Game/Item/ItemHandler.h"
 
-const std::string CharacterHandler::ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop", "fishmonger.mop" };
+const std::string CharacterHandler::ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop"};
+const std::string CharacterHandler::BOSSES[BOSS_TEMPLATE_COUNT] = {"fishmonger.mop" };
 
 CharacterHandler::CharacterHandler(UIHandler* uiHandler)
 {
@@ -28,19 +29,11 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
     loadPlayer();
     loadEnemies();
 
-    /*ConsoleWindow::get().addCommand("charResetEnemies", [&](Arguments args)->std::string {
-        enemies.clear();
-        spawnEnemies();
-
-        return "Enemies has been reset.";
-        });
-
     ConsoleWindow::get().addCommand("charReloadEnemies", [&](Arguments args)->std::string {
         loadEnemies();
-        spawnEnemies();
 
         return "Enemies has been reloaded.";
-        });*/
+        });
 
     ConsoleWindow::get().addCommand("charReloadPlayer", [&](Arguments args)->std::string {
         loadPlayer();
@@ -49,7 +42,7 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
         return "Player has been reloaded.";
         });
 
-    ConsoleWindow::get().addCommand("charShowHitboxes", [&](Arguments args)->std::string
+    ConsoleWindow::get().addCommand("charHitboxes", [&](Arguments args)->std::string
         {
             if (args.empty())
                 return "Missing argument 0 or 1";
@@ -60,7 +53,7 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
             return "Hitboxes on mby";
         });
 
-    ConsoleWindow::get().addCommand("charShowSightlines", [&](Arguments args)->std::string
+    ConsoleWindow::get().addCommand("charSightlines", [&](Arguments args)->std::string
         {
             if (args.empty())
                 return "Missing argument 0 or 1";
@@ -90,6 +83,12 @@ CharacterHandler::~CharacterHandler()
 void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint)
 {
     this->bossSpawner = nullptr;
+    if (boss)
+    {
+        delete boss;
+        boss = nullptr;
+    }
+
     this->occluders = occluders;
     this->player->reset(playerSpawnPoint - this->player->getCollider().getSize());
 }
@@ -208,9 +207,6 @@ void CharacterHandler::loadEnemies()
         case EnemyType::bird:
             enemy = createEnemy<Bird>(data, size, offset);
             break;
-        case EnemyType::fishmonger:
-            enemy = createEnemy<FishMonger>(data, size, offset);
-            break;
         default:
             enemy = createEnemy<Grunt>(data, size, offset);
             break;
@@ -223,6 +219,76 @@ void CharacterHandler::loadEnemies()
 
         file.close();
         enemyTemplates.push_back(enemy);
+    }
+
+    //Bosses get the same treatment
+    for (Boss* boss : bossTemplates)
+        delete boss;
+
+    bossTemplates.clear();
+
+    for (int i = 0; i < BOSS_TEMPLATE_COUNT; i++)
+    {
+        std::ifstream file(DATA_PATH + BOSSES[i]);
+        std::string trash;
+
+        if (!file.is_open())
+            exit(-55);
+
+        int textureID;
+        sf::Vector2u frameCount;
+        int animCount;
+        std::vector<Animation> animations;
+
+        file >> trash;
+        file >> trash >> textureID;
+        file >> trash >> frameCount.x >> frameCount.y;
+        file >> trash >> animCount;
+
+        for (int i = 0; i < animCount; i++)
+        {
+            sf::Vector2u start;
+            sf::Vector2u stop;
+            sf::Vector2u idle;
+            float speed;
+            bool startIdle;
+
+            file >> trash;
+            file >> trash >> start.x >> start.y;
+            file >> trash >> stop.x >> stop.y;
+            file >> trash >> idle.x >> idle.y;
+            file >> trash >> speed;
+            file >> trash >> startIdle;
+
+            animations.push_back(Animation(start, stop, speed, idle, startIdle));
+        }
+
+        AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
+
+        sf::Vector2f size;
+        sf::Vector2f offset;
+
+        file >> trash;
+        file >> trash >> size.x >> size.y;
+        file >> trash >> offset.x >> offset.y;
+
+        Boss* boss;
+
+        switch (i)
+        {
+        case BossType::fishmonger:
+            boss = createEnemy<FishMonger>(data, size, offset);
+            break;
+
+        default:
+            boss = createEnemy<FishMonger>(data, size, offset);
+            break;
+        }
+
+        file >> *boss;
+
+        file.close();
+        bossTemplates.push_back(boss);
     }
 }
 
@@ -261,7 +327,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
         }
 
         if (spawn)
-            spawnBoss((EnemyType)bossSpawner->bossID, bossSpawner->pos);
+            spawnBoss((BossType)bossSpawner->bossID, bossSpawner->pos);
     }
 
     if (boss)
@@ -303,6 +369,9 @@ void CharacterHandler::queueColliders()
 
     for (Enemy* enemy : enemies)
         CollisionHandler::queueCollider(enemy);
+
+    if (boss)
+        CollisionHandler::queueCollider(boss);
 }
 
 void CharacterHandler::setBossSpawner(const BossSpawner* bossSpawner) 
@@ -310,12 +379,21 @@ void CharacterHandler::setBossSpawner(const BossSpawner* bossSpawner)
     this->bossSpawner = bossSpawner;
 }
 
-void CharacterHandler::spawnBoss(EnemyType enemyType, sf::Vector2f pos)
+void CharacterHandler::spawnBoss(BossType bossType, sf::Vector2f pos)
 {
     if (boss)
         delete boss;
 
-    this->boss = dynamic_cast<Boss*>(spawnEnemy(enemyType));
+    switch (bossType)
+    {
+    case BossType::fishmonger:
+        boss = new FishMonger(*dynamic_cast<FishMonger*>(bossTemplates[BossType::fishmonger]));
+        break;
+    default:
+        boss = new FishMonger(*dynamic_cast<FishMonger*>(bossTemplates[BossType::fishmonger]));
+        break;
+    }
+
     boss->spawn(pos - sf::Vector2f(0, boss->getCollider().getSize().y));
 }
 
@@ -329,9 +407,6 @@ Enemy* CharacterHandler::spawnEnemy(int enemyType)
         break;
     case EnemyType::bird:
         enemy = new Bird(*dynamic_cast<Bird*>(enemyTemplates[EnemyType::bird]));
-        break;
-    case EnemyType::fishmonger:
-        enemy = new FishMonger(*dynamic_cast<FishMonger*>(enemyTemplates[EnemyType::fishmonger]));
         break;
     default:
         enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[EnemyType::grunt]));
@@ -437,6 +512,9 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
 
         for (Enemy* enemy : enemies)
             target.draw(enemy->getCollider(), states);
+
+        if (boss)
+            target.draw(boss->getCollider(), states);
     }
 
     if (drawSightlines)
@@ -474,7 +552,21 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
             target.draw(sightradius, states);
         }
 
-        target.draw(arr, states);
+        //if (boss)
+        //{
+        //    sf::Vertex v;
+
+        //    v.color = sf::Color::Red;
+        //    v.position = boss->getEyePos();
+        //    arr.append(v);
+
+        //    v.position = boss->getLastKnownPos();
+        //    arr.append(v);
+        //}
+
+        //target.draw(arr, states);
+
+
 
     }
 }

@@ -61,10 +61,41 @@ Game::Game(const sf::RenderWindow* window) :
 
             return "Warrrrp!";
         });
+    
 }
 
 Game::~Game()
 {
+}
+
+void Game::runAutoCommands()
+{
+    //Initial commands
+    std::ifstream file(DATA_PATH "AutoCommands.mop");
+
+    if (file.is_open())
+    {
+        printfCon("AutoCommands found!");
+        std::string str;
+
+        file >> str;
+
+        if (str == "ignore")
+            printfCon("Remove \"ignore\" from beginning of the file to run the commands");
+
+        else
+        {
+            file.clear();
+            file.seekg(0, std::ios::beg);
+            while (!file.eof())
+            {
+                std::getline(file, str);
+
+                ConsoleWindow::get().runCommand(str);
+            }
+        }
+        file.close();
+    }
 }
 
 void Game::update(float dt)
