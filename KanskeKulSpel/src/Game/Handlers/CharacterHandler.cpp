@@ -78,6 +78,9 @@ CharacterHandler::~CharacterHandler()
 
     for (Enemy* enemy : enemyTemplates)
         delete enemy;
+
+    for (Boss* boss : bossTemplates)
+        delete boss;
 }
 
 void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint)

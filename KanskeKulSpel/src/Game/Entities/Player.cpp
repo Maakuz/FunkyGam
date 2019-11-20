@@ -45,7 +45,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
                     int x = std::stoi(args[0]);
                     int y = std::stoi(args[1]);
 
-                    pos = (sf::Vector2f(x, y));
+                    movement.transform.pos = (sf::Vector2f(x, y));
                 }
                 catch (const std::exception & e)
                 {

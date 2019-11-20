@@ -17,7 +17,9 @@ public:
     LuaScript(std::string filename);
     ~LuaScript();
 
+    LuaScript(const LuaScript& other);
 
+    void operator=(const LuaScript& other);
     
     template <typename T>
     T get(std::string variable);

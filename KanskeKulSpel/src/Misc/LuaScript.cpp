@@ -22,6 +22,19 @@ LuaScript::~LuaScript()
         lua_close(state);
 }
 
+LuaScript::LuaScript(const LuaScript& other)
+{
+    *this = other;
+}
+
+void LuaScript::operator=(const LuaScript& other)
+{
+    this->filename = other.filename;
+    this->level = other.level;
+
+    reload();
+}
+
 void LuaScript::runFunc(std::string funcName, const char* args, ...)
 {
     if (!state)
@@ -68,6 +81,8 @@ void LuaScript::reload()
 {
     if (state)
         lua_close(state);
+
+    this->state = luaL_newstate();
 
     if (luaL_loadfile(state, filename.c_str()) || lua_pcall(state, 0, 0, 0))
         printfCon("Script %s could not be loaded.", filename.c_str());
