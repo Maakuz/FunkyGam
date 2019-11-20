@@ -299,7 +299,7 @@ void ConsoleWindow::update(bool setFocusOnTextbox)
             for (int i = 0; i < log.size(); i++)
             {
                 ImGui::PushStyleColor(ImGuiCol_::ImGuiCol_Text, log[i].color);
-                ImGui::Text("%d: %s\n", i, log[i].text.c_str());
+                ImGui::TextWrapped("%d: %s\n", i, log[i].text.c_str());
                 ImGui::PopStyleColor();
             }
 

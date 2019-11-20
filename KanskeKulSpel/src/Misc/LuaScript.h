@@ -9,7 +9,7 @@ extern "C"
 #include "LUA/lualib.h"
 }
 
-#define SCRIPT_PATH "../Resources/Data/Scripts/"
+#define SCRIPT_PATH "../Resources/Scripts/"
 
 class LuaScript
 {
@@ -24,9 +24,11 @@ public:
 
     void runFunc(std::string funcName, const char* args, ...);
 
+    void reload();
 private:
     lua_State* state;
     int level;
+    std::string filename;
 
     void printErrorMsg(std::string variable, std::string error);
 

@@ -1,0 +1,6 @@
+enemy = {x = 0, y = 0}
+
+function updateAI(x, y, pX, pY)
+enemy.x = x;
+enemy.y = y;
+end

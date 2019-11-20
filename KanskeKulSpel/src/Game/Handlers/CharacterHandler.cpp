@@ -332,7 +332,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 
     if (boss)
     {
-        boss->update(dt);
+        boss->update(dt, this->player->getMovementComp().transform.pos);
     }
 
     this->player->update(dt, mousePos);

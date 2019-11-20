@@ -6,10 +6,14 @@ LuaScript::LuaScript(std::string filename)
 {
     this->state = luaL_newstate();
     this->level = 0;
+    this->filename = filename;
 
     if (luaL_loadfile(state, filename.c_str()) || lua_pcall(state, 0, 0, 0))
+    {
         printfCon("Script %s could not be loaded.", filename.c_str());
-
+        printfCon("Error: %s", lua_tostring(state, -1));
+        lua_pop(state, 1);
+    }
 }
 
 LuaScript::~LuaScript()
@@ -58,6 +62,15 @@ void LuaScript::runFunc(std::string funcName, const char* args, ...)
     }
 
     lua_pcall(state, count, 0, 0);
+}
+
+void LuaScript::reload()
+{
+    if (state)
+        lua_close(state);
+
+    if (luaL_loadfile(state, filename.c_str()) || lua_pcall(state, 0, 0, 0))
+        printfCon("Script %s could not be loaded.", filename.c_str());
 }
 
 void LuaScript::printErrorMsg(std::string variable, std::string error)

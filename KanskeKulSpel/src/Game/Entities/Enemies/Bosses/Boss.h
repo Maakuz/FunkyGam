@@ -16,7 +16,7 @@ public:
     virtual void handleExplosion(const Explosion& explosion) = 0;
 
     bool isInterrupting() { return interrupting; };
-    virtual void update(float dt);
+    virtual void update(float dt, sf::Vector2f playerPos);
     void spawn(sf::Vector2f pos);
 
     virtual const ColliderComp& getCollider()const { return collider; };
@@ -29,6 +29,8 @@ protected:
     AnimatedSpriteComp sprite;
     MovementComp movement;
     ColliderComp collider;
+
+    sf::Vector2f playerPos;
 
     int prevHealth;
     bool interrupting;

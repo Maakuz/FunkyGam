@@ -1,5 +1,6 @@
 #include "FishMonger.h"
 #include "Game/Handlers/TextureHandler.h"
+#include "SFML/Window/Keyboard.hpp"
 
 FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset) :
     Boss(data, pos, size, offset),
@@ -11,7 +12,7 @@ FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, 
     rightArm.setMass(0.1);
 }
 
-void FishMonger::update(float dt)
+void FishMonger::update(float dt, sf::Vector2f playerPos)
 {
     armAnchor = movement.transform.pos;
 
@@ -21,7 +22,16 @@ void FishMonger::update(float dt)
     leftArm.update(dt);
     rightArm.update(dt);
 
-    Boss::update(dt);
+    //temp
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::F5))
+        ai.reload();
+
+    ai.runFunc("updateAI", "ffff",
+        movement.transform.pos.x, movement.transform.pos.y, playerPos.x, playerPos.y);
+
+    movement.transform.pos.x = ai.get<float>("enemy.x");
+    movement.transform.pos.y = ai.get<float>("enemy.y");
+    Boss::update(dt, playerPos);
 }
 
 void FishMonger::handleCollision(const Collidable* collidable)

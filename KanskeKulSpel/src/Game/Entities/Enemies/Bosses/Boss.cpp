@@ -13,7 +13,7 @@ Boss::Boss(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f
     this->sprite.spriteOffset += offset;
 }
 
-void Boss::update(float dt)
+void Boss::update(float dt, sf::Vector2f playerPos)
 {
     movement.update(dt);
     collider.setPosition(movement.transform.pos);
