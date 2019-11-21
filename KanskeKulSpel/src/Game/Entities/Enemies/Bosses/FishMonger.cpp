@@ -4,10 +4,10 @@
 
 FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset) :
     Boss(data, pos, size, offset),
-    leftArm(TextureHandler::get().getTexture(17), pos, 10, 5),
-    rightArm(TextureHandler::get().getTexture(17), pos, 10, 5),
-    leftHand(TextureHandler::get().getTexture(17), pos),
-    rightHand(TextureHandler::get().getTexture(17), pos),
+    leftArm(TextureHandler::get().getTexture(26), pos, 10, 5),
+    rightArm(TextureHandler::get().getTexture(26), pos, 10, 5),
+    leftHand(TextureHandler::get().getTexture(27), pos),
+    rightHand(TextureHandler::get().getTexture(27), pos),
     ai(SCRIPT_PATH "FishmongerAI.skrop")
 {
     leftArm.setMass(0.01);

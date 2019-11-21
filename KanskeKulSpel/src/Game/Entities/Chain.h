@@ -68,6 +68,8 @@ private:
     int stiffness;
     float mass;
 
+    bool seamless;
+
     void move(Point* p);
     void constrainLink(Link* l);
 

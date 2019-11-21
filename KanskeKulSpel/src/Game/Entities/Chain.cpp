@@ -39,21 +39,51 @@ void Chain::update(float dt)
         }
     }
 
-    for (Link& l : links)
+    if (seamless)
     {
-        sf::Vector2f dir(points[l.p2].pos - points[l.p1].pos);
-        normalize(dir);
-        dir = sf::Vector2f(dir.y, -dir.x);
- 
-         l[0].position = points[l.p1].pos - (dir * l.halfWidth);
- 
-         l[1].position = points[l.p1].pos + (dir * l.halfWidth);
- 
-         l[2].position = points[l.p2].pos + (dir * l.halfWidth);
- 
-         l[3].position = points[l.p2].pos - (dir * l.halfWidth);
+        Link* prev = nullptr;
+        for (Link& l : links)
+        {
+            sf::Vector2f dir(points[l.p2].pos - points[l.p1].pos);
+            normalize(dir);
+            dir = sf::Vector2f(dir.y, -dir.x);
+
+            if (prev)
+            {
+                l[0].position = prev->v[3].position;
+                l[1].position = prev->v[2].position;
+            }
+
+            else
+            {
+                l[0].position = points[l.p1].pos - (dir * l.halfWidth);
+                l[1].position = points[l.p1].pos + (dir * l.halfWidth);
+            }
+
+            l[2].position = points[l.p2].pos + (dir * l.halfWidth);
+            l[3].position = points[l.p2].pos - (dir * l.halfWidth);
+
+            prev = &l;
+        }
     }
 
+    else
+    {
+        for (Link& l : links)
+        {
+            sf::Vector2f dir(points[l.p2].pos - points[l.p1].pos);
+            normalize(dir);
+            dir = sf::Vector2f(dir.y, -dir.x);
+
+            l[0].position = points[l.p1].pos - (dir * l.halfWidth);
+
+            l[1].position = points[l.p1].pos + (dir * l.halfWidth);
+
+            l[2].position = points[l.p2].pos + (dir * l.halfWidth);
+
+            l[3].position = points[l.p2].pos - (dir * l.halfWidth);
+        }
+    }
 }
 
 void Chain::move(Point* p)
@@ -85,7 +115,7 @@ void Chain::initialize(std::vector<const sf::Texture*> textures, sf::Vector2f po
     points.clear();
     this->stiffness = stiffness;
     this->mass = 1;
-
+    this->seamless = true;
 
     points.push_back(Point(pos));
 
