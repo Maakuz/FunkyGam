@@ -18,6 +18,13 @@ void Boss::update(float dt, sf::Vector2f playerPos)
     movement.update(dt);
     collider.setPosition(movement.transform.pos);
     sprite.setPosition(movement.transform.pos);
+    sprite.updateAnimation(dt);
+
+    if (abs(movement.momentum.x) < this->movement.walkSpeed * 0.75f && !sprite.isIdle())
+        sprite.pauseAnimation();
+
+    else if (abs(movement.momentum.x) > this->movement.walkSpeed * 0.75f)
+        sprite.resumeAnimation();
 }
 
 bool Boss::isHealthChanged()

@@ -21,6 +21,12 @@ private:
     sf::Vector2f armAnchor;
     Chain leftArm;
     Chain rightArm;
+    SpriteComp leftHand;
+    SpriteComp rightHand;
+
+    bool rightSlap;
+
+    void swingArms(sf::Vector2f momentum);
 
     virtual std::istream& readSpecific(std::istream& in);
 

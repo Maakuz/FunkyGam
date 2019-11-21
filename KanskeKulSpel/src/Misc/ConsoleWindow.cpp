@@ -93,7 +93,7 @@ inline int ConsoleWindow::textEditCallbackHistory(ImGuiInputTextCallbackData* da
             length = snprintf(data->Buf, size_t(data->BufSize), "");
 
         else
-            length = snprintf(data->Buf, size_t(data->BufSize), "%s", history[historyPos].c_str());
+            length = snprintf(data->Buf, size_t(history[historyPos].capacity() +1), "%s", history[historyPos].c_str());
 
         data->BufTextLen = length;
         data->SelectionEnd = length;

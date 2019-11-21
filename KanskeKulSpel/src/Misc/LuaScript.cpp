@@ -7,6 +7,7 @@ LuaScript::LuaScript(std::string filename)
     this->state = luaL_newstate();
     this->level = 0;
     this->filename = filename;
+    luaL_openlibs(state);
 
     if (luaL_loadfile(state, filename.c_str()) || lua_pcall(state, 0, 0, 0))
     {
@@ -14,6 +15,47 @@ LuaScript::LuaScript(std::string filename)
         printfCon("Error: %s", lua_tostring(state, -1));
         lua_pop(state, 1);
     }
+
+
+    ConsoleWindow::get().addCommand("lua" + filename + "GetInt", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg variable";
+
+
+
+            return std::to_string(get<int>(args[0]));
+        });
+
+    ConsoleWindow::get().addCommand("lua" + filename + "GetFloat", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg variable";
+
+
+
+            return std::to_string(get<float>(args[0]));
+        });
+
+    ConsoleWindow::get().addCommand("lua" + filename + "GetBool", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg variable";
+
+
+
+            return std::to_string(get<bool>(args[0]));
+        });
+
+    ConsoleWindow::get().addCommand("lua" + filename + "GetString", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg variable";
+
+
+
+            return get<std::string>(args[0]);
+        });
 }
 
 LuaScript::~LuaScript()

@@ -1,6 +1,35 @@
-enemy = {x = 0, y = 0}
+accel = { x = 0, y = 0}
+momentum = {x = 0, y = 0}
+swingArms = false
+swingSpeed = 60
 
-function updateAI(x, y, pX, pY)
-enemy.x = x;
-enemy.y = y;
+attackInterval = 1000
+attackCounter = 0
+
+anim = 0
+
+function updateAI(x, y, mX, mY, pX, pY, dt)
+
+momentum.x = mX
+momentum.y = mY
+swingArms = false
+
+attackCounter = attackCounter + dt
+
+	if x < pX then 
+		accel.x = 1
+	else
+		accel.x = -1
+		
+	end
+	
+	if length(x - pX, y - pY) < 200 and attackCounter > attackInterval then
+		swingArms = true
+		attackCounter = 0
+	end
+end
+
+
+function length(x, y)
+	return ((x * x) + (y * y))^0.5
 end

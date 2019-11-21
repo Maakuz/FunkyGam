@@ -53,6 +53,9 @@ public:
     Chain(std::vector<const sf::Texture*> textures, sf::Vector2f pos, int linkCount = 5, int stiffness = 10);
     virtual ~Chain(){};
 
+    Point& operator[](int i) { return points[i]; };
+    Point& back() { return points.back(); };
+
     int getLinkCount()const { return this->links.size(); };
     void setPos(sf::Vector2f pos, int link);
     void update(float dt);

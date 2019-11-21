@@ -1,12 +1,19 @@
 [AnimationData]
 Texture: 25
 Frames: 5 1
-AnimationCount: 1
+AnimationCount: 2
 
 [Animation1]
 Start: 0 0
 Stop: 4 0
 Idle: 1 0
+Animationspeed: 50
+StartIdle: 1
+
+[Animation2]
+Start: 2 0
+Stop: 2 0
+Idle: 2 0
 Animationspeed: 50
 StartIdle: 1
 
