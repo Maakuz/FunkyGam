@@ -161,6 +161,9 @@
     <ClCompile Include="src\Game\Item\ProjectileHandler.cpp" />
     <ClCompile Include="src\Game\Item\RecipeEditor.cpp" />
     <ClCompile Include="src\Game\Item\Spell\Fireball.cpp" />
+    <ClCompile Include="src\Game\Item\Spell\Lightning\Tendril.cpp" />
+    <ClCompile Include="src\Game\Item\Spell\Lightning\TendrilTester.cpp" />
+    <ClCompile Include="src\Game\Item\Spell\Lightning\TendrilTester.h" />
     <ClCompile Include="src\Game\Item\Spell\Spell.cpp" />
     <ClCompile Include="src\Game\Item\Spell\Tome.cpp" />
     <ClCompile Include="src\Game\Item\Throwables\Throwable.cpp" />
@@ -233,6 +236,7 @@
     <ClInclude Include="src\Game\Item\ProjectileHandler.h" />
     <ClInclude Include="src\Game\Item\RecipeEditor.h" />
     <ClInclude Include="src\Game\Item\Spell\Fireball.h" />
+    <ClInclude Include="src\Game\Item\Spell\Lightning\Tendril.h" />
     <ClInclude Include="src\Game\Item\Spell\Spell.h" />
     <ClInclude Include="src\Game\Item\Spell\Tome.h" />
     <ClInclude Include="src\Game\Item\Throwables\Throwable.h" />

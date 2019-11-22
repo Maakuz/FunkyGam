@@ -222,6 +222,15 @@
     <ClCompile Include="src\Game\Entities\Enemies\Bosses\Boss.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\Item\Spell\Lightning\Tendril.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Item\Spell\Lightning\TendrilTester.h">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Item\Spell\Lightning\TendrilTester.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game\Collision\CollisionHandler.h">
@@ -483,6 +492,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Entities\Hazard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Item\Spell\Lightning\Tendril.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

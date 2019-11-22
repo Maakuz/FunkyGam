@@ -1,10 +1,13 @@
 accel = { x = 0, y = 0}
 momentum = {x = 0, y = 0}
 swingArms = false
-swingSpeed = 60
+swingSpeed = 100
 
 attackInterval = 1000
 attackCounter = 0
+
+jumpInterval = 2000
+jumpCounter = 0
 
 anim = 0
 
@@ -16,20 +19,38 @@ function updateAI(x, y, mX, mY, pX, pY, dt)
 momentum.x = mX
 momentum.y = mY
 swingArms = false
-
+inRange = false
 attackCounter = attackCounter + dt
+jumpCounter = jumpCounter + dt
 
-	if x < pX then 
-		accel.x = 1
-	else
-		accel.x = -1
-		
+	if jumpCounter > jumpInterval then
+		jumpCounter = 0
+		momentum.x = mX + (accel.x * 50)
+		momentum.y = -15
+	end
+
+	if length(x - pX, y - pY) < 100 then
+		inRange = true
 	end
 	
-	if length(x - pX, y - pY) < 200 and attackCounter > attackInterval then
-		swingArms = true
-		attackCounter = 0
+	if inRange then
+		if attackCounter > attackInterval then
+			swingArms = true
+			attackCounter = 0
+		end
+		
+		accel.x = 0
+		anim = 1
+	else
+		anim = 0
+		if x < pX then 
+			accel.x = 1
+		else
+			accel.x = -1
+		end
 	end
+	
+
 end
 
 

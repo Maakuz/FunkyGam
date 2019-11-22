@@ -335,7 +335,8 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 
     if (boss)
     {
-        boss->update(dt, this->player->getMovementComp().transform.pos);
+        boss->update(dt, this->player->getCollider().getCenterPos());
+        ui->displayEnemyDamage(boss->getHealth().getHealth() / float(boss->getHealth().getMaxHealth()));
     }
 
     this->player->update(dt, mousePos);

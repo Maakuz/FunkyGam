@@ -11,6 +11,7 @@
 #include "Game/Item/ItemEditor.h"
 #include "Game/Item/RecipeEditor.h"
 #include "Game/Particles/ParticleEditor.h"
+#include "Game/Item/Spell/Lightning/TendrilTester.h"
 #include "GameState.h"
 
 #define MAX_LIGHTS 200
@@ -56,6 +57,7 @@ private:
     ItemEditor itemEditor;
     ParticleEditor particleEditor;
     RecipeEditor recipeEditor;
+    TendrilTester tendrilTester;
 
     const sf::RenderWindow* window;
 

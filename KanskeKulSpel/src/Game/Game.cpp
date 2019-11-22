@@ -5,7 +5,6 @@
 #include "Handlers/TextureHandler.h"
 #include "Misc/ConsoleWindow.h"
 #include "Renderer/Renderer.h"
-#include "Game/Entities/Chain.h"
 
 #define DEBUG_MODE true
 
@@ -32,6 +31,14 @@ Game::Game(const sf::RenderWindow* window) :
             itemEditor.openWindow();
 
             return "Open and seeded";
+        });
+
+    ConsoleWindow::get().addCommand("openTendrilTester", [&](Arguments args)->std::string
+        {
+            paused = true;
+            tendrilTester.open = true;
+
+            return "Open and tended";
         });
 
     ConsoleWindow::get().addCommand("openParticleEditor", [&](Arguments args)->std::string
@@ -128,6 +135,12 @@ void Game::update(float dt)
 
     if (recipeEditor.isOpen())
         recipeEditor.update();
+
+    if (tendrilTester.open)
+    {
+        tendrilTester.update();
+        Renderer::queueDrawable(&tendrilTester);
+    }
 }
 
 void Game::resetAfterEditing()
@@ -153,7 +166,6 @@ void Game::updateHub(float dt)
         loadLevel(this->hubHandler.getActiveLevel());
         this->gameState = GameState::States::level;
     }
-
 
     Renderer::queueUI(&this->hubHandler);
     Renderer::queueUI(&this->uiHandler);

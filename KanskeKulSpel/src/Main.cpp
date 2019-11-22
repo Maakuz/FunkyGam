@@ -111,6 +111,8 @@ int main()
     bool debugActive = false;
     bool debugActivePrev = false;
 
+    bool focused = true;
+
     game.runAutoCommands();
     while (wandow.isOpen())
     {
@@ -136,19 +138,21 @@ int main()
             {
                 game.pause();
                 editor.pause();
+                focused = false;
             }
 
             if (e.type == sf::Event::GainedFocus)
             {
                 game.resume();
                 editor.resume();
+                focused = true;
             }
 
             if (state == State::editor)
                 editor.handleEvents(e);
         }
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+        if (focused && sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
             wandow.close();
 
         deltaTime = deltaTimer.restart();

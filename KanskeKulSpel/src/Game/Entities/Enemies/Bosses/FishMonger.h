@@ -27,7 +27,7 @@ private:
 
     bool rightSlap;
 
-    void swingArms(sf::Vector2f momentum);
+    void swingArms(sf::Vector2f target);
 
     virtual std::istream& readSpecific(std::istream& in);
 

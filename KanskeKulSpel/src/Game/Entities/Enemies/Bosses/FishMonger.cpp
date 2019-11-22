@@ -52,7 +52,7 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
     ai.runFunc("setHealth", "dd", health.getHealth(), health.getMaxHealth());
 
     ai.runFunc("updateAI", "fffffff",
-        movement.transform.pos.x, movement.transform.pos.y, 
+        collider.getCenterPos().x, collider.getCenterPos().y, 
         movement.momentum.x, movement.momentum.y, 
         playerPos.x, playerPos.y,
         dt);
@@ -67,10 +67,10 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
 
     if (ai.get<bool>("swingArms"))
     {
-        swingArms(playerPos - armAnchor);
+        swingArms(playerPos);
     }
 
-    if (movement.acceleration.x > 0)
+    if (playerPos.x > movement.transform.pos.x)
     {
         if (this->sprite.isFlippedHorizontally())
             this->sprite.flipHorizontally();
@@ -125,16 +125,20 @@ void FishMonger::handleExplosion(const Explosion& explosion)
     health.takeDamage(explosion.calculateDamage(collider.getCenterPos()));
 }
 
-void FishMonger::swingArms(sf::Vector2f momentum)
+void FishMonger::swingArms(sf::Vector2f target)
 {
+    Chain* arm;
+    if (rightSlap)
+        arm = &this->rightArm;
+
+    else
+        arm = &this->leftArm;
+    sf::Vector2f momentum = target - arm->back().pos;
     float speed = length(momentum);
     normalize(momentum);
 
-    if (rightSlap)
-        rightArm.back().pos += momentum * std::min(speed, ai.get<float>("swingSpeed"));
 
-    else
-        leftArm.back().pos += momentum * std::min(speed, ai.get<float>("swingSpeed"));
+    arm->back().pos += momentum * std::min(speed, ai.get<float>("swingSpeed"));
 
 
     rightSlap = !rightSlap;

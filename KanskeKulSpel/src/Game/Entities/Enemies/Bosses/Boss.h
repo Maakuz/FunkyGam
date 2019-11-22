@@ -24,6 +24,8 @@ public:
     bool isAlive() { return health.isAlive(); };
     bool isHealthChanged();
 
+    const HealthComp& getHealth() const { return health; };
+
 protected:
     HealthComp health;
     AnimatedSpriteComp sprite;
