@@ -21,8 +21,8 @@ private:
     sf::Vector2f armAnchor;
     Chain leftArm;
     Chain rightArm;
-    SpriteComp leftHand;
-    SpriteComp rightHand;
+    //SpriteComp leftHand;
+    //SpriteComp rightHand;
 
     bool rightSlap;
 

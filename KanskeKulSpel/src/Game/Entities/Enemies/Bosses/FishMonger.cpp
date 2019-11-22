@@ -6,13 +6,29 @@ FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, 
     Boss(data, pos, size, offset),
     leftArm(TextureHandler::get().getTexture(26), pos, 10, 5),
     rightArm(TextureHandler::get().getTexture(26), pos, 10, 5),
-    leftHand(TextureHandler::get().getTexture(27), pos),
-    rightHand(TextureHandler::get().getTexture(27), pos),
+    //leftHand(TextureHandler::get().getTexture(27), pos),
+    //rightHand(TextureHandler::get().getTexture(27), pos),
     ai(SCRIPT_PATH "FishmongerAI.skrop")
 {
+    rightSlap = false;
+
+    std::vector <const sf::Texture*> textures;
+
+    for (int i = 0; i < leftArm.getLinkCount() - 1; i++)
+    {
+        textures.push_back(TextureHandler::get().getTexture(26));
+    }
+
+    textures.push_back(TextureHandler::get().getTexture(27));
+
+    leftArm = Chain(textures, pos, leftArm.getLinkCount(), 5);
+    rightArm = Chain(textures, pos, rightArm.getLinkCount(), 5);
+
     leftArm.setMass(0.01);
     rightArm.setMass(0.01);
-    rightSlap = false;
+
+    leftArm.setLinkOffset(sf::Vector2f(-1, -3), leftArm.getLinkCount() - 1);
+    rightArm.setLinkOffset(sf::Vector2f(-1, -3), rightArm.getLinkCount() - 1);
 }
 
 void FishMonger::update(float dt, sf::Vector2f playerPos)
@@ -26,8 +42,8 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
 
     leftArm.update(dt);
     rightArm.update(dt);
-    leftHand.setPosition(leftArm.back().pos);
-    rightHand.setPosition(rightArm.back().pos);
+    //leftHand.setPosition(leftArm.back().pos);
+    //rightHand.setPosition(rightArm.back().pos);
 
     //temp
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F5))
@@ -126,9 +142,8 @@ std::istream& FishMonger::readSpecific(std::istream& in)
 void FishMonger::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(rightArm, states);
-    target.draw(rightHand, states);
+    //target.draw(rightHand, states);
     Boss::draw(target, states);
     target.draw(leftArm, states);
-    target.draw(leftHand, states);
-    target.draw(leftHand, states);
+    //target.draw(leftHand, states);
 }

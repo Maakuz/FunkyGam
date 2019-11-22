@@ -21,6 +21,7 @@ public:
     struct Link 
     {
         sf::Vertex v[4];
+        sf::Vector2f offset;
         const sf::Texture* texture;
         int p1;
         int p2;
@@ -61,6 +62,8 @@ public:
     void update(float dt);
 
     void setMass(float mass) { this->mass = mass; };
+
+    void setLinkOffset(sf::Vector2f offset, int link);
 
 private:
     std::vector<Link> links;
