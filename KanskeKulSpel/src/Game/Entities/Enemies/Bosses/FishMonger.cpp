@@ -6,8 +6,8 @@ FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, 
     Boss(data, pos, size, offset),
     leftArm(TextureHandler::get().getTexture(26), pos, 10, 5),
     rightArm(TextureHandler::get().getTexture(26), pos, 10, 5),
-    //leftHand(TextureHandler::get().getTexture(27), pos),
-    //rightHand(TextureHandler::get().getTexture(27), pos),
+    leftHand(pos, sf::Vector2f(24, 24), 30),
+    rightHand(pos, sf::Vector2f(24, 24), 30),
     ai(SCRIPT_PATH "FishmongerAI.skrop")
 {
     rightSlap = false;
@@ -42,12 +42,14 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
 
     leftArm.update(dt);
     rightArm.update(dt);
-    //leftHand.setPosition(leftArm.back().pos);
-    //rightHand.setPosition(rightArm.back().pos);
+    leftHand.setPos(leftArm[leftArm.getLinkCount() - 2].pos - leftHand.getCollider().getSize() / 2.f);
+    rightHand.setPos(rightArm[leftArm.getLinkCount() - 2].pos - rightHand.getCollider().getSize() / 2.f);
 
     //temp
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F5))
         ai.reload();
+
+    ai.runFunc("setHealth", "dd", health.getHealth(), health.getMaxHealth());
 
     ai.runFunc("updateAI", "fffffff",
         movement.transform.pos.x, movement.transform.pos.y, 
@@ -59,6 +61,9 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
     movement.acceleration.y = ai.get<float>("accel.y");
     movement.momentum.x = ai.get<float>("momentum.x");
     movement.momentum.y = ai.get<float>("momentum.y");
+
+    sprite.setAnimation(ai.get<int>("anim"));
+
 
     if (ai.get<bool>("swingArms"))
     {
@@ -117,6 +122,7 @@ void FishMonger::handleCollision(const Collidable* collidable)
 
 void FishMonger::handleExplosion(const Explosion& explosion)
 {
+    health.takeDamage(explosion.calculateDamage(collider.getCenterPos()));
 }
 
 void FishMonger::swingArms(sf::Vector2f momentum)
@@ -142,8 +148,8 @@ std::istream& FishMonger::readSpecific(std::istream& in)
 void FishMonger::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(rightArm, states);
-    //target.draw(rightHand, states);
+    target.draw(rightHand.getCollider(), states);
     Boss::draw(target, states);
     target.draw(leftArm, states);
-    //target.draw(leftHand, states);
+    target.draw(leftHand.getCollider(), states);
 }

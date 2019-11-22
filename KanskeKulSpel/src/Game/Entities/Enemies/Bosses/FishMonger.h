@@ -4,6 +4,7 @@
 #include "Game/Components/AnimatedSpriteComp.h"
 #include "Game/Components/AI/GroundAIComp.h"
 #include "Game/Entities/Chain.h"
+#include "Game/Entities/Hazard.h"
 
 class FishMonger : public Boss
 {
@@ -21,8 +22,8 @@ private:
     sf::Vector2f armAnchor;
     Chain leftArm;
     Chain rightArm;
-    //SpriteComp leftHand;
-    //SpriteComp rightHand;
+    Hazard leftHand;
+    Hazard rightHand;
 
     bool rightSlap;
 

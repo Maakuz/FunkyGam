@@ -235,8 +235,18 @@ inline void ConsoleWindow::listAllCommands()
 
 void ConsoleWindow::addCommand(std::string command, std::function<std::string(Arguments args)> func)
 {
-    //Todo: assert dupes
-    commands.push_back(Command(command, func));
+    bool found = false;
+    for (Command& com : commands)
+    {
+        if (com.string == command)
+        {
+            found = true;
+            com.func = func;
+        }
+    }
+
+    if (!found)
+        commands.push_back(Command(command, func));
 }
 
 void ConsoleWindow::printText(std::string text)

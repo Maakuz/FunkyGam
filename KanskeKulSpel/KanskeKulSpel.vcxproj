@@ -225,6 +225,7 @@
     <ClInclude Include="src\Game\Entities\Enemies\Bosses\FishMonger.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Enemy.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Grunt.h" />
+    <ClInclude Include="src\Game\Entities\Hazard.h" />
     <ClInclude Include="src\Game\Item\GatherItem.h" />
     <ClInclude Include="src\Game\Item\Item.h" />
     <ClInclude Include="src\Game\Item\ItemEditor.h" />

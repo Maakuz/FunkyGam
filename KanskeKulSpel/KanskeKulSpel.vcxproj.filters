@@ -482,6 +482,9 @@
     <ClInclude Include="src\Game\Components\AI\FlyingAIComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\Entities\Hazard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Data\LoadList.mop" />

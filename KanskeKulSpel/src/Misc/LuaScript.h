@@ -36,6 +36,8 @@ private:
 
     bool getToStack(std::string variable);
 
+    void loadConsoleGetters();
+
     template <typename T>
     T lua_get(std::string variable);
 

@@ -17,45 +17,7 @@ LuaScript::LuaScript(std::string filename)
     }
 
 
-    ConsoleWindow::get().addCommand("lua" + filename + "GetInt", [&](Arguments args)->std::string
-        {
-            if (args.empty())
-                return "Missing arg variable";
-
-
-
-            return std::to_string(get<int>(args[0]));
-        });
-
-    ConsoleWindow::get().addCommand("lua" + filename + "GetFloat", [&](Arguments args)->std::string
-        {
-            if (args.empty())
-                return "Missing arg variable";
-
-
-
-            return std::to_string(get<float>(args[0]));
-        });
-
-    ConsoleWindow::get().addCommand("lua" + filename + "GetBool", [&](Arguments args)->std::string
-        {
-            if (args.empty())
-                return "Missing arg variable";
-
-
-
-            return std::to_string(get<bool>(args[0]));
-        });
-
-    ConsoleWindow::get().addCommand("lua" + filename + "GetString", [&](Arguments args)->std::string
-        {
-            if (args.empty())
-                return "Missing arg variable";
-
-
-
-            return get<std::string>(args[0]);
-        });
+    loadConsoleGetters();
 }
 
 LuaScript::~LuaScript()
@@ -75,6 +37,7 @@ void LuaScript::operator=(const LuaScript& other)
     this->level = other.level;
 
     reload();
+    loadConsoleGetters();
 }
 
 void LuaScript::runFunc(std::string funcName, const char* args, ...)
@@ -173,4 +136,50 @@ bool LuaScript::getToStack(std::string variable)
     }
 
     return true;
+}
+
+void LuaScript::loadConsoleGetters()
+{
+    std::string commandName = filename;
+    commandName.erase(0, std::string(SCRIPT_PATH).size());
+
+    ConsoleWindow::get().addCommand("lua" + (commandName) + "GetInt", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg variable";
+
+
+
+            return std::to_string(get<int>(args[0]));
+        });
+
+    ConsoleWindow::get().addCommand("lua" + commandName + "GetFloat", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg variable";
+
+
+
+            return std::to_string(get<float>(args[0]));
+        });
+
+    ConsoleWindow::get().addCommand("lua" + commandName + "GetBool", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg variable";
+
+
+
+            return std::to_string(get<bool>(args[0]));
+        });
+
+    ConsoleWindow::get().addCommand("lua" + commandName + "GetString", [&](Arguments args)->std::string
+        {
+            if (args.empty())
+                return "Missing arg variable";
+
+
+
+            return get<std::string>(args[0]);
+        });
 }
