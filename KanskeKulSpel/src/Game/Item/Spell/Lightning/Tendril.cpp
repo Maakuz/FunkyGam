@@ -14,6 +14,49 @@ Tendril::Tendril(float thickness, int splits, int sway, float peakHeight)
 void Tendril::generateLightning(sf::Vector2f start, sf::Vector2f end, float thickness, int splits)
 {
     lines.clear();
+    
+    generateBranch(start, end, thickness, splits);
+}
+
+
+void Tendril::generateLightningTree(sf::Vector2f start, sf::Vector2f end, float thickness, int splits , int min, int max, int angle)
+{
+    lines.clear();
+
+    generateLightningTreeRec(start, end, thickness, splits, min, max, angle);
+}
+
+void Tendril::generateLightningTreeRec(sf::Vector2f start, sf::Vector2f end, float thickness, int splits, int min, int max, int angle)
+{
+    if (max <= min)
+        max = min + 1;
+
+    int forks = min + rand() % (max - min);
+
+    std::vector<sf::Vector2f> points = generateBranch(start, end, thickness, splits);
+
+    for (int i = 0; i < forks; i++)
+    {
+        if (i % 1 == 0)
+            angle = -angle;
+
+        int pos = rand() % points.size();
+
+        sf::Vector2f newEnd = rotateBy(angle, end, points[pos]);
+
+        int newMin = min / 2;
+        int newMax = max / 2;
+        int newThickness = thickness * 0.7;
+        int newSplits = splits * 0.7;
+        generateLightningTreeRec(points[pos], newEnd, newThickness, newSplits, newMin, newMax, angle);
+    }
+}
+
+std::vector<sf::Vector2f> Tendril::generateBranch(sf::Vector2f start, sf::Vector2f end, float thickness, int splits)
+{
+    std::vector<sf::Vector2f> points;
+    points.push_back(start);
+
     sf::Vector2f dir = end - start;
     sf::Vector2f normal = sf::Vector2f(dir.y, -dir.x);
     normalize(normal);
@@ -24,7 +67,7 @@ void Tendril::generateLightning(sf::Vector2f start, sf::Vector2f end, float thic
 
     for (int i = 0; i < splits; i++)
         positions.push_back((rand() % 100) / 100.f);
-    
+
     std::sort(positions.begin(), positions.end());
 
     if (sway == 0)
@@ -54,15 +97,14 @@ void Tendril::generateLightning(sf::Vector2f start, sf::Vector2f end, float thic
         addLine(prev, point, thickness);
         prev = point;
         prevDisplacement = displacement;
+
+        points.push_back(point);
     }
 
     addLine(prev, end, thickness);
 
-}
-
-void Tendril::generateLightningTree(sf::Vector2f start, sf::Vector2f end, float thickness, int splits , int min, int max, int angle)
-{
-    int forks = min + rand() % (max - min);
+    points.push_back(end);
+    return points;
 }
 
 void Tendril::addLine(sf::Vector2f p1, sf::Vector2f p2, float thickness)
