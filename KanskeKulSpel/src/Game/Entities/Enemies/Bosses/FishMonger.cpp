@@ -1,34 +1,49 @@
 #include "FishMonger.h"
 #include "Game/Handlers/TextureHandler.h"
+#include "Game/Particles/ParticleHandler.h"
+#include "Game/Item/Throwables/Throwable.h"
+#include "Game/Item/Spell/Fireball.h"
 #include "SFML/Window/Keyboard.hpp"
 
 FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset) :
     Boss(data, pos, size, offset),
     leftArm(TextureHandler::get().getTexture(26), pos, 10, 5),
     rightArm(TextureHandler::get().getTexture(26), pos, 10, 5),
+    lightRope(TextureHandler::get().getTexture(30), pos, 10, 10),
     leftHand(pos, sf::Vector2f(24, 24), 30),
     rightHand(pos, sf::Vector2f(24, 24), 30),
     ai(SCRIPT_PATH "FishmongerAI.skrop")
 {
     rightSlap = false;
+    this->light = false;
 
-    std::vector <const sf::Texture*> textures;
+    sf::Texture* tex = TextureHandler::get().getTexture(27);
 
-    for (int i = 0; i < leftArm.getLinkCount() - 1; i++)
-    {
-        textures.push_back(TextureHandler::get().getTexture(26));
-    }
-
-    textures.push_back(TextureHandler::get().getTexture(27));
-
-    leftArm = Chain(textures, pos, leftArm.getLinkCount(), 5);
-    rightArm = Chain(textures, pos, rightArm.getLinkCount(), 5);
+    leftArm.setTexture(tex, leftArm.getLinkCount() -1);
+    rightArm.setTexture(tex, rightArm.getLinkCount() - 1);
+    lightRope.setTexture(TextureHandler::get().getTexture(29), lightRope.getLinkCount() -1);
 
     leftArm.setMass(0.01);
     rightArm.setMass(0.01);
+    lightRope.setMass(0.005);
 
     leftArm.setLinkOffset(sf::Vector2f(-1, -3), leftArm.getLinkCount() - 1);
     rightArm.setLinkOffset(sf::Vector2f(-1, -3), rightArm.getLinkCount() - 1);
+    lightRope.setLinkOffset(sf::Vector2f(0, -2));
+    lightRope.setSeamless(false);
+}
+
+FishMonger::~FishMonger()
+{
+    if (light)
+        light->kill();
+}
+
+void FishMonger::spawn(sf::Vector2f pos)
+{
+    light = ParticleHandler::addEmitter(13, pos);
+
+    this->movement.transform.pos = pos;
 }
 
 void FishMonger::update(float dt, sf::Vector2f playerPos)
@@ -37,11 +52,18 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
     offset.y -= 30;
     armAnchor = movement.transform.pos + offset;
 
+    
+    forhead = collider.getCenterPos() + sf::Vector2f(ai.get<float>("offsetX") * sprite.getTextureRect().width, ai.get<float>("offsetY"));
+
     leftArm.setPos(armAnchor, 0);
     rightArm.setPos(armAnchor, 0);
 
+    lightRope.setPos(forhead, 0);
+    constrictNose();
+
     leftArm.update(dt);
     rightArm.update(dt);
+    lightRope.update(dt);
     leftHand.setPos(leftArm[leftArm.getLinkCount() - 2].pos - leftHand.getCollider().getSize() / 2.f);
     rightHand.setPos(rightArm[leftArm.getLinkCount() - 2].pos - rightHand.getCollider().getSize() / 2.f);
 
@@ -118,6 +140,15 @@ void FishMonger::handleCollision(const Collidable* collidable)
             this->movement.jump();
         }
     }
+
+    else if (collidable->getCollider().hasComponent(ColliderKeys::throwable))
+    {
+        const Throwable* throwable = dynamic_cast<const Throwable*>(collidable);
+        this->health.takeDamage(throwable->getDamage());
+    }
+
+    else if (collidable->getCollider().hasComponent(ColliderKeys::fireball))
+        this->health.takeDamage(dynamic_cast<const Fireball*>(collidable)->getDamage());
 }
 
 void FishMonger::handleExplosion(const Explosion& explosion)
@@ -144,6 +175,20 @@ void FishMonger::swingArms(sf::Vector2f target)
     rightSlap = !rightSlap;
 }
 
+void FishMonger::constrictNose()
+{
+    if (lightRope.back().pos.y > lightRope[0].pos.y)
+        lightRope.back().pos.y = lightRope[0].pos.y;
+
+    if (!this->sprite.isFlippedHorizontally())
+        lightRope.back().pos.x += 0.1;
+
+    else
+        lightRope.back().pos.x -= 0.1;
+
+    this->light->setEmitterPos(lightRope.back().pos);
+}
+
 std::istream& FishMonger::readSpecific(std::istream& in)
 {
     return in;
@@ -156,4 +201,5 @@ void FishMonger::draw(sf::RenderTarget& target, sf::RenderStates states) const
     Boss::draw(target, states);
     target.draw(leftArm, states);
     target.draw(leftHand.getCollider(), states);
+    target.draw(lightRope, states);
 }

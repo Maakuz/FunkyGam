@@ -14,6 +14,9 @@ anim = 0
 health = 0
 maxHealth = 0
 
+offsetX = 0.29
+offsetY = -110
+
 function updateAI(x, y, mX, mY, pX, pY, dt)
 
 momentum.x = mX
@@ -23,15 +26,11 @@ inRange = false
 attackCounter = attackCounter + dt
 jumpCounter = jumpCounter + dt
 
-	if jumpCounter > jumpInterval then
-		jumpCounter = 0
-		momentum.x = mX + (accel.x * 50)
-		momentum.y = -15
-	end
-
 	if length(x - pX, y - pY) < 100 then
 		inRange = true
+		jumpCounter = 0
 	end
+
 	
 	if inRange then
 		if attackCounter > attackInterval then
@@ -47,6 +46,12 @@ jumpCounter = jumpCounter + dt
 			accel.x = 1
 		else
 			accel.x = -1
+		end
+		
+		if jumpCounter > jumpInterval then
+			jumpCounter = 0
+			momentum.x = mX + (accel.x * 50)
+			momentum.y = -15
 		end
 	end
 	

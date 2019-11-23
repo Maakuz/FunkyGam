@@ -18,7 +18,7 @@ enum ColliderKeys
     character = 4,
     grunt = 5,
     gatherable = 6,
-    spell = 7,
+    fireball = 7,
     hazard = 8
 };
 

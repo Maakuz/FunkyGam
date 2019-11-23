@@ -58,6 +58,11 @@ void Chain::setPos(sf::Vector2f pos, int point)
         points[point].pos = pos;
 }
 
+void Chain::setTexture(const sf::Texture* texture, int link)
+{
+    this->links[link].setTexture(texture);
+}
+
 void Chain::update(float dt)
 {
     for (int i = 0; i < points.size(); i++)
@@ -128,6 +133,12 @@ void Chain::update(float dt)
 void Chain::setLinkOffset(sf::Vector2f offset, int link)
 {
     links[link].offset = offset;
+}
+
+void Chain::setLinkOffset(sf::Vector2f offset)
+{
+    for (Link& link : links)
+        link.offset = offset;
 }
 
 void Chain::move(Point* p)

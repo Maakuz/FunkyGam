@@ -3,6 +3,7 @@
 #include <ostream>
 #include <string>
 #include "Game/Components/TransformComp.h"
+#include "Game/Entities/Collidable.h"
 
 class Spell
 {

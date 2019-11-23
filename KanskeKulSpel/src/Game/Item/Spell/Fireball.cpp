@@ -26,7 +26,7 @@ Fireball::Fireball(sf::Vector2f pos)
     this->topSpeed = 0;
     this->traveledDistance = 0;
 
-    this->collider.addComponent(ColliderKeys::spell);
+    this->collider.addComponent(ColliderKeys::fireball);
 }
 
 bool Fireball::isComplete() const
@@ -58,7 +58,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
         this->maxTravelDistance *= 1.5f;
 
         this->explosion.damage *= 1.5f;
-        this->explosion.radius *= 1.5f;
+        this->explosion.radius *= 2.5f;
 
         this->transform.pos = pos;
         this->distance = std::min(length(pos - dest), maxTravelDistance);
@@ -77,6 +77,7 @@ void Fireball::update(float dt)
     t = std::min(t, 1.f);
     float velocity = (1 - powf(t, 6)) * dt * topSpeed;
     transform.pos += direction * velocity;
+    collider.setPosition(transform.pos);
     trail->setEmitterPos(transform.pos);
 
     if (velocity < 0.2f)

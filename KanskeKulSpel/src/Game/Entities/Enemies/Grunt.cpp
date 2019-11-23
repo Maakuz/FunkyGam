@@ -3,6 +3,7 @@
 #include "Misc/ConsoleWindow.h"
 #include <string>
 #include "Game/Item/Throwables/Throwable.h"
+#include "Game/Item/Spell/Fireball.h"
 #include "Game/Entities/Player.h"
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset)
@@ -121,6 +122,9 @@ void Grunt::handleCollision(const Collidable* collidable)
         const Throwable* throwable = dynamic_cast<const Throwable*>(collidable);
         this->health.takeDamage(throwable->getDamage());
     }
+
+    else if (collidable->getCollider().hasComponent(ColliderKeys::fireball))
+        this->health.takeDamage(dynamic_cast<const Fireball*>(collidable)->getDamage());
 }
 
 void Grunt::handleExplosion(const Explosion& explosion)

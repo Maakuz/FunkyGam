@@ -17,7 +17,7 @@ public:
 
     bool isInterrupting() { return interrupting; };
     virtual void update(float dt, sf::Vector2f playerPos);
-    void spawn(sf::Vector2f pos);
+    virtual void spawn(sf::Vector2f pos);
 
     virtual const ColliderComp& getCollider()const { return collider; };
 

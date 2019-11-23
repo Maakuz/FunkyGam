@@ -109,6 +109,14 @@ void ProjectileHandler::queueColliders()
 {
     for (Throwable& proj : this->throwables)
         CollisionHandler::queueCollider(&proj);
+
+    for (Spell * spell : spells)
+    {
+        Fireball* fireball = dynamic_cast<Fireball*>(spell);
+        if (fireball)
+            CollisionHandler::queueCollider(fireball);
+            
+    }
 }
 
 void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Collidable* thrower)

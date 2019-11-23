@@ -79,6 +79,9 @@ void Bird::handleCollision(const Collidable* collidable)
         if (throwable->getID() != 11) //is immune to birdbombs
             this->health.takeDamage(throwable->getDamage());
     }
+
+    else if (collidable->getCollider().hasComponent(ColliderKeys::fireball))
+        this->health.takeDamage(dynamic_cast<const Fireball*>(collidable)->getDamage());
 }
 
 void Bird::handleExplosion(const Explosion& explosion)

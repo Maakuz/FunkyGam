@@ -5,12 +5,15 @@
 #include "Game/Components/AI/GroundAIComp.h"
 #include "Game/Entities/Chain.h"
 #include "Game/Entities/Hazard.h"
+#include "Game/Particles/Emitter.h"
 
 class FishMonger : public Boss
 {
 public:
     FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset);
-    virtual ~FishMonger() {};
+    virtual ~FishMonger();
+
+    virtual void spawn(sf::Vector2f pos);
 
     virtual void update(float dt, sf::Vector2f playerPos);
 
@@ -20,14 +23,19 @@ private:
     LuaScript ai;
 
     sf::Vector2f armAnchor;
+    sf::Vector2f forhead;
     Chain leftArm;
     Chain rightArm;
+    Chain lightRope;
     Hazard leftHand;
     Hazard rightHand;
+    Emitter* light;
 
     bool rightSlap;
 
     void swingArms(sf::Vector2f target);
+
+    void constrictNose();
 
     virtual std::istream& readSpecific(std::istream& in);
 

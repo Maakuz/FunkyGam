@@ -12,7 +12,7 @@ FullTrailEmitterID: 1
 FullImpactEmitterID: 12
 [Explosion]
 Damage: 50
-Radius: 200
+Radius: 100
 Falloff: 0.3
 Type: 0
 
