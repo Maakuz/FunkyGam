@@ -138,7 +138,7 @@ void Game::update(float dt)
 
     if (tendrilTester.open)
     {
-        tendrilTester.update();
+        tendrilTester.update(dt);
         Renderer::queueDrawable(&tendrilTester);
     }
 }

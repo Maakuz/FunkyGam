@@ -153,12 +153,17 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
                 }
 
                 ImGui::DragFloat2(poslabel.c_str(), pos, 1, -1000, 1000);
-                ImGui::Separator();
 
 
                 light->initialOffset.x = pos[0];
                 light->initialOffset.y = pos[1];
                 light->light->pos = emitto.getEmitterPos() + light->initialOffset;
+
+                if (ImGui::Button("Delete"))
+                {
+                    frame->lights.erase(frame->lights.begin() + i--);
+                }
+                ImGui::Separator();
             }
 
 

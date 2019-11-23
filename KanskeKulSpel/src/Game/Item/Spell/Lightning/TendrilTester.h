@@ -1,3 +1,4 @@
+#pragma once
 #include "Tendril.h"
 
 class TendrilTester : public sf::Drawable
@@ -6,7 +7,7 @@ public:
     TendrilTester();
     virtual ~TendrilTester() {};
 
-    void update();
+    void update(float dt);
 
     bool open;
 
