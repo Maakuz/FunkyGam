@@ -15,6 +15,8 @@ public:
         int splits;
         int min;
         int max;
+        int forkMin;
+        int forkMax;
         int angle;
         int visibleTime;
         float fadeSpeed;
@@ -32,6 +34,8 @@ public:
             this->visibleTime = visibleTime;
             this->fadeSpeed = fadeSpeed;
             color = sf::Color::White;
+            this->forkMin = 0;
+            this->forkMax = splits;
         }
     };
 

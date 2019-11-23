@@ -93,10 +93,9 @@ void Tendril::generateLightningTree(sf::Vector2f start, sf::Vector2f end)
 
 void Tendril::generateLightningTreeRec(std::vector<Branch>* branches, sf::Vector2f start, sf::Vector2f end, float thickness, int splits, int min, int max, int angle)
 {
-    if (max <= min)
-        max = min + 1;
-
-    int forks = min + rand() % (max - min);
+    int forks = min;
+    if (max > min)
+        forks = min + rand() % (max - min);
 
     branches->push_back(generateBranch(start, end, thickness, splits));
 
