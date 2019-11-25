@@ -21,6 +21,7 @@ public:
         int visibleTime;
         float fadeSpeed;
         sf::Color color;
+        int timeAlgorithm;
 
         InitGenData(float thickness = 32, int splits = 10, float fadeSpeed = 1, int min = 0, int max = 0, int sway = 80, float peakHeight = 1, float angle = 30, int visibleTime = 0)
         {
@@ -33,9 +34,10 @@ public:
             this->angle = angle;
             this->visibleTime = visibleTime;
             this->fadeSpeed = fadeSpeed;
-            color = sf::Color::White;
+            this->color = sf::Color::White;
             this->forkMin = 0;
             this->forkMax = splits;
+            this->timeAlgorithm = 0;
         }
     };
 

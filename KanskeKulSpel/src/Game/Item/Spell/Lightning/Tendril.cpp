@@ -62,7 +62,27 @@ void Tendril::updateBranch(Branch* branch, float time)
     for (int i = 0; i < branch->branchPositions.size() && branch->branchPositions[i] < stop; i++)
     {
         float localTime = branch->distances[branch->branchPositions[i]];
-        updateBranch(&branch->branches[i], (time - localTime) / localTime); //not quite right but hella cool
+
+        switch (data.timeAlgorithm)
+        {
+        case 0:
+            localTime = time;
+            break;
+        case 1:
+            localTime = (time - localTime) / localTime;
+            break;
+        case 2:
+            localTime = 1;
+            break;
+        case 3:
+            break;
+
+        default:
+            localTime = time;
+            break;
+        }
+
+        updateBranch(&branch->branches[i], localTime); //not quite right but hella cool
     }
 
     branch->progess = stop;
@@ -99,8 +119,20 @@ void Tendril::generateLightningTreeRec(std::vector<Branch>* branches, sf::Vector
 
     branches->push_back(generateBranch(start, end, thickness, splits));
 
-    for (int i = 0; i < forks; i++)
-        branches->back().branchPositions.push_back(rand() % branches->back().points.size());
+    int forkPosMax = std::max(std::min(data.forkMax, (int)branches->back().points.size()), 0);
+    int forkPosMin = std::min(std::max(data.forkMin, 0), forkPosMax);
+
+    if (forkPosMin == forkPosMax)
+    {
+        for (int i = 0; i < forks; i++)
+            branches->back().branchPositions.push_back(std::min(forkPosMin, (int)branches->back().points.size() -1));
+    }
+
+    else
+    {
+        for (int i = 0; i < forks; i++)
+            branches->back().branchPositions.push_back(forkPosMin + (rand() % (forkPosMax - forkPosMin)));
+    }
 
     std::sort(branches->back().branchPositions.begin(), branches->back().branchPositions.end());
     

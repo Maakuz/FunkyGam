@@ -1,4 +1,5 @@
-ignore
+#ignore
 lighting 0
-setLevel 4
-setPos 2000 2500
+#setLevel 4
+#setPos 2000 2500
+openTendrilTester

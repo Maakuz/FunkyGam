@@ -32,12 +32,15 @@ void TendrilTester::update(float dt)
         ImGui::DragInt("sway", &tendril.data.sway);
         ImGui::DragInt("min", &tendril.data.min);
         ImGui::DragInt("max", &tendril.data.max);
+        ImGui::DragInt("posMin", &tendril.data.forkMin);
+        ImGui::DragInt("posMax", &tendril.data.forkMax);
         ImGui::DragFloat("Height", &tendril.data.peakHeight, 0.001f);
         ImGui::DragFloat("rotation", &rotation, 1.f);
         ImGui::DragInt("fork degrees", &tendril.data.angle, 1.f);
         ImGui::DragInt("Visible time", &tendril.data.visibleTime, 1.f);
         ImGui::DragFloat("Fadespeed", &tendril.data.fadeSpeed, 0.01f);
         ImGui::DragFloat("thickness", &tendril.data.thickness, 1.f);
+        ImGui::InputInt("Algorithm", &tendril.data.timeAlgorithm);
 
         ImGui::Checkbox("Update", &spamUpdate);
 
