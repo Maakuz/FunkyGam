@@ -42,6 +42,7 @@ void TendrilTester::update(float dt)
         ImGui::DragFloat("thickness", &tendril.data.thickness, 1.f);
         ImGui::InputInt("Algorithm", &tendril.data.timeAlgorithm);
 
+        ImGui::Checkbox("repeating", &tendril.data.repeating);
         ImGui::Checkbox("Update", &spamUpdate);
 
         if (ImGui::Button("Generatre!"))

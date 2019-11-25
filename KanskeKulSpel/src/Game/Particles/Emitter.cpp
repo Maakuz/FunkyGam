@@ -12,6 +12,7 @@ Emitter::Emitter()
     this->next = 0;
     this->freezeTime = false;
     this->moved = false;
+    this->tendrilGenCounter = 0;
 
     KeyFrame frame(0);
 
@@ -100,9 +101,21 @@ void Emitter::update(float dt)
     int particlesPerSpawn = ((1 - lerp) * keyFrames[prev].particlesPerSpawn) + (lerp * keyFrames[next].particlesPerSpawn);
     bool affectedByGravity = keyFrames[prev].affectedByGravity;
     bool followsCenter = keyFrames[prev].followsCenter;
+    bool particleHasTendrils = keyFrames[prev].particleHasTendrils;
     float gravity = ((1 - lerp) * keyFrames[prev].gravity) + (lerp * keyFrames[next].gravity);
     float frictionValue = ((1 - lerp) * keyFrames[prev].frictionValue) + (lerp * keyFrames[next].frictionValue);
     float jitterAmount = ((1 - lerp) * keyFrames[prev].jitterAmount) + (lerp * keyFrames[next].jitterAmount);
+
+    if (!keyFrames[prev].tendrilsGenerated)
+    {
+        for (EmitterTendril& tendril : keyFrames[prev].tendrils)
+            tendril.tendril.generate(this->pos + tendril.start, this->pos + tendril.stop);
+
+        keyFrames[prev].tendrilsGenerated = true;
+    }
+
+    for (EmitterTendril& tendril : keyFrames[prev].tendrils)
+        tendril.tendril.update(dt);
 
     if (!immortalEmitter)
     {
@@ -130,10 +143,21 @@ void Emitter::update(float dt)
 
     }
 
+    bool zap = false;
+    if (particleHasTendrils)
+    {
+        tendrilGenCounter += dt;
+        if (tendrilGenCounter > keyFrames[prev].tendrilGenInterval)
+        {
+            zap = true;
+            tendrilGenCounter = 0;
+        }
+    }
+
     for (size_t i = 0; i < particles.size(); i++)
     {
         int p = (int)i * 4;
-        Particle* particle = particles[i];
+        Emitter::Particle* particle = particles[i];
 
         particle->lifespan -= dt;
 
@@ -187,6 +211,15 @@ void Emitter::update(float dt)
                     particles[i]->light->pos += (pos - prevPos);
 
                 particles[i]->light->pos += particle->velocity;
+            }
+
+            if (particle->tendril)
+            {
+                particle->tendril->tendril.update(dt);
+                particle->tendril->stop += particle->velocity;
+
+                if (zap)
+                    particle->tendril->tendril.generate(particle->tendril->start, particle->tendril->stop);
             }
         }
     }
@@ -374,8 +407,9 @@ bool Emitter::isVeryDead() const
 
 void Emitter::reset()
 {
-    this->spawnCounter = 0;
     this->emitterDead = false;
+    this->spawnCounter = 0;
+    this->tendrilGenCounter = 0;
     this->elapsedTime = 0;
     this->next = 0; //if this does not exist we have problems'
     this->prev = 0;
@@ -385,7 +419,7 @@ void Emitter::reset()
 
     this->particles.clear();
     this->vertexArray.clear();
-    
+
 
 
     for (int i = 0; i < initialParticles; i++)
@@ -394,14 +428,26 @@ void Emitter::reset()
     }
 
     for (KeyFrame& frame : keyFrames)
+    {
         for (EmitterLight& light : frame.lights)
             light.light->color = light.initialColor;
+
+        frame.tendrilsGenerated = false;
+    }
 }
 
 void Emitter::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (!vertexArray.empty())
         target.draw(&vertexArray[0], vertexArray.size(), sf::Quads);
+
+    for (const EmitterTendril& tendril : keyFrames[prev].tendrils)
+        target.draw(tendril.tendril, states);
+
+    if (keyFrames[prev].particleHasTendrils)
+        for (const Particle* p : particles)
+            if (p->tendril)
+                target.draw(p->tendril->tendril, states);
 }
 
 void Emitter::addParticle(float lerp)
@@ -443,6 +489,11 @@ void Emitter::addParticle(float lerp)
     //oh bobby i'm scared
     if (particlesHasLight)
         particle->light = new Light_NoShadow(startPos, particleLightRadius, sf::Vector3f(particle->color.r / 255.f, particle->color.g / 255.f, particle->color.b / 255.f));
+
+    if (keyFrames[prev].particleHasTendrils)
+    {
+        particle->tendril = new EmitterTendril(startPos, startPos, keyFrames[prev].particleTendril.tendril);
+    }
 
     particles.push_back(particle);
 

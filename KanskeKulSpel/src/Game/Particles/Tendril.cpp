@@ -13,15 +13,15 @@ Tendril::Tendril(InitGenData data)
 
 void Tendril::update(float dt)
 {
+
     elapsedTime += dt;
     if (data.visibleTime != 0)
     {
         float timePercentage = elapsedTime / data.visibleTime;
         for (Branch& branch : branches)
-        {
             updateBranch(&branch, timePercentage);
-        }
     }
+
 
     vertices.clear();
 
@@ -44,19 +44,41 @@ void Tendril::update(float dt)
             }
         }
     }
+
+    if (data.repeating && elapsedTime >= data.visibleTime && lines.empty())
+    {
+        elapsedTime = 0;
+        for (Branch& b : branches)
+            resetBranch(&b);
+    }
+}
+
+void Tendril::resetBranch(Branch* branch)
+{
+    branch->progess = 0;
+    for (Branch& b : branch->branches)
+        resetBranch(&b);
 }
 
 void Tendril::updateBranch(Branch* branch, float time)
 {
     int stop = branch->progess;
-    for (int i = stop + 1; i < branch->distances.size() && branch->distances[i] < time; i++)
-    {
-        stop = i;
-    }
 
-    for (int i = branch->progess; i < stop; i++)
+    if (stop < branch->distances.size())
     {
-        addLine(branch->points[i], branch->points[i + 1], branch->thickness);
+        for (int i = stop + 1; i < branch->distances.size() && branch->distances[i] < time; i++)
+        {
+            stop = i;
+        }
+
+        //Check if time is bigger than the biggest.
+        if (branch->distances[stop] < time)
+            stop++;
+
+        for (int i = branch->progess; i < stop; i++)
+        {
+            addLine(branch->points[i], branch->points[i + 1], branch->thickness);
+        }
     }
 
     for (int i = 0; i < branch->branchPositions.size() && branch->branchPositions[i] < stop; i++)
@@ -283,4 +305,50 @@ void Tendril::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     states.texture = this->texture;
     target.draw(vertices, states);
+}
+
+std::ostream& operator<<(std::ostream& out, const Tendril& tendril)
+{
+    out << tendril.data.sway << " ";
+    out << tendril.data.peakHeight << " ";
+    out << tendril.data.thickness << " ";
+    out << tendril.data.splits << " ";
+    out << tendril.data.min << " ";
+    out << tendril.data.max << " ";
+    out << tendril.data.forkMin << " ";
+    out << tendril.data.forkMax << " ";
+    out << tendril.data.angle << " ";
+    out << tendril.data.visibleTime << " ";
+    out << tendril.data.fadeSpeed << " ";
+    out << (int)tendril.data.color.r << " " << (int)tendril.data.color.g << " " << (int)tendril.data.color.b << " " << (int)tendril.data.color.a << " ";
+    out << tendril.data.timeAlgorithm << " ";
+    out << tendril.data.repeating << " ";
+
+    return out;
+}
+
+std::istream& operator>>(std::istream& in, Tendril& tendril)
+{
+    int col[4] = { 0 };
+    tendril.elapsedTime = 0;
+    tendril.branches.clear();
+    tendril.lines.clear();
+
+    in >> tendril.data.sway;
+    in >> tendril.data.peakHeight;
+    in >> tendril.data.thickness;
+    in >> tendril.data.splits;
+    in >> tendril.data.min;
+    in >> tendril.data.max;
+    in >> tendril.data.forkMin;
+    in >> tendril.data.forkMax;
+    in >> tendril.data.angle;
+    in >> tendril.data.visibleTime;
+    in >> tendril.data.fadeSpeed;
+    in >> col[0] >> col[1] >> col[2] >> col[3];
+    tendril.data.color = sf::Color(col[0], col[1], col[2], col[3]);
+    in >> tendril.data.timeAlgorithm;
+    in >> tendril.data.repeating;
+
+    return in;
 }

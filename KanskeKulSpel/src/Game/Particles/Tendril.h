@@ -22,31 +22,36 @@ public:
         float fadeSpeed;
         sf::Color color;
         int timeAlgorithm;
+        bool repeating;
 
-        InitGenData(float thickness = 32, int splits = 10, float fadeSpeed = 1, int min = 0, int max = 0, int sway = 80, float peakHeight = 1, float angle = 30, int visibleTime = 0)
+        InitGenData()
         {
-            this->sway = sway;
-            this->thickness = thickness;
-            this->splits = splits;
-            this->peakHeight = peakHeight;
-            this->min = min;
-            this->max = max;
-            this->angle = angle;
-            this->visibleTime = visibleTime;
-            this->fadeSpeed = fadeSpeed;
+            this->sway = 80;
+            this->thickness = 32;
+            this->splits = 10;
+            this->peakHeight = 1;
+            this->min = 0;
+            this->max = 0;
+            this->angle = 30;
+            this->visibleTime = 0;
+            this->fadeSpeed = 1;
             this->color = sf::Color::White;
             this->forkMin = 0;
             this->forkMax = splits;
             this->timeAlgorithm = 0;
+            repeating = false;
         }
     };
 
     Tendril(InitGenData data = InitGenData());
     virtual ~Tendril() {};
 
-    void update(float dt);
+    friend std::ostream& operator<<(std::ostream& out, const Tendril& tendril);
+    friend std::istream& operator>>(std::istream& in, Tendril& tendril);
 
+    void update(float dt);
     void generate(sf::Vector2f start, sf::Vector2f end);
+    InitGenData* getDataPtr() { return &data; };
 private:
     struct Branch 
     {
@@ -75,7 +80,6 @@ private:
     };
 
     friend class TendrilTester;
-    friend class Emitter;
 
     float elapsedTime;
     InitGenData data;
@@ -83,6 +87,8 @@ private:
     std::vector<Line> lines;
     sf::VertexArray vertices;
     const sf::Texture* texture;
+
+    void resetBranch(Branch* branch);
 
     void updateBranch(Branch* branch, float time);
     void generateLightning(sf::Vector2f start, sf::Vector2f end);

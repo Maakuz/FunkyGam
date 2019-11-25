@@ -31,8 +31,8 @@ private:
     int selectedKeyFrame;
 
     bool repeating;
-    bool lightOn;
-    float zoomLevel;
+    bool settingStart;
+    bool settingStop;
 
     struct PlayVariables
     {
@@ -58,6 +58,7 @@ private:
 
     PlayVariables variables;
 
+    void showTendril(Emitter::EmitterTendril* tendril, bool& generated, sf::Vector2f mousePosWorld);
     void save();
     void saveAll();
     void load(int id);

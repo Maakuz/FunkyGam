@@ -1,5 +1,5 @@
 #pragma once
-#include "Tendril.h"
+#include "Game/Particles/Tendril.h"
 
 class TendrilTester : public sf::Drawable
 {

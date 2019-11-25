@@ -3,56 +3,8 @@
 #include "SFML/Graphics.hpp"
 #include "Renderer/Lighting/Light.h"
 #include "Game/Entities/Collidable.h"
+#include "Tendril.h"
 
-struct Particle
-{
-    sf::Vector2f velocity;
-    sf::Color color;
-
-    float lifespan;
-    float lifespanMax;
-    Light_NoShadow* light;
-    Particle(sf::Vector2f velocity, sf::Color color, float life)
-    {
-        this->velocity = velocity;
-        this->color = color;
-        this->lifespan = life;
-        this->lifespanMax = life;
-        this->light = nullptr;
-    }
-    Particle(const Particle& other)
-    {
-        this->light = nullptr;
-        *this = other;
-    }
-    ~Particle()
-    {
-        delete light;
-    }
-    Particle& operator=(const Particle& other)
-    {
-        this->velocity = other.velocity;
-        this->color = other.color;
-        this->lifespan = other.lifespan;
-        this->lifespanMax = other.lifespanMax;
-
-        if (other.light != nullptr)
-        {
-            if (this->light)
-                delete this->light;
-
-            this->light = new Light_NoShadow(other.light->pos, other.light->radius, other.light->color);
-        }
-        else
-        {
-            if (this->light)
-                delete this->light;
-
-            this->light = nullptr;
-        }
-        return *this;
-    }
-};
 
 class Emitter : public sf::Drawable
 {
@@ -95,6 +47,38 @@ public:
         }
     };
 
+    struct EmitterTendril 
+    {
+        Tendril tendril;
+        sf::Vector2f start;
+        sf::Vector2f stop;
+
+        EmitterTendril(sf::Vector2f start = sf::Vector2f(), sf::Vector2f end = sf::Vector2f(), Tendril t = Tendril())
+        {
+            this->start = start;
+            this->stop = end;
+            this->tendril = t;
+        }
+
+        friend std::ostream& operator<<(std::ostream& out, const EmitterTendril& tendril)
+        {
+            out << tendril.tendril << "\n";
+            out << tendril.start.x << " " << tendril.start.y << "\n";
+            out << tendril.stop.x << " " << tendril.stop.y << "\n";
+
+            return out;
+        }
+
+        friend std::istream& operator>>(std::istream& in, EmitterTendril& tendril)
+        {
+            in >> tendril.tendril;
+            in >> tendril.start.x >> tendril.start.y;
+            in >> tendril.stop.x >> tendril.stop.y;
+
+            return in;
+        }
+    };
+
     struct KeyFrame
     {
         float timeStamp;
@@ -110,12 +94,19 @@ public:
         sf::Color colorDeviation;
         bool affectedByGravity;
         bool followsCenter;
+
+        bool particleHasTendrils;
+        EmitterTendril particleTendril;
+        float tendrilGenInterval;
+
         float gravity;
         float particleLightRadius;
         float jitterAmount;
         float frictionValue;
         float offset;
         std::vector<EmitterLight> lights;
+        std::vector<EmitterTendril> tendrils;
+        bool tendrilsGenerated;
         
         KeyFrame(float timeStamp = 0)
         {
@@ -131,6 +122,10 @@ public:
             this->gravity = 0;
             this->jitterAmount = 0;
             this->frictionValue = 0;
+            this->particleHasTendrils = 0;
+            this->tendrilsGenerated = false;
+            this->particleHasTendrils = false;
+            this->tendrilGenInterval = 0;
         }
 
         friend std::ostream& operator<<(std::ostream& out, const KeyFrame& frame)
@@ -163,6 +158,21 @@ public:
                 out << frame.lights[i].initialColor.x << " " << frame.lights[i].initialColor.y << " " << frame.lights[i].initialColor.z << "\n";
             }
 
+            out << frame.tendrils.size() << "\n";
+
+            for (const Emitter::EmitterTendril& tendril : frame.tendrils)
+            {
+                out << tendril << "\n";
+            }
+
+            out << frame.particleHasTendrils << "\n";
+
+            if (frame.particleHasTendrils)
+            {
+                out << frame.particleTendril << "\n";
+                out << frame.tendrilGenInterval << "\n";
+            }
+
             return out;
         }
         
@@ -170,6 +180,8 @@ public:
         {
             int col[4] = {0};
             int lightCount = 0;
+            int tendrilCount = 0;
+
             in >> frame.timeStamp;
             in >> frame.particlesPerSpawn;
             in >> frame.particleLifespan;
@@ -205,6 +217,25 @@ public:
 
                 frame.lights.push_back(Emitter::EmitterLight(sf::Vector2f(), radius, color, offset));
             }
+
+            in >> tendrilCount;
+
+            frame.tendrils.clear();
+            for (int i = 0; i < tendrilCount; i++)
+            {
+                Emitter::EmitterTendril tendril;
+                in >> tendril;
+                frame.tendrils.push_back(tendril);
+            }
+
+            in >> frame.particleHasTendrils;
+
+            if (frame.particleHasTendrils)
+            {
+                in >> frame.particleTendril;
+                in >> frame.tendrilGenInterval;
+            }
+
             return in;
         }
     };
@@ -258,6 +289,76 @@ public:
 
     void reset();
 private:
+    struct Particle
+    {
+        sf::Vector2f velocity;
+        sf::Color color;
+
+        float lifespan;
+        float lifespanMax;
+        Light_NoShadow* light;
+        EmitterTendril* tendril;
+        Particle(sf::Vector2f velocity, sf::Color color, float life)
+        {
+            this->velocity = velocity;
+            this->color = color;
+            this->lifespan = life;
+            this->lifespanMax = life;
+            this->light = nullptr;
+            this->tendril = nullptr;
+        }
+        Particle(const Particle& other)
+        {
+            this->light = nullptr;
+            this->tendril = nullptr;
+            *this = other;
+        }
+        ~Particle()
+        {
+            delete light;
+            delete tendril;
+        }
+        Particle& operator=(const Particle& other)
+        {
+            this->velocity = other.velocity;
+            this->color = other.color;
+            this->lifespan = other.lifespan;
+            this->lifespanMax = other.lifespanMax;
+
+            if (other.light != nullptr)
+            {
+                if (this->light)
+                    delete this->light;
+
+                this->light = new Light_NoShadow(other.light->pos, other.light->radius, other.light->color);
+            }
+            else
+            {
+                if (this->light)
+                    delete this->light;
+
+                this->light = nullptr;
+            }
+
+            if (other.tendril != nullptr)
+            {
+                if (this->tendril)
+                    delete this->tendril;
+
+                this->tendril = new EmitterTendril(*other.tendril);
+            }
+            else
+            {
+                if (this->tendril)
+                    delete this->tendril;
+
+                this->tendril = nullptr;
+            }
+
+            return *this;
+        }
+    };
+
     std::vector<KeyFrame> keyFrames;
     int prev;
     int next;
@@ -276,6 +377,7 @@ private:
     float lifespan;
 
     float spawnCounter;
+    float tendrilGenCounter;
 
     bool immortalEmitter;
     bool colliding;

@@ -15,11 +15,11 @@ ParticleEditor::ParticleEditor()
     gridColor = sf::Color::Magenta;
     grid = generateGrid(gridColor);
     repeating = false;
-    lightOn = false;
-    zoomLevel = 1;
     color = sf::Color(variables.color[0], variables.color[1], variables.color[2], variables.color[3]);
     this->currentEmitter = -1;
     this->selectedKeyFrame = 0;
+    this->settingStart = false;
+    this->settingStop = false;
 }
 
 void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
@@ -174,6 +174,50 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
             ImGui::EndTabItem();
         }
 
+        if (ImGui::BeginTabItem("Tendrils"))
+        {
+            if (ImGui::Button("Add tendie"))
+            {
+                frame->tendrils.push_back(Emitter::EmitterTendril());
+            }
+
+
+
+            ImGui::Separator();
+            if (ImGui::BeginTabBar("tendrils"))
+            {
+                if (ImGui::BeginTabItem("Particle Tendrils"))
+                {
+                    if (frame->particleHasTendrils)
+                        showTendril(&frame->particleTendril, frame->tendrilsGenerated, mousePosWorld);
+
+                    ImGui::Checkbox("Particles has tendrils", &frame->particleHasTendrils);
+                    ImGui::EndTabItem();
+                }
+
+
+                for (int i = 0; i < frame->tendrils.size(); i++)
+                {
+                    if (ImGui::BeginTabItem(("#" + std::to_string(i)).c_str()))
+                    {
+                        showTendril(&frame->tendrils[i], frame->tendrilsGenerated, mousePosWorld);
+
+                        if (ImGui::Button("Erase tendie"))
+                        {
+                            frame->tendrils.erase(frame->tendrils.begin() + i--);
+                        }
+                        ImGui::EndTabItem();
+                    }
+
+                }
+
+                ImGui::EndTabBar();
+            }
+
+
+            ImGui::EndTabItem();
+        }
+
         if (ImGui::BeginTabItem("Keyframes"))
         {
             float min = 0;
@@ -207,7 +251,7 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
             ImGui::EndTabItem();
         }
 
-        if (ImGui::BeginTabItem("Editor"))
+       /* if (ImGui::BeginTabItem("Editor"))
         {
             float col[3] = { gridColor.r, gridColor.g, gridColor.b };
 
@@ -217,10 +261,10 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
                 grid = generateGrid(gridColor);
             }
 
-            ImGui::DragFloat("Zooooom", &zoomLevel, 1, 1, 8);
+            //ImGui::DragFloat("Zooooom", &zoomLevel, 1, 1, 8);
 
             ImGui::EndTabItem();
-        }
+        }*/
 
         if (ImGui::BeginTabItem("Experimental"))
         {
@@ -233,8 +277,6 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
 
         ImGui::Separator();
         ImGui::DragInt3("Background color", variables.clearColor, 1, 0, 255);
-        ImGui::Checkbox("Enable light", &lightOn);
-        ImGui::SameLine();
         ImGui::Checkbox("Repeating", &repeating);
         ImGui::SameLine();
         if (ImGui::Checkbox("Enable particle lights!?", &variables.hasLight))
@@ -392,6 +434,120 @@ void ParticleEditor::openWindow()
 void ParticleEditor::closeWindow()
 {
     this->open = false;
+}
+
+void ParticleEditor::showTendril(Emitter::EmitterTendril* tendril, bool& generated, sf::Vector2f mousePosWorld)
+{
+    Tendril::InitGenData* data = tendril->tendril.getDataPtr();
+    static const sf::Color ACTIVE_COLOR = sf::Color(100, 200, 200);
+    static bool popStyle = false;
+
+    float col[4] = { data->color.r / 255.f, data->color.g / 255.f, data->color.b / 255.f, data->color.a / 255.f };
+
+    if (settingStart)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ACTIVE_COLOR);
+        popStyle = true;
+    }
+
+    if (ImGui::Button("Set start pos"))
+    {
+        this->settingStart = !settingStart;
+        this->settingStop = false;
+    }
+
+    if (popStyle)
+    {
+        ImGui::PopStyleColor();
+        popStyle = false;
+    }
+
+    if (settingStop)
+    {
+        ImGui::PushStyleColor(ImGuiCol_Button, ACTIVE_COLOR);
+        popStyle = true;
+    }
+
+    if (ImGui::Button("Set end pos"))
+    {
+        this->settingStop = !settingStop;
+        this->settingStart = false;
+    }
+
+    if (popStyle)
+    {
+        ImGui::PopStyleColor();
+        popStyle = false;
+    }
+
+
+    if (ImGui::ColorEdit4("Color", col))
+    {
+        generated = false;
+        data->color = sf::Color(col[0] * 255.f, col[1] * 255.f, col[2] * 255.f, col[3] * 255.f);
+    }
+
+    if (ImGui::DragInt("Splits", &data->splits))
+        generated = false;
+    if (ImGui::DragInt("sway", &data->sway))
+        generated = false;
+    if (ImGui::DragInt("min", &data->min))
+        generated = false;
+    if (ImGui::DragInt("max", &data->max))
+        generated = false;
+    if (ImGui::DragInt("posMin", &data->forkMin))
+        generated = false;
+    if (ImGui::DragInt("posMax", &data->forkMax))
+        generated = false;
+    if (ImGui::DragFloat("Height", &data->peakHeight, 0.001f))
+        generated = false;
+    if (ImGui::DragInt("fork degrees", &data->angle, 1.f))
+        generated = false;
+    if (ImGui::DragInt("Visible time", &data->visibleTime, 1.f))
+        generated = false;
+    if (ImGui::DragFloat("Fadespeed", &data->fadeSpeed, 0.01f))
+        generated = false;
+    if (ImGui::DragFloat("thickness", &data->thickness, 1.f))
+        generated = false;
+    if (ImGui::InputInt("Algorithm", &data->timeAlgorithm))
+        generated = false;
+    if (ImGui::Checkbox("repeating", &data->repeating))
+        generated = false;
+
+
+    if (data->splits < 0)
+        data->splits = 0;
+
+    if (data->min < 0)
+        data->min = 0;
+
+    if (data->max < data->min)
+        data->max = data->min;
+
+    if (data->forkMax > data->splits)
+        data->forkMax = data->splits;
+
+    if (data->forkMin < 0)
+        data->forkMin = 0;
+
+    if (data->forkMax < data->forkMin)
+        data->forkMax = data->forkMin;
+
+    if (settingStart || settingStop)
+    {
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            if (settingStart)
+                tendril->start = mousePosWorld - emitto.getEmitterPos();
+
+            else if (settingStop)
+                tendril->stop = mousePosWorld - emitto.getEmitterPos();
+
+            settingStart = false;
+            settingStop = false;
+            generated = false;
+        }
+    }
 }
 
 void ParticleEditor::save()
