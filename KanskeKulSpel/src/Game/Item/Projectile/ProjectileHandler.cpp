@@ -7,8 +7,10 @@
 #include <fstream>
 
 std::vector<Throwable> ProjectileHandler::throwables;
+std::vector<LightProjectile> ProjectileHandler::projectiles;
 std::vector<Spell*> ProjectileHandler::spells;
 std::unordered_map<std::string, const Spell*> ProjectileHandler::spellTemplates;
+std::vector<LightProjectile> ProjectileHandler::projectileTemplates;
 
 ProjectileHandler::ProjectileHandler()
 {
@@ -71,6 +73,9 @@ void ProjectileHandler::update(float dt, Player* player)
             spells[i]->update(dt);
     }
 
+
+    //projectilefd
+
 }
 
 void ProjectileHandler::loadTemplates()
@@ -103,6 +108,43 @@ void ProjectileHandler::loadTemplates()
 
     file.close();
 
+    projectileTemplates.clear();
+    file.open(DATA_PATH "Projectiles.mop");
+
+    if (!file.is_open())
+    {
+        printCon("File not found, editing unavailible");
+        system("pause");
+        exit(-33);
+    }
+
+    else
+    {
+        while (!file.eof())
+        {
+            std::string projectileType;
+            std::string name;
+            std::string trash;
+
+            file >> projectileType;
+
+            if (projectileType == "[LightProjectile]")
+            {
+                LightProjectile projectile;
+
+                file.ignore();
+                std::getline(file, name);
+
+                file >> projectile;
+                projectileTemplates.push_back(projectile);
+            }
+        }
+
+
+
+        file.close();
+    }
+
 }
 
 void ProjectileHandler::queueColliders()
@@ -117,6 +159,9 @@ void ProjectileHandler::queueColliders()
             CollisionHandler::queueCollider(fireball);
             
     }
+
+    for (LightProjectile& projectile : projectiles)
+        CollisionHandler::queueCollider(&projectile);
 }
 
 void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Collidable* thrower)
@@ -141,6 +186,12 @@ void ProjectileHandler::addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f dest
             spells.push_back(newFire);
         }
     }
+}
+
+void ProjectileHandler::addProjectile(int projectileID, sf::Vector2f pos, sf::Vector2f direction, Collidable* shooter)
+{
+    projectiles.push_back(projectileTemplates[projectileID]);
+    projectiles.back().shoot(pos, direction, shooter);
 }
 
 void ProjectileHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const

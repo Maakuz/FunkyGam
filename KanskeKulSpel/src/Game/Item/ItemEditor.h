@@ -6,7 +6,7 @@
 #include "Projectile/Spell/Fireball.h"
 #include "Projectile/LightProjectile.h"
 
-class ItemEditor
+class ItemEditor : public sf::Drawable
 {
 public:
     ItemEditor();
@@ -15,15 +15,25 @@ public:
     void openWindow();
     void closeWindow() { open = false; };
     bool isOpen() const { return open; };
-    void update();
-    void updateItems();
-    void updateSpells();
-    void updateProjectiles();
+    void update(float dt, sf::Vector2f mouseWorldPos);
+    void updateItems(float dt, sf::Vector2f mouseWorldPos);
+    void updateSpells(float dt, sf::Vector2f mouseWorldPos);
+    void updateProjectiles(float dt, sf::Vector2f mouseWorldPos);
 private:
+    enum class Tab 
+    {
+        items,
+        spells,
+        projectiles
+    };
+
+    Tab currentTab;
+
     bool open;
     std::vector<Item*> items;
     std::vector<Spell*> spells;
     std::vector<LightProjectile> projectiles;
+    std::vector<std::string> projectileNames;
     int currentItem;
     int currentSpell;
     int currentProjectile;
@@ -34,7 +44,7 @@ private:
     void showThrowableData(Throwable* item);
     void showTomeData(Tome* item);
     void showFireballData(Fireball* fireball);
-    void showProjectileData(LightProjectile* projectile);
+    void showProjectileData(LightProjectile* projectile, std::string* name);
 
     void readItems();
     void readSpells();
@@ -47,5 +57,7 @@ private:
     void clearItems();
     void clearSpells();
     void clearProjectiles();
+
+    void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
 

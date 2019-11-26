@@ -128,7 +128,10 @@ void Game::update(float dt)
     }
 
     if (itemEditor.isOpen())
-        itemEditor.update();
+    {
+        itemEditor.update(dt, mousePosWorld);
+        Renderer::queueDrawable(&itemEditor);
+    }
 
     if (particleEditor.isOpen())
         particleEditor.update(mousePosWorld, dt);

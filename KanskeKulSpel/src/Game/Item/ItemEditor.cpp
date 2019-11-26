@@ -3,6 +3,8 @@
 #include "Misc/ConsoleWindow.h"
 #include "Game/Handlers/TextureHandler.h"
 #include "Game/Particles/ParticleHandler.h"
+#include "Game/Item/Projectile/ProjectileHandler.h"
+#include "Game/Misc/MouseState.h"
 #include "Imgui/imgui.h"
 #include "Imgui/misc/cpp/imgui_stdlib.h"
 #include <fstream>
@@ -10,8 +12,10 @@
 ItemEditor::ItemEditor()
 {
     this->open = false;
+    this->currentTab = Tab::items;
     currentItem = -1;
     currentSpell = -1;
+    currentProjectile = -1;
 }
 
 ItemEditor::~ItemEditor()
@@ -26,9 +30,10 @@ void ItemEditor::openWindow()
 
     readItems();
     readSpells();
+    readProjectiles();
 }
 
-void ItemEditor::update()
+void ItemEditor::update(float dt, sf::Vector2f mouseWorldPos)
 {
     ImGui::Begin("Item Editor", &this->open);
 
@@ -36,13 +41,22 @@ void ItemEditor::update()
     {
         if (ImGui::BeginTabItem("Items"))
         {
-            updateItems();
+            currentTab = Tab::items;
+            updateItems(dt, mouseWorldPos);
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Spells"))
         {
-            updateSpells();
+            currentTab = Tab::spells;
+            updateSpells(dt, mouseWorldPos);
+            ImGui::EndTabItem();
+        }
+
+        if (ImGui::BeginTabItem("Projectiles"))
+        {
+            currentTab = Tab::projectiles;
+            updateProjectiles(dt, mouseWorldPos);
             ImGui::EndTabItem();
         }
 
@@ -51,7 +65,7 @@ void ItemEditor::update()
     ImGui::End();
 }
 
-void ItemEditor::updateItems()
+void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 {
     if (!items.empty())
     {
@@ -120,7 +134,7 @@ void ItemEditor::updateItems()
 
 }
 
-void ItemEditor::updateSpells()
+void ItemEditor::updateSpells(float dt, sf::Vector2f mouseWorldPos)
 {
     if (!spells.empty())
     {
@@ -147,8 +161,44 @@ void ItemEditor::updateSpells()
         writeSpells();
 }
 
-void ItemEditor::updateProjectiles()
+void ItemEditor::updateProjectiles(float dt, sf::Vector2f mouseWorldPos)
 {
+    if (!projectiles.empty())
+    {
+        if (ImGui::BeginCombo("Select projectile", this->projectileNames[this->currentProjectile].c_str()))
+        {
+            for (int i = 0; i < projectiles.size(); i++)
+            {
+                if (ImGui::Selectable(projectileNames[i].c_str()))
+                {
+                    this->currentProjectile = i;
+                    ProjectileHandler::addProjectile(currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), nullptr);
+                }
+            }
+
+
+            ImGui::EndCombo();
+        }
+
+        if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Right))
+        {
+            ProjectileHandler::addProjectile(currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), nullptr);
+        }
+
+        ImGui::Text("Index: %d", currentProjectile);
+        showProjectileData(&projectiles[currentProjectile], &projectileNames[currentProjectile]);
+    }
+
+    if (ImGui::Button("Create Light Projectile"))
+    {
+        LightProjectile projectile;
+        this->projectiles.push_back(projectile);
+        this->projectileNames.push_back("Temp name. Please change me!");
+        this->currentProjectile = this->projectiles.size() - 1;
+    }
+
+    if (ImGui::Button("save"))
+        writeProjectiles();
 }
 
 void ItemEditor::showItemData(Item* item)
@@ -369,8 +419,48 @@ void ItemEditor::showFireballData(Fireball* fireball)
     showExplosionData(fireball->getExplosionPtr());
 }
 
-void ItemEditor::showProjectileData(LightProjectile* projectile)
+void ItemEditor::showProjectileData(LightProjectile* projectile, std::string* name)
 {
+    ImGui::InputText("Name", name);
+
+    const std::vector<Emitter>* emitters = ParticleHandler::getEmitterTemplates();
+    int currentLightEmitter = projectile->getLightEmitterID();
+    if (ImGui::BeginCombo("Select light emitter", ParticleHandler::getEmitterName(currentLightEmitter).c_str()))
+    {
+
+        for (int i = 0; i < emitters->size(); i++)
+        {
+            if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
+                projectile->setLightEmitterID(i);
+        }
+
+        ImGui::EndCombo();
+    }
+
+    currentLightEmitter = projectile->getInitialEmitterID();
+    if (ImGui::BeginCombo("Select initial emitter", ParticleHandler::getEmitterName(currentLightEmitter).c_str()))
+    {
+
+        for (int i = 0; i < emitters->size(); i++)
+        {
+            if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
+                projectile->setInitialEmitterID(i);
+        }
+
+        ImGui::EndCombo();
+    }
+
+    int damage = projectile->getDamage();
+    ImGui::DragInt("Damage", &damage, 1, 0, 10000);
+    projectile->setDamage(damage);
+
+    float velocity = projectile->getVelocity();
+    ImGui::DragFloat("Velocity", &velocity, 1, 0, 100000);
+    projectile->setVelocity(velocity);
+
+    float size = projectile->getCollider().getSize().x;
+    ImGui::DragFloat("size", &size, 1, 0, 100000);
+    projectile->setSize(sf::Vector2f(size, size));
 }
 
 void ItemEditor::readItems()
@@ -471,6 +561,46 @@ void ItemEditor::readSpells()
 
 void ItemEditor::readProjectiles()
 {
+    clearProjectiles();
+    std::ifstream file(DATA_PATH "Projectiles.mop");
+
+    if (!file.is_open())
+    {
+        printCon("File not found, editing unavailible");
+        closeWindow();
+    }
+
+    else
+    {
+        while (!file.eof())
+        {
+            std::string projectileType;
+            std::string name;
+            std::string trash;
+
+            file >> projectileType;
+
+            if (projectileType == "[LightProjectile]")
+            {
+                LightProjectile projectile;
+
+                file.ignore();
+                std::getline(file, name);
+                while (name.size() > 0 && name[0] == ' ')
+                    name.erase(name.begin());
+
+                file >> projectile;
+                this->projectileNames.push_back(name);
+                this->projectiles.push_back(projectile);
+            }
+        }
+
+
+
+        file.close();
+    }
+
+    this->currentProjectile = this->projectiles.size() - 1;
 }
 
 void ItemEditor::writeItems()
@@ -540,6 +670,23 @@ void ItemEditor::writeSpells()
 
 void ItemEditor::writeProjectiles()
 {
+    std::ofstream file(DATA_PATH "Projectiles.mop");
+
+    if (!file.is_open())
+    {
+        printCon("File not found, editing unavailible");
+        closeWindow();
+    }
+
+    auto it = projectileNames.begin();
+    for (const LightProjectile& projectile : projectiles)
+    {
+            file << "[LightProjectile]\n";
+            file << *it++ << "\n";
+            file << projectile << "\n";
+    }
+
+    file.close();
 }
 
 void ItemEditor::clearItems()
@@ -560,4 +707,19 @@ void ItemEditor::clearSpells()
 
 void ItemEditor::clearProjectiles()
 {
+    projectiles.clear();
+    projectileNames.clear();
+}
+
+void ItemEditor::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    switch (this->currentTab)
+    {
+    case Tab::items:
+        if (!items.empty())
+            target.draw(*items[currentItem], states);
+        break;
+    default:
+        break;
+    }
 }
