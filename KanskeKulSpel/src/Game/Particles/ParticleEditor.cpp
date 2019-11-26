@@ -188,6 +188,7 @@ void ParticleEditor::update(sf::Vector2f mousePosWorld, float dt)
             {
                 if (ImGui::BeginTabItem("Particle Tendrils"))
                 {
+                    ImGui::DragFloat("Interval", &frame->tendrilGenInterval);
                     if (frame->particleHasTendrils)
                         showTendril(&frame->particleTendril, frame->tendrilsGenerated, mousePosWorld);
 
