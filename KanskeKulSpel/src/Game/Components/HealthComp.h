@@ -14,6 +14,8 @@ public:
     void setMaxHealth(unsigned int health);
     int getMaxHealth() const { return maxHealth; };
 
+    float getHealthPercentage() const;
+
     void fillHealth();
 
     bool isAlive()const { return alive; };

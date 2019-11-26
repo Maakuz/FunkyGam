@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_set>
-#include "Game/Item/Throwables/Throwable.h"
+#include "Game/Item/Projectile/Throwables/Throwable.h"
 #include "Game/Level/Level.h"
 #include "Game/Entities/Player.h"
 #include "Game/Particles/Emitter.h"
@@ -9,8 +9,8 @@
 #include "Renderer/DebugDrawable.h"
 #include "Misc/Structs.h"
 #include "GatherItem.h"
-#include "Game/Item/Spell/Fireball.h"
-#include "Game/Item/Spell/Tome.h"
+#include "Game/Item/Projectile/Spell/Fireball.h"
+#include "Game/Item/Projectile/Spell/Tome.h"
 
 class ItemHandler : public sf::Drawable, public DebugDrawable
 {

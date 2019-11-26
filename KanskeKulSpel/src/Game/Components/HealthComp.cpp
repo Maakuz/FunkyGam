@@ -35,7 +35,12 @@ void HealthComp::setMaxHealth(unsigned int health)
         this->alive = false;
 }
 
-void HealthComp::fillHealth() 
+float HealthComp::getHealthPercentage() const
+{
+    return this->health / (float)this->maxHealth;
+}
+
+void HealthComp::fillHealth()
 { 
     this->health = this->maxHealth; 
     this->alive = true;

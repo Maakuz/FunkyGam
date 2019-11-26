@@ -2,8 +2,8 @@
 #include "Game/Misc/VectorFunctions.h"
 #include "Misc/ConsoleWindow.h"
 #include <string>
-#include "Game/Item/Throwables/Throwable.h"
-#include "Game/Item/Spell/Fireball.h"
+#include "Game/Item/Projectile/Throwables/Throwable.h"
+#include "Game/Item/Projectile//Spell/Fireball.h"
 #include "Game/Entities/Player.h"
 
 Grunt::Grunt(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset)

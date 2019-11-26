@@ -5,7 +5,7 @@
 #include "Renderer/Lighting/LightQueue.h"
 #include "Imgui/imgui.h"
 #include "Game/Item/ItemHandler.h"
-#include "Game/Item/ProjectileHandler.h"
+#include "Game/Item/Projectile/ProjectileHandler.h"
 #include "Game/Particles/ParticleHandler.h"
 #include "Misc/ConsoleWindow.h"
 #include "Enemies/Grunt.h"

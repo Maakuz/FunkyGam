@@ -4,14 +4,14 @@
 #include "Collision/CollisionHandler.h"
 #include "Level/LevelHandler.h"
 #include "Game/Item/ItemHandler.h"
-#include "Game/Item/ProjectileHandler.h"
+#include "Game/Item/Projectile/ProjectileHandler.h"
 #include "Particles/ParticleHandler.h"
 #include "Interface/UIHandler.h"
 #include "Interface/HubHandler.h"
 #include "Game/Item/ItemEditor.h"
 #include "Game/Item/RecipeEditor.h"
 #include "Game/Particles/ParticleEditor.h"
-#include "Game/Item/Spell/Lightning/TendrilTester.h"
+#include "Game/Particles/TendrilTester.h"
 #include "GameState.h"
 
 #define MAX_LIGHTS 200

@@ -1,7 +1,12 @@
 accel = { x = 0, y = 0}
 momentum = {x = 0, y = 0}
-swingArms = false
+attack = false
 swingSpeed = 100
+
+currentTentacle = 0
+swingTentacles = false
+tentacleInterval = 400
+tentacleCounter = 0
 
 attackInterval = 1000
 attackCounter = 0
@@ -17,15 +22,70 @@ maxHealth = 0
 offsetX = 0.29
 offsetY = -110
 
+transitioning = false
+transitionTime = 3000
+transitionCounter = 0
+
+phaseTwo = false
+
 function updateAI(x, y, mX, mY, pX, pY, dt)
 
-momentum.x = mX
-momentum.y = mY
-swingArms = false
-inRange = false
-attackCounter = attackCounter + dt
-jumpCounter = jumpCounter + dt
+	momentum.x = mX
+	momentum.y = mY
+	swingArms = false
+	inRange = false
+	attackCounter = attackCounter + dt
+	jumpCounter = jumpCounter + dt
 
+	if transitioning == true then
+		accel.x = 0
+		accel.y = -0.3
+	
+		transitionCounter = transitionCounter + dt
+		if transitionCounter > transitionTime then
+			phaseTwo = true
+			transitioning = false
+		end
+	end
+	
+
+	if phaseTwo == false and transitioning == false then
+		updatePhaseOne(x, y, pX, pY, dt)
+		
+		if (health / maxHealth) < 0.5 then
+			transitioning = true
+		end
+	elseif phaseTwo == true then
+		updatePhaseTwo(x, y, pX, pY, dt)
+	end
+	
+end
+
+function updatePhaseTwo(x, y, pX, pY, dt)
+	tentacleCounter = tentacleCounter + dt
+	swingTentacles = false
+	accel.y = 0
+	
+	if tentacleCounter > tentacleInterval then
+		tentacleCounter = 0
+		swingTentacles = true
+		currentTentacle = currentTentacle + 1
+		
+		if currentTentacle >= 10 then currentTentacle = 0 end
+	end
+	
+	if length(x - pX, y - pY) < 600 then inRange = true end
+	
+	if inRange then
+		if attackCounter > attackInterval then
+			swingArms = true
+			attackCounter = 0
+		end
+	else
+	end
+end
+
+function updatePhaseOne(x, y, pX, pY, dt)
 	if length(x - pX, y - pY) < 100 then
 		inRange = true
 		jumpCounter = 0
@@ -50,12 +110,10 @@ jumpCounter = jumpCounter + dt
 		
 		if jumpCounter > jumpInterval then
 			jumpCounter = 0
-			momentum.x = mX + (accel.x * 50)
+			momentum.x = momentum.x + (accel.x * 50)
 			momentum.y = -15
 		end
 	end
-	
-
 end
 
 

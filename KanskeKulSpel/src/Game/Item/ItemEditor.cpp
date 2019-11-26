@@ -147,6 +147,10 @@ void ItemEditor::updateSpells()
         writeSpells();
 }
 
+void ItemEditor::updateProjectiles()
+{
+}
+
 void ItemEditor::showItemData(Item* item)
 {
     ImGui::Text("%s", ("ItemID: " + std::to_string(item->getID())).c_str());
@@ -365,6 +369,10 @@ void ItemEditor::showFireballData(Fireball* fireball)
     showExplosionData(fireball->getExplosionPtr());
 }
 
+void ItemEditor::showProjectileData(LightProjectile* projectile)
+{
+}
+
 void ItemEditor::readItems()
 {
     clearItems();
@@ -461,6 +469,10 @@ void ItemEditor::readSpells()
     this->currentSpell = this->spells.size() - 1;
 }
 
+void ItemEditor::readProjectiles()
+{
+}
+
 void ItemEditor::writeItems()
 {
     std::ofstream file(DATA_PATH "Items.mop");
@@ -526,6 +538,10 @@ void ItemEditor::writeSpells()
     file.close();
 }
 
+void ItemEditor::writeProjectiles()
+{
+}
+
 void ItemEditor::clearItems()
 {
     for (Item* item : items)
@@ -540,4 +556,8 @@ void ItemEditor::clearSpells()
         delete spell;
 
     spells.clear();
+}
+
+void ItemEditor::clearProjectiles()
+{
 }

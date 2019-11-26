@@ -1,5 +1,5 @@
 #include "Bird.h"
-#include "Game/Item/ProjectileHandler.h"
+#include "Game/Item/Projectile/ProjectileHandler.h"
 #include "Misc/ConsoleWindow.h"
 
 Bird::Bird(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset)

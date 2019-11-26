@@ -20,22 +20,34 @@ public:
     virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion);
 private:
+    struct Arm
+    {
+        Chain arm;
+        Hazard hand;
+        Arm(const sf::Texture* texture, sf::Vector2f pos, sf::Vector2f handSize, int handDamage, int linkCount = 10, int stiffness = 10):
+            arm(texture, pos, linkCount, stiffness),
+            hand(pos, handSize, handDamage){}
+    };
     LuaScript ai;
 
     sf::Vector2f armAnchor;
     sf::Vector2f forhead;
-    Chain leftArm;
-    Chain rightArm;
+    Arm leftArm;
+    Arm rightArm;
     Chain lightRope;
-    Hazard leftHand;
-    Hazard rightHand;
+    std::vector<Arm> tentacles;
     Emitter* light;
+    Emitter* transitionEmitter;
 
     bool rightSlap;
+    bool phaseTwoInitialized;
+    bool phaseTwo;
 
     void swingArms(sf::Vector2f target);
 
     void constrictNose();
+    void initializePhaseTwo();
+    void updatePhaseTwo(float dt, sf::Vector2f target);
 
     virtual std::istream& readSpecific(std::istream& in);
 

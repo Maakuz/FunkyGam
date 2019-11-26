@@ -2,8 +2,8 @@
 #include <unordered_map>
 #include "Game/Entities/Player.h"
 #include "Renderer/DebugDrawable.h"
-#include "Game/Item/Throwables/Throwable.h"
-#include "Game/Item/Spell/Fireball.h"
+#include "Game/Item/Projectile/Throwables/Throwable.h"
+#include "Game/Item/Projectile/Spell/Fireball.h"
 
 class ProjectileHandler : public sf::Drawable, public DebugDrawable
 {

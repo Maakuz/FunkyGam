@@ -1,8 +1,8 @@
 #include "SpellComp.h"
-#include "Game/Item/ProjectileHandler.h"
+#include "Game/Item/Projectile/ProjectileHandler.h"
 #include "Game/Item/ItemHandler.h"
 #include "Game/Particles/ParticleHandler.h"
-#include "Game/Item/Spell/Tome.h"
+#include "Game/Item/Projectile/Spell/Tome.h"
 
 SpellComp::SpellComp(const sf::Vector2f pos)
 {
