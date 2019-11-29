@@ -24,13 +24,11 @@ public:
 private:
     bool drawHitboxes;
 
-    Spell* test;
-
     static std::unordered_map<std::string, const Spell*> spellTemplates;
     static std::vector<LightProjectile> projectileTemplates;
 
     static std::vector<Throwable> throwables;
-    static std::vector<LightProjectile> projectiles;
+    static std::vector<LightProjectile*> projectiles;
     static std::vector<Spell*> spells;
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

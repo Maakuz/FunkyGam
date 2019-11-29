@@ -7,7 +7,7 @@
 #include <fstream>
 
 std::vector<Throwable> ProjectileHandler::throwables;
-std::vector<LightProjectile> ProjectileHandler::projectiles;
+std::vector<LightProjectile*> ProjectileHandler::projectiles;
 std::vector<Spell*> ProjectileHandler::spells;
 std::unordered_map<std::string, const Spell*> ProjectileHandler::spellTemplates;
 std::vector<LightProjectile> ProjectileHandler::projectileTemplates;
@@ -16,7 +16,7 @@ ProjectileHandler::ProjectileHandler()
 {
     this->drawHitboxes = false;
 
-    ConsoleWindow::get().addCommand("itemShowHitboxes", [&](Arguments args)->std::string
+    ConsoleWindow::get().addCommand("projectileHitboxes", [&](Arguments args)->std::string
         {
             if (args.empty())
                 return "Missing argument 0 or 1";
@@ -27,7 +27,7 @@ ProjectileHandler::ProjectileHandler()
             return "Hitboxes on mby";
         });
 
-    ConsoleWindow::get().addCommand("reloadSpells", [&](Arguments args)->std::string
+    ConsoleWindow::get().addCommand("reloadProjectiles", [&](Arguments args)->std::string
         {
 
             loadTemplates();
@@ -43,6 +43,10 @@ ProjectileHandler::~ProjectileHandler()
 
     for (auto& pair : spellTemplates)
         delete pair.second;
+
+    for (LightProjectile* projectile : projectiles)
+        delete projectile;
+
     spellTemplates.clear();
 }
 
@@ -74,7 +78,17 @@ void ProjectileHandler::update(float dt, Player* player)
     }
 
 
-    //projectilefd
+    for (int i = 0; i < projectiles.size(); i++)
+    {
+        if (projectiles[i]->isDestroyed())
+        {
+            delete projectiles[i];
+            unordered_erase(projectiles, projectiles.begin() + i--);
+        }
+
+        else
+            projectiles[i]->update(dt);
+    }
 
 }
 
@@ -83,6 +97,7 @@ void ProjectileHandler::loadTemplates()
     for (auto& pair : spellTemplates)
         delete pair.second;
     spellTemplates.clear();
+    projectileTemplates.clear();
 
     std::ifstream file(DATA_PATH "Spells.mop");
     if (!file.is_open())
@@ -108,7 +123,6 @@ void ProjectileHandler::loadTemplates()
 
     file.close();
 
-    projectileTemplates.clear();
     file.open(DATA_PATH "Projectiles.mop");
 
     if (!file.is_open())
@@ -160,8 +174,8 @@ void ProjectileHandler::queueColliders()
             
     }
 
-    for (LightProjectile& projectile : projectiles)
-        CollisionHandler::queueCollider(&projectile);
+    for (LightProjectile* projectile : projectiles)
+        CollisionHandler::queueCollider(projectile);
 }
 
 void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Collidable* thrower)
@@ -190,15 +204,20 @@ void ProjectileHandler::addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f dest
 
 void ProjectileHandler::addProjectile(int projectileID, sf::Vector2f pos, sf::Vector2f direction, Collidable* shooter)
 {
-    projectiles.push_back(projectileTemplates[projectileID]);
-    projectiles.back().shoot(pos, direction, shooter);
+    projectiles.push_back(new LightProjectile(projectileTemplates[projectileID]));
+    projectiles.back()->shoot(pos, direction, shooter);
 }
 
 void ProjectileHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
 {
     if (drawHitboxes)
+    {
         for (const Throwable& throwable : this->throwables)
             target.draw(throwable.getCollider(), states);
+
+        for (const LightProjectile* projectile : projectiles)
+            target.draw(projectile->getCollider(), states);
+    }
 }
 
 void ProjectileHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const

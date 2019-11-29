@@ -26,7 +26,9 @@ void LightProjectile::update(float dt)
 {
     this->movement.update(dt);
     this->collider.setPosition(movement.transform.pos);
-    this->light->setEmitterPos(collider.getCenterPos());
+
+    if (this->light)
+        this->light->setEmitterPos(collider.getCenterPos());
 }
 
 void LightProjectile::shoot(sf::Vector2f pos, sf::Vector2f dir, Collidable* owner)
