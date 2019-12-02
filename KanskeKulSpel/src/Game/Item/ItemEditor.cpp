@@ -447,6 +447,25 @@ void ItemEditor::showProjectileData(LightProjectile* projectile, std::string* na
                 projectile->setInitialEmitterID(i);
         }
 
+        if (ImGui::Selectable("None"))
+            projectile->setInitialEmitterID(-1);
+
+        ImGui::EndCombo();
+    }
+
+    currentLightEmitter = projectile->getImpactEmitterID();
+    if (ImGui::BeginCombo("Select impact emitter", ParticleHandler::getEmitterName(currentLightEmitter).c_str()))
+    {
+
+        for (int i = 0; i < emitters->size(); i++)
+        {
+            if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
+                projectile->setImpactEmitterID(i);
+        }
+
+        if (ImGui::Selectable("None"))
+            projectile->setImpactEmitterID(-1);
+
         ImGui::EndCombo();
     }
 

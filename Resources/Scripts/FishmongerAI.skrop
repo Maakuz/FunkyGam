@@ -11,6 +11,9 @@ tentacleCounter = 0
 attackInterval = 1000
 attackCounter = 0
 
+channelling = false
+chanellTime = 600
+
 jumpInterval = 2000
 jumpCounter = 0
 
@@ -32,7 +35,7 @@ function updateAI(x, y, mX, mY, pX, pY, dt)
 
 	momentum.x = mX
 	momentum.y = mY
-	swingArms = false
+	attack = false
 	inRange = false
 	attackCounter = attackCounter + dt
 	jumpCounter = jumpCounter + dt
@@ -45,6 +48,7 @@ function updateAI(x, y, mX, mY, pX, pY, dt)
 		if transitionCounter > transitionTime then
 			phaseTwo = true
 			transitioning = false
+			attackInterval = 2000
 		end
 	end
 	
@@ -66,22 +70,31 @@ function updatePhaseTwo(x, y, pX, pY, dt)
 	swingTentacles = false
 	accel.y = 0
 	
-	if tentacleCounter > tentacleInterval then
-		tentacleCounter = 0
-		swingTentacles = true
-		currentTentacle = currentTentacle + 1
-		
-		if currentTentacle >= 10 then currentTentacle = 0 end
-	end
+
 	
 	if length(x - pX, y - pY) < 600 then inRange = true end
 	
 	if inRange then
-		if attackCounter > attackInterval then
-			swingArms = true
-			attackCounter = 0
+		if tentacleCounter > tentacleInterval then
+			tentacleCounter = 0
+			swingTentacles = true
+			currentTentacle = currentTentacle + 1
+		
+			if currentTentacle >= 10 then currentTentacle = 0 end
 		end
 	else
+	if x < pX then 
+			momentum.x = 10
+		else
+			momentum.x = -10
+		end
+	end
+	
+	
+	if attackCounter > attackInterval then
+		attackCounter = 0
+		attack = true
+		channelling = true
 	end
 end
 
@@ -94,7 +107,7 @@ function updatePhaseOne(x, y, pX, pY, dt)
 	
 	if inRange then
 		if attackCounter > attackInterval then
-			swingArms = true
+			attack = true
 			attackCounter = 0
 		end
 		
@@ -124,4 +137,9 @@ end
 function setHealth(h, mh)
 	health = h 
 	maxHealth = mh
+ end
+ 
+ function setChannelling(var)
+	channelling = var
+	attackCounter = 0
  end

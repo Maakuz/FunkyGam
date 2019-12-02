@@ -185,21 +185,17 @@ void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f mome
     throwables.push_back(item);
 }
 
-void ProjectileHandler::addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination, float channelTime)
+void ProjectileHandler::addSpell(std::string spellID, sf::Vector2f pos, sf::Vector2f destination, float channelTime)
 {
-    const Tome* tome = dynamic_cast<const Tome*>(ItemHandler::getTemplate(tomeID));
+    const Fireball* fire = dynamic_cast<const Fireball*>(spellTemplates[spellID]);
 
-    if (tome)
+    if (fire)
     {
-        const Fireball* fire = dynamic_cast<const Fireball*>(spellTemplates[tome->getSpell()]);
-
-        if (fire)
-        {
-            Fireball* newFire = new Fireball(*fire);
-            newFire->cast(pos, destination, channelTime);
-            spells.push_back(newFire);
-        }
+        Fireball* newFire = new Fireball(*fire);
+        newFire->cast(pos, destination, channelTime);
+        spells.push_back(newFire);
     }
+    
 }
 
 void ProjectileHandler::addProjectile(int projectileID, sf::Vector2f pos, sf::Vector2f direction, Collidable* shooter)

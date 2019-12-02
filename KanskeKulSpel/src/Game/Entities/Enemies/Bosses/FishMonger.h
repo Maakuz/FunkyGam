@@ -2,6 +2,7 @@
 #include "Misc/LuaScript.h"
 #include "Game/Entities/Enemies/Bosses/Boss.h"
 #include "Game/Components/AnimatedSpriteComp.h"
+#include "Game/Components/SpellComp.h"
 #include "Game/Components/AI/GroundAIComp.h"
 #include "Game/Entities/Chain.h"
 #include "Game/Entities/Hazard.h"
@@ -26,9 +27,10 @@ private:
         Hazard hand;
         Arm(const sf::Texture* texture, sf::Vector2f pos, sf::Vector2f handSize, int handDamage, int linkCount = 10, int stiffness = 10):
             arm(texture, pos, linkCount, stiffness),
-            hand(pos, handSize, handDamage){}
+            hand(pos, handSize, handDamage){ }
     };
     LuaScript ai;
+    SpellComp spell;
 
     sf::Vector2f armAnchor;
     sf::Vector2f forhead;
@@ -37,7 +39,8 @@ private:
     Chain lightRope;
     std::vector<Arm> tentacles;
     Emitter* light;
-    Emitter* transitionEmitter;
+    int transitionEmitterID;
+    int spellID;
 
     bool rightSlap;
     bool phaseTwoInitialized;

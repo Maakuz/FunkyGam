@@ -19,7 +19,8 @@ enum ColliderKeys
     grunt = 5,
     gatherable = 6,
     fireball = 7,
-    hazard = 8
+    hazard = 8,
+    projectilePassable = 9
 };
 
 struct AABB

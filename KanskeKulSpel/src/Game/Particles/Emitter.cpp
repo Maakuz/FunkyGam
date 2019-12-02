@@ -218,6 +218,12 @@ void Emitter::update(float dt)
                 particle->tendril->tendril.update(dt);
                 particle->tendril->stop += particle->velocity;
 
+                if (followsCenter && moved)
+                {
+                    particle->tendril->start += (pos - prevPos);
+                    particle->tendril->stop += (pos - prevPos);
+                }
+
                 if (zap)
                     particle->tendril->tendril.generate(particle->tendril->start, particle->tendril->stop);
             }

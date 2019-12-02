@@ -6,7 +6,7 @@
 #include "Game/Entities/Collidable.h"
 #include "Game/Components/MovementComp.h"
 #include "Game/Components/AnimatedSpriteComp.h"
-#include "Game/Components/SpellComp.h"
+#include "Game/Components/TomeComp.h"
 #include "Game/Components/HealthComp.h"
 #include <istream>
 
@@ -46,7 +46,7 @@ private:
     ColliderComp collider;
     AnimatedSpriteComp sprite;
     MovementComp movement;
-    SpellComp spellComp;
+    TomeComp spellComp;
     HealthComp healthComp;
 
     bool debugMode;

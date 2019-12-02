@@ -165,9 +165,6 @@
     <ClCompile Include="src\Game\Entities\Enemies\Bird.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\Game\Components\SpellComp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Game\Components\HealthComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -232,6 +229,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Game\Item\Projectile\LightProjectile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Components\TomeComp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Game\Components\SpellComp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -431,9 +434,6 @@
     <ClInclude Include="src\Game\Entities\Enemies\Bird.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Game\Components\SpellComp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="src\Game\Components\HealthComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -501,6 +501,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Game\Item\Projectile\LightProjectile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Components\TomeComp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Game\Components\SpellComp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

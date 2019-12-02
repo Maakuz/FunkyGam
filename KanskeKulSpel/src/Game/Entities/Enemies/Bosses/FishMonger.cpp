@@ -16,6 +16,8 @@ FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, 
     this->phaseTwoInitialized = false;
     this->phaseTwo = false;
     this->light = nullptr;
+    this->transitionEmitterID = 0;
+    this->spellID = 0;
 
     sf::Texture* tex = TextureHandler::get().getTexture(27);
 
@@ -78,7 +80,7 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
         movement.momentum.x, movement.momentum.y, 
         playerPos.x, playerPos.y,
         dt);
-
+    
     movement.acceleration.x = ai.get<float>("accel.x");
     movement.acceleration.y = ai.get<float>("accel.y");
     movement.momentum.x = ai.get<float>("momentum.x");
@@ -91,6 +93,7 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
     {
         if (phaseTwo)
         {
+            spell.startChannelling(spellID, 17);
         }
 
         else
@@ -158,6 +161,7 @@ void FishMonger::initializePhaseTwo()
     this->phaseTwoInitialized = true;
     sf::Vector2f displacement(1, 0);
     this->movement.mass = 0;
+    this->movement.setAirRes(0.99);
 
     Arm tentacle(TextureHandler::get().getTexture(26), armAnchor, sf::Vector2f(24, 24), 30, 20, 5);
     tentacle.arm.setTexture(TextureHandler::get().getTexture(27), tentacle.arm.getLinkCount() - 1);
@@ -175,6 +179,20 @@ void FishMonger::initializePhaseTwo()
 
 void FishMonger::updatePhaseTwo(float dt, sf::Vector2f target)
 {
+    this->movement.grounded = false;
+    this->spell.update(dt, this->lightRope.back().pos);
+
+    if (spell.isChannelling())
+    {
+        float channelTime = ai.get<float>("chanellTime");
+
+        if (channelTime < spell.getChannelTime())
+        {
+            spell.castSpell<LightProjectile>(target, this);
+            ai.runFunc("setChannelling", "b", false);
+        }
+    }
+
     for (Arm& arm : tentacles)
     {
         arm.arm.setPos(armAnchor, 0);

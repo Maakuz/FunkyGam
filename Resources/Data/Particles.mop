@@ -14,3 +14,6 @@ Folder: ../Resources/Particles/
 12: fireballBigImpact.part
 13: fishmongernose.part
 14: test.part
+15: lightningBall.part
+16: lightningBallImpact.part
+17: lightningBallCharge.part

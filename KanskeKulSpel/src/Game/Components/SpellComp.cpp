@@ -1,26 +1,19 @@
 #include "SpellComp.h"
-#include "Game/Item/Projectile/ProjectileHandler.h"
-#include "Game/Item/ItemHandler.h"
 #include "Game/Particles/ParticleHandler.h"
-#include "Game/Item/Projectile/Spell/Tome.h"
 
-SpellComp::SpellComp(const sf::Vector2f pos)
+SpellComp::SpellComp()
 {
     this->channelTime = 0;
     this->channelling = false;
-    this->tome = 0;
     this->channelEmitter = nullptr;
-
-    this->pos = pos;
+    this->spellID = 0;
 }
 
-void SpellComp::startChannelling(int tomeID)
+void SpellComp::startChannelling(int id, int emitterID)
 {
     this->channelling = true;
-    this->tome = tomeID;
+    this->spellID = id;
     this->channelTime = 0;
-
-    int emitterID = dynamic_cast<const Tome*>(ItemHandler::getTemplate(tomeID))->getChannelEmitter();
 
     this->channelEmitter = ParticleHandler::addEmitter(emitterID, pos);
 }
@@ -40,16 +33,6 @@ void SpellComp::update(float dt, sf::Vector2f pos)
         channelEmitter->setEmitterPos(pos);
 
     this->pos = pos;
-}
-
-void SpellComp::castSpell(sf::Vector2f dest)
-{
-    if (channelling)
-        ProjectileHandler::addSpell(this->tome, this->pos, dest, this->channelTime);
-
-    channelling = false;
-
-    killEmitter();
 }
 
 void SpellComp::killEmitter()

@@ -149,6 +149,7 @@
     <ClCompile Include="src\Game\Components\HealthComp.cpp" />
     <ClCompile Include="src\Game\Components\MovementComp.cpp" />
     <ClCompile Include="src\Game\Components\SpellComp.cpp" />
+    <ClCompile Include="src\Game\Components\TomeComp.cpp" />
     <ClCompile Include="src\Game\Components\SpriteComp.cpp" />
     <ClCompile Include="src\Game\Entities\Chain.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Bird.cpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="src\Game\Components\HealthComp.h" />
     <ClInclude Include="src\Game\Components\MovementComp.h" />
     <ClInclude Include="src\Game\Components\SpellComp.h" />
+    <ClInclude Include="src\Game\Components\TomeComp.h" />
     <ClInclude Include="src\Game\Components\SpriteComp.h" />
     <ClInclude Include="src\Game\Components\TransformComp.h" />
     <ClInclude Include="src\Game\Entities\Chain.h" />

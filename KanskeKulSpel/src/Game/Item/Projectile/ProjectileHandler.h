@@ -17,7 +17,7 @@ public:
     void queueColliders();
 
     static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Collidable* thrower);
-    static void addSpell(int tomeID, sf::Vector2f pos, sf::Vector2f destination, float channelTime);
+    static void addSpell(std::string spellID, sf::Vector2f pos, sf::Vector2f destination, float channelTime);
     static void addProjectile(int projectileID, sf::Vector2f pos, sf::Vector2f direction, Collidable* shooter);
 
     virtual void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;

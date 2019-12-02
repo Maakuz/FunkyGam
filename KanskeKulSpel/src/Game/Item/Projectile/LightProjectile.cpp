@@ -19,7 +19,7 @@ LightProjectile::LightProjectile() :
 LightProjectile::~LightProjectile()
 {
     if (this->light)
-        this->light->kill();
+        this->light->killQuick();
 }
 
 void LightProjectile::update(float dt)
@@ -34,18 +34,24 @@ void LightProjectile::update(float dt)
 void LightProjectile::shoot(sf::Vector2f pos, sf::Vector2f dir, Collidable* owner)
 {
     this->movement.transform.pos = pos;
+    this->collider.setPosition(pos);
     this->movement.momentum = dir * this->velocity;
     this->owner = owner;
     this->light = ParticleHandler::addEmitter(lightEmitterID, collider.getCenterPos());
-    ParticleHandler::addEmitter(initialEmitterID, collider.getCenterPos());
+
+    if (initialEmitterID != -1)
+        ParticleHandler::addEmitter(initialEmitterID, collider.getCenterPos());
 }
 
 void LightProjectile::handleCollision(const Collidable* collidable)
 {
-    if (collidable == owner)
+    if (collidable == owner || collidable->getCollider().hasComponent(ColliderKeys::projectilePassable))
         return;
 
     this->destroyed = true;
+
+    if (impactEmitterID != -1)
+        ParticleHandler::addEmitter(impactEmitterID, collider.getCenterPos());
 }
 
 std::istream& operator>>(std::istream& in, LightProjectile& projectile)
@@ -53,6 +59,7 @@ std::istream& operator>>(std::istream& in, LightProjectile& projectile)
     float size;
     in >> projectile.lightEmitterID;
     in >> projectile.initialEmitterID;
+    in >> projectile.impactEmitterID;
     in >> projectile.damage;
     in >> projectile.velocity;
     in >> size;
@@ -65,6 +72,7 @@ std::ostream& operator<<(std::ostream& out, const LightProjectile& projectile)
 {
     out << projectile.lightEmitterID << "\n";
     out << projectile.initialEmitterID << "\n";
+    out << projectile.impactEmitterID << "\n";
     out << projectile.damage << "\n";
     out << projectile.velocity << "\n";
     out << projectile.getCollider().getSize().x << "\n";

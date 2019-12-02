@@ -33,6 +33,9 @@ public:
     void setLightEmitterID(int id) { this->lightEmitterID = id; };
     int getLightEmitterID() const { return lightEmitterID; };
 
+    void setImpactEmitterID(int id) { this->impactEmitterID = id; };
+    int getImpactEmitterID() const { return impactEmitterID; };
+
     void setSize(sf::Vector2f size) { this->collider.setSize(size); };
 private:
     Collidable* owner;
@@ -41,6 +44,7 @@ private:
     Emitter* light;
     int lightEmitterID;
     int initialEmitterID;
+    int impactEmitterID;
     int damage;
     float velocity;
     bool destroyed;
