@@ -12,7 +12,8 @@ enum class ComponentKey
     spell,
     sprite,
     tome,
-    transform
+    transform,
+    logistic
 };
 
 class Comp

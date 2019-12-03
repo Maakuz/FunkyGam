@@ -1,13 +1,13 @@
 #include "Game/Item/Item.h"
+#include "Game/Components/LogisticsComp.h"
 
-Item::Item(sf::Vector2f pos, const sf::Texture* texture):
-    sprite(texture, pos)
+
+Item::Item(sf::Vector2f pos, const sf::Texture* texture)
 {
-    id = 0;
-    stackLimit = 0;
-    emitterID = -1;
-    useable = false;
-    obtained = false;
+    addComponent(new LogisticsComp);
+
+    SpriteComp* sprite = new SpriteComp(texture, pos);
+    addComponent(sprite);
 }
 
 void Item::setPosition(sf::Vector2f pos)

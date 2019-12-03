@@ -147,6 +147,7 @@
     <ClCompile Include="src\Game\Components\ColliderComp.cpp" />
     <ClCompile Include="src\Game\Components\AI\GroundAIComp.cpp" />
     <ClCompile Include="src\Game\Components\HealthComp.cpp" />
+    <ClCompile Include="src\Game\Components\LogisticsComp.cpp" />
     <ClCompile Include="src\Game\Components\MovementComp.cpp" />
     <ClCompile Include="src\Game\Components\SpellComp.cpp" />
     <ClCompile Include="src\Game\Components\TomeComp.cpp" />
