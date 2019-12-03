@@ -16,7 +16,7 @@ public:
     Counter attackCounter;
     sf::Vector2f attackDestination;
 
-    virtual void handleCollision(const Collidable* collidable, SpriteComp* sprite = nullptr);
+    virtual void handleCollision(const ColliderComp* collidable, SpriteComp* sprite = nullptr);
 private:
     bool forcedDirResolved;
 

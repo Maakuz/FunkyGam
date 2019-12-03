@@ -212,7 +212,7 @@ void ProjectileHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates sta
             target.draw(throwable.getCollider(), states);
 
         for (const LightProjectile* projectile : projectiles)
-            target.draw(projectile->getCollider(), states);
+            target.draw(*projectile->getComponent<ColliderComp>(), states);
     }
 }
 

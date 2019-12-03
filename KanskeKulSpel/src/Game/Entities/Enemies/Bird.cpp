@@ -71,16 +71,17 @@ void Bird::updateAttack(float dt)
 
 void Bird::handleCollision(const Collidable* collidable)
 {
-    ai.handleCollision(collidable);
+    const ColliderComp* otherCollider = collidable->getComponent<ColliderComp>();
+    ai.handleCollision(otherCollider);
 
-    if (collidable->getCollider().hasComponent(ColliderKeys::throwable))
+    if (otherCollider->hasComponent(ColliderKeys::throwable))
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(collidable);
         if (throwable->getID() != 11) //is immune to birdbombs
             this->health.takeDamage(throwable->getDamage());
     }
 
-    else if (collidable->getCollider().hasComponent(ColliderKeys::fireball))
+    else if (otherCollider->hasComponent(ColliderKeys::fireball))
         this->health.takeDamage(dynamic_cast<const Fireball*>(collidable)->getDamage());
 }
 

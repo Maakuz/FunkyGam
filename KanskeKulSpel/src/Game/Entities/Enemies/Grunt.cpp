@@ -102,28 +102,30 @@ std::istream& Grunt::readSpecific(std::istream& in)
 
 void Grunt::handleCollision(const Collidable* collidable)
 {
-    ai.handleCollision(collidable);
+    const ColliderComp* otherCollider = collidable->getComponent<ColliderComp>();
 
-    if (flying && !collidable->getCollider().hasComponent(ColliderKeys::player))
+    ai.handleCollision(otherCollider);
+
+    if (flying && !otherCollider->hasComponent(ColliderKeys::player))
     {
         this->flying = false;
         this->ai.setState(AIComp::State::stunned);
     }
 
-    else if (flying && collidable->getCollider().hasComponent(ColliderKeys::player))
+    else if (flying && otherCollider->hasComponent(ColliderKeys::player))
     {
-        const Player* ptr = dynamic_cast<const Player*>(collidable);
+        const MovementComp* playerMovement = collidable->getComponent<MovementComp>();
         
-        ai.movement.addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(ai.collider.getCenterPos(), collidable->getCollider().getCenterPos(), ai.movement.momentum, ptr->getMovementComp().momentum, ai.movement.mass, ptr->getMovementComp().mass));
+        ai.movement.addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(ai.collider.getCenterPos(), otherCollider->getCenterPos(), ai.movement.momentum, playerMovement->momentum, ai.movement.mass, playerMovement->mass));
     }
 
-    if (collidable->getCollider().hasComponent(ColliderKeys::throwable))
+    if (otherCollider->hasComponent(ColliderKeys::throwable))
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(collidable);
         this->health.takeDamage(throwable->getDamage());
     }
 
-    else if (collidable->getCollider().hasComponent(ColliderKeys::fireball))
+    else if (otherCollider->hasComponent(ColliderKeys::fireball))
         this->health.takeDamage(dynamic_cast<const Fireball*>(collidable)->getDamage());
 }
 

@@ -13,12 +13,15 @@
 #define TESTING false
 
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::Vector2f size)
-    :sprite(data, pos),
-    collider(size, pos),
-    spellComp(collider.getCenterPos())
+    :Collidable(pos, size),
+    sprite(data, pos),
+    spellComp(getComponent<ColliderComp>()->getCenterPos())
 {
-    this->collider.addComponent(ColliderKeys::player);
-    this->collider.addComponent(ColliderKeys::character);
+    this->getComponent<ColliderComp>()->addComponent(ColliderKeys::player);
+    this->getComponent<ColliderComp>()->addComponent(ColliderKeys::character);
+
+    addComponent(new MovementComp);
+
     this->ui = uiHandler;
     this->illumination = 0;
     this->throwingPower = 0;
@@ -36,7 +39,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
     this->sprite.spriteOffset.x = -size.x / 2.f;
 
     
-    ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
+   /* ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
         {
             if (args.size() >= 2)
             {
@@ -45,7 +48,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
                     int x = std::stoi(args[0]);
                     int y = std::stoi(args[1]);
 
-                    movement.transform.pos = (sf::Vector2f(x, y));
+                     getComponent<MovementComp>()->transform.pos = (sf::Vector2f(x, y));
                 }
                 catch (const std::exception & e)
                 {
@@ -61,7 +64,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
 
             return "Position set";
         });
-
+    */
     ConsoleWindow::get().addCommand("debugMode", [&](Arguments args)->std::string
         {
             if (args.size() >= 1)
@@ -114,13 +117,15 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
 
 void Player::update(float dt, sf::Vector2f mousePos)
 {
+    MovementComp* movement = getComponent<MovementComp>();
+
     if (debugMode)
     {
         ImGui::Begin("Player tweaker", &debugMode);
 
-        ImGui::DragFloat("Walk speed", &this->movement.walkSpeed, 0.01, 0, 10000);
-        ImGui::DragFloat("Jump height", &this->movement.jumpHeight, 0.01, 0, 10000);
-        ImGui::DragFloat("Mass", &this->movement.mass, 0.01, 0, 10000);
+        ImGui::DragFloat("Walk speed", &movement->walkSpeed, 0.01, 0, 10000);
+        ImGui::DragFloat("Jump height", &movement->jumpHeight, 0.01, 0, 10000);
+        ImGui::DragFloat("Mass", &movement->mass, 0.01, 0, 10000);
 
         ImGui::Checkbox("Noclip", &noClip);
 
@@ -133,19 +138,19 @@ void Player::update(float dt, sf::Vector2f mousePos)
     else
         this->debugMove(dt);
 
-    if (this->movement.grounded)
+    if (movement->grounded)
         sprite.setAnimation(0);
 
     else
         sprite.setAnimation(1);
 
-    movement.update(dt);
+    movement->update(dt);
 
     updateItems(dt, mousePos);
-    spellComp.update(dt, collider.getCenterPos());
-    collider.setPosition(movement.transform.pos);
+    spellComp.update(dt, getComponent<ColliderComp>()->getCenterPos());
+    getComponent<ColliderComp>()->setPosition(movement->transform.pos);
     sprite.updateAnimation(dt);
-    sprite.setPosition(movement.transform.pos);
+    sprite.setPosition(movement->transform.pos);
 
     if (this->canReturn && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
         this->returning = true;
@@ -159,10 +164,10 @@ void Player::update(float dt, sf::Vector2f mousePos)
     ui->setHealthPercentage(this->healthComp.getHealth() / float(this->healthComp.getMaxHealth()));
     this->canReturn = false;
 
-    if (abs(movement.momentum.x) < this->movement.walkSpeed * 0.75f && !sprite.isIdle())
+    if (abs(movement->momentum.x) < movement->walkSpeed * 0.75f && !sprite.isIdle())
         sprite.pauseAnimation();
 
-    else if (abs(movement.momentum.x) > this->movement.walkSpeed * 0.75f)
+    else if (abs(movement->momentum.x) > movement->walkSpeed * 0.75f)
         sprite.resumeAnimation();
 
 
@@ -170,10 +175,11 @@ void Player::update(float dt, sf::Vector2f mousePos)
 
 void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
 {
-    this->movement.transform.pos = spawnPoint;
+    MovementComp* movement = getComponent<MovementComp>();
+    movement->transform.pos = spawnPoint;
     this->returning = false;
     this->exitReached = -1;
-    this->movement.reset();
+    movement->reset();
 
     if (fillHealth)
         this->healthComp.fillHealth();
@@ -181,11 +187,13 @@ void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
 
 void Player::updateMove(float dt)
 {
-    this->movement.acceleration = sf::Vector2f(0, 0);
+    MovementComp* movement = getComponent<MovementComp>();
+
+    movement->acceleration = sf::Vector2f(0, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
     {
-        this->movement.acceleration.x = 1;
+        movement->acceleration.x = 1;
 
         if (this->sprite.isFlippedHorizontally())
             this->sprite.flipHorizontally();
@@ -193,7 +201,7 @@ void Player::updateMove(float dt)
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
-        this->movement.acceleration.x = -1;
+        movement->acceleration.x = -1;
 
         if (!this->sprite.isFlippedHorizontally())
             this->sprite.flipHorizontally();
@@ -201,14 +209,14 @@ void Player::updateMove(float dt)
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
     {
-        movement.jump();
+        movement->jump();
     }
 
     else if (sf::Keyboard::isKeyPressed(sf::Keyboard::S) && sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
         platformPassingCounter.reset();
 
-    if (this->movement.isJumping() && !sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-        movement.stopJump(0.3);
+    if (movement->isJumping() && !sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+        movement->stopJump(0.3);
 
 
     platformPassingCounter.update(dt);
@@ -217,19 +225,21 @@ void Player::updateMove(float dt)
 
 void Player::debugMove(float dt)
 {
-    this->movement.acceleration = sf::Vector2f(0, 0);
+    MovementComp* movement = getComponent<MovementComp>();
+
+    movement->acceleration = sf::Vector2f(0, 0);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-        this->movement.acceleration.x = 1;
+        movement->acceleration.x = 1;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-        this->movement.acceleration.x = -1;
+        movement->acceleration.x = -1;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-        this->movement.acceleration.y = -1;
+        movement->acceleration.y = -1;
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift))
-        this->movement.acceleration.y = 1;
+        movement->acceleration.y = 1;
 }
 
 void Player::updateItems(float dt, sf::Vector2f mousePos)
@@ -241,13 +251,15 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
         {
             if (dynamic_cast<const Throwable*>(ItemHandler::getTemplate(itemID)))
             {
-                sf::Vector2f direction = mousePos - this->movement.transform.pos - sf::Vector2f(16, 10);
+                MovementComp* movement = getComponent<MovementComp>();
+
+                sf::Vector2f direction = mousePos - movement->transform.pos - sf::Vector2f(16, 10);
                 normalize(direction);
                 direction *= (this->throwingPower);
 
-                direction += movement.momentum * 0.5f;
+                direction += movement->momentum * 0.5f;
 
-                ProjectileHandler::addThrowable(itemID, this->movement.transform.pos, direction, this);
+                ProjectileHandler::addThrowable(itemID, movement->transform.pos, direction, this);
             }
 
             else if (dynamic_cast<const Tome*>(ItemHandler::getTemplate(itemID)))
@@ -288,78 +300,87 @@ void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void Player::handleCollision(const Collidable* colliderEntity)
 {
+    ColliderComp* collider = getComponent<ColliderComp>();
+    const ColliderComp* otherCollider = colliderEntity->getComponent<ColliderComp>();
     if (!noClip)
     {
-        if (movement.momentum.y > 0 && colliderEntity->getCollider().hasComponent(ColliderKeys::platform))
+        MovementComp* movement = getComponent<MovementComp>();
+
+        if (movement->momentum.y > 0 && otherCollider->hasComponent(ColliderKeys::platform))
         {
             //walking on ground
-            if (ColliderComp::intersects(colliderEntity->getCollider().getUpBox(), this->collider.getDownBox()))
+            if (ColliderComp::intersects(otherCollider->getUpBox(), collider->getDownBox()))
             {
                 if (platformPassingCounter.isTimeUp())
                 {
-                    this->movement.momentum.y = 0;
-                    this->movement.transform.pos.y = (colliderEntity->getCollider().up() - collider.height());
-                    this->movement.grounded = true;
+                    movement->momentum.y = 0;
+                    movement->transform.pos.y = (otherCollider->up() - collider->height());
+                    movement->grounded = true;
                 }
             }
         }
 
-        else if (colliderEntity->getCollider().hasComponent(ColliderKeys::ground))
+        else if (otherCollider->hasComponent(ColliderKeys::ground))
         {
             //walking on ground
-            if (this->movement.momentum.y > 0 && colliderEntity->getCollider().intersects(colliderEntity->getCollider().getUpBox(), this->collider.getDownBox()))
+            if (movement->momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), collider->getDownBox()))
             {
-                this->movement.momentum.y = 0;
-                this->movement.transform.pos.y = (colliderEntity->getCollider().up() - this->collider.height());
-                movement.grounded = true;
+                movement->momentum.y = 0;
+                movement->transform.pos.y = (otherCollider->up() - collider->height());
+                movement->grounded = true;
             }
 
             //smackin into roof
-            if (this->movement.momentum.y < 0 && colliderEntity->getCollider().intersects(colliderEntity->getCollider().getDownBox(), this->collider.getUpBox()))
+            if (movement->momentum.y < 0 && ColliderComp::intersects(otherCollider->getDownBox(), collider->getUpBox()))
             {
-                this->movement.momentum.y = 0;
-                this->movement.transform.pos.y = (colliderEntity->getCollider().down());
+                movement->momentum.y = 0;
+                movement->transform.pos.y = (otherCollider->down());
             }
 
-            if (colliderEntity->getCollider().intersects(colliderEntity->getCollider().getLeftBox(), this->collider.getRightBox()))
+            if (ColliderComp::intersects(otherCollider->getLeftBox(), collider->getRightBox()))
             {
-                this->movement.momentum.x *= -0.5f;
-                this->movement.transform.pos.x = (colliderEntity->getCollider().left() - this->collider.width());
+                movement->momentum.x *= -0.5f;
+                movement->transform.pos.x = (otherCollider->left() - collider->width());
             }
 
-            if (colliderEntity->getCollider().intersects(colliderEntity->getCollider().getRightBox(), this->collider.getLeftBox()))
+            if (ColliderComp::intersects(otherCollider->getRightBox(), collider->getLeftBox()))
             {
-                this->movement.momentum.x *= -0.5f;
-                this->movement.transform.pos.x = (colliderEntity->getCollider().right());
+                movement->momentum.x *= -0.5f;
+                movement->transform.pos.x = (otherCollider->right());
             }
         }
 
-        else if (colliderEntity->getCollider().hasComponent(ColliderKeys::grunt))
+        else if (otherCollider->hasComponent(ColliderKeys::grunt))
         {
             const Grunt* ptr = dynamic_cast<const Grunt*>(colliderEntity);
             if (ptr->isAttacking())
             {
-                
-                movement.addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider.getCenterPos(), colliderEntity->getCollider().getCenterPos(), movement.momentum, ptr->getMovementComp().momentum, movement.mass, ptr->getMovementComp().mass));
+                movement->addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider->getCenterPos(), otherCollider->getCenterPos(), movement->momentum, ptr->getMovementComp().momentum, movement->mass, ptr->getMovementComp().mass));
                 healthComp.takeDamage(ptr->getDamage());
             }
         }
+
+        else if (otherCollider->hasComponent(ColliderKeys::projectile))
+        {
+            const LightProjectile* ptr = dynamic_cast<const LightProjectile*>(colliderEntity);
+            healthComp.takeDamage(ptr->getDamage());
+        }
     }
 
-    if (colliderEntity->getCollider().hasComponent(ColliderKeys::levelReturn))
+    if (otherCollider->hasComponent(ColliderKeys::levelReturn))
         this->returning = true;
 
-    else if (colliderEntity->getCollider().hasComponent(ColliderKeys::levelWarp))
+    else if (otherCollider->hasComponent(ColliderKeys::levelWarp))
         this->canReturn = true;
 
-    else if (colliderEntity->getCollider().hasComponent(ColliderKeys::customTerrain))
+    else if (otherCollider->hasComponent(ColliderKeys::customTerrain))
     {
-        std::string flag = colliderEntity->getCollider().getFlag();
+        std::string flag = otherCollider->getFlag();
         if (flag.compare(0, 4, "exit") == 0)
             this->exitReached = flag[4] - '0';
     }
 
-    else if (colliderEntity->getCollider().hasComponent(ColliderKeys::throwable))
+    else if (otherCollider->hasComponent(ColliderKeys::throwable))
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(colliderEntity);
         if (throwable->getThrower() != this)
@@ -371,7 +392,7 @@ void Player::handleExplosion(const Explosion& explosion)
 {
     if (explosion.damage > 0)
     {
-        int damage = explosion.calculateDamage(this->collider.getCenterPos());
+        int damage = explosion.calculateDamage(getComponent<ColliderComp>()->getCenterPos());
         this->healthComp.takeDamage(damage);
     }
 }
@@ -380,11 +401,12 @@ std::istream& operator>>(std::istream& in, Player& player)
 {
     std::string trash;
     int health = 0;
+    MovementComp* movement = player.getComponent<MovementComp>();
     in >> trash;
 
-    in >> trash >> player.movement.walkSpeed;
-    in >> trash >> player.movement.jumpHeight;
-    in >> trash >> player.movement.mass;
+    in >> trash >> movement->walkSpeed;
+    in >> trash >> movement->jumpHeight;
+    in >> trash >> movement->mass;
     in >> trash >> health;
     in >> trash >> player.throwingPower;
 

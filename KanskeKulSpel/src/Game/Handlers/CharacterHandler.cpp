@@ -93,7 +93,7 @@ void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::V
     }
 
     this->occluders = occluders;
-    this->player->reset(playerSpawnPoint - this->player->getCollider().getSize());
+    this->player->reset(playerSpawnPoint - this->player->getComponent<ColliderComp>->getSize());
 }
 
 void CharacterHandler::loadPlayer()
@@ -317,7 +317,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
     if (!boss && bossSpawner)
     {
         bool spawn = true;
-        if (!this->bossSpawner->playerPosCriteria.contains(this->player->getMovementComp().transform.pos))
+        if (!this->bossSpawner->playerPosCriteria.contains(this->player->getComponent<MovementComp>()->transform.pos))
             spawn = false;
 
         if (spawn)
@@ -335,7 +335,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 
     if (boss)
     {
-        boss->update(dt, this->player->getCollider().getCenterPos());
+        boss->update(dt, this->player->getComponent<ColliderComp>()->getCenterPos());
         ui->displayEnemyDamage(boss->getHealth().getHealth() / float(boss->getHealth().getMaxHealth()));
     }
 
@@ -429,7 +429,7 @@ void CharacterHandler::calculatePlayerIllumination()
     {
         Light* light = LightQueue::get().getQueue()[i];
         bool playerOccluded = false;
-        sf::Vector2f dir = this->player->getCollider().getCenterPos() - light->pos;
+        sf::Vector2f dir = this->player->getComponent<ColliderComp>()->getCenterPos() - light->pos;
         float distance = length(dir);
         normalize(dir);
         if (light->radius < distance)
@@ -465,12 +465,12 @@ void CharacterHandler::calculatePlayerIllumination()
 void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 {
     sf::Vector2f pos = enemy->getEyePos();
-    if ((enemy->getFacingDir() == AIComp::Direction::left && pos.x > player->getMovementComp().transform.pos.x)
-        || (enemy->getFacingDir() == AIComp::Direction::right && pos.x <= player->getMovementComp().transform.pos.x)
+    if ((enemy->getFacingDir() == AIComp::Direction::left && pos.x > player->getComponent<MovementComp>()->transform.pos.x)
+        || (enemy->getFacingDir() == AIComp::Direction::right && pos.x <= player->getComponent<MovementComp>()->transform.pos.x)
         || enemy->getState() == AIComp::State::chasing)
     {
         bool playerHidden = false;
-        sf::Vector2f dir = this->player->getCollider().getCenterPos() - pos;
+        sf::Vector2f dir = this->player->getComponent<ColliderComp>()->getCenterPos() - pos;
         float distance = length(dir);
         normalize(dir);
 
@@ -491,7 +491,7 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 
         if (!playerHidden)
         {
-            enemy->notifyEnemy(player->getMovementComp().transform.pos + (player->getCollider().getSize() / 2.f));
+            enemy->notifyEnemy(player->getComponent<MovementComp>()->transform.pos + (player->getComponent<ColliderComp>()->getSize() / 2.f));
         }
     }
 }
@@ -512,7 +512,7 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
 {
     if (drawHitboxes)
     {
-        target.draw(player->getCollider(), states);
+        target.draw(*player->getComponent<ColliderComp>(), states);
 
         for (Enemy* enemy : enemies)
             target.draw(enemy->getCollider(), states);

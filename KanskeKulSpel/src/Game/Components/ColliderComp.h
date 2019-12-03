@@ -2,6 +2,7 @@
 #include "Game/Collision/Explosion.h"
 #include "SFML/System/Vector2.hpp"
 #include "SFML/Graphics/Drawable.hpp"
+#include "Comp.h"
 #include <set>
 #include <string>
 
@@ -20,7 +21,8 @@ enum ColliderKeys
     gatherable = 6,
     fireball = 7,
     hazard = 8,
-    projectilePassable = 9
+    projectilePassable = 9,
+    projectile = 10
 };
 
 struct AABB
@@ -46,13 +48,15 @@ struct AABB
 };
 
 
-class ColliderComp : public sf::Drawable
+class ColliderComp : public Comp, public sf::Drawable
 {
 public:
     static const int EDGE_SIZE = 16;
 
-    ColliderComp(sf::Vector2f size, const sf::Vector2f pos);
-    ~ColliderComp() {};
+    ColliderComp(sf::Vector2f size = sf::Vector2f(), const sf::Vector2f pos = sf::Vector2f());
+    virtual ~ColliderComp() {};
+
+    virtual ComponentKey getKey() const { return ComponentKey::collider; };
 
     void setPosition(sf::Vector2f pos);
 

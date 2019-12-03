@@ -6,9 +6,9 @@
 
 Throwable::Throwable(sf::Vector2f pos, const sf::Texture* texture, sf::Vector2f size)
     :Item(pos, texture),
-    collider(size, pos)
+    Collidable(pos, size)
 {
-    this->collider.addComponent(ColliderKeys::throwable);
+    this->getComponent<ColliderComp>.addComponent(ColliderKeys::throwable);
     this->armingCounter = 0;
     this->armingTime = 1000;
     this->bounce = 0.4f;
@@ -21,11 +21,17 @@ Throwable::Throwable(sf::Vector2f pos, const sf::Texture* texture, sf::Vector2f 
     this->damage = 0;
     this->thrower = nullptr;
 
-    this->movement.setAirRes(1.f);
+    MovementComp* movement = new MovementComp;
+    addComponent(movement);
+
+    movement->setAirRes(1.f);
 }
 
 void Throwable::update(float dt)
 {
+    MovementComp* movement = getComponent<MovementComp>();
+    ColliderComp* collider = getComponent<ColliderComp>();
+
     if (!detonateOnImpact)
         this->armingCounter += dt;
 
@@ -37,12 +43,12 @@ void Throwable::update(float dt)
     {
         detonated = true;
         this->explosionData.center = getTextureCenterPos();
-        ParticleHandler::addEmitter(this->particleEffectID, this->movement.transform.pos + (this->collider.getSize() / 2.f));
+        ParticleHandler::addEmitter(this->particleEffectID, movement->transform.pos + (collider->getSize() / 2.f));
     }
 
-    movement.update(dt);
-    this->sprite.setPosition(movement.transform.pos);
-    this->collider.setPosition(movement.transform.pos);
+    movement->update(dt);
+    this->sprite.setPosition(movement->transform.pos);
+    collider->setPosition(movement->transform.pos);
 }
 
 void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Collidable* thrower)
@@ -54,42 +60,44 @@ void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Collida
 
 void Throwable::handleCollision(const Collidable* collidable)
 {
+    const ColliderComp* otherCollider = collidable->getComponent<ColliderComp>();
+
     //Projectile is immune to thrower NO, NOT THE OTHER WAY AROUND
     if (collidable == thrower ||
-        collidable->getCollider().hasComponent(ColliderKeys::customTerrain) ||
-        collidable->getCollider().hasComponent(ColliderKeys::levelReturn))
+        otherCollider->hasComponent(ColliderKeys::customTerrain) ||
+        otherCollider->hasComponent(ColliderKeys::levelReturn))
         return;
 
-    if (collidable->getCollider().hasComponent(ColliderKeys::ground) ||
-        collidable->getCollider().hasComponent(ColliderKeys::character))
+    if (otherCollider->hasComponent(ColliderKeys::ground) ||
+        otherCollider->hasComponent(ColliderKeys::character))
     {
-        if (collidable->getCollider().intersects(collidable->getCollider().getLeftBox(), this->collider.getAABB()))
+        if (otherCollider->intersects(otherCollider->getLeftBox(), this->collider.getAABB()))
         {
             this->movement.momentum.x *= -bounce;
-            this->movement.transform.pos.x = (collidable->getCollider().left() - this->collider.width());
+            this->movement.transform.pos.x = (otherCollider->left() - this->collider.width());
         }
 
-        else if (collidable->getCollider().intersects(collidable->getCollider().getRightBox(), this->collider.getAABB()))
+        else if (otherCollider->intersects(otherCollider->getRightBox(), this->collider.getAABB()))
         {
             this->movement.momentum.x *= -bounce;
-            this->movement.transform.pos.x = (collidable->getCollider().right());
+            this->movement.transform.pos.x = (otherCollider->right());
         }
 
-        else if (this->movement.momentum.y > 0 && collidable->getCollider().intersects(collidable->getCollider().getUpBox(), this->collider.getAABB()))
+        else if (this->movement.momentum.y > 0 && otherCollider->intersects(otherCollider->getUpBox(), this->collider.getAABB()))
         {
             this->movement.momentum.y *= -bounce;
             this->movement.momentum.x *= 0.96f;
-            this->movement.transform.pos.y = collidable->getCollider().up() - this->collider.height();
+            this->movement.transform.pos.y = otherCollider->up() - this->collider.height();
         }
 
-        else if (collidable->getCollider().intersects(collidable->getCollider().getDownBox(), this->collider.getAABB()))
+        else if (otherCollider->intersects(otherCollider->getDownBox(), this->collider.getAABB()))
         {
             this->movement.momentum.y *= bounce;
-            this->movement.transform.pos.y = (collidable->getCollider().down());
+            this->movement.transform.pos.y = (otherCollider->down());
         }
     }
 
-    else if (collidable->getCollider().hasComponent(ColliderKeys::throwable))
+    else if (otherCollider->hasComponent(ColliderKeys::throwable))
     {
         const Throwable* ptr = dynamic_cast<const Throwable*>(collidable);
 

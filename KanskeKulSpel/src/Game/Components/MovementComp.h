@@ -1,13 +1,16 @@
 #pragma once
 #include "SFML/System/Vector2.hpp"
+#include "Comp.h"
 #include "TransformComp.h"
 #include <istream>
 
-class MovementComp
+class MovementComp : public Comp
 {
 public:
     MovementComp();
     ~MovementComp() {};
+
+    ComponentKey getKey() const { return ComponentKey::movement; };
 
     void reset();
 

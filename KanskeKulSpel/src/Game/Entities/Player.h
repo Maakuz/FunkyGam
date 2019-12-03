@@ -1,5 +1,6 @@
 #pragma once
 #include "Game/Misc/Counter.h"
+#include "Entity.h"
 #include "Game/Interface/UIHandler.h"
 #include "Game/Item/Item.h"
 #include "Game/Item/GatherItem.h"
@@ -10,10 +11,10 @@
 #include "Game/Components/HealthComp.h"
 #include <istream>
 
-class Player :public Collidable, public sf::Drawable
+class Player : public Collidable, public sf::Drawable
 {
 public:
-
+    
     Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos = sf::Vector2f(0, 0), sf::Vector2f size = sf::Vector2f(0, 0));
     ~Player() {};
 
@@ -32,9 +33,6 @@ public:
 
     virtual void handleCollision(const Collidable* collider);
     virtual void handleExplosion(const Explosion& explosion);
-    virtual const ColliderComp& getCollider() const { return collider; };
-
-    const MovementComp& getMovementComp() const { return this->movement; };
 private:
     Counter platformPassingCounter;
     UIHandler* ui;
@@ -43,9 +41,7 @@ private:
 
     float throwingPower;
 
-    ColliderComp collider;
     AnimatedSpriteComp sprite;
-    MovementComp movement;
     TomeComp spellComp;
     HealthComp healthComp;
 

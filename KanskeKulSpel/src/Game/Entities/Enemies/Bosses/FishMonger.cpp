@@ -218,45 +218,47 @@ std::istream& FishMonger::readSpecific(std::istream& in)
 
 void FishMonger::handleCollision(const Collidable* collidable)
 {
-    if (collidable->getCollider().hasComponent(ColliderKeys::ground) || collidable->getCollider().hasComponent(ColliderKeys::platform))
+    const ColliderComp* otherCollider = collidable->getComponent<ColliderComp>();
+
+    if (otherCollider->hasComponent(ColliderKeys::ground) || otherCollider->hasComponent(ColliderKeys::platform))
     {
         //walking on ground
-        if (this->movement.momentum.y > 0 && collidable->getCollider().intersects(collidable->getCollider().getUpBox(), this->collider.getDownBox()))
+        if (this->movement.momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), this->collider.getDownBox()))
         {
             this->movement.momentum.y = 0;
-            this->movement.transform.pos.y = collidable->getCollider().up() - this->collider.height();
+            this->movement.transform.pos.y = otherCollider->up() - this->collider.height();
             movement.grounded = true;
         }
 
         //smackin into roof
-        if (collidable->getCollider().intersects(collidable->getCollider().getDownBox(), this->collider.getUpBox()))
+        if (ColliderComp::intersects(otherCollider->getDownBox(), this->collider.getUpBox()))
         {
             this->movement.momentum.y = 0;
-            this->movement.transform.pos.y = collidable->getCollider().down();
+            this->movement.transform.pos.y = otherCollider->down();
         }
 
-        if (collidable->getCollider().intersects(collidable->getCollider().getLeftBox(), this->collider.getRightBox()))
+        if (ColliderComp::intersects(otherCollider->getLeftBox(), this->collider.getRightBox()))
         {
             this->movement.momentum.x *= -0.5f;
-            this->movement.transform.pos.x = collidable->getCollider().left() - this->collider.width();
+            this->movement.transform.pos.x = otherCollider->left() - this->collider.width();
             this->movement.jump();
         }
 
-        if (collidable->getCollider().intersects(collidable->getCollider().getRightBox(), this->collider.getLeftBox()))
+        if (ColliderComp::intersects(otherCollider->getRightBox(), this->collider.getLeftBox()))
         {
             this->movement.momentum.x *= -0.5f;
-            this->movement.transform.pos.x = collidable->getCollider().right();
+            this->movement.transform.pos.x = otherCollider->right();
             this->movement.jump();
         }
     }
 
-    else if (collidable->getCollider().hasComponent(ColliderKeys::throwable))
+    else if (otherCollider->hasComponent(ColliderKeys::throwable))
     {
         const Throwable* throwable = dynamic_cast<const Throwable*>(collidable);
         this->health.takeDamage(throwable->getDamage());
     }
 
-    else if (collidable->getCollider().hasComponent(ColliderKeys::fireball))
+    else if (otherCollider->hasComponent(ColliderKeys::fireball))
         this->health.takeDamage(dynamic_cast<const Fireball*>(collidable)->getDamage());
 }
 

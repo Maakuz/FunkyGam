@@ -5,7 +5,7 @@ class Hazard : public Collidable
 {
 public:
     int damage;
-    sf::Vector2f knockbackDir;
+    sf::Vector2f knockback;
 
     Hazard(sf::Vector2f pos, sf::Vector2f size, int damage = 0, bool projectilesCanPass = true) :
         collider(size, pos) 

@@ -17,13 +17,10 @@ public:
 
     const Explosion& getExplosion() const { return explosionData; };
     Explosion* getExplosionPtr() { return &this->explosionData; };
-    sf::Vector2f getMomentum() const { return this->movement.momentum; };
 
     int getDamage() const { return this->damage; };
     void setDamage(int damage) { this->damage = damage; };
 
-    float getMass()const { return movement.mass; };
-    void setMass(float mass) { this->movement.mass = mass; };
 
     int getArmingTime()const { return this->armingTime; };
     void setArmingTime(int time) { this->armingTime = time; };
@@ -42,14 +39,10 @@ public:
 
     virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion) {};
-    virtual const ColliderComp& getCollider()const { return collider; };
 
 private:
     Explosion explosionData;
     const Collidable* thrower;
-
-    MovementComp movement;
-    ColliderComp collider;
 
     float armingTime;
     float armingCounter;

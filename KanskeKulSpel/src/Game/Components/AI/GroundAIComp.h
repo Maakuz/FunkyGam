@@ -20,7 +20,7 @@ public:
 
 
 
-    virtual void handleCollision(const Collidable* collidable);
+    virtual void handleCollision(const ColliderComp* collidable);
 private:
 
 };

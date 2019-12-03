@@ -12,7 +12,7 @@ void CollisionHandler::processQueue()
     {
         for (auto entity2 = entity1 +1; entity2 < colliders.end(); entity2++)
         {
-            if ((*entity1)->getCollider().intersects((*entity2)->getCollider()))
+            if ((*entity1)->getComponent<ColliderComp>()->intersects(*(*entity2)->getComponent<ColliderComp>()))
             {
                 (*entity1)->handleCollision((*entity2));
                 (*entity2)->handleCollision((*entity1));
@@ -23,14 +23,14 @@ void CollisionHandler::processQueue()
     //Static objects cannot collide with other static objects
     for (const Collidable* staticEntity : staticColliders)
         for (Collidable* entity : colliders)
-            if (staticEntity->getCollider().intersects(entity->getCollider()))
+            if (staticEntity->getComponent<ColliderComp>()->intersects(*entity->getComponent<ColliderComp>()))
                 entity->handleCollision(staticEntity);
 
 
 
     for (Explosion& explosion : explosions)
         for (Collidable* entity : colliders)
-            if (lengthSquared(explosion.center - entity->getCollider().getCenterPos()) < explosion.radius * explosion.radius)
+            if (lengthSquared(explosion.center - entity->getComponent<ColliderComp>()->getCenterPos()) < explosion.radius * explosion.radius)
                 entity->handleExplosion(explosion);
 
 
@@ -43,7 +43,7 @@ void CollisionHandler::processQueue()
     
         for (Collidable* entity : colliders)
         {
-            if (terrain->getCollider().intersects(entity->getCollider()))
+            if (terrain->getCollider().intersects(*entity->getComponent<ColliderComp>()))
             {
                 entity->handleCollision(terrain);
                 terrain->handleCollision(entity);

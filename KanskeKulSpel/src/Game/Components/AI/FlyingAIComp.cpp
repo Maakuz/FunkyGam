@@ -135,29 +135,29 @@ void FlyingAIComp::updateStunned(float dt, SpriteComp* sprite)
     }
 }
 
-void FlyingAIComp::handleCollision(const Collidable* collidable, SpriteComp* sprite)
+void FlyingAIComp::handleCollision(const ColliderComp* otherCollider, SpriteComp* sprite)
 {
-    if (collidable->getCollider().hasComponent(ColliderKeys::ground))
+    if (otherCollider->hasComponent(ColliderKeys::ground))
     {
 
-        if (collidable->getCollider().intersects(collidable->getCollider().getLeftBox(), this->collider.getRightBox()))
+        if (ColliderComp::intersects(otherCollider->getLeftBox(), this->collider.getRightBox()))
         {
             this->movement.momentum.x *= -0.5f;
             this->movement.acceleration.x *= -1;
             this->facingDir = Direction::left;
-            this->movement.transform.pos.x = collidable->getCollider().left() - this->collider.width();
+            this->movement.transform.pos.x = otherCollider->left() - this->collider.width();
             this->movement.jump();
 
             if (sprite)
                 sprite->flipHorizontally();
         }
 
-        else if (collidable->getCollider().intersects(collidable->getCollider().getRightBox(), this->collider.getLeftBox()))
+        else if (ColliderComp::intersects(otherCollider->getRightBox(), this->collider.getLeftBox()))
         {
             this->movement.momentum.x *= -0.5f;
             this->movement.acceleration.x *= -1;
             this->facingDir = Direction::right;
-            this->movement.transform.pos.x = collidable->getCollider().right();
+            this->movement.transform.pos.x = otherCollider->right();
             this->movement.jump();
 
             if (sprite)
@@ -166,20 +166,20 @@ void FlyingAIComp::handleCollision(const Collidable* collidable, SpriteComp* spr
 
 
         //walking on ground
-        else if (this->movement.momentum.y > 0 && collidable->getCollider().intersects(collidable->getCollider().getUpBox(), this->collider.getDownBox()))
+        else if (this->movement.momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), this->collider.getDownBox()))
         {
             this->movement.momentum.y = 0;
             this->movement.acceleration.y *= -1;
-            this->movement.transform.pos.y = collidable->getCollider().up() - this->collider.height();
+            this->movement.transform.pos.y = otherCollider->up() - this->collider.height();
             movement.grounded = true;
         }
 
         //smackin into roof
-        else if (collidable->getCollider().intersects(collidable->getCollider().getDownBox(), this->collider.getUpBox()))
+        else if (ColliderComp::intersects(otherCollider->getDownBox(), this->collider.getUpBox()))
         {
             this->movement.momentum.y = 0;
             this->movement.acceleration.y *= -1;
-            this->movement.transform.pos.y = collidable->getCollider().down();
+            this->movement.transform.pos.y = otherCollider->down();
         }
     }
 

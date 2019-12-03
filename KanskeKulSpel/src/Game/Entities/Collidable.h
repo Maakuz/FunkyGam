@@ -1,10 +1,18 @@
 #pragma once
 #include "Game/Components/ColliderComp.h"
+#include "Game/Entities/Entity.h"
 
-class Collidable
+class Collidable : public Entity
 {
 public:
-    virtual const ColliderComp& getCollider()const = 0;
+    Collidable(sf::Vector2f pos = sf::Vector2f(), sf::Vector2f size = sf::Vector2f())
+    {
+        ColliderComp* comp = new ColliderComp(size, pos);
+
+        addComponent(comp);
+    };
+
+    virtual ~Collidable() { };
 
 protected:
     friend class CollisionHandler;

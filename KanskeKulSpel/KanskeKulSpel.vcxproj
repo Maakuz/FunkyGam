@@ -157,6 +157,7 @@
     <ClCompile Include="src\Game\Entities\Enemies\Bosses\FishMonger.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Enemy.cpp" />
     <ClCompile Include="src\Game\Entities\Enemies\Grunt.cpp" />
+    <ClCompile Include="src\Game\Entities\Entity.cpp" />
     <ClCompile Include="src\Game\Item\Item.cpp" />
     <ClCompile Include="src\Game\Item\ItemEditor.cpp" />
     <ClCompile Include="src\Game\Item\Projectile\LightProjectile.cpp" />
@@ -218,7 +219,10 @@
     <ClInclude Include="src\Game\Components\AnimatedSpriteComp.h" />
     <ClInclude Include="src\Game\Components\ColliderComp.h" />
     <ClInclude Include="src\Game\Components\AI\GroundAIComp.h" />
+    <ClInclude Include="src\Game\Components\Comp.h" />
+    <ClInclude Include="src\Game\Components\DamageComp.h" />
     <ClInclude Include="src\Game\Components\HealthComp.h" />
+    <ClInclude Include="src\Game\Components\LogisticsComp.h" />
     <ClInclude Include="src\Game\Components\MovementComp.h" />
     <ClInclude Include="src\Game\Components\SpellComp.h" />
     <ClInclude Include="src\Game\Components\TomeComp.h" />
@@ -231,6 +235,7 @@
     <ClInclude Include="src\Game\Entities\Enemies\Bosses\FishMonger.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Enemy.h" />
     <ClInclude Include="src\Game\Entities\Enemies\Grunt.h" />
+    <ClInclude Include="src\Game\Entities\Entity.h" />
     <ClInclude Include="src\Game\Entities\Hazard.h" />
     <ClInclude Include="src\Game\Item\GatherItem.h" />
     <ClInclude Include="src\Game\Item\Item.h" />

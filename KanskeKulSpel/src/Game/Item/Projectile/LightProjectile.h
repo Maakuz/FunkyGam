@@ -19,7 +19,6 @@ public:
 
     virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion) {};
-    virtual const ColliderComp& getCollider()const { return this->collider; };
 
     void setDamage(int damage) { this->damage = damage; };
     int getDamage()const { return damage; };
@@ -36,11 +35,9 @@ public:
     void setImpactEmitterID(int id) { this->impactEmitterID = id; };
     int getImpactEmitterID() const { return impactEmitterID; };
 
-    void setSize(sf::Vector2f size) { this->collider.setSize(size); };
+    void setSize(sf::Vector2f size) { this->getComponent<ColliderComp>()->setSize(size); };
 private:
     Collidable* owner;
-    ColliderComp collider;
-    MovementComp movement;
     Emitter* light;
     int lightEmitterID;
     int initialEmitterID;

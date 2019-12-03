@@ -94,7 +94,7 @@ void ItemHandler::update(float dt, Player* player)
         }
         else
         {
-            if (length(player->getCollider().getCenterPos() - item->item.getTextureCenterPos()) < this->gatherRange)
+            if (length(player->getComponent<ColliderComp>()->getCenterPos() - item->item.getTextureCenterPos()) < this->gatherRange)
                 inRange = item;
         }
     }

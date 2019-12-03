@@ -477,7 +477,7 @@ void ItemEditor::showProjectileData(LightProjectile* projectile, std::string* na
     ImGui::DragFloat("Velocity", &velocity, 1, 0, 100000);
     projectile->setVelocity(velocity);
 
-    float size = projectile->getCollider().getSize().x;
+    float size = projectile->getComponent<ColliderComp>()->getSize().x;
     ImGui::DragFloat("size", &size, 1, 0, 100000);
     projectile->setSize(sf::Vector2f(size, size));
 }

@@ -59,7 +59,7 @@ function updateAI(x, y, mX, mY, pX, pY, dt)
 		if (health / maxHealth) < 0.5 then
 			transitioning = true
 		end
-	elseif phaseTwo == true then
+	elseif phaseTwo == true and channelling == false then
 		updatePhaseTwo(x, y, pX, pY, dt)
 	end
 	
@@ -95,6 +95,7 @@ function updatePhaseTwo(x, y, pX, pY, dt)
 		attackCounter = 0
 		attack = true
 		channelling = true
+		momentum.x = momentum.x * 0.05
 	end
 end
 

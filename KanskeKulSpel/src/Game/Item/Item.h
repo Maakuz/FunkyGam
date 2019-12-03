@@ -46,12 +46,7 @@ protected:
     SpriteComp sprite;
 
 private:
-    int id;
-    std::string name;
-    int stackLimit;
-    int emitterID;
-    bool useable;
-    bool obtained;
+
 
 
     virtual std::istream& readSpecific(std::istream& in) { return in; };

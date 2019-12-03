@@ -181,11 +181,11 @@ void Game::updateLevel(float dt)
 
     if (!paused)
     {
-        static Light light(this->characterHandler.getPlayer()->getMovementComp().transform.pos + sf::Vector2f(32, 30), 400, sf::Vector3f(0.1f, 0.1f, 0.05f));
-        light.pos = this->characterHandler.getPlayer()->getMovementComp().transform.pos;
+        static Light light(this->characterHandler.getPlayer()->getComponent<MovementComp>()->transform.pos + sf::Vector2f(32, 30), 400, sf::Vector3f(0.1f, 0.1f, 0.05f));
+        light.pos = this->characterHandler.getPlayer()->getComponent<MovementComp>()->transform.pos;
         LightQueue::get().queue(&light);
 
-        sf::Vector2f center = this->characterHandler.getPlayer()->getMovementComp().transform.pos;
+        sf::Vector2f center = this->characterHandler.getPlayer()->getComponent<MovementComp>()->transform.pos;
         center.x = std::max(center.x, view.getSize().x / 2);
         center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / 2));
         center.y = std::max(center.y, view.getSize().y / 2);
