@@ -45,7 +45,12 @@ class AnimatedSpriteComp : public SpriteComp
 {
 public:
     AnimatedSpriteComp(AnimationData data, sf::Vector2f pos = sf::Vector2f(0, 0));
-    ~AnimatedSpriteComp() {};
+
+    //only for getting the key
+    virtual ~AnimatedSpriteComp() {};
+
+    static ComponentKey getStaticKey() { return ComponentKey::animatedSprite; };
+    virtual Comp* clone() const { return new AnimatedSpriteComp(*this); };
 
     void flipHorizontally();
     void setAnimationData(AnimationData data);

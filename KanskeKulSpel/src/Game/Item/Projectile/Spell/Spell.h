@@ -5,7 +5,7 @@
 #include "Game/Components/TransformComp.h"
 #include "Game/Entities/Collidable.h"
 
-class Spell
+class Spell : public Collidable
 {
 public:
     Spell(sf::Vector2f pos);
@@ -22,9 +22,6 @@ public:
 
     std::string getName() const { return name; };
     void setName(std::string name) { this->name = name; };
-
-protected:
-    TransformComp transform;
 
 private:
     std::string name;

@@ -19,5 +19,6 @@ enum class ComponentKey
 class Comp
 {
 public:
-    virtual ComponentKey getKey() const = 0;
+    virtual ~Comp() {};
+    virtual Comp* clone() const = 0;
 };

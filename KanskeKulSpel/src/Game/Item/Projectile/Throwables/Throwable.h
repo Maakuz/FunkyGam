@@ -1,26 +1,27 @@
 #pragma once
-#include "Game/Item/Item.h"
+#include "SFML/Graphics/Drawable.hpp"
 #include "Game/Entities/Collidable.h"
 #include "Game/Components/MovementComp.h"
+#include "Game/Components/DamageComp.h"
+#include "Game/Components/SpriteComp.h"
 
-class Throwable : public Item, public Collidable
+class Throwable : public Collidable, public sf::Drawable
 {
 public:
     Throwable(sf::Vector2f pos, const sf::Texture* texture, sf::Vector2f size);
-    ~Throwable() { };
+    virtual ~Throwable() { };
+
+    friend std::istream& operator>>(std::istream& in, Throwable& throwable);
+    friend std::ostream& operator<<(std::ostream& out, const Throwable& throwable);
 
     void update(float dt);
 
     bool hasDetonated() const { return detonated; };
 
-    void throwItem(sf::Vector2f pos, sf::Vector2f momentum, const Collidable* thrower);
+    void throwItem(sf::Vector2f pos, sf::Vector2f momentum, DamageComp::DamageOrigin origin);
 
     const Explosion& getExplosion() const { return explosionData; };
     Explosion* getExplosionPtr() { return &this->explosionData; };
-
-    int getDamage() const { return this->damage; };
-    void setDamage(int damage) { this->damage = damage; };
-
 
     int getArmingTime()const { return this->armingTime; };
     void setArmingTime(int time) { this->armingTime = time; };
@@ -34,15 +35,13 @@ public:
     int getParticleEffectID()const { return particleEffectID; };
     void setParticleEffectID(int effectID) { this->particleEffectID = effectID; };
 
-    //Careful with this, could crash if thrower is gone
-    const Collidable* getThrower()const { return this->thrower; };
-
     virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion) {};
 
+    virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+
 private:
     Explosion explosionData;
-    const Collidable* thrower;
 
     float armingTime;
     float armingCounter;
@@ -51,10 +50,6 @@ private:
     bool armed;
     bool detonateOnImpact;
     bool detonated;
-    int damage;
 
     int particleEffectID;
-    
-    virtual std::istream& readSpecific(std::istream& in);
-    virtual std::ostream& writeSpecific(std::ostream& out) const;
 };

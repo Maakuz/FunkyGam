@@ -13,14 +13,19 @@
 #define TESTING false
 
 Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::Vector2f size)
-    :Collidable(pos, size),
-    sprite(data, pos),
-    spellComp(getComponent<ColliderComp>()->getCenterPos())
+    :Collidable(pos, size)
 {
     this->getComponent<ColliderComp>()->addComponent(ColliderKeys::player);
-    this->getComponent<ColliderComp>()->addComponent(ColliderKeys::character);
 
-    addComponent(new MovementComp);
+    addComponent<MovementComp>(new MovementComp);
+
+    AnimatedSpriteComp* sprite = new AnimatedSpriteComp(data, pos);
+    addComponent<AnimatedSpriteComp>(sprite);
+
+    TomeComp* tome = new TomeComp(getComponent<ColliderComp>()->getCenterPos());
+    addComponent<TomeComp>(tome);
+
+    addComponent<HealthComp>(new HealthComp);
 
     this->ui = uiHandler;
     this->illumination = 0;
@@ -35,11 +40,11 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
 
-    this->sprite.spriteOffset.y = -(abs(sprite.getTextureRect().height) - size.y);
-    this->sprite.spriteOffset.x = -size.x / 2.f;
+    sprite->spriteOffset.y = -(abs(sprite->getTextureRect().height) - size.y);
+    sprite->spriteOffset.x = -size.x / 2.f;
 
     
-   /* ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
+   ConsoleWindow::get().addCommand("setPos", [&](Arguments args)->std::string 
         {
             if (args.size() >= 2)
             {
@@ -48,7 +53,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
                     int x = std::stoi(args[0]);
                     int y = std::stoi(args[1]);
 
-                     getComponent<MovementComp>()->transform.pos = (sf::Vector2f(x, y));
+                     this->getMovementComp()->transform.pos = (sf::Vector2f(x, y));
                 }
                 catch (const std::exception & e)
                 {
@@ -64,7 +69,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
 
             return "Position set";
         });
-    */
+    
     ConsoleWindow::get().addCommand("debugMode", [&](Arguments args)->std::string
         {
             if (args.size() >= 1)
@@ -97,7 +102,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
                 {
                     int x = std::stoi(args[0]);
 
-                    healthComp.setHealth(x);
+                    this->getHealthComp()->setCurrentHealth(x);
                 }
                 catch (const std::exception & e)
                 {
@@ -117,7 +122,8 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
 
 void Player::update(float dt, sf::Vector2f mousePos)
 {
-    MovementComp* movement = getComponent<MovementComp>();
+    MovementComp* movement = getMovementComp();
+    AnimatedSpriteComp* sprite = getComponent<AnimatedSpriteComp>();
 
     if (debugMode)
     {
@@ -139,55 +145,56 @@ void Player::update(float dt, sf::Vector2f mousePos)
         this->debugMove(dt);
 
     if (movement->grounded)
-        sprite.setAnimation(0);
+        sprite->setAnimation(0);
 
     else
-        sprite.setAnimation(1);
+        sprite->setAnimation(1);
 
     movement->update(dt);
 
     updateItems(dt, mousePos);
-    spellComp.update(dt, getComponent<ColliderComp>()->getCenterPos());
+    getTomeComp()->update(dt, getComponent<ColliderComp>()->getCenterPos());
     getComponent<ColliderComp>()->setPosition(movement->transform.pos);
-    sprite.updateAnimation(dt);
-    sprite.setPosition(movement->transform.pos);
+    sprite->updateAnimation(dt);
+    sprite->setPosition(movement->transform.pos);
 
     if (this->canReturn && sf::Keyboard::isKeyPressed(sf::Keyboard::E))
         this->returning = true;
 
     if (this->gatherableInRange != nullptr && KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::E))
     {
-        this->gatherableInRange->item.pluck();
-        this->ui->getInventory()->addItem(this->gatherableInRange->item.getID(), this->gatherableInRange->count);
+        this->gatherableInRange->item.getComponent<LogisticsComp>()->pluck();
+        this->ui->getInventory()->addItem(this->gatherableInRange->item.getComponent<LogisticsComp>()->id, this->gatherableInRange->count);
     }
 
-    ui->setHealthPercentage(this->healthComp.getHealth() / float(this->healthComp.getMaxHealth()));
+    ui->setHealthPercentage(getHealthComp()->getHealthPercentage());
     this->canReturn = false;
 
-    if (abs(movement->momentum.x) < movement->walkSpeed * 0.75f && !sprite.isIdle())
-        sprite.pauseAnimation();
+    if (abs(movement->momentum.x) < movement->walkSpeed * 0.75f && !sprite->isIdle())
+        sprite->pauseAnimation();
 
     else if (abs(movement->momentum.x) > movement->walkSpeed * 0.75f)
-        sprite.resumeAnimation();
+        sprite->resumeAnimation();
 
 
 }
 
 void Player::reset(sf::Vector2f spawnPoint, bool fillHealth)
 {
-    MovementComp* movement = getComponent<MovementComp>();
+    MovementComp* movement = getMovementComp();
     movement->transform.pos = spawnPoint;
     this->returning = false;
     this->exitReached = -1;
     movement->reset();
 
     if (fillHealth)
-        this->healthComp.fillHealth();
+        getHealthComp()->fillHealth();
 }
 
 void Player::updateMove(float dt)
 {
-    MovementComp* movement = getComponent<MovementComp>();
+    MovementComp* movement = getMovementComp();
+    AnimatedSpriteComp* sprite = getAnimatedSpriteComp();
 
     movement->acceleration = sf::Vector2f(0, 0);
 
@@ -195,16 +202,16 @@ void Player::updateMove(float dt)
     {
         movement->acceleration.x = 1;
 
-        if (this->sprite.isFlippedHorizontally())
-            this->sprite.flipHorizontally();
+        if (sprite->isFlippedHorizontally())
+            sprite->flipHorizontally();
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
     {
         movement->acceleration.x = -1;
 
-        if (!this->sprite.isFlippedHorizontally())
-            this->sprite.flipHorizontally();
+        if (!sprite->isFlippedHorizontally())
+            sprite->flipHorizontally();
     }
 
     if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Space) && !sf::Keyboard::isKeyPressed(sf::Keyboard::S))
@@ -225,7 +232,7 @@ void Player::updateMove(float dt)
 
 void Player::debugMove(float dt)
 {
-    MovementComp* movement = getComponent<MovementComp>();
+    MovementComp* movement = getMovementComp();
 
     movement->acceleration = sf::Vector2f(0, 0);
 
@@ -251,7 +258,7 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
         {
             if (dynamic_cast<const Throwable*>(ItemHandler::getTemplate(itemID)))
             {
-                MovementComp* movement = getComponent<MovementComp>();
+                MovementComp* movement = getMovementComp();
 
                 sf::Vector2f direction = mousePos - movement->transform.pos - sf::Vector2f(16, 10);
                 normalize(direction);
@@ -259,19 +266,19 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
 
                 direction += movement->momentum * 0.5f;
 
-                ProjectileHandler::addThrowable(itemID, movement->transform.pos, direction, this);
+                ProjectileHandler::addThrowable(itemID, movement->transform.pos, direction, DamageComp::DamageOrigin::player);
             }
 
             else if (dynamic_cast<const Tome*>(ItemHandler::getTemplate(itemID)))
             {
-                spellComp.startChannelling(itemID);
+                getTomeComp()->startChannelling(itemID);
             }
         }
     }
 
-    if (spellComp.isChannelling()  && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
+    if (getTomeComp()->isChannelling()  && !sf::Mouse::isButtonPressed(sf::Mouse::Right))
     {
-        spellComp.castSpell(mousePos);
+        getTomeComp()->castSpell(mousePos);
     }
 
     for (int i = 0; i < 5; i++)
@@ -279,7 +286,7 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
         if (KEYBOARD::KeyboardState::isKeyClicked(sf::Keyboard::Key(27 + i))) //keys 1 to 5
         {
             ui->getInventory()->setSelectedItem(i);
-            spellComp.stopChannelling();
+            getTomeComp()->stopChannelling();
         }
     }
 
@@ -295,16 +302,16 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
 
 void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(sprite, states);
+    target.draw(*getAnimatedSpriteComp(), states);
 }
 
 void Player::handleCollision(const Collidable* colliderEntity)
 {
-    ColliderComp* collider = getComponent<ColliderComp>();
-    const ColliderComp* otherCollider = colliderEntity->getComponent<ColliderComp>();
+    ColliderComp* collider = getColliderComp();
+    const ColliderComp* otherCollider = colliderEntity->getColliderComp();
     if (!noClip)
     {
-        MovementComp* movement = getComponent<MovementComp>();
+        MovementComp* movement = getMovementComp();
 
         if (movement->momentum.y > 0 && otherCollider->hasComponent(ColliderKeys::platform))
         {
@@ -355,15 +362,9 @@ void Player::handleCollision(const Collidable* colliderEntity)
             const Grunt* ptr = dynamic_cast<const Grunt*>(colliderEntity);
             if (ptr->isAttacking())
             {
-                movement->addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider->getCenterPos(), otherCollider->getCenterPos(), movement->momentum, ptr->getMovementComp().momentum, movement->mass, ptr->getMovementComp().mass));
-                healthComp.takeDamage(ptr->getDamage());
+                movement->addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider->getCenterPos(), otherCollider->getCenterPos(), movement->momentum, ptr->getMovementComp()->momentum, movement->mass, ptr->getMovementComp()->mass));
+                getHealthComp()->takeDamage(ptr->getDamageComp()->damage);
             }
-        }
-
-        else if (otherCollider->hasComponent(ColliderKeys::projectile))
-        {
-            const LightProjectile* ptr = dynamic_cast<const LightProjectile*>(colliderEntity);
-            healthComp.takeDamage(ptr->getDamage());
         }
     }
 
@@ -380,11 +381,11 @@ void Player::handleCollision(const Collidable* colliderEntity)
             this->exitReached = flag[4] - '0';
     }
 
-    else if (otherCollider->hasComponent(ColliderKeys::throwable))
+    else if (otherCollider->hasComponent(ColliderKeys::throwable) || otherCollider->hasComponent(ColliderKeys::projectile))
     {
-        const Throwable* throwable = dynamic_cast<const Throwable*>(colliderEntity);
-        if (throwable->getThrower() != this)
-            this->healthComp.takeDamage(throwable->getDamage());
+        const DamageComp* damage = colliderEntity->getComponent<DamageComp>();
+        if (damage->origin != DamageComp::DamageOrigin::player)
+            this->getHealthComp()->takeDamage(damage->damage);
     }
 }
 
@@ -393,7 +394,7 @@ void Player::handleExplosion(const Explosion& explosion)
     if (explosion.damage > 0)
     {
         int damage = explosion.calculateDamage(getComponent<ColliderComp>()->getCenterPos());
-        this->healthComp.takeDamage(damage);
+        this->getHealthComp()->takeDamage(damage);
     }
 }
 
@@ -401,7 +402,7 @@ std::istream& operator>>(std::istream& in, Player& player)
 {
     std::string trash;
     int health = 0;
-    MovementComp* movement = player.getComponent<MovementComp>();
+    MovementComp* movement = player.getMovementComp();
     in >> trash;
 
     in >> trash >> movement->walkSpeed;
@@ -410,8 +411,8 @@ std::istream& operator>>(std::istream& in, Player& player)
     in >> trash >> health;
     in >> trash >> player.throwingPower;
 
-    player.healthComp.setMaxHealth(health);
-    player.healthComp.setHealth(health);
+    player.getHealthComp()->setMaxHealth(health);
+    player.getHealthComp()->setCurrentHealth(health);
 
     return in;
 }

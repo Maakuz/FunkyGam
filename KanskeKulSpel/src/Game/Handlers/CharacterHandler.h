@@ -29,7 +29,7 @@ public:
 
 
     CharacterHandler(UIHandler* uiHandler);
-    ~CharacterHandler();
+    virtual ~CharacterHandler();
 
     void initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint);
     void loadPlayer();

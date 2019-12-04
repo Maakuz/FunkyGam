@@ -1,8 +1,9 @@
 #include "Spell.h"
 
-Spell::Spell(sf::Vector2f pos)
+Spell::Spell(sf::Vector2f pos):
+    Collidable(pos, sf::Vector2f(32, 32))
 {
-    transform.pos = pos;
+    addComponent<TransformComp>(new TransformComp(pos));
 }
 
 std::istream& operator>>(std::istream& in, Spell& spell)

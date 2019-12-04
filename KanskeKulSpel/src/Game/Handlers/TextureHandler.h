@@ -11,7 +11,7 @@ public:
         static TextureHandler tex;
         return tex;
     }
-    ~TextureHandler() {};
+    virtual ~TextureHandler() {};
 
     void loadTextures();
 

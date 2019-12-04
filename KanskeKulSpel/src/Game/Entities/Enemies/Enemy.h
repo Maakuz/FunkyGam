@@ -13,7 +13,7 @@ class Enemy : public Collidable, public sf::Drawable
 {
 public:
     Enemy(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset);
-    ~Enemy() {};
+    virtual ~Enemy() {};
 
     friend std::istream& operator>>(std::istream& in, Enemy& enemy);
 
@@ -23,7 +23,6 @@ public:
 
     bool isAlive();
     bool isHealthChanged();
-    float getHealthPercentage() const;
 
     AIComp::Direction getFacingDir() const { return this->getAI()->facingDir; }
     AIComp::State getState() const { return this->getAI()->getState(); }
@@ -34,13 +33,7 @@ public:
     void setEyeLevel(sf::Vector2f eyeLevel) { this->getAI()->eyeLevel = eyeLevel; };
     sf::Vector2f getLastKnownPos() const { return this->getAI()->lastKnownPlayerPos; };
 
-    const MovementComp& getMovementComp() const { return this->getAI()->movement; };
-
-
-    virtual const ColliderComp& getCollider()const { return getAI()->collider; };
 protected:
-    HealthComp health;
-    AnimatedSpriteComp sprite;
     sf::Sprite question;
     sf::Sprite exclamation;
     Counter drawExclamation;

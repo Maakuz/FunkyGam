@@ -1,11 +1,15 @@
 #pragma once
 #include "Game/Particles/Emitter.h"
+#include "Game/Components/Comp.h"
 
-class TomeComp
+class TomeComp : public Comp
 {
 public:
     TomeComp(sf::Vector2f pos);
-    ~TomeComp();
+    virtual ~TomeComp();
+
+    static ComponentKey getStaticKey() { return ComponentKey::tome; };
+    virtual Comp* clone() const { return new TomeComp(*this); };
 
     void startChannelling(int tomeID);
     void stopChannelling();

@@ -6,7 +6,7 @@ class TextBubble : public sf::Drawable
 public:
     TextBubble(sf::Texture* texture, sf::Font* font);
     TextBubble();
-    ~TextBubble() {};
+    virtual ~TextBubble() {};
 
     void create(sf::Texture* texture, sf::Font* font);
     //this only works if the textures has the same dimensions. TAKE HEED

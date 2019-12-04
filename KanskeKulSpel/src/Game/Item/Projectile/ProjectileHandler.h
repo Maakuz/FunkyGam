@@ -10,15 +10,16 @@ class ProjectileHandler : public sf::Drawable, public DebugDrawable
 {
 public:
     ProjectileHandler();
-    ~ProjectileHandler();
+    virtual ~ProjectileHandler();
 
     void update(float dt, Player* player);
     void loadTemplates();
     void queueColliders();
+    void reset();
 
-    static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Collidable* thrower);
+    static void addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, DamageComp::DamageOrigin origin);
     static void addSpell(std::string spellID, sf::Vector2f pos, sf::Vector2f destination, float channelTime);
-    static void addProjectile(int projectileID, sf::Vector2f pos, sf::Vector2f direction, Collidable* shooter);
+    static void addProjectile(int projectileID, sf::Vector2f pos, sf::Vector2f direction, DamageComp::DamageOrigin origin);
 
     virtual void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 private:

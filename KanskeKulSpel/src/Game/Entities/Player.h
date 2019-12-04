@@ -16,7 +16,7 @@ class Player : public Collidable, public sf::Drawable
 public:
     
     Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos = sf::Vector2f(0, 0), sf::Vector2f size = sf::Vector2f(0, 0));
-    ~Player() {};
+    virtual ~Player() {};
 
     friend std::istream& operator>>(std::istream& in, Player& player);
 
@@ -25,7 +25,7 @@ public:
 
     void setIllumination(float illumination) { this->illumination = illumination; };
     float getIllumination() const { return illumination; };
-    bool isAlive() const { return this->healthComp.isAlive(); };
+    bool isAlive() const { return this->getHealthComp()->isAlive(); };
     bool isReturning() const { return this->returning; };
     int getExitReached() const { return this->exitReached; };
 
@@ -40,10 +40,6 @@ private:
     float illumination;
 
     float throwingPower;
-
-    AnimatedSpriteComp sprite;
-    TomeComp spellComp;
-    HealthComp healthComp;
 
     bool debugMode;
     bool noClip;

@@ -538,7 +538,7 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
         for (int i = 0; i < recipe->components.size(); i++)
         {
             this->infoBox.appendText(std::to_string(recipe->componentAmounts[i]) + " ");
-            this->infoBox.appendText(ItemHandler::getTemplate(recipe->components[i])->getName() + "\n");
+            this->infoBox.appendText(ItemHandler::getTemplate(recipe->components[i])->getLogisticsComp()->name + "\n");
         }
 
         this->infoBox.appendText("\n\nYou have:\n");
@@ -551,7 +551,7 @@ void HubHandler::updateAlchemy(sf::Vector2f mousePos)
 
 
             this->infoBox.appendText(std::to_string(currentAmount) + " ");
-            this->infoBox.appendText(ItemHandler::getTemplate(recipe->components[i])->getName() + "\n");
+            this->infoBox.appendText(ItemHandler::getTemplate(recipe->components[i])->getLogisticsComp()->name + "\n");
         }
 
         if (craftingClearance)

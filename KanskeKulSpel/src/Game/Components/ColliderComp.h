@@ -6,23 +6,23 @@
 #include <set>
 #include <string>
 
-enum ColliderKeys
+enum class ColliderKeys
 {
-    ground = 501,
-    platform = 502,
-    levelWarp = 507,
-    levelReturn = 508,
-    customTerrain = 999,
-    player = 1,
-    Static = 2,
-    throwable = 3,
-    character = 4,
-    grunt = 5,
-    gatherable = 6,
-    fireball = 7,
-    hazard = 8,
-    projectilePassable = 9,
-    projectile = 10
+    ground,
+    platform,
+    levelWarp,
+    levelReturn,
+    customTerrain,
+    player,
+    enemy,
+    Static,
+    throwable,
+    grunt,
+    gatherable,
+    fireball,
+    hazard,
+    projectilePassable,
+    projectile
 };
 
 struct AABB
@@ -53,10 +53,11 @@ class ColliderComp : public Comp, public sf::Drawable
 public:
     static const int EDGE_SIZE = 16;
 
-    ColliderComp(sf::Vector2f size = sf::Vector2f(), const sf::Vector2f pos = sf::Vector2f());
+    ColliderComp(sf::Vector2f size, const sf::Vector2f pos = sf::Vector2f());
     virtual ~ColliderComp() {};
+    Comp* clone() const { return new ColliderComp(*this); };
 
-    virtual ComponentKey getKey() const { return ComponentKey::collider; };
+     static ComponentKey getStaticKey() { return ComponentKey::collider; };
 
     void setPosition(sf::Vector2f pos);
 

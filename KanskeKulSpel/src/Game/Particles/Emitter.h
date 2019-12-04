@@ -244,7 +244,7 @@ public:
 
     Emitter(const Emitter& other);
     Emitter& operator=(const Emitter& other);
-    ~Emitter();
+    virtual ~Emitter();
 
     void update(float dt);
     void queueLights();

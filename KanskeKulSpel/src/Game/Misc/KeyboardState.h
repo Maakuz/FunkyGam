@@ -9,7 +9,7 @@ namespace KEYBOARD
     {
     private:
         KeyboardState() {};
-        ~KeyboardState() {};
+        virtual ~KeyboardState() {};
         static std::map<sf::Keyboard::Key, bool> prevKeyState;
 
     public:

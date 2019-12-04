@@ -93,7 +93,7 @@ void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::V
     }
 
     this->occluders = occluders;
-    this->player->reset(playerSpawnPoint - this->player->getComponent<ColliderComp>->getSize());
+    this->player->reset(playerSpawnPoint - this->player->getComponent<ColliderComp>()->getSize());
 }
 
 void CharacterHandler::loadPlayer()
@@ -307,7 +307,7 @@ void CharacterHandler::spawnEnemies(const LevelInfo* info)
         int i = rand() % info->enemies.size();
         
         Enemy* enemy = spawnEnemy(info->enemies[i]);
-        enemy->spawn(point - sf::Vector2f(0, enemy->getCollider().getSize().y));
+        enemy->spawn(point - sf::Vector2f(0, enemy->getColliderComp()->getSize().y));
         enemies.push_back(enemy);
     }
 }
@@ -336,7 +336,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
     if (boss)
     {
         boss->update(dt, this->player->getComponent<ColliderComp>()->getCenterPos());
-        ui->displayEnemyDamage(boss->getHealth().getHealth() / float(boss->getHealth().getMaxHealth()));
+        ui->displayEnemyDamage(boss->getHealthComp()->getHealthPercentage());
     }
 
     this->player->update(dt, mousePos);
@@ -353,7 +353,7 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
                 this->updateEnemyLineOfSight(enemy);
 
             if (enemy->isHealthChanged())
-                ui->displayEnemyDamage(enemy->getHealthPercentage());
+                ui->displayEnemyDamage(enemy->getHealthComp()->getHealthPercentage());
 
             enemy->update(dt);
         }
@@ -398,7 +398,7 @@ void CharacterHandler::spawnBoss(BossType bossType, sf::Vector2f pos)
         break;
     }
 
-    boss->spawn(pos - sf::Vector2f(0, boss->getCollider().getSize().y));
+    boss->spawn(pos - sf::Vector2f(0, boss->getColliderComp()->getSize().y));
 }
 
 Enemy* CharacterHandler::spawnEnemy(int enemyType)
@@ -515,10 +515,10 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
         target.draw(*player->getComponent<ColliderComp>(), states);
 
         for (Enemy* enemy : enemies)
-            target.draw(enemy->getCollider(), states);
+            target.draw(*enemy->getColliderComp(), states);
 
         if (boss)
-            target.draw(boss->getCollider(), states);
+            target.draw(*boss->getColliderComp(), states);
     }
 
     if (drawSightlines)
@@ -551,7 +551,7 @@ void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates stat
             sightradius.setOutlineThickness(1);
 
             sightradius.setRadius(enemy->getSightRadius());
-            sightradius.setPosition(enemy->getCollider().getCenterPos() - sf::Vector2f(sightradius.getRadius(), sightradius.getRadius()));
+            sightradius.setPosition(enemy->getColliderComp()->getCenterPos() - sf::Vector2f(sightradius.getRadius(), sightradius.getRadius()));
 
             target.draw(sightradius, states);
         }

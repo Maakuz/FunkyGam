@@ -6,7 +6,19 @@ Entity::~Entity()
         delete pair.second;
 }
 
-void Entity::addComponent(Comp* comp)
+Entity::Entity(const Entity& other)
 {
-    components.emplace(comp->getKey(), comp);
+    *this = other;
 }
+
+void Entity::operator=(const Entity& other)
+{
+    for (auto& pair : this->components)
+        delete pair.second;
+
+    components.clear();
+
+    for (auto& component : other.components)
+        this->components.emplace(component.first, component.second->clone());
+}
+

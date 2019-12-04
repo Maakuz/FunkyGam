@@ -6,12 +6,12 @@ Bird::Bird(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f
     :Enemy(data, pos, size, offset),
     ai(pos, size)
 {
-    ai.movement.setIgnoreGravity(true);
+    getMovementComp()->setIgnoreGravity(true);
     this->inBombingRange = false;
     startBombing = false;
     this->ai.eyeLevel.x = data.spriteSheet->getSize().x / data.frameCount.x / 2.f;
     this->ai.eyeLevel.y = data.spriteSheet->getSize().y / data.frameCount.y * 0.2;
-    this->ai.collider.addComponent(ColliderKeys::character);
+    getColliderComp()->addComponent(ColliderKeys::enemy);
 }
 
 Bird::~Bird()
@@ -20,30 +20,34 @@ Bird::~Bird()
 
 void Bird::update(float dt)
 {
+    AnimatedSpriteComp* sprite = getAnimatedSpriteComp();
+    ColliderComp* collider = getColliderComp();
+    MovementComp* movement = getMovementComp();
+
     switch (ai.getState())
     {
     case AIComp::State::idle:
-        sprite.setAnimation(0);
-        ai.updateIdle(dt, &sprite);
+        sprite->setAnimation(0);
+        ai.updateIdle(movement, collider, dt, sprite);
         break;
 
     case AIComp::State::chasing:
-        sprite.setAnimation(0);
-        ai.updateChasing(dt, &sprite);
+        sprite->setAnimation(0);
+        ai.updateChasing(movement, collider, dt, sprite);
         break;
 
     case AIComp::State::attacking:
-        sprite.setAnimation(1);
+        sprite->setAnimation(1);
         updateAttack(dt);
         break;
 
     case AIComp::State::returning:
-        sprite.setAnimation(0);
-        ai.updateReturn(dt, &sprite);
+        sprite->setAnimation(0);
+        ai.updateReturn(movement, collider, dt, sprite);
         break;
 
     case AIComp::State::stunned:
-        ai.updateStunned(dt, &sprite);
+        ai.updateStunned(movement, collider, dt, sprite);
         break;
     }
 
@@ -52,12 +56,13 @@ void Bird::update(float dt)
 
 void Bird::updateAttack(float dt)
 {
-    if (lengthSquared(ai.attackDestination - ai.collider.getCenterPos()) < 150 * 150)
+    ColliderComp* collider = getColliderComp();
+    if (lengthSquared(ai.attackDestination - collider->getCenterPos()) < 150 * 150)
         this->startBombing = true;
 
     if (startBombing && bombCounter.update(dt))
     {
-        ProjectileHandler::addThrowable(11, ai.collider.getCenterPos(), this->ai.movement.momentum, this);
+        ProjectileHandler::addThrowable(11, collider->getCenterPos(), getMovementComp()->momentum, DamageComp::DamageOrigin::enemies);
         bombCounter.reset();
 
         if (bombsPerAttack.update(1))
@@ -72,25 +77,24 @@ void Bird::updateAttack(float dt)
 void Bird::handleCollision(const Collidable* collidable)
 {
     const ColliderComp* otherCollider = collidable->getComponent<ColliderComp>();
-    ai.handleCollision(otherCollider);
+    ai.handleCollision(getMovementComp(), getColliderComp(), otherCollider);
 
     if (otherCollider->hasComponent(ColliderKeys::throwable))
     {
-        const Throwable* throwable = dynamic_cast<const Throwable*>(collidable);
-        if (throwable->getID() != 11) //is immune to birdbombs
-            this->health.takeDamage(throwable->getDamage());
+        if (collidable->getComponent<LogisticsComp>()->id != 11) //is immune to birdbombs
+            this->getComponent<HealthComp>()->takeDamage(collidable->getComponent<DamageComp>()->damage);
     }
 
     else if (otherCollider->hasComponent(ColliderKeys::fireball))
-        this->health.takeDamage(dynamic_cast<const Fireball*>(collidable)->getDamage());
+        this->getComponent<HealthComp>()->takeDamage(collidable->getDamageComp()->damage);
 }
 
 void Bird::handleExplosion(const Explosion& explosion)
 {
     if (explosion.damage > 0 && explosion.type != ExplosionType::bird)
     {
-        int damage = explosion.calculateDamage(this->ai.collider.getCenterPos());
-        this->health.takeDamage(damage);
+        int damage = explosion.calculateDamage(getColliderComp()->getCenterPos());
+        this->getComponent<HealthComp>()->takeDamage(damage);
     }
 }
 

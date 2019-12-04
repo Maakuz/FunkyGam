@@ -10,7 +10,7 @@ public:
     };
 
     GameState();
-    ~GameState() {};
+    virtual ~GameState() {};
 
     void operator=(States state) { GameState::state = state; };
     bool operator==(States state) { return GameState::state == state; };

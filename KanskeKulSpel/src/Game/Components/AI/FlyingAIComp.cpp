@@ -6,9 +6,9 @@ FlyingAIComp::FlyingAIComp(sf::Vector2f pos, sf::Vector2f size):
     this->forcedDirResolved = false;
 }
 
-void FlyingAIComp::updateIdle(float dt, SpriteComp* sprite)
+void FlyingAIComp::updateIdle(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    this->movement.walkSpeed = idleSpeed;
+    movement->walkSpeed = idleSpeed;
 
     if (isDesicionTime() && this->forcedDirection == Direction::none)
     {
@@ -17,30 +17,30 @@ void FlyingAIComp::updateIdle(float dt, SpriteComp* sprite)
         switch (x)
         {
         case 0:
-            moveLeft(sprite);
+            moveLeft(movement, sprite);
             break;
 
         case 1:
-            moveRight(sprite);
+            moveRight(movement, sprite);
             break;
         default:
-            this->movement.acceleration.x = 0;
-            this->movement.acceleration.y = 0;
+            movement->acceleration.x = 0;
+            movement->acceleration.y = 0;
             break;
         }
-        this->movement.acceleration.y = y / 50.f;
-        normalize(this->movement.acceleration);
+        movement->acceleration.y = y / 50.f;
+        normalize(movement->acceleration);
         forcedDirResolved = false;
         desicionTimeOver();
     }
 
     else if (isDesicionTime())
     {
-        this->movement.acceleration = this->currentRoamPoint - this->collider.getCenterPos();
-        normalize(this->movement.acceleration);
+        movement->acceleration = this->currentRoamPoint - collider->getCenterPos();
+        normalize(movement->acceleration);
         forcedDirection = Direction::none;
 
-        if (movement.acceleration.x > 0)
+        if (movement->acceleration.x > 0)
             faceRight(sprite);
 
         else
@@ -50,19 +50,19 @@ void FlyingAIComp::updateIdle(float dt, SpriteComp* sprite)
         this->desicionTimeOver();
     }
 
-    sf::Vector2f roampointToPos = this->movement.transform.pos - this->currentRoamPoint;
-    if (length(this->movement.transform.pos - this->currentRoamPoint) > this->roamDistance && !forcedDirResolved)
+    sf::Vector2f roampointToPos = movement->transform.pos - this->currentRoamPoint;
+    if (length(movement->transform.pos - this->currentRoamPoint) > this->roamDistance && !forcedDirResolved)
     {
         forcedDirection = Direction::right;
         forcedDirResolved = false;
     }
 }
 
-void FlyingAIComp::updateChasing(float dt, SpriteComp* sprite)
+void FlyingAIComp::updateChasing(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    this->movement.walkSpeed = chaseSpeed;
+    movement->walkSpeed = chaseSpeed;
 
-    if (lastKnownPlayerPos.x < collider.getCenterPos().x)
+    if (lastKnownPlayerPos.x < collider->getCenterPos().x)
         faceLeft(sprite);
 
     else
@@ -77,23 +77,23 @@ void FlyingAIComp::updateChasing(float dt, SpriteComp* sprite)
     }
 
 
-    this->movement.acceleration = lastKnownPlayerPos + sf::Vector2f(x, -200) - collider.getCenterPos();
+    movement->acceleration = lastKnownPlayerPos + sf::Vector2f(x, -200) - collider->getCenterPos();
 
-    if (lengthSquared(movement.acceleration) > 1.f)
-        normalize(movement.acceleration);
+    if (lengthSquared(movement->acceleration) > 1.f)
+        normalize(movement->acceleration);
 
-    if (attackCounter.update(dt) && lengthSquared(lastKnownPlayerPos - collider.getCenterPos()) < 500 * 500)
+    if (attackCounter.update(dt) && lengthSquared(lastKnownPlayerPos - collider->getCenterPos()) < 500 * 500)
     {
         if (timeSincePlayerSeen < 200)
         {
             state = State::attacking;
-            movement.momentum.x = 0;
-            movement.momentum.y = 0;
+            movement->momentum.x = 0;
+            movement->momentum.y = 0;
             attackCounter.reset();
             attackDestination = lastKnownPlayerPos + sf::Vector2f(0, -190);
-            this->movement.acceleration = attackDestination - collider.getCenterPos();
-            normalize(movement.acceleration);
-            movement.acceleration *= 1.3f;
+            movement->acceleration = attackDestination - collider->getCenterPos();
+            normalize(movement->acceleration);
+            movement->acceleration *= 1.3f;
         }
 
         else
@@ -102,24 +102,24 @@ void FlyingAIComp::updateChasing(float dt, SpriteComp* sprite)
 
 }
 
-void FlyingAIComp::updateReturn(float dt, SpriteComp* sprite)
+void FlyingAIComp::updateReturn(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    this->movement.acceleration = this->currentRoamPoint - this->collider.getCenterPos();
-    normalize(this->movement.acceleration);
+    movement->acceleration = this->currentRoamPoint - collider->getCenterPos();
+    normalize(movement->acceleration);
 
-    if (movement.acceleration.x > 0)
+    if (movement->acceleration.x > 0)
         faceRight(sprite);
 
     else
         faceLeft(sprite);
 
-    if (lengthSquared(this->currentRoamPoint - collider.getCenterPos()) < 250)
+    if (lengthSquared(this->currentRoamPoint - collider->getCenterPos()) < 250)
         state = State::idle;
 }
 
-void FlyingAIComp::updateStunned(float dt, SpriteComp* sprite)
+void FlyingAIComp::updateStunned(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    this->movement.acceleration.x = 0;
+    movement->acceleration.x = 0;
     if (this->stunCounter.update(dt))
     {
         this->stunCounter.reset();
@@ -135,30 +135,30 @@ void FlyingAIComp::updateStunned(float dt, SpriteComp* sprite)
     }
 }
 
-void FlyingAIComp::handleCollision(const ColliderComp* otherCollider, SpriteComp* sprite)
+void FlyingAIComp::handleCollision(MovementComp* movement, ColliderComp* collider, const ColliderComp* otherCollider, SpriteComp* sprite)
 {
     if (otherCollider->hasComponent(ColliderKeys::ground))
     {
 
-        if (ColliderComp::intersects(otherCollider->getLeftBox(), this->collider.getRightBox()))
+        if (ColliderComp::intersects(otherCollider->getLeftBox(), collider->getRightBox()))
         {
-            this->movement.momentum.x *= -0.5f;
-            this->movement.acceleration.x *= -1;
+            movement->momentum.x *= -0.5f;
+            movement->acceleration.x *= -1;
             this->facingDir = Direction::left;
-            this->movement.transform.pos.x = otherCollider->left() - this->collider.width();
-            this->movement.jump();
+            movement->transform.pos.x = otherCollider->left() - collider->width();
+            movement->jump();
 
             if (sprite)
                 sprite->flipHorizontally();
         }
 
-        else if (ColliderComp::intersects(otherCollider->getRightBox(), this->collider.getLeftBox()))
+        else if (ColliderComp::intersects(otherCollider->getRightBox(), collider->getLeftBox()))
         {
-            this->movement.momentum.x *= -0.5f;
-            this->movement.acceleration.x *= -1;
+            movement->momentum.x *= -0.5f;
+            movement->acceleration.x *= -1;
             this->facingDir = Direction::right;
-            this->movement.transform.pos.x = otherCollider->right();
-            this->movement.jump();
+            movement->transform.pos.x = otherCollider->right();
+            movement->jump();
 
             if (sprite)
                 sprite->flipHorizontally();
@@ -166,20 +166,20 @@ void FlyingAIComp::handleCollision(const ColliderComp* otherCollider, SpriteComp
 
 
         //walking on ground
-        else if (this->movement.momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), this->collider.getDownBox()))
+        else if (movement->momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), collider->getDownBox()))
         {
-            this->movement.momentum.y = 0;
-            this->movement.acceleration.y *= -1;
-            this->movement.transform.pos.y = otherCollider->up() - this->collider.height();
-            movement.grounded = true;
+            movement->momentum.y = 0;
+            movement->acceleration.y *= -1;
+            movement->transform.pos.y = otherCollider->up() - collider->height();
+            movement->grounded = true;
         }
 
         //smackin into roof
-        else if (ColliderComp::intersects(otherCollider->getDownBox(), this->collider.getUpBox()))
+        else if (ColliderComp::intersects(otherCollider->getDownBox(), collider->getUpBox()))
         {
-            this->movement.momentum.y = 0;
-            this->movement.acceleration.y *= -1;
-            this->movement.transform.pos.y = otherCollider->down();
+            movement->momentum.y = 0;
+            movement->acceleration.y *= -1;
+            movement->transform.pos.y = otherCollider->down();
         }
     }
 

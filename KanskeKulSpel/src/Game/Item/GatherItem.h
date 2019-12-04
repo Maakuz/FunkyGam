@@ -5,6 +5,6 @@
 struct GatherItem
 {
     Emitter* emitter;
-    Item item;
+    Entity item;
     int count;
 };

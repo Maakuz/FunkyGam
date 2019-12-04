@@ -16,7 +16,7 @@ class ItemHandler : public sf::Drawable, public DebugDrawable
 {
 public:
     ItemHandler(UIHandler* uiHandler);
-    ~ItemHandler();
+    virtual ~ItemHandler();
     ItemHandler(const ItemHandler&) = delete;
 
     void loadTemplates();
@@ -25,8 +25,8 @@ public:
     void setGatherPoints(std::vector<sf::Vector2f> gatherPoints, std::vector<sf::Vector2f> rareGatherPoints) { this->gatherPoints = gatherPoints; this->rareGatherPoints = rareGatherPoints; };
     void spawnGatherables(const LevelInfo* level, std::vector<CustomHitbox> shrines);
 
-    static const Item* getTemplate(int itemID);
-    static const std::vector<const Item*>* getTemplateVec() { return &itemTemplates; };
+    static const Entity* getTemplate(int itemID);
+    static const std::vector<const Entity*>* getTemplateVec() { return &itemTemplates; };
     static const std::unordered_set<int>* getFoundItems() { return &foundItems; };
     static bool isOneTimeItemPickedUp(std::string item);
 
@@ -34,7 +34,7 @@ public:
 private:
     UIHandler* ui;
 
-    static std::vector<const Item*> itemTemplates;
+    static std::vector<const Entity*> itemTemplates;
     static std::unordered_set<int> foundItems;
     static std::unordered_set<std::string> oneTimeItemList;
 

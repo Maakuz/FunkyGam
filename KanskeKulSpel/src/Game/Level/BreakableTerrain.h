@@ -7,7 +7,7 @@ class BreakableTerrain : public Collidable, public sf::Drawable
 {
 public:
     BreakableTerrain(sf::Vector2f pos, sf::Texture* texture, sf::IntRect texRext);
-    ~BreakableTerrain();
+    virtual ~BreakableTerrain();
 
     virtual void handleCollision(const Collidable* collider);
     virtual void handleExplosion(const Explosion& explosion);

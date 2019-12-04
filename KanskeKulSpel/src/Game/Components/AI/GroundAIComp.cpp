@@ -7,9 +7,9 @@ GroundAIComp::GroundAIComp(sf::Vector2f pos, sf::Vector2f size):
     attackDistance = 0;
 }
 
-void GroundAIComp::updateIdle(float dt, SpriteComp* sprite)
+void GroundAIComp::updateIdle(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    this->movement.walkSpeed = idleSpeed;
+    movement->walkSpeed = idleSpeed;
 
     if (isDesicionTime() && this->forcedDirection == Direction::none)
     {
@@ -17,19 +17,19 @@ void GroundAIComp::updateIdle(float dt, SpriteComp* sprite)
         switch (r)
         {
         case 0:
-            this->movement.acceleration.x = 0;
+            movement->acceleration.x = 0;
             break;
 
         case 1:
-            moveLeft(sprite);
+            moveLeft(movement, sprite);
             break;
 
         case 2:
-            moveRight(sprite);
+            moveRight(movement, sprite);
             break;
 
         default:
-            this->movement.acceleration.x = 0;
+            movement->acceleration.x = 0;
             break;
         }
 
@@ -39,18 +39,18 @@ void GroundAIComp::updateIdle(float dt, SpriteComp* sprite)
     else if (isDesicionTime())
     {
         if (this->forcedDirection == Direction::right)
-            moveRight(sprite);
+            moveRight(movement, sprite);
 
         else
-            moveLeft(sprite);
+            moveLeft(movement, sprite);
 
         this->forcedDirection = Direction::none;
 
         this->desicionTimeOver();
     }
 
-    sf::Vector2f roampointToPos = this->movement.transform.pos - this->currentRoamPoint;
-    if (length(this->movement.transform.pos - this->currentRoamPoint) > this->roamDistance)
+    sf::Vector2f roampointToPos = movement->transform.pos - this->currentRoamPoint;
+    if (length(movement->transform.pos - this->currentRoamPoint) > this->roamDistance)
     {
         if (roampointToPos.x > 0)
             forcedDirection = Direction::left;
@@ -62,9 +62,9 @@ void GroundAIComp::updateIdle(float dt, SpriteComp* sprite)
 
 }
 
-void GroundAIComp::updateChasing(float dt, SpriteComp* sprite)
+void GroundAIComp::updateChasing(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    this->movement.walkSpeed = chaseSpeed;
+    movement->walkSpeed = chaseSpeed;
 
     if (timeSincePlayerSeen.isTimeUp()) //will sort of mitigating stuck enemies looking silly
     {
@@ -73,18 +73,18 @@ void GroundAIComp::updateChasing(float dt, SpriteComp* sprite)
         this->searchCounter.reset();
     }
 
-    if (this->lastKnownPlayerPos.x < this->movement.transform.pos.x)
+    if (this->lastKnownPlayerPos.x < movement->transform.pos.x)
     {
-        moveLeft(sprite);
+        moveLeft(movement, sprite);
     }
 
-    else if (this->lastKnownPlayerPos.x >= this->movement.transform.pos.x)
+    else if (this->lastKnownPlayerPos.x >= movement->transform.pos.x)
     {
-        moveRight(sprite);
+        moveRight(movement, sprite);
     }
 
 
-    if (lengthSquared(this->movement.transform.pos + eyeLevel - lastKnownPlayerPos) < this->attackDistance * this->attackDistance)
+    if (lengthSquared(movement->transform.pos + eyeLevel - lastKnownPlayerPos) < this->attackDistance * this->attackDistance)
     {
         if (timeSincePlayerSeen < 200)
         {
@@ -93,7 +93,7 @@ void GroundAIComp::updateChasing(float dt, SpriteComp* sprite)
         }
     }
 
-    if (timeSincePlayerSeen > 200 && abs(movement.transform.pos.x - lastKnownPlayerPos.x) < 10)
+    if (timeSincePlayerSeen > 200 && abs(movement->transform.pos.x - lastKnownPlayerPos.x) < 10)
     {
         state = State::searching;
         this->currentRoamPoint = lastKnownPlayerPos;
@@ -101,27 +101,27 @@ void GroundAIComp::updateChasing(float dt, SpriteComp* sprite)
     }
 }
 
-void GroundAIComp::updateReturn(float dt, SpriteComp* sprite)
+void GroundAIComp::updateReturn(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    if (this->currentRoamPoint.x < this->movement.transform.pos.x)
+    if (this->currentRoamPoint.x < movement->transform.pos.x)
     {
-        moveLeft(sprite);
+        moveLeft(movement, sprite);
     }
 
-    else if (this->currentRoamPoint.x >= this->movement.transform.pos.x)
+    else if (this->currentRoamPoint.x >= movement->transform.pos.x)
     {
-        moveRight(sprite);
+        moveRight(movement, sprite);
     }
 
-    if (abs(movement.transform.pos.x - currentRoamPoint.x) < 10)
+    if (abs(movement->transform.pos.x - currentRoamPoint.x) < 10)
     {
         state = State::idle;
     }
 }
 
-void GroundAIComp::updateSearch(float dt, SpriteComp* sprite)
+void GroundAIComp::updateSearch(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    updateIdle(dt);
+    updateIdle(movement, collider, dt, sprite);
 
     if (searchCounter.update(dt))
     {
@@ -130,9 +130,9 @@ void GroundAIComp::updateSearch(float dt, SpriteComp* sprite)
     }
 }
 
-void GroundAIComp::updateStunned(float dt, SpriteComp* sprite)
+void GroundAIComp::updateStunned(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite)
 {
-    this->movement.acceleration.x = 0;
+    movement->acceleration.x = 0;
     if (this->stunCounter.update(dt))
     {
         this->stunCounter.reset();
@@ -149,37 +149,37 @@ void GroundAIComp::updateStunned(float dt, SpriteComp* sprite)
     }
 }
 
-void GroundAIComp::handleCollision(const ColliderComp* otherCollider)
+void GroundAIComp::handleCollision(MovementComp* movement, ColliderComp* collider, const ColliderComp* otherCollider)
 {
     if (otherCollider->hasComponent(ColliderKeys::ground) || otherCollider->hasComponent(ColliderKeys::platform))
     {
         //walking on ground
-        if (this->movement.momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), this->collider.getDownBox()))
+        if (movement->momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), collider->getDownBox()))
         {
-            this->movement.momentum.y = 0;
-            this->movement.transform.pos.y = otherCollider->up() - this->collider.height();
-            movement.grounded = true;
+            movement->momentum.y = 0;
+            movement->transform.pos.y = otherCollider->up() - collider->height();
+            movement->grounded = true;
         }
 
         //smackin into roof
-        if (ColliderComp::intersects(otherCollider->getDownBox(), this->collider.getUpBox()))
+        if (ColliderComp::intersects(otherCollider->getDownBox(), collider->getUpBox()))
         {
-            this->movement.momentum.y = 0;
-            this->movement.transform.pos.y = otherCollider->down();
+            movement->momentum.y = 0;
+            movement->transform.pos.y = otherCollider->down();
         }
 
-        if (ColliderComp::intersects(otherCollider->getLeftBox(), this->collider.getRightBox()))
+        if (ColliderComp::intersects(otherCollider->getLeftBox(), collider->getRightBox()))
         {
-            this->movement.momentum.x *= -0.5f;
-            this->movement.transform.pos.x = otherCollider->left() - this->collider.width();
-            this->movement.jump();
+            movement->momentum.x *= -0.5f;
+            movement->transform.pos.x = otherCollider->left() - collider->width();
+            movement->jump();
         }
 
-        if (ColliderComp::intersects(otherCollider->getRightBox(), this->collider.getLeftBox()))
+        if (ColliderComp::intersects(otherCollider->getRightBox(), collider->getLeftBox()))
         {
-            this->movement.momentum.x *= -0.5f;
-            this->movement.transform.pos.x = otherCollider->right();
-            this->movement.jump();
+            movement->momentum.x *= -0.5f;
+            movement->transform.pos.x = otherCollider->right();
+            movement->jump();
         }
     }
 }

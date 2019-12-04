@@ -6,7 +6,7 @@ class Bird : public Enemy
 {
 public:
     Bird(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset);
-    ~Bird();
+    virtual ~Bird();
 
     void update(float dt);
 

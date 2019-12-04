@@ -2,12 +2,13 @@
 #include "Spell.h"
 #include "Game/Particles/Emitter.h"
 #include "Game/Entities/Collidable.h"
+#include "Game/Components/DamageComp.h"
 
-class Fireball : public Spell, public Collidable
+class Fireball : public Spell
 {
 public:
     Fireball(sf::Vector2f pos);
-    ~Fireball() { };
+    virtual ~Fireball() { };
 
     virtual bool isComplete() const;
     virtual void cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime);
@@ -15,13 +16,9 @@ public:
 
     virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion);
-    virtual const ColliderComp& getCollider()const { return collider; };
 
     virtual std::istream& readSpecific(std::istream& in);
     virtual std::ostream& writeSpecific(std::ostream& out) const;
-
-    int getDamage() const { return this->damage; };
-    void setDamage(int damage) { this->damage = damage; };
 
     int getMinCharge() const { return this->minCharge; };
     void setMinCharge(int minCharge) { this->minCharge = minCharge; };
@@ -50,12 +47,9 @@ public:
     Explosion* getExplosionPtr() { return &explosion; };
 
 private:
-    ColliderComp collider;
-
     int minCharge;
     int maxCharge;
     
-    int damage;
     float maxTravelDistance;
     float topSpeed;
     int trailEmitterID;

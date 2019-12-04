@@ -9,7 +9,7 @@ namespace MOUSE
     {
     private:
         MouseState() {};
-        ~MouseState() {};
+        virtual ~MouseState() {};
         static std::map<sf::Mouse::Button, bool> prevButtonState;
         static bool sameFrame;
 

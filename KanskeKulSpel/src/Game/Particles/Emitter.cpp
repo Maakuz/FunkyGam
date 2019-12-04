@@ -321,20 +321,20 @@ void Emitter::handleCollision(const std::vector<Collidable*>* entities)
 {
     for (const Collidable* entity : *entities)
     {
-        const ColliderComp collider = entity->getCollider();
-        if (collider.hasComponent(ColliderKeys::ground))
+        const ColliderComp* collider = entity->getColliderComp();
+        if (collider->hasComponent(ColliderKeys::ground))
         {
             for (int i = 0; i < particles.size(); i++)
             {
                 sf::Vector2f pos = vertexArray[i * 4].position;
 
-                if (collider.contains(pos))
+                if (collider->contains(pos))
                 {
-                    if (ColliderComp::contains(collider.getLeftBox(), pos) || ColliderComp::contains(collider.getRightBox(), pos))
+                    if (ColliderComp::contains(collider->getLeftBox(), pos) || ColliderComp::contains(collider->getRightBox(), pos))
                         particles[i]->velocity.x *= -0.5f;
 
                     if (
-                        ColliderComp::contains(collider.getDownBox(), pos) || ColliderComp::contains(collider.getUpBox(), pos))
+                        ColliderComp::contains(collider->getDownBox(), pos) || ColliderComp::contains(collider->getUpBox(), pos))
                         particles[i]->velocity.y *= -0.5f;
                 }
             }

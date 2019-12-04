@@ -19,19 +19,10 @@ public:
     virtual void update(float dt, sf::Vector2f playerPos);
     virtual void spawn(sf::Vector2f pos);
 
-    virtual const ColliderComp& getCollider()const { return collider; };
-
-    bool isAlive() { return health.isAlive(); };
+    bool isAlive() { return getComponent<HealthComp>()->isAlive(); };
     bool isHealthChanged();
 
-    const HealthComp& getHealth() const { return health; };
-
 protected:
-    HealthComp health;
-    AnimatedSpriteComp sprite;
-    MovementComp movement;
-    ColliderComp collider;
-
     sf::Vector2f playerPos;
 
     int prevHealth;

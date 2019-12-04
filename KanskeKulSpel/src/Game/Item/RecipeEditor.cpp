@@ -71,16 +71,16 @@ void RecipeEditor::showRecipeData(EditorRecipe& recipe)
     ImGui::InputText("Name", &recipe.name);
     ImGui::PushItemWidth(200);
 
-    const std::vector<const Item*>* items = ItemHandler::getTemplateVec();
+    const std::vector<const Entity*>* items = ItemHandler::getTemplateVec();
     for (int i = 0; i < recipe.recipe.components.size(); i++)
     {
         std::string compL = "Component #" + std::to_string(i);
         
-        if (ImGui::BeginCombo(compL.c_str(), items->at(recipe.recipe.components[i])->getName().c_str()))
+        if (ImGui::BeginCombo(compL.c_str(), items->at(recipe.recipe.components[i])->getLogisticsComp()->name.c_str()))
         {
             for (int j = 0; j < items->size(); j++)
             {
-                if (ImGui::Selectable(items->at(j)->getName().c_str()))
+                if (ImGui::Selectable(items->at(j)->getLogisticsComp()->name.c_str()))
                     recipe.recipe.components[i] = j;
             }
 
@@ -89,7 +89,7 @@ void RecipeEditor::showRecipeData(EditorRecipe& recipe)
         }
 
         if (ImGui::IsItemHovered())
-            ImGui::SetTooltip(("ID: " + std::to_string(items->at(recipe.recipe.components[i])->getID())).c_str());
+            ImGui::SetTooltip(("ID: " + std::to_string(items->at(recipe.recipe.components[i])->getLogisticsComp()->id)).c_str());
 
         ImGui::SameLine();
         std::string compAmountL = "Amount #" + std::to_string(i);
@@ -112,11 +112,11 @@ void RecipeEditor::showRecipeData(EditorRecipe& recipe)
     ImGui::PopItemWidth();   
     ImGui::Separator();
 
-    if (ImGui::BeginCombo("Item created", items->at(recipe.recipe.resultID)->getName().c_str()))
+    if (ImGui::BeginCombo("Item created", items->at(recipe.recipe.resultID)->getLogisticsComp()->name.c_str()))
     {
         for (int i = 0; i < items->size(); i++)
         {
-            if (ImGui::Selectable(items->at(i)->getName().c_str()))
+            if (ImGui::Selectable(items->at(i)->getLogisticsComp()->name.c_str()))
                 recipe.recipe.resultID = i;
         }
 
@@ -125,7 +125,7 @@ void RecipeEditor::showRecipeData(EditorRecipe& recipe)
     }
 
     if (ImGui::IsItemHovered())
-        ImGui::SetTooltip(("ID: " + std::to_string(items->at(recipe.recipe.resultID)->getID())).c_str());
+        ImGui::SetTooltip(("ID: " + std::to_string(items->at(recipe.recipe.resultID)->getLogisticsComp()->id)).c_str());
 
     ImGui::InputInt("Items created", &recipe.recipe.resultAmount);
 

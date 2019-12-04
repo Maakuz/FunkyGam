@@ -10,7 +10,7 @@ class ItemEditor : public sf::Drawable
 {
 public:
     ItemEditor();
-    ~ItemEditor();
+    virtual ~ItemEditor();
 
     void openWindow();
     void closeWindow() { open = false; };
@@ -30,7 +30,7 @@ private:
     Tab currentTab;
 
     bool open;
-    std::vector<Item*> items;
+    std::vector<Entity*> items;
     std::vector<Spell*> spells;
     std::vector<LightProjectile> projectiles;
     std::vector<std::string> projectileNames;
@@ -39,7 +39,7 @@ private:
     int currentProjectile;
     sf::Vector2f pos;
 
-    void showItemData(Item* item);
+    void showItemData(Entity* item);
     void showExplosionData(Explosion* explosion);
     void showThrowableData(Throwable* item);
     void showTomeData(Tome* item);

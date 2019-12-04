@@ -8,7 +8,7 @@ class ParticleHandler : public sf::Drawable
 public:
 
     ParticleHandler();
-    ~ParticleHandler();
+    virtual ~ParticleHandler();
 
     void update(float dt);
     void queueLights();

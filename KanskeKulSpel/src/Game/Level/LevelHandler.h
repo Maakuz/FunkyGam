@@ -67,7 +67,7 @@ private:
     BossSpawner bossSpawner;
 
     bool importLevel(const LevelInfo* level);
-    bool generateHitboxes(ColliderKeys type);
+    bool generateHitboxes(int id, ColliderKeys type);
     void generateShadowLines();
     void createSpites();
 

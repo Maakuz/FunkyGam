@@ -45,17 +45,21 @@ void FishMonger::spawn(sf::Vector2f pos)
 {
     light = ParticleHandler::addEmitter(13, pos);
 
-    this->movement.transform.pos = pos;
+    this->getComponent<MovementComp>()->transform.pos = pos;
 }
 
 void FishMonger::update(float dt, sf::Vector2f playerPos)
 {
-    sf::Vector2f offset = collider.getSize() / 2.f;
+    ColliderComp* collider = getComponent<ColliderComp>();
+    MovementComp* movement = getComponent<MovementComp>();
+    AnimatedSpriteComp* sprite = getComponent<AnimatedSpriteComp>();
+
+    sf::Vector2f offset =  collider->getSize() / 2.f;
     offset.y -= 30;
-    armAnchor = movement.transform.pos + offset;
+    armAnchor = movement->transform.pos + offset;
 
     
-    forhead = collider.getCenterPos() + sf::Vector2f(ai.get<float>("offsetX") * sprite.getTextureRect().width, ai.get<float>("offsetY"));
+    forhead = collider->getCenterPos() + sf::Vector2f(ai.get<float>("offsetX") * sprite->getTextureRect().width, ai.get<float>("offsetY"));
 
     leftArm.arm.setPos(armAnchor, 0);
     rightArm.arm.setPos(armAnchor, 0);
@@ -73,21 +77,21 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F5))
         ai.reload();
 
-    ai.runFunc("setHealth", "dd", health.getHealth(), health.getMaxHealth());
+    ai.runFunc("setHealth", "dd", getComponent<HealthComp>()->getCurrentHealth(), getComponent<HealthComp>()->getMaxHealth());
 
     ai.runFunc("updateAI", "fffffff",
-        collider.getCenterPos().x, collider.getCenterPos().y, 
-        movement.momentum.x, movement.momentum.y, 
+        collider->getCenterPos().x, collider->getCenterPos().y, 
+        movement->momentum.x, movement->momentum.y, 
         playerPos.x, playerPos.y,
         dt);
     
-    movement.acceleration.x = ai.get<float>("accel.x");
-    movement.acceleration.y = ai.get<float>("accel.y");
-    movement.momentum.x = ai.get<float>("momentum.x");
-    movement.momentum.y = ai.get<float>("momentum.y");
+    movement->acceleration.x = ai.get<float>("accel.x");
+    movement->acceleration.y = ai.get<float>("accel.y");
+    movement->momentum.x = ai.get<float>("momentum.x");
+    movement->momentum.y = ai.get<float>("momentum.y");
     this->phaseTwo = ai.get<bool>("phaseTwo");
 
-    sprite.setAnimation(ai.get<int>("anim"));
+    sprite->setAnimation(ai.get<int>("anim"));
 
     if (ai.get<bool>("attack"))
     {
@@ -100,16 +104,16 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
             swingArms(playerPos);
     }
 
-    if (playerPos.x > movement.transform.pos.x)
+    if (playerPos.x > movement->transform.pos.x)
     {
-        if (this->sprite.isFlippedHorizontally())
-            this->sprite.flipHorizontally();
+        if (sprite->isFlippedHorizontally())
+            sprite->flipHorizontally();
     }
 
     else
     {
-        if (!this->sprite.isFlippedHorizontally())
-            this->sprite.flipHorizontally();
+        if (!sprite->isFlippedHorizontally())
+            sprite->flipHorizontally();
     }
 
     if (!phaseTwoInitialized && ai.get<bool>("transitioning"))
@@ -147,7 +151,7 @@ void FishMonger::constrictNose()
     if (lightRope.back().pos.y > lightRope[0].pos.y)
         lightRope.back().pos.y = lightRope[0].pos.y;
 
-    if (!this->sprite.isFlippedHorizontally())
+    if (!this->getComponent<AnimatedSpriteComp>()->isFlippedHorizontally())
         lightRope.back().pos.x += 0.1;
 
     else
@@ -160,8 +164,8 @@ void FishMonger::initializePhaseTwo()
 {
     this->phaseTwoInitialized = true;
     sf::Vector2f displacement(1, 0);
-    this->movement.mass = 0;
-    this->movement.setAirRes(0.99);
+    this->getComponent<MovementComp>()->mass = 0;
+    this->getComponent<MovementComp>()->setAirRes(0.99);
 
     Arm tentacle(TextureHandler::get().getTexture(26), armAnchor, sf::Vector2f(24, 24), 30, 20, 5);
     tentacle.arm.setTexture(TextureHandler::get().getTexture(27), tentacle.arm.getLinkCount() - 1);
@@ -179,7 +183,9 @@ void FishMonger::initializePhaseTwo()
 
 void FishMonger::updatePhaseTwo(float dt, sf::Vector2f target)
 {
-    this->movement.grounded = false;
+    MovementComp* movement = getComponent<MovementComp>();
+    
+    movement->grounded = false;
     this->spell.update(dt, this->lightRope.back().pos);
 
     if (spell.isChannelling())
@@ -188,7 +194,7 @@ void FishMonger::updatePhaseTwo(float dt, sf::Vector2f target)
 
         if (channelTime < spell.getChannelTime())
         {
-            spell.castSpell<LightProjectile>(target, this);
+            spell.castSpell<LightProjectile>(target, DamageComp::DamageOrigin::enemies);
             ai.runFunc("setChannelling", "b", false);
         }
     }
@@ -219,52 +225,53 @@ std::istream& FishMonger::readSpecific(std::istream& in)
 void FishMonger::handleCollision(const Collidable* collidable)
 {
     const ColliderComp* otherCollider = collidable->getComponent<ColliderComp>();
+    const ColliderComp* collider = this->getComponent<ColliderComp>();
+    MovementComp* movement = getComponent<MovementComp>();
 
     if (otherCollider->hasComponent(ColliderKeys::ground) || otherCollider->hasComponent(ColliderKeys::platform))
     {
         //walking on ground
-        if (this->movement.momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), this->collider.getDownBox()))
+        if (movement->momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), collider->getDownBox()))
         {
-            this->movement.momentum.y = 0;
-            this->movement.transform.pos.y = otherCollider->up() - this->collider.height();
-            movement.grounded = true;
+            movement->momentum.y = 0;
+            movement->transform.pos.y = otherCollider->up() - collider->height();
+            movement->grounded = true;
         }
 
         //smackin into roof
-        if (ColliderComp::intersects(otherCollider->getDownBox(), this->collider.getUpBox()))
+        if (ColliderComp::intersects(otherCollider->getDownBox(), collider->getUpBox()))
         {
-            this->movement.momentum.y = 0;
-            this->movement.transform.pos.y = otherCollider->down();
+            movement->momentum.y = 0;
+            movement->transform.pos.y = otherCollider->down();
         }
 
-        if (ColliderComp::intersects(otherCollider->getLeftBox(), this->collider.getRightBox()))
+        if (ColliderComp::intersects(otherCollider->getLeftBox(), collider->getRightBox()))
         {
-            this->movement.momentum.x *= -0.5f;
-            this->movement.transform.pos.x = otherCollider->left() - this->collider.width();
-            this->movement.jump();
+            movement->momentum.x *= -0.5f;
+            movement->transform.pos.x = otherCollider->left() - collider->width();
+            movement->jump();
         }
 
-        if (ColliderComp::intersects(otherCollider->getRightBox(), this->collider.getLeftBox()))
+        if (ColliderComp::intersects(otherCollider->getRightBox(), collider->getLeftBox()))
         {
-            this->movement.momentum.x *= -0.5f;
-            this->movement.transform.pos.x = otherCollider->right();
-            this->movement.jump();
+            movement->momentum.x *= -0.5f;
+            movement->transform.pos.x = otherCollider->right();
+            movement->jump();
         }
     }
 
-    else if (otherCollider->hasComponent(ColliderKeys::throwable))
+    const DamageComp* damage = collidable->getComponent<DamageComp>();
+
+    if (damage)
     {
-        const Throwable* throwable = dynamic_cast<const Throwable*>(collidable);
-        this->health.takeDamage(throwable->getDamage());
+        if (damage->origin != DamageComp::DamageOrigin::enemies)
+            this->getComponent<HealthComp>()->takeDamage(damage->damage);
     }
-
-    else if (otherCollider->hasComponent(ColliderKeys::fireball))
-        this->health.takeDamage(dynamic_cast<const Fireball*>(collidable)->getDamage());
 }
 
 void FishMonger::handleExplosion(const Explosion& explosion)
 {
-    health.takeDamage(explosion.calculateDamage(collider.getCenterPos()));
+    getComponent<HealthComp>()->takeDamage(explosion.calculateDamage(getComponent<ColliderComp>()->getCenterPos()));
 }
 
 

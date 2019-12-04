@@ -8,15 +8,15 @@ public:
     FlyingAIComp(sf::Vector2f pos, sf::Vector2f size);
     virtual ~FlyingAIComp() {};
 
-    void updateIdle(float dt, SpriteComp* sprite = nullptr);
-    void updateChasing(float dt, SpriteComp* sprite = nullptr);
-    void updateReturn(float dt, SpriteComp* sprite = nullptr);
-    void updateStunned(float dt, SpriteComp* sprite = nullptr);
+    void updateIdle(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite = nullptr);
+    void updateChasing(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite = nullptr);
+    void updateReturn(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite = nullptr);
+    void updateStunned(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite = nullptr);
 
     Counter attackCounter;
     sf::Vector2f attackDestination;
 
-    virtual void handleCollision(const ColliderComp* collidable, SpriteComp* sprite = nullptr);
+    virtual void handleCollision(MovementComp* movement, ColliderComp* collider, const ColliderComp* otherCollidable, SpriteComp* sprite = nullptr);
 private:
     bool forcedDirResolved;
 

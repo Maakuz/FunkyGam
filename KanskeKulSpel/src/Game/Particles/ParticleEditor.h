@@ -5,7 +5,7 @@ class ParticleEditor
 {
 public:
     ParticleEditor();
-    ~ParticleEditor() {};
+    virtual ~ParticleEditor() {};
 
     ParticleEditor(const ParticleEditor&) = delete;
 

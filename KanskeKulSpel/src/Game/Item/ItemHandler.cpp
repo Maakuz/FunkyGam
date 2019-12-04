@@ -9,7 +9,7 @@
 #include <sstream>
 #include <fstream>
 
-std::vector<const Item*> ItemHandler::itemTemplates;
+std::vector<const Entity*> ItemHandler::itemTemplates;
 std::unordered_set<int> ItemHandler::foundItems;
 std::unordered_set<std::string> ItemHandler::oneTimeItemList;
 
@@ -75,9 +75,10 @@ void ItemHandler::update(float dt, Player* player)
     for (int i = 0; i < gatherItems.size(); i++)
     {
         GatherItem* item = &gatherItems[i];
-        if (item->item.isObtained())
+        LogisticsComp* logistic = item->item.getComponent<LogisticsComp>();
+        if (logistic->isObtained())
         {
-            int id = item->item.getID();
+            int id = logistic->id;
             if (!foundItems.count(id))
             {
                 ui->displayNewItem(id);
@@ -88,13 +89,13 @@ void ItemHandler::update(float dt, Player* player)
                 item->emitter->kill();
 
             if (item->count == -1)
-                oneTimeItemList.emplace(item->item.getName());
+                oneTimeItemList.emplace(logistic->name);
 
             unordered_erase(gatherItems, gatherItems.begin() + i--);
         }
         else
         {
-            if (length(player->getComponent<ColliderComp>()->getCenterPos() - item->item.getTextureCenterPos()) < this->gatherRange)
+            if (length(player->getComponent<ColliderComp>()->getCenterPos() - item->item.getComponent<SpriteComp>()->getTextureCenterPos()) < this->gatherRange)
                 inRange = item;
         }
     }
@@ -115,16 +116,18 @@ void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHit
     {
         int i = rand() % level->gatherables.size();
 
-        Item item(*this->itemTemplates[level->gatherables[i]]);
+        Entity item(*this->itemTemplates[level->gatherables[i]]);
+        SpriteComp* sprite = item.getComponent<SpriteComp>();
+        LogisticsComp* logistics = item.getComponent<LogisticsComp>();
 
         sf::Vector2f pos = point;
-        pos.y += TILE_SIZE - item.getTextureSize().y;
+        pos.y += TILE_SIZE - sprite->getTexture()->getSize().y;
 
-        item.setPosition(pos);
+        sprite->setPosition(pos);
         Emitter* emitter = nullptr;
 
-        if (item.getEmitterID() != -1)
-            emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos + (item.getTextureSize() / 2.f));
+        if (logistics->emitterID != -1)
+            emitter = ParticleHandler::addEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
 
         gatherItems.push_back(GatherItem{ emitter, item, 1});
     }
@@ -133,16 +136,18 @@ void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHit
     {
         int i = rand() % level->rareGatherables.size();
 
-        Item item(*this->itemTemplates[level->rareGatherables[i]]);
+        Entity item(*this->itemTemplates[level->rareGatherables[i]]);
+        SpriteComp* sprite = item.getComponent<SpriteComp>();
+        LogisticsComp* logistics = item.getComponent<LogisticsComp>();
 
         sf::Vector2f pos = point;
-        pos.y += TILE_SIZE - item.getTextureSize().y;
+        pos.y += TILE_SIZE - sprite->getTexture()->getSize().y;
 
-        item.setPosition(pos);
+        sprite->setPosition(pos);
         Emitter* emitter = nullptr;
 
-        if (item.getEmitterID() != -1)
-            emitter = ParticleHandler::addEmitter(item.getEmitterID(), pos);
+        if (logistics->emitterID != -1)
+            emitter = ParticleHandler::addEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
 
         gatherItems.push_back(GatherItem{ emitter, item, 1 });
     }
@@ -163,21 +168,23 @@ void ItemHandler::spawnShrines(std::vector<CustomHitbox> shrines)
 
         if (!oneTimeItemList.count(itemName))
         {
-            for (const Item* item : this->itemTemplates)
+            for (const Entity* item : this->itemTemplates)
             {
-                if (item->getName() == itemName)
+                if (item->getComponent<LogisticsComp>()->name == itemName)
                 {
-                    Item newItem(*item);
+                    Entity newItem(*item);
+                    SpriteComp* sprite = newItem.getComponent<SpriteComp>();
+                    LogisticsComp* logistics = newItem.getComponent<LogisticsComp>();
 
                     sf::Vector2f pos = sf::Vector2f(box.min);
-                    pos.y += TILE_SIZE - newItem.getTextureSize().y;
-                    pos.x += TILE_SIZE / 2 - newItem.getTextureSize().x / 2.f;
+                    pos.y += TILE_SIZE - sprite->getTexture()->getSize().y;
+                    pos.x += TILE_SIZE / 2 - sprite->getTexture()->getSize().x / 2.f;
 
-                    newItem.setPosition(pos);
+                    sprite->setPosition(pos);
                     Emitter* emitter = nullptr;
 
-                    if (newItem.getEmitterID() != -1)
-                        emitter = ParticleHandler::addEmitter(newItem.getEmitterID(), pos);
+                    if (logistics->emitterID != -1)
+                        emitter = ParticleHandler::addEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
 
                     gatherItems.push_back({ emitter, newItem, -1});
                 }
@@ -188,7 +195,7 @@ void ItemHandler::spawnShrines(std::vector<CustomHitbox> shrines)
     }
 }
 
-const Item* ItemHandler::getTemplate(int itemID)
+const Entity* ItemHandler::getTemplate(int itemID)
 {
     return itemTemplates[itemID];
 }
@@ -206,7 +213,7 @@ void ItemHandler::loadThrowable(std::ifstream& file)
 
     file >> *throwable;
 
-    throwable->setID(itemID);
+    throwable->getComponent<LogisticsComp>()->id = itemID;
 
     itemTemplates.push_back(throwable);
 }
@@ -223,7 +230,7 @@ void ItemHandler::loadGatherable(std::ifstream& file)
     Item* item = new Item(sf::Vector2f(), TextureHandler::get().getTexture(textureID));
 
     file >> *item;
-    item->setID(itemID);
+    item->getComponent<LogisticsComp>()->id = itemID;
 
     itemTemplates.push_back(item);
 }
@@ -240,13 +247,13 @@ void ItemHandler::loadTome(std::ifstream& file)
     Tome* item = new Tome(sf::Vector2f(), TextureHandler::get().getTexture(textureID));
 
     file >> *item;
-    item->setID(itemID);
+    item->getComponent<LogisticsComp>()->id = itemID;
     itemTemplates.push_back(item);
 }
 
 void ItemHandler::clearTemplates()
 {
-    for (const Item* item : itemTemplates)
+    for (const Entity* item : itemTemplates)
         delete item;
 
     itemTemplates.clear();
@@ -255,7 +262,7 @@ void ItemHandler::clearTemplates()
 void ItemHandler::draw(sf::RenderTarget & target, sf::RenderStates states) const
 {
     for (const GatherItem& item : this->gatherItems)
-        target.draw(item.item, states);
+        target.draw(*item.item.getComponent<SpriteComp>(), states);
 }
 
 bool ItemHandler::isOneTimeItemPickedUp(std::string item)

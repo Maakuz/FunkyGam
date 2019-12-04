@@ -56,11 +56,11 @@ void InfoWindow::update()
                     for (int i = 0; i < info.gatherables.size(); i++)
                     {
                         std::string label = "LootID #" + std::to_string(i);
-                        if (ImGui::BeginCombo(label.c_str(), items->at(info.gatherables[i])->getName().c_str()))
+                        if (ImGui::BeginCombo(label.c_str(), items->at(info.gatherables[i])->getLogisticsComp()->name.c_str()))
                         {
                             for (int j = 0; j < items->size(); j++)
                             {
-                                if (ImGui::Selectable(items->at(j)->getName().c_str()))
+                                if (ImGui::Selectable(items->at(j)->getLogisticsComp()->name.c_str()))
                                     info.gatherables[i] = j;
                             }
                             ImGui::EndCombo();
@@ -81,11 +81,11 @@ void InfoWindow::update()
                     for (int i = 0; i < info.rareGatherables.size(); i++)
                     {
                         std::string label = "LootID #" + std::to_string(i);
-                        if (ImGui::BeginCombo(label.c_str(), items->at(info.rareGatherables[i])->getName().c_str()))
+                        if (ImGui::BeginCombo(label.c_str(), items->at(info.rareGatherables[i])->getLogisticsComp()->name.c_str()))
                         {
                             for (int j = 0; j < items->size(); j++)
                             {
-                                if (ImGui::Selectable(items->at(j)->getName().c_str()))
+                                if (ImGui::Selectable(items->at(j)->getLogisticsComp()->name.c_str()))
                                     info.rareGatherables[i] = j;
                             }
                             ImGui::EndCombo();

@@ -69,11 +69,11 @@ void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 {
     if (!items.empty())
     {
-        if (ImGui::BeginCombo("Select item", this->items[this->currentItem]->getName().c_str()))
+        if (ImGui::BeginCombo("Select item", this->items[this->currentItem]->getComponent<LogisticsComp>()->name.c_str()))
         {
             for (int i = 0; i < items.size(); i++)
             {
-                if (ImGui::Selectable(items[i]->getName().c_str()))
+                if (ImGui::Selectable(items[i]->getComponent<LogisticsComp>()->name.c_str()))
                     this->currentItem = i;
             }
 
@@ -83,14 +83,15 @@ void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 
         Throwable* throwable = dynamic_cast<Throwable*>(items[currentItem]);
         Tome* tome = dynamic_cast<Tome*>(items[currentItem]);
+        Item* item = dynamic_cast<Item*>(items[currentItem]);
         if (throwable)
             showThrowableData(throwable);
 
         else if (tome)
             showTomeData(tome);
 
-        else
-            showItemData(items[currentItem]);
+        else if (item)
+            showItemData(item);
     }
 
     if (ImGui::Button("save"))
@@ -98,9 +99,9 @@ void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 
     if (ImGui::Button("Create Item"))
     {
-        Item* item = new Item(sf::Vector2f(), items[currentItem]->getTexture());
+        Item* item = new Item(sf::Vector2f(), items[currentItem]->getComponent<SpriteComp>()->getTexture());
         this->items.push_back(item);
-        item->setID(this->items.size() - 1);
+        item->getComponent<LogisticsComp>()->id = this->items.size() - 1;
         this->currentItem = this->items.size() - 1;
     }
 
@@ -108,10 +109,10 @@ void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 
     if (ImGui::Button("Create Tome"))
     {
-        Tome* item = new Tome(sf::Vector2f(), items[currentItem]->getTexture());
+        Tome* item = new Tome(sf::Vector2f(), items[currentItem]->getComponent<SpriteComp>()->getTexture());
         this->items.push_back(item);
-        item->setID(this->items.size() - 1);
-        item->setUseable(true);
+        item->getComponent<LogisticsComp>()->id = this->items.size() - 1;
+        item->getComponent<LogisticsComp>()->useable = true;
         this->currentItem = this->items.size() - 1;
     }
 
@@ -119,10 +120,10 @@ void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 
     if (ImGui::Button("Create Throwable"))
     {
-        Throwable* item = new Throwable(sf::Vector2f(), items[currentItem]->getTexture(), (sf::Vector2f)items[currentItem]->getTexture()->getSize());
+        Throwable* item = new Throwable(sf::Vector2f(), items[currentItem]->getComponent<SpriteComp>()->getTexture(), (sf::Vector2f)items[currentItem]->getComponent<SpriteComp>()->getTexture()->getSize());
         this->items.push_back(item);
-        item->setID(this->items.size() - 1);
-        item->setUseable(true);
+        item->getComponent<LogisticsComp>()->id = this->items.size() - 1;
+        item->getComponent<LogisticsComp>()->useable = true;
         this->currentItem = this->items.size() - 1;
     }
 
@@ -172,7 +173,7 @@ void ItemEditor::updateProjectiles(float dt, sf::Vector2f mouseWorldPos)
                 if (ImGui::Selectable(projectileNames[i].c_str()))
                 {
                     this->currentProjectile = i;
-                    ProjectileHandler::addProjectile(currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), nullptr);
+                    ProjectileHandler::addProjectile(currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), DamageComp::DamageOrigin::neutral);
                 }
             }
 
@@ -182,7 +183,7 @@ void ItemEditor::updateProjectiles(float dt, sf::Vector2f mouseWorldPos)
 
         if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Right))
         {
-            ProjectileHandler::addProjectile(currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), nullptr);
+            ProjectileHandler::addProjectile(currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), DamageComp::DamageOrigin::neutral);
         }
 
         ImGui::Text("Index: %d", currentProjectile);
@@ -201,19 +202,21 @@ void ItemEditor::updateProjectiles(float dt, sf::Vector2f mouseWorldPos)
         writeProjectiles();
 }
 
-void ItemEditor::showItemData(Item* item)
+void ItemEditor::showItemData(Entity* item)
 {
-    ImGui::Text("%s", ("ItemID: " + std::to_string(item->getID())).c_str());
+    LogisticsComp* logistics = item->getComponent<LogisticsComp>();
+    SpriteComp* sprite = item->getComponent<SpriteComp>();
+    ImGui::Text("%s", ("ItemID: " + std::to_string(logistics->id)).c_str());
 
     const std::vector<sf::Texture>* textures = TextureHandler::get().getTextureVec();
-    int currentTexture = TextureHandler::get().getIDForTexture(item->getTexture());
+    int currentTexture = TextureHandler::get().getIDForTexture(sprite->getTexture());
     if (ImGui::BeginCombo("Select texture", TextureHandler::get().getTextureName(currentTexture).c_str()))
     {
         
         for (int i = 0; i < textures->size(); i++)
         {
             if (ImGui::Selectable(TextureHandler::get().getTextureName(i).c_str()))
-                item->setTexture(&textures->at(i));
+                sprite->setTexture(&textures->at(i));
         }
 
 
@@ -221,30 +224,25 @@ void ItemEditor::showItemData(Item* item)
     }
 
     const std::vector<Emitter>* emitters = ParticleHandler::getEmitterTemplates();
-    int currentEmitter = item->getEmitterID();
+    int currentEmitter = logistics->emitterID;
     if (ImGui::BeginCombo("Select emitter", ParticleHandler::getEmitterName(currentEmitter).c_str()))
     {
 
         for (int i = 0; i < emitters->size(); i++)
         {
             if (ImGui::Selectable(ParticleHandler::getEmitterName(i).c_str()))
-                item->setEmitterID(i);
+                logistics->emitterID = i;
         }
 
         if (ImGui::Selectable("None"))
-            item->setEmitterID(-1);
+            logistics->emitterID = -1;
 
         ImGui::EndCombo();
     }
 
+    ImGui::InputText("Name", &logistics->name);
 
-    std::string name = item->getName();
-    ImGui::InputText("Name", &name);
-    item->setName(name);
-
-    int stackLimit = item->getStackLimit();
-    ImGui::InputInt("Stack limit", &stackLimit);
-    item->setStackLimit(stackLimit);
+    ImGui::InputInt("Stack limit", &logistics->stackLimit);
 }
 
 void ItemEditor::showExplosionData(Explosion* explosion)
@@ -276,9 +274,7 @@ void ItemEditor::showThrowableData(Throwable* item)
 {
     showItemData(item);
     ImGui::Separator();
-    float mass = item->getMass();
-    ImGui::DragFloat("Mass", &mass, 0.01, 0, 1000);
-    item->setMass(mass);
+    ImGui::DragFloat("Mass", &item->getComponent<MovementComp>()->mass, 0.01, 0, 1000);
 
     int armingTime = item->getArmingTime();
     ImGui::DragInt("Arming time, milliseconds", &armingTime, 0.01, 0, 100000);
@@ -292,9 +288,7 @@ void ItemEditor::showThrowableData(Throwable* item)
     ImGui::Checkbox("DetonateOnImpact", &detonateOnImpact);
     item->setDetonatingOnImpact(detonateOnImpact);
 
-    int damage = item->getDamage();
-    ImGui::DragInt("Collision damage", &damage, 1, 0, 100000);
-    item->setDamage(damage);
+    ImGui::DragInt("Collision damage", &item->getComponent<DamageComp>()->damage, 1, 0, 100000);
 
     const std::vector<Emitter>* emitters = ParticleHandler::getEmitterTemplates();
     int currentEmitter = item->getParticleEffectID();
@@ -396,9 +390,7 @@ void ItemEditor::showFireballData(Fireball* fireball)
         ImGui::EndCombo();
     }
 
-    int damage = fireball->getDamage();
-    ImGui::DragInt("Damage", &damage, 1, 0, 10000);
-    fireball->setDamage(damage);
+    ImGui::DragInt("Damage", &fireball->getDamageComp()->damage, 1, 0, 10000);
 
     float maxTravel = fireball->getMaxTravelDistance();
     ImGui::DragFloat("Maximum distance", &maxTravel, 1, 0, 100000);
@@ -469,9 +461,7 @@ void ItemEditor::showProjectileData(LightProjectile* projectile, std::string* na
         ImGui::EndCombo();
     }
 
-    int damage = projectile->getDamage();
-    ImGui::DragInt("Damage", &damage, 1, 0, 10000);
-    projectile->setDamage(damage);
+    ImGui::DragInt("Damage", &projectile->getDamageComp()->damage, 1, 0, 10000);
 
     float velocity = projectile->getVelocity();
     ImGui::DragFloat("Velocity", &velocity, 1, 0, 100000);
@@ -509,7 +499,7 @@ void ItemEditor::readItems()
             if (itemType == "[Throwable]")
             {
                 Throwable* item = new Throwable(sf::Vector2f(), TextureHandler::get().getTexture(texID), (sf::Vector2f)TextureHandler::get().getTexture(texID)->getSize());
-                item->setID(id);
+                item->getComponent<LogisticsComp>()->id = id;
                 file >> *item;
                 this->items.push_back(item);
             }
@@ -517,8 +507,8 @@ void ItemEditor::readItems()
             if (itemType == "[Item]")
             {
                 Item* item = new Item(sf::Vector2f(), TextureHandler::get().getTexture(texID));
-                item->setID(id);
-                file >> *item;
+                item->getComponent<LogisticsComp>()->id = id;
+                file >> *item->getComponent<LogisticsComp>();
                 this->items.push_back(item);
             }
 
@@ -526,7 +516,7 @@ void ItemEditor::readItems()
             if (itemType == "[Tome]")
             {
                 Tome* item = new Tome(sf::Vector2f(), TextureHandler::get().getTexture(texID));
-                item->setID(id);
+                item->getComponent<LogisticsComp>()->id = id;
                 file >> *item;
                 this->items.push_back(item);
             }
@@ -632,32 +622,34 @@ void ItemEditor::writeItems()
         closeWindow();
     }
 
-    for (Item* item : items)
+    for (Entity* item : items)
     {
+        LogisticsComp* logistics = item->getComponent<LogisticsComp>();
+        SpriteComp* sprite = item->getComponent<SpriteComp>();
         Throwable* thrw = dynamic_cast<Throwable*>(item);
         Tome* tome = dynamic_cast<Tome*>(item);
         if (thrw)
         {
             file << "[Throwable]\n";
-            file << "ID: " << thrw->getID() << "\n";
-            file << "TexID: " << TextureHandler::get().getIDForTexture(thrw->getTexture()) << "\n";
+            file << "ID: " << logistics->id << "\n";
+            file << "TexID: " << TextureHandler::get().getIDForTexture(sprite->getTexture()) << "\n";
             file << *thrw << "\n";
         }
 
         else if (tome)
         {
             file << "[Tome]\n";
-            file << "ID: " << tome->getID() << "\n";
-            file << "TexID: " << TextureHandler::get().getIDForTexture(tome->getTexture()) << "\n";
+            file << "ID: " << logistics->id << "\n";
+            file << "TexID: " << TextureHandler::get().getIDForTexture(sprite->getTexture()) << "\n";
             file << *tome << "\n";
         }
 
         else
         {
             file << "[Item]\n";
-            file << "ID: " << item->getID() << "\n";
-            file << "TexID: " << TextureHandler::get().getIDForTexture(item->getTexture()) << "\n";
-            file << *item << "\n";
+            file << "ID: " << logistics->id << "\n";
+            file << "TexID: " << TextureHandler::get().getIDForTexture(sprite->getTexture()) << "\n";
+            file << *logistics << "\n";
         }
     }
 
@@ -710,7 +702,7 @@ void ItemEditor::writeProjectiles()
 
 void ItemEditor::clearItems()
 {
-    for (Item* item : items)
+    for (Entity* item : items)
         delete item;
 
     items.clear();
@@ -736,7 +728,7 @@ void ItemEditor::draw(sf::RenderTarget& target, sf::RenderStates states) const
     {
     case Tab::items:
         if (!items.empty())
-            target.draw(*items[currentItem], states);
+            target.draw(*items[currentItem]->getComponent<SpriteComp>(), states);
         break;
     default:
         break;

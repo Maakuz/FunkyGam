@@ -23,7 +23,7 @@ class Game
 {
 public:
     Game(const sf::RenderWindow* window);
-    ~Game();
+    virtual ~Game();
 
     void runAutoCommands();
 

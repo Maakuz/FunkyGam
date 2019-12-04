@@ -1,7 +1,6 @@
 #include "AIComp.h"
 
-AIComp::AIComp(sf::Vector2f pos, sf::Vector2f size):
-    collider(size, pos)
+AIComp::AIComp(sf::Vector2f pos, sf::Vector2f size)
 {
     this->timeSincePlayerSeen = Counter(10000);
 
@@ -14,9 +13,6 @@ AIComp::AIComp(sf::Vector2f pos, sf::Vector2f size):
     this->state = State::idle;
     this->facingDir = Direction::none;
     this->forcedDirection = Direction::none;
-
-
-
 }
 
 void AIComp::baseUpdate(float dt)
@@ -27,12 +23,6 @@ void AIComp::baseUpdate(float dt)
         this->roamDecisionCounter.reset();
     }
     timeSincePlayerSeen.update(dt);
-
-
-
-
-    this->movement.update(dt);
-    collider.setPosition(movement.transform.pos);
 }
 
 void AIComp::notify(sf::Vector2f pos)
@@ -47,9 +37,9 @@ void AIComp::setState(State state)
     this->state = state;
 }
 
-void AIComp::moveLeft(SpriteComp* sprite)
+void AIComp::moveLeft(MovementComp* movement, SpriteComp* sprite)
 {
-    this->movement.acceleration.x = -1;
+    movement->acceleration.x = -1;
     this->facingDir = Direction::left;
     if (!sprite)
         return;
@@ -58,9 +48,9 @@ void AIComp::moveLeft(SpriteComp* sprite)
         sprite->flipHorizontally();
 }
 
-void AIComp::moveRight(SpriteComp* sprite)
+void AIComp::moveRight(MovementComp* movement, SpriteComp* sprite)
 {
-    this->movement.acceleration.x = 1;
+    movement->acceleration.x = 1;
     this->facingDir = Direction::right;
     if (!sprite)
         return;

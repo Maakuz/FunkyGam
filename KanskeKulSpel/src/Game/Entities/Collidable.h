@@ -9,10 +9,10 @@ public:
     {
         ColliderComp* comp = new ColliderComp(size, pos);
 
-        addComponent(comp);
+        addComponent<ColliderComp>(comp);
     };
 
-    virtual ~Collidable() { };
+    virtual ~Collidable() {};
 
 protected:
     friend class CollisionHandler;

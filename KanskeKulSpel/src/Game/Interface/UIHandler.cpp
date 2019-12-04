@@ -87,7 +87,7 @@ void UIHandler::update(float dt, sf::Vector2f mousePos)
 
 void UIHandler::displayNewItem(int item)
 {
-    newItem.setText("New item: " + ItemHandler::getTemplate(item)->getName() + "!");
+    newItem.setText("New item: " + ItemHandler::getTemplate(item)->getLogisticsComp()->name + "!");
     newItem.resizeToFit();
     newItemDisplayDuration.reset();
 }

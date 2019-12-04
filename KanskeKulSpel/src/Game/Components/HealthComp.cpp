@@ -14,7 +14,7 @@ void HealthComp::takeDamage(int damage)
         this->alive = false;
 }
 
-void HealthComp::setHealth(int health)
+void HealthComp::setCurrentHealth(int health)
 {
     this->health = std::min(health, this->maxHealth);
 

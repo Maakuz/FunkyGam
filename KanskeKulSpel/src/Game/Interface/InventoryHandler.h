@@ -8,7 +8,7 @@ class InventoryHandler : public sf::Drawable
 {
 public:
     InventoryHandler();
-    ~InventoryHandler();
+    virtual ~InventoryHandler();
 
     void initialize(const sf::Texture* texture);
 
@@ -38,7 +38,7 @@ private:
 
     struct InventorySlot
     {
-        Item* item;
+        Entity* item;
         int size;
         sf::Text text;
         sf::RectangleShape rect;

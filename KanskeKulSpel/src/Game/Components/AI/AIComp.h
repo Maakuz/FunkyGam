@@ -41,21 +41,18 @@ public:
     Direction facingDir;
     sf::Vector2f lastKnownPlayerPos;
 
-    MovementComp movement;
-    ColliderComp collider;
-
     AIComp(sf::Vector2f pos, sf::Vector2f size);
     virtual ~AIComp() {};
     void baseUpdate(float dt);
     void notify(sf::Vector2f pos);
 
-    virtual void updateIdle(float dt, SpriteComp* sprite = nullptr) = 0;
-    virtual void updateChasing(float dt, SpriteComp* sprite = nullptr) = 0;
-    virtual void updateReturn(float dt, SpriteComp* sprite = nullptr) = 0;
-    virtual void updateStunned(float dt, SpriteComp* sprite = nullptr) = 0;
+    virtual void updateIdle(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite = nullptr) = 0;
+    virtual void updateChasing(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite = nullptr) = 0;
+    virtual void updateReturn(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite = nullptr) = 0;
+    virtual void updateStunned(MovementComp* movement, ColliderComp* collider, float dt, SpriteComp* sprite = nullptr) = 0;
 
-    void moveLeft(SpriteComp* sprite);
-    void moveRight(SpriteComp* sprite);
+    void moveLeft(MovementComp* movement, SpriteComp* sprite);
+    void moveRight(MovementComp* movement, SpriteComp* sprite);
     void faceLeft(SpriteComp* sprite);
     void faceRight(SpriteComp* sprite);
 

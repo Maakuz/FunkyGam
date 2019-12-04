@@ -6,7 +6,7 @@ class UIHandler : public sf::Drawable
 {
 public:
     UIHandler();
-    ~UIHandler();
+    virtual ~UIHandler();
 
     void initialize();
 

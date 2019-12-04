@@ -9,7 +9,7 @@ class HubHandler : public sf::Drawable
 {
 public:
     HubHandler(UIHandler* uiHandler);
-    ~HubHandler() {};
+    virtual ~HubHandler() {};
 
     void update(float dt, sf::Vector2f mousePos);
     const LevelInfo* getActiveLevel()const;

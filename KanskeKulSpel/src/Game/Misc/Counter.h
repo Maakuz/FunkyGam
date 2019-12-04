@@ -13,7 +13,7 @@ public:
         this->stopValue = stopValue;
     }
 
-    ~Counter() {};
+    virtual ~Counter() {};
 
     bool operator<(int value)
     {

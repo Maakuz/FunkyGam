@@ -3,11 +3,18 @@
 #include "Game/Handlers/TextureHandler.h"
 
 Enemy::Enemy(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset) :
-    sprite(data, pos)
+    Collidable(pos, size)
 {
+    AnimatedSpriteComp* sprite = new AnimatedSpriteComp(data, pos);
+    addComponent<AnimatedSpriteComp>(sprite);
+
+    addComponent<HealthComp>(new HealthComp);
+
+    addComponent<MovementComp>(new MovementComp);
+    
     this->prevHealth = 0;
-    this->sprite.spriteOffset.y = -(abs(sprite.getTextureRect().height) - size.y);
-    this->sprite.spriteOffset += offset;
+    sprite->spriteOffset.y = -(abs(sprite->getTextureRect().height) - size.y);
+    sprite->spriteOffset += offset;
 
     this->drawExclamation = Counter(1000);
     this->drawQuestion = Counter(1000);
@@ -19,24 +26,30 @@ Enemy::Enemy(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector
 
 void Enemy::updateEnemy(float dt)
 {
+    AnimatedSpriteComp* sprite = getAnimatedSpriteComp();
+    ColliderComp* collider = getColliderComp();
+    MovementComp* movement = getMovementComp();
     getAI()->baseUpdate(dt);
+
+    movement->update(dt);
+    collider->setPosition(movement->transform.pos);
 
     drawExclamation.update(dt);
     drawQuestion.update(dt);
-    sf::Vector2f iconPos(getAI()->movement.transform.pos + sprite.spriteOffset + sf::Vector2f(this->getAI()->collider.getSize().x / 2 + 10, 0));
+    sf::Vector2f iconPos(movement->transform.pos + sprite->spriteOffset + sf::Vector2f(collider->getSize().x / 2 + 10, 0));
     this->exclamation.setPosition(iconPos);
     this->question.setPosition(iconPos);
 
-    this->prevHealth = this->health.getHealth();
+    this->prevHealth = this->getComponent<HealthComp>()->getCurrentHealth();
 
-    if (abs(getAI()->movement.momentum.x) < this->getAI()->movement.walkSpeed * 0.75f && !sprite.isIdle())
-        sprite.pauseAnimation();
+    if (abs(movement->momentum.x) < movement->walkSpeed * 0.75f && !sprite->isIdle())
+        sprite->pauseAnimation();
 
-    else if (abs(getAI()->movement.momentum.x) > this->getAI()->movement.walkSpeed * 0.75f)
-        sprite.resumeAnimation();
+    else if (abs(movement->momentum.x) > movement->walkSpeed * 0.75f)
+        sprite->resumeAnimation();
 
-    sprite.updateAnimation(dt);
-    sprite.setPosition(getAI()->movement.transform.pos);
+    sprite->updateAnimation(dt);
+    sprite->setPosition(movement->transform.pos);
 }
 
 void Enemy::notifyEnemy(sf::Vector2f playerPos)
@@ -49,7 +62,7 @@ void Enemy::notifyEnemy(sf::Vector2f playerPos)
 
 void Enemy::spawn(sf::Vector2f pos)
 {
-    this->getAI()->movement.transform.pos = pos;
+    getMovementComp()->transform.pos = pos;
     this->getAI()->setStartPoint(pos);
     this->getAI()->currentRoamPoint = pos;
     this->getAI()->setState(AIComp::State::idle);
@@ -58,17 +71,12 @@ void Enemy::spawn(sf::Vector2f pos)
 
 bool Enemy::isAlive()
 {
-    return this->health.isAlive();
+    return this->getComponent<HealthComp>()->isAlive();
 }
 
 bool Enemy::isHealthChanged()
 {
-    return health.getHealth() != prevHealth;
-}
-
-float Enemy::getHealthPercentage() const
-{
-    return float(health.getHealth()) / health.getMaxHealth();
+    return getComponent<HealthComp>()->getCurrentHealth() != prevHealth;
 }
 
 float Enemy::getVisionRatingAt(float distance) const
@@ -83,12 +91,12 @@ float Enemy::getVisionRatingAt(float distance) const
 
 sf::Vector2f Enemy::getEyePos() const
 {
-    return this->getAI()->movement.transform.pos + this->getAI()->eyeLevel;
+    return getMovementComp()->transform.pos + this->getAI()->eyeLevel;
 }
 
 void Enemy::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(sprite, states);
+    target.draw(*getComponent<AnimatedSpriteComp>(), states);
 
     if (!drawExclamation.isTimeUp())
         target.draw(exclamation, states);
@@ -106,7 +114,7 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
 
     in >> trash >> enemy.getAI()->roamDistance;
     in >> trash >> health;
-    in >> trash >> enemy.getAI()->movement.mass;
+    in >> trash >> enemy.getMovementComp()->mass;
     in >> trash >> enemy.getAI()->sightRadius;
     in >> trash >> enemy.getAI()->sightMultiplier;
     in >> trash >> enemy.getAI()->chaseSpeed;
@@ -115,8 +123,8 @@ std::istream& operator>>(std::istream& in, Enemy& enemy)
     in >> trash >> enemy.getAI()->roamDecisionCounter.stopValue;
 
     enemy.getAI()->roamDecisionCounter.stopValue += rand() % 1000;
-    enemy.health.setMaxHealth(health);
-    enemy.health.fillHealth();
+    enemy.getComponent<HealthComp>()->setMaxHealth(health);
+    enemy.getComponent<HealthComp>()->fillHealth();
     enemy.prevHealth = health;
 
     enemy.readSpecific(in);

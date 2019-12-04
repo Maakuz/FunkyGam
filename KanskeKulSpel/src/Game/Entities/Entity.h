@@ -2,12 +2,27 @@
 #include "Game/Components/Comp.h"
 #include <unordered_map>
 
+#define getLogisticsComp getComponent<LogisticsComp>
+#define getSpriteComp getComponent<SpriteComp>
+#define getAnimatedSpriteComp getComponent<AnimatedSpriteComp>
+#define getMovementComp getComponent<MovementComp>
+#define getTomeComp getComponent<TomeComp>
+#define getHealthComp getComponent<HealthComp>
+#define getColliderComp getComponent<ColliderComp>
+#define getDamageComp getComponent<DamageComp>
+#define getTransformComp getComponent<TransformComp>
+
 class Entity
 {
 public:
     Entity() {};
-    ~Entity();
+    virtual ~Entity();
 
+    Entity(const Entity& other);
+
+    void operator=(const Entity& other);
+
+    template <typename Component>
     void addComponent(Comp* comp);
 
     template <typename Component>
@@ -21,12 +36,17 @@ private:
 };
 
 template<typename Component>
+inline void Entity::addComponent(Comp* comp)
+{
+    if (!components.count(Component::getStaticKey()))
+        components.emplace(Component::getStaticKey(), comp);
+}
+
+template<typename Component>
 inline Component* Entity::getComponent()
 {
-    Component comp;
-
-    if (components.count(comp.getKey()))
-        return dynamic_cast<Component*>(components.at(comp.getKey()));
+    if (components.count(Component::getStaticKey()))
+        return dynamic_cast<Component*>(components.at(Component::getStaticKey()));
 
     else
         return nullptr;
@@ -35,9 +55,8 @@ inline Component* Entity::getComponent()
 template<typename Component>
 inline const Component* Entity::getComponent() const
 {
-    Component comp;
-    if (components.count(comp.getKey()))
-        return dynamic_cast<const Component*>(components.at(comp.getKey()));
+    if (components.count(Component::getStaticKey()))
+        return dynamic_cast<const Component*>(components.at(Component::getStaticKey()));
 
     else
         return nullptr;

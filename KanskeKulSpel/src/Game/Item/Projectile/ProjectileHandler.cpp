@@ -38,16 +38,25 @@ ProjectileHandler::ProjectileHandler()
 
 ProjectileHandler::~ProjectileHandler()
 {
-    for (Spell* spell : spells)
-        delete spell;
+    reset();
 
     for (auto& pair : spellTemplates)
         delete pair.second;
 
+    spellTemplates.clear();
+}
+
+void ProjectileHandler::reset()
+{
+    for (Spell* spell : spells)
+        delete spell;
+
     for (LightProjectile* projectile : projectiles)
         delete projectile;
 
-    spellTemplates.clear();
+    spells.clear();
+    projectiles.clear();
+    throwables.clear();
 }
 
 void ProjectileHandler::update(float dt, Player* player)
@@ -178,10 +187,10 @@ void ProjectileHandler::queueColliders()
         CollisionHandler::queueCollider(projectile);
 }
 
-void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, Collidable* thrower)
+void ProjectileHandler::addThrowable(int id, sf::Vector2f pos, sf::Vector2f momentum, DamageComp::DamageOrigin origin)
 {
     Throwable item(*dynamic_cast<const Throwable*>(ItemHandler::getTemplate(id)));
-    item.throwItem(pos, momentum, thrower);
+    item.throwItem(pos, momentum, origin);
     throwables.push_back(item);
 }
 
@@ -198,10 +207,10 @@ void ProjectileHandler::addSpell(std::string spellID, sf::Vector2f pos, sf::Vect
     
 }
 
-void ProjectileHandler::addProjectile(int projectileID, sf::Vector2f pos, sf::Vector2f direction, Collidable* shooter)
+void ProjectileHandler::addProjectile(int projectileID, sf::Vector2f pos, sf::Vector2f direction, DamageComp::DamageOrigin origin)
 {
     projectiles.push_back(new LightProjectile(projectileTemplates[projectileID]));
-    projectiles.back()->shoot(pos, direction, shooter);
+    projectiles.back()->shoot(pos, direction, origin);
 }
 
 void ProjectileHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
@@ -209,7 +218,7 @@ void ProjectileHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates sta
     if (drawHitboxes)
     {
         for (const Throwable& throwable : this->throwables)
-            target.draw(throwable.getCollider(), states);
+            target.draw(*throwable.getComponent<ColliderComp>(), states);
 
         for (const LightProjectile* projectile : projectiles)
             target.draw(*projectile->getComponent<ColliderComp>(), states);

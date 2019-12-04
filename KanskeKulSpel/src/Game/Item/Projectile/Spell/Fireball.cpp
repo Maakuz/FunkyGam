@@ -6,10 +6,8 @@
 #include "Misc/ConsoleWindow.h"
 
 Fireball::Fireball(sf::Vector2f pos)
-    :Spell(pos),
-    collider(sf::Vector2f(32, 32), pos)
+    :Spell(pos)
 {
-    this->damage = 0;
     this->maxTravelDistance = 0;
     this->minCharge = 0;
     this->maxCharge = 0;
@@ -26,7 +24,9 @@ Fireball::Fireball(sf::Vector2f pos)
     this->topSpeed = 0;
     this->traveledDistance = 0;
 
-    this->collider.addComponent(ColliderKeys::fireball);
+    addComponent<DamageComp>(new DamageComp);
+
+    getColliderComp()->addComponent(ColliderKeys::fireball);
 }
 
 bool Fireball::isComplete() const
@@ -41,7 +41,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 
     else if (channelTime > this->minCharge && channelTime < this->maxCharge)
     {
-        this->transform.pos = pos;
+        getTransformComp()->pos = pos;
         this->distance = std::min(length(pos - dest), maxTravelDistance);
         this->direction = dest - pos;
         normalize(this->direction);
@@ -54,13 +54,13 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
     {
         this->fullCharge = true;
         this->topSpeed *= 1.7f;
-        this->damage *= 1.2f;
+        getDamageComp()->damage *= 1.2f;
         this->maxTravelDistance *= 1.5f;
 
         this->explosion.damage *= 1.5f;
         this->explosion.radius *= 2.5f;
 
-        this->transform.pos = pos;
+        getTransformComp()->pos = pos;
         this->distance = std::min(length(pos - dest), maxTravelDistance);
         this->distance = std::max(length(pos - dest), 64.f);
         this->direction = dest - pos;
@@ -73,25 +73,26 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
 
 void Fireball::update(float dt)
 {
-    float t = std::max(0.f, 1 - (length(this->transform.pos - this->destination) / distance));
+    TransformComp* transform = getTransformComp();
+    float t = std::max(0.f, 1 - (length(transform->pos - this->destination) / distance));
     t = std::min(t, 1.f);
     float velocity = (1 - powf(t, 6)) * dt * topSpeed;
-    transform.pos += direction * velocity;
-    collider.setPosition(transform.pos);
-    trail->setEmitterPos(transform.pos);
+    transform->pos += direction * velocity;
+    getColliderComp()->setPosition(transform->pos);
+    trail->setEmitterPos(transform->pos);
 
     if (velocity < 0.2f)
     {
         this->complete = true;
-        this->explosion.center = this->transform.pos;
+        this->explosion.center = transform->pos;
         trail->kill();
         CollisionHandler::queueExplosion(this->explosion);
 
         if (!fullCharge)
-            ParticleHandler::addEmitter(this->impactEmitterID, this->transform.pos);
+            ParticleHandler::addEmitter(this->impactEmitterID, transform->pos);
 
         else
-            ParticleHandler::addEmitter(this->fullImpactEmitterID, this->transform.pos);
+            ParticleHandler::addEmitter(this->fullImpactEmitterID, transform->pos);
     }
 
     this->traveledDistance += velocity;
@@ -115,7 +116,7 @@ std::istream& Fireball::readSpecific(std::istream& in)
 {
     std::string trash;
     in >> trash;
-    in >> trash >> damage;
+    in >> trash >> getDamageComp()->damage;
     in >> trash >> maxTravelDistance;
     in >> trash >> topSpeed;
     in >> trash >> minCharge;
@@ -132,7 +133,7 @@ std::istream& Fireball::readSpecific(std::istream& in)
 std::ostream& Fireball::writeSpecific(std::ostream& out) const
 {
     out << "[Specific]\n";
-    out << "TickDamage: " << damage << "\n";
+    out << "TickDamage: " << getDamageComp()->damage << "\n";
     out << "MaximumTravel: " << maxTravelDistance << "\n";
     out << "TopSpeed: " << topSpeed << "\n";
     out << "MinCharge: " << minCharge << "\n";

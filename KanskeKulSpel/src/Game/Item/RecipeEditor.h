@@ -5,7 +5,7 @@ class RecipeEditor
 {
 public:
     RecipeEditor();
-    ~RecipeEditor();
+    virtual ~RecipeEditor();
 
     void openWindow();
     void closeWindow() { open = false; };

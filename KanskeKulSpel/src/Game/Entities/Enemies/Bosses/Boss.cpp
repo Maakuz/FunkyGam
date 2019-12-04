@@ -2,39 +2,49 @@
 #include <fstream>
 
 Boss::Boss(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset):
-    sprite(data, pos),
-    collider(size, pos)
+    Collidable(pos, size)
 {
+    AnimatedSpriteComp* sprite = new AnimatedSpriteComp(data, pos);
+    addComponent<AnimatedSpriteComp>(sprite);
+    
+    MovementComp* movement = new MovementComp;
+    addComponent<MovementComp>(movement);
+
+    addComponent<HealthComp>(new HealthComp);
+
     this->interrupting = false;
     this->prevHealth = 0;
-    movement.transform.pos = pos;
+    movement->transform.pos = pos;
 
-    this->sprite.spriteOffset.y = -(abs(sprite.getTextureRect().height) - size.y);
-    this->sprite.spriteOffset += offset;
+    sprite->spriteOffset.y = -(abs(sprite->getTextureRect().height) - size.y);
+    sprite->spriteOffset += offset;
 }
 
 void Boss::update(float dt, sf::Vector2f playerPos)
 {
-    movement.update(dt);
-    collider.setPosition(movement.transform.pos);
-    sprite.setPosition(movement.transform.pos);
-    sprite.updateAnimation(dt);
+    MovementComp* movement = getComponent<MovementComp>();
+    AnimatedSpriteComp* sprite = getComponent<AnimatedSpriteComp>();
 
-    if (abs(movement.momentum.x) < this->movement.walkSpeed * 0.75f && !sprite.isIdle())
-        sprite.pauseAnimation();
+    movement->update(dt);
+    getComponent<ColliderComp>()->setPosition(movement->transform.pos);
+    sprite->setPosition(movement->transform.pos);
+    sprite->updateAnimation(dt);
 
-    else if (abs(movement.momentum.x) > this->movement.walkSpeed * 0.75f)
-        sprite.resumeAnimation();
+    if (abs(movement->momentum.x) < movement->walkSpeed * 0.75f && !sprite->isIdle())
+        sprite->pauseAnimation();
+
+    else if (abs(movement->momentum.x) > movement->walkSpeed * 0.75f)
+        sprite->resumeAnimation();
 }
 
 bool Boss::isHealthChanged()
 {
-    return health.getHealth() != prevHealth;
+    return getComponent<HealthComp>()->getCurrentHealth() != prevHealth;
 }
 
 void Boss::spawn(sf::Vector2f pos)
 {
-    this->movement.transform.pos = pos;
+    this->getComponent<MovementComp>()->transform.pos = pos;
 }
 
 std::istream& operator>>(std::istream& in, Boss& boss)
@@ -44,11 +54,11 @@ std::istream& operator>>(std::istream& in, Boss& boss)
     in >> trash;
 
     in >> trash >> health;
-    in >> trash >> boss.movement.mass;
-    in >> trash >> boss.movement.walkSpeed;
+    in >> trash >> boss.getComponent<MovementComp>()->mass;
+    in >> trash >> boss.getComponent<MovementComp>()->walkSpeed;
 
-    boss.health.setMaxHealth(health);
-    boss.health.fillHealth();
+    boss.getComponent<HealthComp>()->setMaxHealth(health);
+    boss.getComponent<HealthComp>()->fillHealth();
     boss.prevHealth = health;
 
     return in;
@@ -56,5 +66,5 @@ std::istream& operator>>(std::istream& in, Boss& boss)
 
 void Boss::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(sprite, states);
+    target.draw(*getComponent<AnimatedSpriteComp>(), states);
 }

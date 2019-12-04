@@ -17,7 +17,7 @@ public:
     float getChannelTime() const { return channelTime; };
 
     template <typename SpellType>
-    void castSpell(sf::Vector2f dest, Collidable* owner);
+    void castSpell(sf::Vector2f dest, DamageComp::DamageOrigin origin);
 
 private:
     Emitter* channelEmitter;
@@ -31,10 +31,10 @@ private:
 };
 
 template<typename LightProjectile>
-inline void SpellComp::castSpell(sf::Vector2f dest, Collidable* owner)
+inline void SpellComp::castSpell(sf::Vector2f dest, DamageComp::DamageOrigin origin)
 {
     sf::Vector2f dir = dest - pos;
     normalize(dir);
-    ProjectileHandler::addProjectile(spellID, pos, dir, owner);
+    ProjectileHandler::addProjectile(spellID, pos, dir, origin);
     stopChannelling();
 }

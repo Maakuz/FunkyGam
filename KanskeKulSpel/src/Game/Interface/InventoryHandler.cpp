@@ -36,10 +36,10 @@ InventoryHandler::InventoryHandler()
                 addItem(std::stoi(args[0]), std::stoi(args[1]));
 
             else
-                addItem(std::stoi(args[0]), ItemHandler::getTemplate(std::stoi(args[0]))->getStackLimit());
+                addItem(std::stoi(args[0]), ItemHandler::getTemplate(std::stoi(args[0]))->getLogisticsComp()->stackLimit);
 
             updateQuickslotSprites();
-            return "You got " + ItemHandler::getTemplate(std::stoi(args[0]))->getName() + "!";
+            return "You got " + ItemHandler::getTemplate(std::stoi(args[0]))->getLogisticsComp()->name + "!";
         });
 
     ConsoleWindow::get().addCommand("sortInventory", [&](Arguments args)->std::string
@@ -140,7 +140,7 @@ void InventoryHandler::update(float dt, sf::Vector2f mousePos)
         {
 
             this->currentToolTip = toolTipItem;
-            this->toolTip.setText(this->slots[toolTipItem].item->getName());
+            this->toolTip.setText(this->slots[toolTipItem].item->getLogisticsComp()->name);
             this->toolTip.resizeToFit();
             
             this->toolTip.setPos(mousePos);
@@ -176,7 +176,7 @@ int InventoryHandler::countItem(int itemID)
 {
     int tally = 0;
     for (InventorySlot& slot : this->slots)
-        if (slot.item != nullptr && slot.item->getID() == itemID)
+        if (slot.item != nullptr && slot.item->getLogisticsComp()->id == itemID)
             tally += slot.size;
 
     return tally;
@@ -200,7 +200,7 @@ void InventoryHandler::setSelectedItem(int item)
 int InventoryHandler::getSelectedItemID() const
 {
     if (slots[selectedQuickslotItem].item)
-        return slots[selectedQuickslotItem].item->getID();
+        return slots[selectedQuickslotItem].item->getLogisticsComp()->id;
 
     else
         return -1;
@@ -211,7 +211,7 @@ int InventoryHandler::useSelectedItem()
     int id = getSelectedItemID();
     if (id != -1)
     {
-        if (!this->slots[this->selectedQuickslotItem].item->isUseable())
+        if (!this->slots[this->selectedQuickslotItem].item->getLogisticsComp()->useable)
             id = -1;
 
         else if (!this->slots[this->selectedQuickslotItem].infinite)
@@ -250,7 +250,7 @@ void InventoryHandler::sortItems()
     {
         for (int j = i + 1; j < ITEM_SLOT_COUNT; j++)
         {
-            if (slots[i].item && slots[j].item && slots[i].item->getID() == slots[j].item->getID())
+            if (slots[i].item && slots[j].item && slots[i].item->getLogisticsComp()->id == slots[j].item->getLogisticsComp()->id)
             {
                 bool fullyMerged = mergeStacks(i, j);
                 if (!fullyMerged)
@@ -283,15 +283,15 @@ void InventoryHandler::addItem(int itemID, int amount)
         {
             if (slots[i].item == nullptr && first)
             {
-                this->slots[i].item = new Item(*ItemHandler::getTemplate(itemID));
-                this->slots[i].item->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getTextureSize() / 2.f));
+                this->slots[i].item = new Entity(*ItemHandler::getTemplate(itemID));
+                this->slots[i].item->getSpriteComp()->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
                 slots[i].infinite = true;
                 slots[i].size = 8;
                 slots[i].text.setString("Inf");
                 first = false;            
             }
 
-            else if (slots[i].item && slots[i].item->getID() == itemID && first)
+            else if (slots[i].item && slots[i].item->getLogisticsComp()->id == itemID && first)
             {
                 slots[i].infinite = true;
                 slots[i].size = 8;
@@ -299,7 +299,7 @@ void InventoryHandler::addItem(int itemID, int amount)
                 first = false;
             }
 
-            else if (slots[i].item && slots[i].item->getID() == itemID)
+            else if (slots[i].item && slots[i].item->getLogisticsComp()->id == itemID)
             {
                 removeAt(i);
             }
@@ -314,7 +314,7 @@ void InventoryHandler::addItem(int itemID, int amount)
             int i = 0;
             while (i < ITEM_SLOT_COUNT &&
                 this->slots[i].item != nullptr &&
-                !(this->slots[i].item->getID() == itemID && this->slots[i].item->getStackLimit() > this->slots[i].size))
+                !(this->slots[i].item->getLogisticsComp()->id == itemID && this->slots[i].item->getLogisticsComp()->stackLimit > this->slots[i].size))
             {
                 i++;
             }
@@ -323,7 +323,7 @@ void InventoryHandler::addItem(int itemID, int amount)
             {
                 if (this->slots[i].item)
                 {
-                    int stack = std::min(amount, this->slots[i].item->getStackLimit() - this->slots[i].size);
+                    int stack = std::min(amount, this->slots[i].item->getLogisticsComp()->stackLimit - this->slots[i].size);
                     this->slots[i].size += stack;
                     amount -= stack;
                     this->slots[i].text.setString(std::to_string(this->slots[i].size));
@@ -331,9 +331,9 @@ void InventoryHandler::addItem(int itemID, int amount)
 
                 else
                 {
-                    this->slots[i].item = new Item(*ItemHandler::getTemplate(itemID));
-                    this->slots[i].item->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getTextureSize() / 2.f));
-                    int stack = std::min(amount, this->slots[i].item->getStackLimit() - this->slots[i].size);
+                    this->slots[i].item = new Entity(*ItemHandler::getTemplate(itemID));
+                    this->slots[i].item->getSpriteComp()->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
+                    int stack = std::min(amount, this->slots[i].item->getLogisticsComp()->stackLimit - this->slots[i].size);
                     this->slots[i].size += stack;
                     amount -= stack;
                     this->slots[i].text.setString(std::to_string(this->slots[i].size));
@@ -356,7 +356,7 @@ int InventoryHandler::removeItem(int itemID, int amount)
     int tally = 0;
     for (int i = 0; i < ITEM_SLOT_COUNT && amount > 0; i++)
     {
-        if (slots[i].item != nullptr && slots[i].item->getID() == itemID)
+        if (slots[i].item != nullptr && slots[i].item->getLogisticsComp()->id == itemID)
         {
             int itemsTaken = std::min(amount, slots[i].size);
             tally += itemsTaken;
@@ -386,10 +386,10 @@ void InventoryHandler::removeAt(int slot)
 
 bool InventoryHandler::mergeStacks(int to, int from)
 {
-    if (!slots[to].item || !slots[from].item || slots[to].item->getID() != slots[from].item->getID())
+    if (!slots[to].item || !slots[from].item || slots[to].item->getLogisticsComp()->id != slots[from].item->getLogisticsComp()->id)
         return false;
 
-    int avaliableSpace = slots[to].item->getStackLimit() - slots[to].size;
+    int avaliableSpace = slots[to].item->getLogisticsComp()->stackLimit - slots[to].size;
 
     slots[to].size += std::min(slots[from].size, avaliableSpace);
     slots[from].size -= std::min(slots[from].size, avaliableSpace);
@@ -410,10 +410,10 @@ bool InventoryHandler::mergeStacks(int to, int from)
 void InventoryHandler::swapItems(int a, int b)
 {
     if (this->slots[a].item)
-        this->slots[a].item->setPosition(this->slots[b].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[a].item->getTextureSize() / 2.f));
+        this->slots[a].item->getSpriteComp()->setPosition(this->slots[b].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[a].item->getSpriteComp()->getTextureSize() / 2.f));
 
     if (this->slots[b].item)
-        this->slots[b].item->setPosition(this->slots[a].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[b].item->getTextureSize() / 2.f));
+        this->slots[b].item->getSpriteComp()->setPosition(this->slots[a].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[b].item->getSpriteComp()->getTextureSize() / 2.f));
 
     std::swap(this->slots[a].item, this->slots[b].item);
     std::swap(this->slots[a].size, this->slots[b].size);
@@ -433,8 +433,8 @@ void InventoryHandler::updateQuickslotSprites()
     {
         if (this->slots[i].item)
         {
-            quickslots[i].sprite.setTexture(*this->slots[i].item->getTexture(), true);
-            quickslots[i].sprite.setPosition(quickslots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (slots[i].item->getTextureSize() / 2.f));
+            quickslots[i].sprite.setTexture(*this->slots[i].item->getSpriteComp()->getTexture(), true);
+            quickslots[i].sprite.setPosition(quickslots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
 
             quickslots[i].text.setString(slots[i].text.getString());
         }
@@ -463,7 +463,7 @@ void InventoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) c
             target.draw(slots[i].rect, states);
             if (this->slots[i].item)
             {
-                target.draw(*this->slots[i].item, states);
+                target.draw(*this->slots[i].item->getSpriteComp(), states);
                 target.draw(this->slots[i].text, states);
             }
         }

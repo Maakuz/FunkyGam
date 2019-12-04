@@ -6,18 +6,16 @@ class Grunt : public Enemy
 {
 public:
     Grunt(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset);
-    ~Grunt() {};
+    virtual ~Grunt() {};
 
     void update(float dt);
 
     virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion);
 
-    int getDamage()const { return this->damage; };
     bool isAttacking()const { return this->flying; };
     
 private:
-    int damage;
     sf::Vector2f attackMomentum;
     bool flying;
     GroundAIComp ai;

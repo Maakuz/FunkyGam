@@ -8,7 +8,7 @@ class CollisionHandler
 {
 public:
     CollisionHandler() {};
-    ~CollisionHandler() {};
+    virtual ~CollisionHandler() {};
 
     void processQueue(); //todo: optimize with quadtree and whatnot
 

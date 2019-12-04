@@ -257,6 +257,7 @@ void Game::loadLevel(const LevelInfo* level)
     LightQueueNoShadow::get().clear();
     int exitTaken = characterHandler.getPlayer()->getExitReached();
     particleHandler.reset();
+    projectileHandler.reset();
     levelHandler.loadLevel(level);
     characterHandler.initializeLevel(levelHandler.getShadowLinePtr(), levelHandler.findPlayerSpawnPoints(exitTaken));
     characterHandler.setSpawnPoints(levelHandler.generateEnemySpawnPoints());

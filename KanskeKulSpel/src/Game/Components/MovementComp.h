@@ -8,9 +8,10 @@ class MovementComp : public Comp
 {
 public:
     MovementComp();
-    ~MovementComp() {};
+    virtual ~MovementComp() {};
 
-    ComponentKey getKey() const { return ComponentKey::movement; };
+    static ComponentKey getStaticKey() { return ComponentKey::movement; };
+    Comp* clone() const { return new MovementComp(*this); };
 
     void reset();
 
