@@ -18,6 +18,7 @@ public:
 
     virtual void update(float dt, sf::Vector2f playerPos);
 
+    virtual void queueHitboxes();
     virtual void handleCollision(const Collidable* collidable);
     virtual void handleExplosion(const Explosion& explosion);
 private:
@@ -27,7 +28,7 @@ private:
         Hazard hand;
         Arm(const sf::Texture* texture, sf::Vector2f pos, sf::Vector2f handSize, int handDamage, int linkCount = 10, int stiffness = 10):
             arm(texture, pos, linkCount, stiffness),
-            hand(pos, handSize, handDamage){ }
+            hand(pos, handSize, handDamage, DamageComp::DamageOrigin::enemies){ }
     };
     LuaScript ai;
     SpellComp spell;

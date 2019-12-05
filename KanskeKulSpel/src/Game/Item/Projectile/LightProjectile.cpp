@@ -47,6 +47,8 @@ void LightProjectile::shoot(sf::Vector2f pos, sf::Vector2f dir, DamageComp::Dama
     MovementComp* movement = getComponent<MovementComp>();
     ColliderComp* collider = getComponent<ColliderComp>();
 
+    getDamageComp()->origin = origin;
+
     movement->transform.pos = pos;
     collider->setPosition(pos);
     movement->momentum = dir * this->velocity;

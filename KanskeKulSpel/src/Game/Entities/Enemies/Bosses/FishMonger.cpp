@@ -4,6 +4,7 @@
 #include "Game/Item/Projectile/Throwables/Throwable.h"
 #include "Game/Item/Projectile/Spell/Fireball.h"
 #include "SFML/Window/Keyboard.hpp"
+#include "Game/Collision/CollisionHandler.h"
 
 FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset) :
     Boss(data, pos, size, offset),
@@ -70,8 +71,8 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
     leftArm.arm.update(dt);
     rightArm.arm.update(dt);
     lightRope.update(dt);
-    leftArm.hand.setPos(leftArm.arm[leftArm.arm.getLinkCount() - 2].pos - leftArm.hand.getCollider().getSize() / 2.f);
-    rightArm.hand.setPos(rightArm.arm[rightArm.arm.getLinkCount() - 2].pos - rightArm.hand.getCollider().getSize() / 2.f);
+    leftArm.hand.setPos(leftArm.arm[leftArm.arm.getLinkCount() - 2].pos - leftArm.hand.getColliderComp()->getSize() / 2.f);
+    rightArm.hand.setPos(rightArm.arm[rightArm.arm.getLinkCount() - 2].pos - rightArm.hand.getColliderComp()->getSize() / 2.f);
 
     //temp
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::F5))
@@ -203,7 +204,7 @@ void FishMonger::updatePhaseTwo(float dt, sf::Vector2f target)
     {
         arm.arm.setPos(armAnchor, 0);
         arm.arm.update(dt);
-        arm.hand.setPos(arm.arm[arm.arm.getLinkCount() - 2].pos - arm.hand.getCollider().getSize() / 2.f);
+        arm.hand.setPos(arm.arm[arm.arm.getLinkCount() - 2].pos - arm.hand.getColliderComp()->getSize() / 2.f);
     }
 
     if (ai.get<bool>("swingTentacles"))
@@ -220,6 +221,15 @@ void FishMonger::updatePhaseTwo(float dt, sf::Vector2f target)
 std::istream& FishMonger::readSpecific(std::istream& in)
 {
     return in;
+}
+
+void FishMonger::queueHitboxes()
+{
+    CollisionHandler::queueCollider(&leftArm.hand);
+    CollisionHandler::queueCollider(&rightArm.hand);
+
+    for (Arm& arm : tentacles)
+        CollisionHandler::queueCollider(&arm.hand);
 }
 
 void FishMonger::handleCollision(const Collidable* collidable)
@@ -278,10 +288,10 @@ void FishMonger::handleExplosion(const Explosion& explosion)
 void FishMonger::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(rightArm.arm, states);
-    target.draw(rightArm.hand.getCollider(), states);
+    target.draw(*rightArm.hand.getColliderComp(), states);
     Boss::draw(target, states);
     target.draw(leftArm.arm, states);
-    target.draw(leftArm.hand.getCollider(), states);
+    target.draw(*leftArm.hand.getColliderComp(), states);
     target.draw(lightRope, states);
 
     if (phaseTwo)
@@ -289,7 +299,7 @@ void FishMonger::draw(sf::RenderTarget& target, sf::RenderStates states) const
         for (const Arm& arm : tentacles)
         {
             target.draw(arm.arm, states);
-            target.draw(arm.hand.getCollider(), states);
+            target.draw(*arm.hand.getColliderComp(), states);
         }
     }
 }

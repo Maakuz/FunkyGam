@@ -4,27 +4,37 @@
 class Hazard : public Collidable
 {
 public:
-    int damage;
-    sf::Vector2f knockback;
-
-    Hazard(sf::Vector2f pos, sf::Vector2f size, int damage = 0, bool projectilesCanPass = true) :
-        collider(size, pos) 
+    Hazard(sf::Vector2f pos, sf::Vector2f size, int damage = 0, DamageComp::DamageOrigin origin = DamageComp::DamageOrigin::neutral, bool projectilesCanPass = true) :
+        Collidable(pos, size) 
     {
-        this->damage = damage;
-        collider.addComponent(ColliderKeys::hazard);
+        DamageComp* damageComp = new DamageComp(origin);
+        damageComp->damage = damage;
+        addComponent<DamageComp>(damageComp);
+
+        switch (origin)
+        {
+        case DamageComp::DamageOrigin::player:
+            getColliderComp()->addComponent(ColliderKeys::player);
+            break;
+        case DamageComp::DamageOrigin::enemies:
+            getColliderComp()->addComponent(ColliderKeys::enemy);
+            break;
+
+        default:
+            break;
+        }
+
+        getColliderComp()->addComponent(ColliderKeys::hazard);
 
         if (projectilesCanPass)
-            collider.addComponent(ColliderKeys::projectilePassable);
+            getColliderComp()->addComponent(ColliderKeys::projectilePassable);
     };
     
     virtual ~Hazard() {};
 
     virtual void handleCollision(const Collidable* collidable) {};
     virtual void handleExplosion(const Explosion& explosion) {};
-    virtual const ColliderComp& getCollider()const { return this->collider; };
-    void setPos(sf::Vector2f pos) { collider.setPosition(pos); };
-
+    void setPos(sf::Vector2f pos) { getColliderComp()->setPosition(pos); };
 
 private:
-    ColliderComp collider;
 };

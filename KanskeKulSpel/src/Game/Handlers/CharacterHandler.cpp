@@ -375,7 +375,10 @@ void CharacterHandler::queueColliders()
         CollisionHandler::queueCollider(enemy);
 
     if (boss)
+    {
         CollisionHandler::queueCollider(boss);
+        boss->queueHitboxes();
+    }
 }
 
 void CharacterHandler::setBossSpawner(const BossSpawner* bossSpawner) 

@@ -381,7 +381,9 @@ void Player::handleCollision(const Collidable* colliderEntity)
             this->exitReached = flag[4] - '0';
     }
 
-    else if (otherCollider->hasComponent(ColliderKeys::throwable) || otherCollider->hasComponent(ColliderKeys::projectile))
+    else if (otherCollider->hasComponent(ColliderKeys::throwable) || 
+        otherCollider->hasComponent(ColliderKeys::projectile) ||
+        otherCollider->hasComponent(ColliderKeys::hazard))
     {
         const DamageComp* damage = colliderEntity->getComponent<DamageComp>();
         if (damage->origin != DamageComp::DamageOrigin::player)

@@ -12,6 +12,7 @@ public:
 
     friend std::istream& operator>>(std::istream& in, Boss& boss);
 
+    virtual void queueHitboxes() = 0;
     virtual void handleCollision(const Collidable* collidable) = 0;
     virtual void handleExplosion(const Explosion& explosion) = 0;
 
