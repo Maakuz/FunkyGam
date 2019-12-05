@@ -27,7 +27,7 @@ void TomeComp::startChannelling(int tomeID)
 
     int emitterID = dynamic_cast<const Tome*>(ItemHandler::getTemplate(tomeID))->getChannelEmitter();
 
-    this->channelEmitter = ParticleHandler::addEmitter(emitterID, pos);
+    this->channelEmitter = ParticleHandler::createEmitter(emitterID, pos);
 }
 
 void TomeComp::stopChannelling()
@@ -42,8 +42,10 @@ void TomeComp::update(float dt, sf::Vector2f pos)
         this->channelTime += dt;
 
     if (channelEmitter)
+    {
         channelEmitter->setEmitterPos(pos);
-
+        ParticleHandler::queueEmitter(channelEmitter);
+    }
     this->pos = pos;
 }
 
@@ -63,7 +65,7 @@ void TomeComp::killEmitter()
 {
     if (channelEmitter)
     {
-        channelEmitter->killQuick();
+        ParticleHandler::destroyEmitter(channelEmitter);
         channelEmitter = nullptr;
     }
 }

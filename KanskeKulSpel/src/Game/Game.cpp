@@ -114,6 +114,7 @@ void Game::update(float dt)
 
     KEYBOARD::KeyboardState::updateKeys();
     MOUSE::MouseState::updateButtons();
+    particleHandler.clearEmitterQueue();
 
     switch (gameState.getState())
     {

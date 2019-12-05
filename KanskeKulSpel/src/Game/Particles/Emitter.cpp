@@ -1,6 +1,7 @@
 #include "Emitter.h"
 #include "Renderer/Lighting/LightQueue.h"
 #include "Misc/ConsoleWindow.h"
+#include "Game/Misc/UnorderedErase.h"
 
 Emitter::Emitter()
 {
@@ -109,13 +110,23 @@ void Emitter::update(float dt)
     if (!keyFrames[prev].tendrilsGenerated)
     {
         for (EmitterTendril& tendril : keyFrames[prev].tendrils)
-            tendril.tendril.generate(this->pos + tendril.start, this->pos + tendril.stop);
+        {
+            tendrils.push_back(Tendril(tendril.tendrilData));
+            tendrils.back().generate(this->pos + tendril.start, this->pos + tendril.stop);
+        }
 
         keyFrames[prev].tendrilsGenerated = true;
     }
 
-    for (EmitterTendril& tendril : keyFrames[prev].tendrils)
-        tendril.tendril.update(dt);
+    //Tendril update and removal service
+    for (int i = 0; i < tendrils.size(); i++)
+    {
+        if (tendrils[i].isComplete())
+            unordered_erase(tendrils, tendrils.begin() + i--);
+
+        else
+            tendrils[i].update(dt);
+    }
 
     if (!immortalEmitter)
     {
@@ -215,7 +226,6 @@ void Emitter::update(float dt)
 
             if (particle->tendril)
             {
-                particle->tendril->tendril.update(dt);
                 particle->tendril->stop += particle->velocity;
 
                 if (followsCenter && moved)
@@ -225,7 +235,10 @@ void Emitter::update(float dt)
                 }
 
                 if (zap)
-                    particle->tendril->tendril.generate(particle->tendril->start, particle->tendril->stop);
+                {
+                    tendrils.push_back(Tendril(particle->tendril->tendrilData));
+                    tendrils.back().generate(particle->tendril->start, particle->tendril->stop);
+                }
             }
         }
     }
@@ -425,6 +438,7 @@ void Emitter::reset()
 
     this->particles.clear();
     this->vertexArray.clear();
+    this->tendrils.clear();
 
 
 
@@ -447,13 +461,8 @@ void Emitter::draw(sf::RenderTarget& target, sf::RenderStates states) const
     if (!vertexArray.empty())
         target.draw(&vertexArray[0], vertexArray.size(), sf::Quads);
 
-    for (const EmitterTendril& tendril : keyFrames[prev].tendrils)
-        target.draw(tendril.tendril, states);
-
-    if (keyFrames[prev].particleHasTendrils)
-        for (const Particle* p : particles)
-            if (p->tendril)
-                target.draw(p->tendril->tendril, states);
+    for (const Tendril& tendril : tendrils)
+        target.draw(tendril, states);
 }
 
 void Emitter::addParticle(float lerp)
@@ -498,7 +507,7 @@ void Emitter::addParticle(float lerp)
 
     if (keyFrames[prev].particleHasTendrils)
     {
-        particle->tendril = new EmitterTendril(startPos, startPos, keyFrames[prev].particleTendril.tendril);
+        particle->tendril = new EmitterTendril(startPos, startPos, keyFrames[prev].particleTendril.tendrilData);
     }
 
     particles.push_back(particle);

@@ -439,7 +439,7 @@ void ParticleEditor::closeWindow()
 
 void ParticleEditor::showTendril(Emitter::EmitterTendril* tendril, bool& generated, sf::Vector2f mousePosWorld)
 {
-    Tendril::InitGenData* data = tendril->tendril.getDataPtr();
+    Tendril::InitGenData* data = &tendril->tendrilData;
     static const sf::Color ACTIVE_COLOR = sf::Color(100, 200, 200);
     static bool popStyle = false;
 

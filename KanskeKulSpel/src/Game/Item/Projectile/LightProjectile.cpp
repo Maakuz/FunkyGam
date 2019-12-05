@@ -24,7 +24,7 @@ LightProjectile::LightProjectile()
 LightProjectile::~LightProjectile()
 {
     if (this->light)
-        this->light->killQuick();
+        ParticleHandler::destroyEmitter(this->light);
 }
 
 void LightProjectile::update(float dt)
@@ -39,7 +39,10 @@ void LightProjectile::update(float dt)
         destroyed = true;
 
     if (this->light)
+    {
         this->light->setEmitterPos(collider->getCenterPos());
+        ParticleHandler::queueEmitter(this->light);
+    }
 }
 
 void LightProjectile::shoot(sf::Vector2f pos, sf::Vector2f dir, DamageComp::DamageOrigin origin)
@@ -52,7 +55,7 @@ void LightProjectile::shoot(sf::Vector2f pos, sf::Vector2f dir, DamageComp::Dama
     movement->transform.pos = pos;
     collider->setPosition(pos);
     movement->momentum = dir * this->velocity;
-    this->light = ParticleHandler::addEmitter(lightEmitterID, collider->getCenterPos());
+    this->light = ParticleHandler::createEmitter(lightEmitterID, collider->getCenterPos());
 
     if (initialEmitterID != -1)
         ParticleHandler::addEmitter(initialEmitterID, collider->getCenterPos());

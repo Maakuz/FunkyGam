@@ -9,19 +9,29 @@ SpellComp::SpellComp()
     this->spellID = 0;
 }
 
+SpellComp::~SpellComp()
+{
+    if (channelEmitter)
+        ParticleHandler::destroyEmitter(channelEmitter, true);
+}
+
 void SpellComp::startChannelling(int id, int emitterID)
 {
     this->channelling = true;
     this->spellID = id;
     this->channelTime = 0;
 
-    this->channelEmitter = ParticleHandler::addEmitter(emitterID, pos);
+    this->channelEmitter = ParticleHandler::createEmitter(emitterID, pos);
 }
 
 void SpellComp::stopChannelling()
 {
     this->channelling = false;
-    killEmitter();
+    if (channelEmitter)
+    {
+        ParticleHandler::destroyEmitter(channelEmitter, true);
+        channelEmitter = nullptr;
+    }
 }
 
 void SpellComp::update(float dt, sf::Vector2f pos)
@@ -33,13 +43,4 @@ void SpellComp::update(float dt, sf::Vector2f pos)
         channelEmitter->setEmitterPos(pos);
 
     this->pos = pos;
-}
-
-void SpellComp::killEmitter()
-{
-    if (channelEmitter)
-    {
-        channelEmitter->killQuick();
-        channelEmitter = nullptr;
-    }
 }

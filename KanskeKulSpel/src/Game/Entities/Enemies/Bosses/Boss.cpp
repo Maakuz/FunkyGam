@@ -61,6 +61,7 @@ std::istream& operator>>(std::istream& in, Boss& boss)
     boss.getComponent<HealthComp>()->fillHealth();
     boss.prevHealth = health;
 
+    boss.readSpecific(in);
     return in;
 }
 

@@ -3,12 +3,56 @@
 #include "Game/Handlers/TextureHandler.h"
 #include "Game/Misc/UnorderedErase.h"
 
+std::ostream& operator<<(std::ostream& out, const Tendril::InitGenData& data)
+{
+    out << data.sway << " ";
+    out << data.peakHeight << " ";
+    out << data.thickness << " ";
+    out << data.splits << " ";
+    out << data.min << " ";
+    out << data.max << " ";
+    out << data.forkMin << " ";
+    out << data.forkMax << " ";
+    out << data.angle << " ";
+    out << data.visibleTime << " ";
+    out << data.fadeSpeed << " ";
+    out << (int)data.color.r << " " << (int)data.color.g << " " << (int)data.color.b << " " << (int)data.color.a << " ";
+    out << data.timeAlgorithm << " ";
+    out << data.repeating << " ";
+
+    return out;
+};
+
+std::istream& operator>>(std::istream& in, Tendril::InitGenData& data)
+{
+    int col[4] = { 0 };
+
+    in >> data.sway;
+    in >> data.peakHeight;
+    in >> data.thickness;
+    in >> data.splits;
+    in >> data.min;
+    in >> data.max;
+    in >> data.forkMin;
+    in >> data.forkMax;
+    in >> data.angle;
+    in >> data.visibleTime;
+    in >> data.fadeSpeed;
+    in >> col[0] >> col[1] >> col[2] >> col[3];
+    data.color = sf::Color(col[0], col[1], col[2], col[3]);
+    in >> data.timeAlgorithm;
+    in >> data.repeating;
+
+    return in;
+};
+
 Tendril::Tendril(InitGenData data)
 {
     this->data = data;
     this->elapsedTime = 0;
     this->vertices.setPrimitiveType(sf::Quads);
     this->texture = TextureHandler::get().getTexture(28);
+    this->complete = false;
 }
 
 void Tendril::update(float dt)
@@ -44,10 +88,14 @@ void Tendril::update(float dt)
             }
         }
     }
+    if (elapsedTime >= data.visibleTime && lines.empty())
+        this->complete = true;
 
-    if (data.repeating && elapsedTime >= data.visibleTime && lines.empty())
+    if (data.repeating && this->complete)
     {
         elapsedTime = 0;
+        this->complete = false;
+
         for (Branch& b : branches)
             resetBranch(&b);
     }
@@ -309,46 +357,18 @@ void Tendril::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 std::ostream& operator<<(std::ostream& out, const Tendril& tendril)
 {
-    out << tendril.data.sway << " ";
-    out << tendril.data.peakHeight << " ";
-    out << tendril.data.thickness << " ";
-    out << tendril.data.splits << " ";
-    out << tendril.data.min << " ";
-    out << tendril.data.max << " ";
-    out << tendril.data.forkMin << " ";
-    out << tendril.data.forkMax << " ";
-    out << tendril.data.angle << " ";
-    out << tendril.data.visibleTime << " ";
-    out << tendril.data.fadeSpeed << " ";
-    out << (int)tendril.data.color.r << " " << (int)tendril.data.color.g << " " << (int)tendril.data.color.b << " " << (int)tendril.data.color.a << " ";
-    out << tendril.data.timeAlgorithm << " ";
-    out << tendril.data.repeating << " ";
+    out << tendril.data;
 
     return out;
 }
 
 std::istream& operator>>(std::istream& in, Tendril& tendril)
 {
-    int col[4] = { 0 };
     tendril.elapsedTime = 0;
     tendril.branches.clear();
     tendril.lines.clear();
-
-    in >> tendril.data.sway;
-    in >> tendril.data.peakHeight;
-    in >> tendril.data.thickness;
-    in >> tendril.data.splits;
-    in >> tendril.data.min;
-    in >> tendril.data.max;
-    in >> tendril.data.forkMin;
-    in >> tendril.data.forkMax;
-    in >> tendril.data.angle;
-    in >> tendril.data.visibleTime;
-    in >> tendril.data.fadeSpeed;
-    in >> col[0] >> col[1] >> col[2] >> col[3];
-    tendril.data.color = sf::Color(col[0], col[1], col[2], col[3]);
-    in >> tendril.data.timeAlgorithm;
-    in >> tendril.data.repeating;
+    
+    in >> tendril.data;
 
     return in;
 }

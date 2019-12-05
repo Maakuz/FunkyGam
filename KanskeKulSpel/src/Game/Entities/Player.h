@@ -35,6 +35,7 @@ public:
     virtual void handleExplosion(const Explosion& explosion);
 private:
     Counter platformPassingCounter;
+    Counter invincibilityCounter;
     UIHandler* ui;
     GatherItem* gatherableInRange;
     float illumination;
@@ -51,6 +52,7 @@ private:
     void updateMove(float dt);
     void debugMove(float dt);
     void updateItems(float dt, sf::Vector2f mousePos);
+    void takeDamage(int damage);
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

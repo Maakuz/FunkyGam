@@ -49,20 +49,20 @@ public:
 
     struct EmitterTendril 
     {
-        Tendril tendril;
+        Tendril::InitGenData tendrilData;
         sf::Vector2f start;
         sf::Vector2f stop;
 
-        EmitterTendril(sf::Vector2f start = sf::Vector2f(), sf::Vector2f end = sf::Vector2f(), Tendril t = Tendril())
+        EmitterTendril(sf::Vector2f start = sf::Vector2f(), sf::Vector2f end = sf::Vector2f(), Tendril::InitGenData t = Tendril::InitGenData())
         {
             this->start = start;
             this->stop = end;
-            this->tendril = t;
+            this->tendrilData = t;
         }
 
         friend std::ostream& operator<<(std::ostream& out, const EmitterTendril& tendril)
         {
-            out << tendril.tendril << "\n";
+            out << tendril.tendrilData << "\n";
             out << tendril.start.x << " " << tendril.start.y << "\n";
             out << tendril.stop.x << " " << tendril.stop.y << "\n";
 
@@ -71,7 +71,7 @@ public:
 
         friend std::istream& operator>>(std::istream& in, EmitterTendril& tendril)
         {
-            in >> tendril.tendril;
+            in >> tendril.tendrilData;
             in >> tendril.start.x >> tendril.start.y;
             in >> tendril.stop.x >> tendril.stop.y;
 
@@ -370,6 +370,7 @@ private:
     bool moved;
 
     std::vector<Particle*> particles;
+    std::vector<Tendril> tendrils;
     std::vector<sf::Vertex> vertexArray;
 
     int initialParticles;

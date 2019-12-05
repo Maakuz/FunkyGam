@@ -29,5 +29,7 @@ protected:
     int prevHealth;
     bool interrupting;
 
+    virtual std::istream& readSpecific(std::istream& in) = 0;
+
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };

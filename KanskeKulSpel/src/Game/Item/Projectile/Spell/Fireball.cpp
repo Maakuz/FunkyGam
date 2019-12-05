@@ -29,6 +29,12 @@ Fireball::Fireball(sf::Vector2f pos)
     getColliderComp()->addComponent(ColliderKeys::fireball);
 }
 
+Fireball::~Fireball()
+{
+    if (trail)
+        ParticleHandler::destroyEmitter(trail);
+}
+
 bool Fireball::isComplete() const
 {
     return complete;
@@ -47,7 +53,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
         normalize(this->direction);
 
         this->destination = pos + (direction * distance);
-        trail = ParticleHandler::addEmitter(trailEmitterID, pos);
+        trail = ParticleHandler::createEmitter(trailEmitterID, pos);
     }
 
     else
@@ -67,7 +73,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
         normalize(this->direction);
 
         this->destination = pos + (direction * distance);
-        this->trail = ParticleHandler::addEmitter(fullTrailEmitterID, pos);
+        this->trail = ParticleHandler::createEmitter(fullTrailEmitterID, pos);
     }
 }
 
@@ -81,11 +87,17 @@ void Fireball::update(float dt)
     getColliderComp()->setPosition(transform->pos);
     trail->setEmitterPos(transform->pos);
 
+    if (trail)
+        ParticleHandler::queueEmitter(trail);
+
     if (velocity < 0.2f)
     {
         this->complete = true;
         this->explosion.center = transform->pos;
-        trail->kill();
+
+        ParticleHandler::destroyEmitter(this->trail);
+        this->trail = nullptr;
+
         CollisionHandler::queueExplosion(this->explosion);
 
         if (!fullCharge)
@@ -98,7 +110,9 @@ void Fireball::update(float dt)
     this->traveledDistance += velocity;
     if (traveledDistance > maxTravelDistance * 5.f)
     {
-        trail->kill();
+        ParticleHandler::destroyEmitter(this->trail);
+        this->trail = nullptr;
+
         complete = true;
     }
 }

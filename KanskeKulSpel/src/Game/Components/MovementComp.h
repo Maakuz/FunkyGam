@@ -2,6 +2,7 @@
 #include "SFML/System/Vector2.hpp"
 #include "Comp.h"
 #include "TransformComp.h"
+#include "Game/Misc/Counter.h"
 #include <istream>
 
 class MovementComp : public Comp
@@ -20,6 +21,8 @@ public:
     void jump();
     //momentum.y = momentum.y * haltforce 
     void stopJump(float haltForce = 0);
+
+    //ignores acceleration for a while after knockback suffered
     void addCollisionMomentum(sf::Vector2f momentum);
 
     void setIgnoreGravity(bool ignoringGravity) { this->ignoringGravity = ignoringGravity; };

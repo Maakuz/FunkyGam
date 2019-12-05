@@ -8,8 +8,8 @@
 
 FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f offset) :
     Boss(data, pos, size, offset),
-    leftArm(TextureHandler::get().getTexture(26), pos, sf::Vector2f(24, 24), 30, 10, 5),
-    rightArm(TextureHandler::get().getTexture(26), pos, sf::Vector2f(24, 24), 30, 10, 5),
+    leftArm(TextureHandler::get().getTexture(26), pos, sf::Vector2f(24, 24), 15, 10, 5),
+    rightArm(TextureHandler::get().getTexture(26), pos, sf::Vector2f(24, 24), 15, 10, 5),
     lightRope(TextureHandler::get().getTexture(30), pos, 10, 10),
     ai(SCRIPT_PATH "FishmongerAI.skrop")
 {
@@ -17,7 +17,7 @@ FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, 
     this->phaseTwoInitialized = false;
     this->phaseTwo = false;
     this->light = nullptr;
-    this->transitionEmitterID = 0;
+    this->transitionEmitterID = 18;
     this->spellID = 0;
 
     sf::Texture* tex = TextureHandler::get().getTexture(27);
@@ -39,12 +39,12 @@ FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, 
 FishMonger::~FishMonger()
 {
     if (light)
-        light->kill();
+        ParticleHandler::destroyEmitter(light);
 }
 
 void FishMonger::spawn(sf::Vector2f pos)
 {
-    light = ParticleHandler::addEmitter(13, pos);
+    light = ParticleHandler::createEmitter(13, pos);
 
     this->getComponent<MovementComp>()->transform.pos = pos;
 }
@@ -125,6 +125,7 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
 
 
     Boss::update(dt, playerPos);
+    updateKnockback(playerPos);
 }
 
 
@@ -168,7 +169,7 @@ void FishMonger::initializePhaseTwo()
     this->getComponent<MovementComp>()->mass = 0;
     this->getComponent<MovementComp>()->setAirRes(0.99);
 
-    Arm tentacle(TextureHandler::get().getTexture(26), armAnchor, sf::Vector2f(24, 24), 30, 20, 5);
+    Arm tentacle(TextureHandler::get().getTexture(26), armAnchor, sf::Vector2f(24, 24), 15, 20, 5);
     tentacle.arm.setTexture(TextureHandler::get().getTexture(27), tentacle.arm.getLinkCount() - 1);
     tentacle.arm.setLinkOffset(sf::Vector2f(-1, -3), tentacle.arm.getLinkCount() - 1);
     tentacle.arm.setMass(0);
@@ -180,6 +181,7 @@ void FishMonger::initializePhaseTwo()
         this->tentacles.push_back(tentacle);
         this->tentacles.back().arm.back().pos += (displacement * 100.f);
     }
+
 }
 
 void FishMonger::updatePhaseTwo(float dt, sf::Vector2f target)
@@ -218,8 +220,25 @@ void FishMonger::updatePhaseTwo(float dt, sf::Vector2f target)
     }
 }
 
+void FishMonger::updateKnockback(sf::Vector2f target)
+{
+    float centerX = getColliderComp()->getCenterPos().x;
+    float dir = (target.x - centerX) / abs(target.x - centerX);
+
+    leftArm.hand.getDamageComp()->knockback = sf::Vector2f(knockback.x * dir, knockback.y);
+    rightArm.hand.getDamageComp()->knockback = sf::Vector2f(knockback.x * dir, knockback.y);
+
+    for (Arm& arm : tentacles)
+        arm.hand.getDamageComp()->knockback = sf::Vector2f(knockback.x * dir, knockback.y);
+}
+
 std::istream& FishMonger::readSpecific(std::istream& in)
 {
+    std::string trash;
+    in >> trash;
+    in >> trash >> this->knockback.x >> this->knockback.y;
+
+
     return in;
 }
 

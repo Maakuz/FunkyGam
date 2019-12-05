@@ -40,6 +40,9 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
     platformPassingCounter.stopValue = 1000;
     platformPassingCounter.counter = platformPassingCounter.stopValue;
 
+    this->invincibilityCounter.stopValue = 200;
+    this->invincibilityCounter.counter = 200;
+
     sprite->spriteOffset.y = -(abs(sprite->getTextureRect().height) - size.y);
     sprite->spriteOffset.x = -size.x / 2.f;
 
@@ -124,6 +127,8 @@ void Player::update(float dt, sf::Vector2f mousePos)
 {
     MovementComp* movement = getMovementComp();
     AnimatedSpriteComp* sprite = getComponent<AnimatedSpriteComp>();
+
+    invincibilityCounter.update(dt);
 
     if (debugMode)
     {
@@ -300,6 +305,15 @@ void Player::updateItems(float dt, sf::Vector2f mousePos)
     }
 }
 
+void Player::takeDamage(int damage)
+{
+    if (invincibilityCounter.isTimeUp())
+    {
+        getHealthComp()->takeDamage(damage);
+        invincibilityCounter.reset();
+    }
+}
+
 void Player::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(*getAnimatedSpriteComp(), states);
@@ -309,9 +323,9 @@ void Player::handleCollision(const Collidable* colliderEntity)
 {
     ColliderComp* collider = getColliderComp();
     const ColliderComp* otherCollider = colliderEntity->getColliderComp();
+    MovementComp* movement = getMovementComp();
     if (!noClip)
     {
-        MovementComp* movement = getMovementComp();
 
         if (movement->momentum.y > 0 && otherCollider->hasComponent(ColliderKeys::platform))
         {
@@ -356,16 +370,6 @@ void Player::handleCollision(const Collidable* colliderEntity)
                 movement->transform.pos.x = (otherCollider->right());
             }
         }
-
-        else if (otherCollider->hasComponent(ColliderKeys::grunt))
-        {
-            const Grunt* ptr = dynamic_cast<const Grunt*>(colliderEntity);
-            if (ptr->isAttacking())
-            {
-                movement->addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider->getCenterPos(), otherCollider->getCenterPos(), movement->momentum, ptr->getMovementComp()->momentum, movement->mass, ptr->getMovementComp()->mass));
-                getHealthComp()->takeDamage(ptr->getDamageComp()->damage);
-            }
-        }
     }
 
     if (otherCollider->hasComponent(ColliderKeys::levelReturn))
@@ -381,13 +385,28 @@ void Player::handleCollision(const Collidable* colliderEntity)
             this->exitReached = flag[4] - '0';
     }
 
-    else if (otherCollider->hasComponent(ColliderKeys::throwable) || 
+    else if (otherCollider->hasComponent(ColliderKeys::grunt))
+    {
+        const Grunt* ptr = dynamic_cast<const Grunt*>(colliderEntity);
+        if (ptr->isAttacking())
+        {
+            movement->addCollisionMomentum(ColliderComp::calculateCollisionForceOnObject(collider->getCenterPos(), otherCollider->getCenterPos(), movement->momentum, ptr->getMovementComp()->momentum, movement->mass, ptr->getMovementComp()->mass));
+            
+            takeDamage(ptr->getDamageComp()->damage);
+        }
+    }
+
+    else if (otherCollider->hasComponent(ColliderKeys::throwable) ||
         otherCollider->hasComponent(ColliderKeys::projectile) ||
         otherCollider->hasComponent(ColliderKeys::hazard))
     {
         const DamageComp* damage = colliderEntity->getComponent<DamageComp>();
         if (damage->origin != DamageComp::DamageOrigin::player)
-            this->getHealthComp()->takeDamage(damage->damage);
+        {
+            movement->addCollisionMomentum(damage->knockback);
+
+            takeDamage(damage->damage);
+        }
     }
 }
 

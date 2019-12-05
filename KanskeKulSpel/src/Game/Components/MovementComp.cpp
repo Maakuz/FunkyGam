@@ -16,6 +16,7 @@ MovementComp::MovementComp()
     this->floorRes = 0.85f;
     this->airRes = 0.985f;
     this->airMobility = 0.1f;
+
 }
 
 void MovementComp::reset()
@@ -26,6 +27,7 @@ void MovementComp::reset()
 
 void MovementComp::update(float dt)
 {
+
     if (addedMomentum)
     {
         this->momentum = collisionMomentum;
@@ -47,11 +49,13 @@ void MovementComp::update(float dt)
     if (grounded)
     {
         momentum += acceleration * walkSpeed * dt;
+
         momentum *= floorRes;
     }
     else
     {
         momentum += acceleration * walkSpeed * dt * airMobility;
+
         momentum *= airRes;
     }
 
@@ -83,4 +87,5 @@ void MovementComp::addCollisionMomentum(sf::Vector2f momentum)
 {
     this->collisionMomentum = momentum;
     this->addedMomentum = true;
+    this->grounded = false;
 }

@@ -8,7 +8,7 @@ class Fireball : public Spell
 {
 public:
     Fireball(sf::Vector2f pos);
-    virtual ~Fireball() { };
+    virtual ~Fireball();
 
     virtual bool isComplete() const;
     virtual void cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime);

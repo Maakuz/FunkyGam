@@ -7,6 +7,9 @@
 #include "Game/Collision/CollisionHandler.h"
 
 std::vector<Emitter*> ParticleHandler::activeEmitters;
+std::vector<Emitter*> ParticleHandler::emitterQueue;
+std::vector<Emitter*> ParticleHandler::dyingEmitters;
+
 std::vector<Emitter> ParticleHandler::emitterTemplates;
 std::vector<std::string> ParticleHandler::templateNames;
 
@@ -23,8 +26,7 @@ ParticleHandler::ParticleHandler()
 
 ParticleHandler::~ParticleHandler()
 {
-    for (auto& emitter : ParticleHandler::activeEmitters)
-        delete emitter;
+    reset();
 }
 
 void ParticleHandler::update(float dt)
@@ -42,17 +44,50 @@ void ParticleHandler::update(float dt)
             activeEmitters[i]->update(dt);
         }
     }
+
+    for (size_t i = 0; i < dyingEmitters.size(); i++)
+    {
+        if (dyingEmitters[i]->isVeryDead())
+        {
+            delete dyingEmitters[i];
+            unordered_erase(dyingEmitters, dyingEmitters.begin() + i--);
+        }
+
+        else
+        {
+            dyingEmitters[i]->update(dt);
+        }
+    }
+
+    for (size_t i = 0; i < emitterQueue.size(); i++)
+    {
+        emitterQueue[i]->update(dt);
+    }
 }
 
 void ParticleHandler::queueLights()
 {
     for (Emitter* emitter : this->activeEmitters)
         emitter->queueLights();
+
+    for (Emitter* emitter : this->emitterQueue)
+        emitter->queueLights();
+
+    for (Emitter* emitter : this->dyingEmitters)
+        emitter->queueLights();
 }
 
 void ParticleHandler::handleCollision()
 { 
     for (Emitter* emitter : this->activeEmitters)
+        if (emitter->isColliding())
+            emitter->handleCollision(CollisionHandler::getStaticColliders());
+
+    for (Emitter* emitter : this->emitterQueue)
+        if (emitter->isColliding())
+            emitter->handleCollision(CollisionHandler::getStaticColliders());
+
+    for (Emitter* emitter : this->dyingEmitters)
         if (emitter->isColliding())
             emitter->handleCollision(CollisionHandler::getStaticColliders());
 
@@ -104,23 +139,48 @@ void ParticleHandler::loadEmitters()
 
 void ParticleHandler::reset()
 {
-    for (auto& emitter : ParticleHandler::activeEmitters)
+    for (Emitter* emitter : ParticleHandler::activeEmitters)
+        delete emitter;
+
+    for (Emitter* emitter : ParticleHandler::dyingEmitters)
         delete emitter;
 
     activeEmitters.clear();
+    dyingEmitters.clear();
 }
 
-Emitter* ParticleHandler::addEmitter(int emitterID, sf::Vector2f pos)
+void ParticleHandler::addEmitter(int emitterID, sf::Vector2f pos)
 {
     Emitter* emitter = new Emitter(emitterTemplates[emitterID]);
     emitter->setEmitterPos(pos);
     emitter->reset();
     activeEmitters.push_back(emitter);
+}
 
+Emitter* ParticleHandler::createEmitter(int emitterID, sf::Vector2f pos)
+{
+    Emitter* emitter = new Emitter(emitterTemplates[emitterID]);
+    emitter->setEmitterPos(pos);
     return emitter;
 }
 
-std::string ParticleHandler::getEmitterName(int id) 
+void ParticleHandler::queueEmitter(Emitter* emitter)
+{
+    ParticleHandler::emitterQueue.push_back(emitter);
+}
+
+void ParticleHandler::destroyEmitter(Emitter* emitter, bool killQuick)
+{
+    dyingEmitters.push_back(emitter);
+
+    if (killQuick)
+        dyingEmitters.back()->killQuick();
+
+    else
+        dyingEmitters.back()->kill();
+}
+
+std::string ParticleHandler::getEmitterName(int id)
 {
     if (id < 0)
         return "None";
@@ -131,5 +191,11 @@ std::string ParticleHandler::getEmitterName(int id)
 void ParticleHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     for (const auto& emitter : activeEmitters)
+        target.draw(*emitter, states);
+
+    for (const auto& emitter : emitterQueue)
+        target.draw(*emitter, states);
+
+    for (const auto& emitter : dyingEmitters)
         target.draw(*emitter, states);
 }

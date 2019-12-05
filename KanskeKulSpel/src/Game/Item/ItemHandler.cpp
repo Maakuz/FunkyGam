@@ -85,8 +85,11 @@ void ItemHandler::update(float dt, Player* player)
                 foundItems.insert(id);
             }
 
-            if (item->emitter != nullptr)
-                item->emitter->kill();
+            if (item->emitter)
+            {
+                ParticleHandler::destroyEmitter(item->emitter);
+                item->emitter = nullptr;
+            }
 
             if (item->count == -1)
                 oneTimeItemList.emplace(logistic->name);
@@ -97,6 +100,8 @@ void ItemHandler::update(float dt, Player* player)
         {
             if (length(player->getComponent<ColliderComp>()->getCenterPos() - item->item.getComponent<SpriteComp>()->getTextureCenterPos()) < this->gatherRange)
                 inRange = item;
+
+            ParticleHandler::queueEmitter(item->emitter);
         }
     }
 
@@ -108,7 +113,7 @@ void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHit
     for (GatherItem& item : gatherItems)
     {
         if (item.emitter)
-            item.emitter->kill();
+            ParticleHandler::destroyEmitter(item.emitter, true);
     }
     gatherItems.clear();
 
@@ -127,7 +132,7 @@ void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHit
         Emitter* emitter = nullptr;
 
         if (logistics->emitterID != -1)
-            emitter = ParticleHandler::addEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
+            emitter = ParticleHandler::createEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
 
         gatherItems.push_back(GatherItem{ emitter, item, 1});
     }
@@ -147,7 +152,7 @@ void ItemHandler::spawnGatherables(const LevelInfo* level, std::vector<CustomHit
         Emitter* emitter = nullptr;
 
         if (logistics->emitterID != -1)
-            emitter = ParticleHandler::addEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
+            emitter = ParticleHandler::createEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
 
         gatherItems.push_back(GatherItem{ emitter, item, 1 });
     }
@@ -184,7 +189,7 @@ void ItemHandler::spawnShrines(std::vector<CustomHitbox> shrines)
                     Emitter* emitter = nullptr;
 
                     if (logistics->emitterID != -1)
-                        emitter = ParticleHandler::addEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
+                        emitter = ParticleHandler::createEmitter(logistics->emitterID, pos + (sf::Vector2f(sprite->getTexture()->getSize()) / 2.f));
 
                     gatherItems.push_back({ emitter, newItem, -1});
                 }

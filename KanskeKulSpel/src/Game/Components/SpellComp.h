@@ -7,7 +7,7 @@ class SpellComp
 {
 public:
     SpellComp();
-    virtual ~SpellComp() {};
+    virtual ~SpellComp();
 
     void startChannelling(int id, int emitterID);
     void stopChannelling();

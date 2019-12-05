@@ -35,6 +35,7 @@ private:
 
     sf::Vector2f armAnchor;
     sf::Vector2f forhead;
+    sf::Vector2f knockback;
     Arm leftArm;
     Arm rightArm;
     Chain lightRope;
@@ -52,6 +53,7 @@ private:
     void constrictNose();
     void initializePhaseTwo();
     void updatePhaseTwo(float dt, sf::Vector2f target);
+    void updateKnockback(sf::Vector2f target);
 
     virtual std::istream& readSpecific(std::istream& in);
 

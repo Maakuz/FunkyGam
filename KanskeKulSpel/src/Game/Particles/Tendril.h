@@ -41,6 +41,10 @@ public:
             this->timeAlgorithm = 0;
             repeating = false;
         }
+
+        friend std::ostream& operator<<(std::ostream& out, const InitGenData& data);
+
+        friend std::istream& operator>>(std::istream& in, InitGenData& data);
     };
 
     Tendril(InitGenData data = InitGenData());
@@ -52,6 +56,7 @@ public:
     void update(float dt);
     void generate(sf::Vector2f start, sf::Vector2f end);
     InitGenData* getDataPtr() { return &data; };
+    bool isComplete()const { return this->complete; };
 private:
     struct Branch 
     {
@@ -87,6 +92,7 @@ private:
     std::vector<Line> lines;
     sf::VertexArray vertices;
     const sf::Texture* texture;
+    bool complete;
 
     void resetBranch(Branch* branch);
 
