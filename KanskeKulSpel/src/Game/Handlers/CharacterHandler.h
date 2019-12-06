@@ -29,13 +29,17 @@ public:
     CharacterHandler(UIHandler* uiHandler);
     virtual ~CharacterHandler();
 
+    CharacterHandler(const CharacterHandler&) = delete;
+
+    static bool isBossActive() { return CharacterHandler::bossActive; };
+
     void initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint);
     void loadPlayer();
     void loadEnemies();
     void spawnEnemies(const LevelInfo* info);
     void update(float dt, sf::Vector2f mousePos);
     void queueColliders();
-    void setBossSpawner(const BossSpawner* bossSpawner);
+    void setBossSpawner(BossSpawner* bossSpawner);
 
     void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
     Player* getPlayer() const { return this->player; };
@@ -47,7 +51,7 @@ private:
     std::vector<sf::Vector2f> spawnPoints;
     std::vector<Enemy*> enemies;
 
-    const BossSpawner* bossSpawner;
+    BossSpawner* bossSpawner;
     Boss* boss;
     Player* player;
     UIHandler* ui;
@@ -55,6 +59,7 @@ private:
     bool drawHitboxes;
     bool drawSightlines;
    
+    static bool bossActive;
 
     std::vector<Enemy*> enemyTemplates;
     std::vector<Boss*> bossTemplates;

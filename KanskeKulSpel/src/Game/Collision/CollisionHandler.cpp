@@ -38,12 +38,12 @@ void CollisionHandler::processQueue()
     for (BreakableTerrain* terrain : breakableTerrain)
     {
         for (Explosion& explosion : explosions)
-            if (lengthSquared(explosion.center - terrain->getCollider().getCenterPos()) < explosion.radius * explosion.radius)
+            if (lengthSquared(explosion.center - terrain->getColliderComp()->getCenterPos()) < explosion.radius * explosion.radius)
                 terrain->handleExplosion(explosion);
     
         for (Collidable* entity : colliders)
         {
-            if (terrain->getCollider().intersects(*entity->getComponent<ColliderComp>()))
+            if (terrain->getColliderComp()->intersects(*entity->getComponent<ColliderComp>()))
             {
                 entity->handleCollision(terrain);
                 terrain->handleCollision(entity);

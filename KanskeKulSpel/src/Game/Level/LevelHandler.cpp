@@ -2,8 +2,9 @@
 #include <fstream>
 #include <sstream>
 #include "Game/Misc/Definitions.h"
-#include "Misc/ConsoleWindow.h"
 #include "Game/Misc/UnorderedErase.h"
+#include "Game/Handlers/CharacterHandler.h"
+#include "Misc/ConsoleWindow.h"
 
 #define LEVEL_FOLDER "../Resources/Maps/"
 #define LEVEL_TEX_FOLDER LEVEL_FOLDER "Textures/"
@@ -21,15 +22,15 @@
 
 LevelHandler::LevelHandler()
 {
-    this->bossInLevel = false;
-    this->drawCollision = false;
+    m_bossInLevel = false;
+    m_drawCollision = false;
 
     ConsoleWindow::get().addCommand("levelShowCollision", [&](Arguments args)->std::string 
         {
             if (args.empty())
                 return "Missing argument 0 or 1";
 
-            drawCollision = std::stoi(args[0]);
+            m_drawCollision = std::stoi(args[0]);
 
 
             return "It is done";
@@ -38,108 +39,146 @@ LevelHandler::LevelHandler()
 
 LevelHandler::~LevelHandler()
 {
-    for (Light* light : lights)
+    for (Light* light : m_lights)
         delete light;
 }
 
 bool LevelHandler::loadLevel(const LevelInfo* level)
 {
-    terrain.clear();
-    bossInLevel = false;
+    m_terrain.clear();
+    
+    m_bossInLevel = false;
 
-    bool success = this->importLevel(level);
+    bool success = importLevel(level);
     if (!success)
         return false;
 
-    this->generateHitboxes(GROUND, ColliderKeys::ground);
-    this->generateHitboxes(PLATFORM, ColliderKeys::platform);
-    this->generateHitboxes(LEVEL_RETURN_POINT, ColliderKeys::levelReturn);
-    this->generateHitboxes(LEVEL_WARP_POINT, ColliderKeys::levelWarp);
+    generateHitboxes(GROUND, ColliderKeys::ground);
+    generateHitboxes(PLATFORM, ColliderKeys::platform);
+    generateHitboxes(LEVEL_RETURN_POINT, ColliderKeys::levelReturn);
+    generateHitboxes(LEVEL_WARP_POINT, ColliderKeys::levelWarp);
 
-    for (CustomHitbox& box : customHitboxes)
+
+    m_exits.clear();
+    m_exitBlockades.clear();
+
+    for (CustomHitbox& box : m_customHitboxes)
     {
         if (box.flag.compare(0, 4, "boss") == 0)
         {
-            bossInLevel = true;
+            m_bossInLevel = true;
             generateBossSpawner(box);
         }
 
         else
         {
             Terrain ter(AABB(sf::Vector2f(box.min), sf::Vector2f(box.max - box.min)), ColliderKeys::customTerrain, box.flag);
-            terrain.push_back(ter);
+            
+            if (box.flag.compare(0, 4, "exit") == 0)
+            {
+                m_exits.push_back(ter);
+                m_exitBlockades.push_back(Terrain(AABB(sf::Vector2f(box.min), sf::Vector2f(box.max - box.min)), ColliderKeys::ground));
+            }
+
+            else
+                m_terrain.push_back(ter);
         }
     }
-    this->createSpites();
 
-    shadowLines.clear();
-    this->generateShadowLines(terrain, &shadowLines);
-    this->generateBreakableShadowLines();
+    createSpites();
 
-    //if (!this->backgroundTexture.loadFromFile(LEVEL_TEX_FOLDER + LEVEL_BG_NAMES[level]))
-    //{
-    //    exit(-55);
-    //    system("Pause");
-    //}
 
-    this->backgroundSprite.setTexture(backgroundTexture);
+    std::vector<Terrain> staticShadowsCasters;
+
+    for (const Terrain& ter : m_terrain)
+    {
+        if (ter.getColliderComp()->hasComponent(ColliderKeys::ground))
+            staticShadowsCasters.push_back(ter);
+    }
+
+    m_shadowLines.clear();
+    generateShadowLines(staticShadowsCasters, &m_shadowLines);
+
+    m_exitShadowLines.clear();
+    generateShadowLines(m_exits, &m_exitShadowLines);
+    generateBreakableShadowLines();
+
+    m_backgroundSprite.setTexture(m_backgroundTexture);
     return true;
 }
 
 void LevelHandler::updateLevel(float dt)
 {
-    for (int i = 0; i < breakableTerrain.size(); i++)
+    for (int i = 0; i < m_breakableTerrain.size(); i++)
     {
-        if (breakableTerrain[i].isBroken())
+        if (m_breakableTerrain[i].isBroken())
         {
-            unordered_erase(breakableTerrain, breakableTerrain.begin() + i);
-            unordered_erase(breakableShadowLines, breakableShadowLines.begin() + i--);
+            unordered_erase(m_breakableTerrain, m_breakableTerrain.begin() + i);
+            unordered_erase(m_breakableShadowLines, m_breakableShadowLines.begin() + i--);
         }
     }
 }
 
 void LevelHandler::queueColliders()
 {
-    for (auto& ter : terrain)
+    for (Terrain& ter : m_terrain)
         CollisionHandler::queueStaticCollider(&ter);
 
-    for (auto& ter : breakableTerrain)
+    //boss blocks all escape
+    if (CharacterHandler::isBossActive())
+        for (Terrain& ter : m_exitBlockades)
+            CollisionHandler::queueStaticCollider(&ter);
+
+    //Spawn exits as normal
+    else
+        for (Terrain& ter : m_exits)
+            CollisionHandler::queueStaticCollider(&ter);
+
+    for (BreakableTerrain& ter : m_breakableTerrain)
         CollisionHandler::queueBreakable(&ter);
 }
 
 void LevelHandler::queueLightsAndShadows()
 {
-    for (auto& line : this->shadowLines)
+    for (auto& line : m_shadowLines)
         ShadowHandler::queueLine(line);
 
-    for (std::vector<Line>& lines : this->breakableShadowLines)
+    for (std::vector<Line>& lines : m_breakableShadowLines)
         for (Line& line : lines)
             ShadowHandler::queueLine(line);
 
-    for (Light* light : lights)
+    if (CharacterHandler::isBossActive())
+        for (Line& line : m_exitShadowLines)
+            ShadowHandler::queueLine(line);
+
+    for (Light* light : m_lights)
         LightQueue::get().queue(light);
 }
 
 void LevelHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    if (drawCollision)
-        for (size_t i = 0; i < terrain.size(); i++)
-            target.draw(*terrain[i].getColliderComp(), states);
+    if (m_drawCollision)
+        for (size_t i = 0; i < m_terrain.size(); i++)
+            target.draw(*m_terrain[i].getColliderComp(), states);
+
+    if (m_drawCollision)
+        for (size_t i = 0; i < m_exits.size(); i++)
+            target.draw(*m_exits[i].getColliderComp(), states);
 }
 
 bool LevelHandler::importLevel(const LevelInfo* level)
 {
     std::string trash = "";
 
-    for (Light* light : lights)
+    for (Light* light : m_lights)
         delete light;
 
-    lights.clear();
+    m_lights.clear();
 
-    layers.clear();
-    tilemaps.clear();
-    customHitboxes.clear();
-    layers.resize(LAYER_AMOUNT);
+    m_layers.clear();
+    m_tilemaps.clear();
+    m_customHitboxes.clear();
+    m_layers.resize(LAYER_AMOUNT);
 
     std::ifstream in(LEVEL_FOLDER + level->levelFileName);
     if (in.is_open())
@@ -152,30 +191,30 @@ bool LevelHandler::importLevel(const LevelInfo* level)
 
         for (int i = 0; i < LAYER_AMOUNT; i++)
         {
-            this->layers[i].resize(y);
+            m_layers[i].resize(y);
             for (int j = 0; j < y; j++)
             {
-                layers[i][j].resize(x);
+                m_layers[i][j].resize(x);
                 for (int k = 0; k < x; k++)
                 {
-                    in >> this->layers[i][j][k].textureID;
-                    in >> this->layers[i][j][k].tileID;
-                    this->layers[i][j][k].x = k * TILE_SIZE;
-                    this->layers[i][j][k].y = j * TILE_SIZE;
+                    in >> m_layers[i][j][k].textureID;
+                    in >> m_layers[i][j][k].tileID;
+                    m_layers[i][j][k].x = k * TILE_SIZE;
+                    m_layers[i][j][k].y = j * TILE_SIZE;
                 }
             }
         }
 
-        this->hitboxData.resize(y);
+        m_hitboxData.resize(y);
         for (int j = 0; j < y; j++)
         {
-            hitboxData[j].resize(x);
+            m_hitboxData[j].resize(x);
             for (int k = 0; k < x; k++)
             {
-                in >> this->hitboxData[j][k].textureID;
-                in >> this->hitboxData[j][k].tileID;
-                this->hitboxData[j][k].x = k * TILE_SIZE;
-                this->hitboxData[j][k].y = j * TILE_SIZE;
+                in >> m_hitboxData[j][k].textureID;
+                in >> m_hitboxData[j][k].tileID;
+                m_hitboxData[j][k].x = k * TILE_SIZE;
+                m_hitboxData[j][k].y = j * TILE_SIZE;
             }
         }
 
@@ -184,13 +223,13 @@ bool LevelHandler::importLevel(const LevelInfo* level)
 
         for (int i = 0; i < texCount; i++)
         {
-            tilemaps.push_back(Tilemap());
+            m_tilemaps.push_back(Tilemap());
 
             std::string name = "";
             in >> name;
-            in >> tilemaps[i].x >> tilemaps[i].y;
+            in >> m_tilemaps[i].x >> m_tilemaps[i].y;
 
-            if (!tilemaps[i].texture.loadFromFile(LEVEL_TEX_FOLDER + name))
+            if (!m_tilemaps[i].texture.loadFromFile(LEVEL_TEX_FOLDER + name))
             {
                 system("Pause");
                 exit(-3);
@@ -212,7 +251,7 @@ bool LevelHandler::importLevel(const LevelInfo* level)
             in >> rad;
             in >> col.x >> col.y >> col.z;
 
-            lights.push_back(new Light(pos, rad, col));
+            m_lights.push_back(new Light(pos, rad, col));
         }
 
         int hitboxCount = 0;
@@ -223,7 +262,7 @@ bool LevelHandler::importLevel(const LevelInfo* level)
             in >> box;
             box.min *= TILE_SIZE;
             box.max *= TILE_SIZE;
-            customHitboxes.push_back(box);
+            m_customHitboxes.push_back(box);
         }
         in.close();
         
@@ -236,7 +275,7 @@ bool LevelHandler::importLevel(const LevelInfo* level)
 
 bool LevelHandler::generateHitboxes(int id, ColliderKeys type)
 {
-    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
+    sf::Vector2i end = sf::Vector2i((int)m_hitboxData[0].size(), (int)m_hitboxData.size());
 
     std::vector<std::vector<bool>> open(end.y, std::vector<bool>(end.x, true));
 
@@ -244,11 +283,11 @@ bool LevelHandler::generateHitboxes(int id, ColliderKeys type)
     {
         for (int j = 0; j < end.x; j++)
         {
-            if (hitboxData[i][j].tileID == id)
+            if (m_hitboxData[i][j].tileID == id)
             {
                 bool horExisits = false;
-                sf::Vector2f min = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
-                sf::Vector2f max = sf::Vector2f((float)hitboxData[i][j].x + TILE_SIZE, (float)hitboxData[i][j].y + TILE_SIZE);
+                sf::Vector2f min = sf::Vector2f((float)m_hitboxData[i][j].x, (float)m_hitboxData[i][j].y);
+                sf::Vector2f max = sf::Vector2f((float)m_hitboxData[i][j].x + TILE_SIZE, (float)m_hitboxData[i][j].y + TILE_SIZE);
 
                 //Big 'ol box
                 if (open[i][j])
@@ -257,10 +296,10 @@ bool LevelHandler::generateHitboxes(int id, ColliderKeys type)
                     bool foundYEnd = false;
 
                     int k = 0;
-                    while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID && open[i][j + k])
+                    while (k + j < end.x && m_hitboxData[i][j + k].tileID == m_hitboxData[i][j].tileID && open[i][j + k])
                     {
                         int l = 1;
-                        while (l + i < end.y && hitboxData[i + l][j + k].tileID == hitboxData[i][j + k].tileID)
+                        while (l + i < end.y && m_hitboxData[i + l][j + k].tileID == m_hitboxData[i][j + k].tileID)
                         {
                             l++;
                         }
@@ -284,7 +323,7 @@ bool LevelHandler::generateHitboxes(int id, ColliderKeys type)
 
 
                         Terrain ter(AABB(min, max - min), type);
-                        terrain.push_back(ter);
+                        m_terrain.push_back(ter);
                     }
 
                 }
@@ -293,7 +332,7 @@ bool LevelHandler::generateHitboxes(int id, ColliderKeys type)
                 if (open[i][j])
                 {
                     int k = 1;
-                    while (k + j < end.x && hitboxData[i][j + k].tileID == hitboxData[i][j].tileID && open[i][j + k])
+                    while (k + j < end.x && m_hitboxData[i][j + k].tileID == m_hitboxData[i][j].tileID && open[i][j + k])
                     {
                         max.x += TILE_SIZE;
                         open[i][j + k] = false;
@@ -302,34 +341,34 @@ bool LevelHandler::generateHitboxes(int id, ColliderKeys type)
                     }
 
                     //if other tiles has been found
-                    if (horExisits || (1 + i < end.y && hitboxData[i + 1][j].tileID != hitboxData[i][j].tileID))
+                    if (horExisits || (1 + i < end.y && m_hitboxData[i + 1][j].tileID != m_hitboxData[i][j].tileID))
                     {
                         Terrain ter(AABB(min, max - min), type);
-                        terrain.push_back(ter);
+                        m_terrain.push_back(ter);
                         open[i][j] = false;
                     }
                 }
 
                 //Vertical 
-                if (1 + i < end.y && hitboxData[i + 1][j].tileID == hitboxData[i][j].tileID && open[i + 1][j])
+                if (1 + i < end.y && m_hitboxData[i + 1][j].tileID == m_hitboxData[i][j].tileID && open[i + 1][j])
                 {
                     int k = 1;
                     if (horExisits || !open[i][j]) 
                     {
-                        min = sf::Vector2f((float)hitboxData[i + k][j].x, (float)hitboxData[i + k][j].y);
-                        max = sf::Vector2f((float)hitboxData[i + k][j].x + TILE_SIZE, (float)hitboxData[i + k][j].y + TILE_SIZE);
+                        min = sf::Vector2f((float)m_hitboxData[i + k][j].x, (float)m_hitboxData[i + k][j].y);
+                        max = sf::Vector2f((float)m_hitboxData[i + k][j].x + TILE_SIZE, (float)m_hitboxData[i + k][j].y + TILE_SIZE);
                         open[i + k][j] = false;
                         k++;
                     }
 
                     else 
                     {
-                        min = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
-                        max = sf::Vector2f((float)hitboxData[i][j].x + TILE_SIZE, (float)hitboxData[i][j].y + TILE_SIZE);
+                        min = sf::Vector2f((float)m_hitboxData[i][j].x, (float)m_hitboxData[i][j].y);
+                        max = sf::Vector2f((float)m_hitboxData[i][j].x + TILE_SIZE, (float)m_hitboxData[i][j].y + TILE_SIZE);
                         open[i][j] = false;
                     }
 
-                    while (k + i < end.y && hitboxData[i + k][j].tileID == hitboxData[i][j].tileID)
+                    while (k + i < end.y && m_hitboxData[i + k][j].tileID == m_hitboxData[i][j].tileID)
                     {
                         max.y += TILE_SIZE;
                         open[i + k][j] = false;
@@ -338,7 +377,7 @@ bool LevelHandler::generateHitboxes(int id, ColliderKeys type)
 
 
                     Terrain ter = Terrain(AABB(min, max - min), type);
-                    terrain.push_back(ter);
+                    m_terrain.push_back(ter);
                 }
             }
         }
@@ -352,15 +391,15 @@ std::vector<sf::Vector2f> LevelHandler::generateEnemySpawnPoints()
 {
     std::vector<sf::Vector2f> spawnPoints;
 
-    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
+    sf::Vector2i end = sf::Vector2i((int)m_hitboxData[0].size(), (int)m_hitboxData.size());
 
     for (int i = 0; i < end.y; i++)
     {
         for (int j = 0; j < end.x; j++)
         {
-            if (hitboxData[i][j].tileID == ENEMY_SPAWN_POINT)
+            if (m_hitboxData[i][j].tileID == ENEMY_SPAWN_POINT)
             {
-                spawnPoints.push_back(sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y));
+                spawnPoints.push_back(sf::Vector2f((float)m_hitboxData[i][j].x, (float)m_hitboxData[i][j].y));
             }
         }
     }
@@ -373,15 +412,15 @@ std::vector<sf::Vector2f> LevelHandler::generateGatherPoints()
 {
     std::vector<sf::Vector2f> gatherPoints;
 
-    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
+    sf::Vector2i end = sf::Vector2i((int)m_hitboxData[0].size(), (int)m_hitboxData.size());
 
     for (int i = 0; i < end.y; i++)
     {
         for (int j = 0; j < end.x; j++)
         {
-            if (hitboxData[i][j].tileID == GATHER_POINT)
+            if (m_hitboxData[i][j].tileID == GATHER_POINT)
             {
-                gatherPoints.push_back(sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y));
+                gatherPoints.push_back(sf::Vector2f((float)m_hitboxData[i][j].x, (float)m_hitboxData[i][j].y));
             }
         }
     }
@@ -394,15 +433,15 @@ std::vector<sf::Vector2f> LevelHandler::generateRareGatherPoints()
 {
     std::vector<sf::Vector2f> gatherPoints;
 
-    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
+    sf::Vector2i end = sf::Vector2i((int)m_hitboxData[0].size(), (int)m_hitboxData.size());
 
     for (int i = 0; i < end.y; i++)
     {
         for (int j = 0; j < end.x; j++)
         {
-            if (hitboxData[i][j].tileID == RARE_GATHER_POINT)
+            if (m_hitboxData[i][j].tileID == RARE_GATHER_POINT)
             {
-                gatherPoints.push_back(sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y));
+                gatherPoints.push_back(sf::Vector2f((float)m_hitboxData[i][j].x, (float)m_hitboxData[i][j].y));
             }
         }
     }
@@ -415,7 +454,7 @@ std::vector<CustomHitbox> LevelHandler::getShrines()
 {
     std::vector<CustomHitbox> shrines;
 
-    for (CustomHitbox& box : customHitboxes)
+    for (CustomHitbox& box : m_customHitboxes)
         if (box.flag.compare(0, 6, "shrine") == 0)
             shrines.push_back(box);
     return shrines;
@@ -423,9 +462,22 @@ std::vector<CustomHitbox> LevelHandler::getShrines()
 
 sf::Vector2f LevelHandler::findPlayerSpawnPoints(int exitTaken)
 {
-    sf::Vector2i end = sf::Vector2i((int)hitboxData[0].size(), (int)hitboxData.size());
+    sf::Vector2i end = sf::Vector2i((int)m_hitboxData[0].size(), (int)m_hitboxData.size());
     sf::Vector2f point;
 
+    std::vector<sf::Vector2f> points;
+    for (int i = 0; i < end.y; i++)
+    {
+        for (int j = 0; j < end.x; j++)
+        {
+            if (m_hitboxData[i][j].tileID == PLAYER_SPAWN_POINT)
+            {
+                points.push_back(sf::Vector2f((float)m_hitboxData[i][j].x, (float)m_hitboxData[i][j].y));
+            }
+        }
+    }
+
+    point = points[0];
 
     if (exitTaken == -1)
     {
@@ -433,10 +485,8 @@ sf::Vector2f LevelHandler::findPlayerSpawnPoints(int exitTaken)
         {
             for (int j = 0; j < end.x; j++)
             {
-                if (hitboxData[i][j].tileID == LEVEL_WARP_POINT)
-                {
-                    point = sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y);
-                }
+                if (m_hitboxData[i][j].tileID == LEVEL_WARP_POINT)
+                    point = sf::Vector2f((float)m_hitboxData[i][j].x, (float)m_hitboxData[i][j].y);
             }
         }
     }
@@ -445,29 +495,17 @@ sf::Vector2f LevelHandler::findPlayerSpawnPoints(int exitTaken)
     {
         sf::Vector2f entrance;
 
-        for (const CustomHitbox& box : customHitboxes)
+        for (const CustomHitbox& box : m_customHitboxes)
         {
             if (box.flag[4] - '0' == exitTaken)
                 entrance = sf::Vector2f(box.min);
         }
 
-        std::vector<sf::Vector2f> points;
-        for (int i = 0; i < end.y; i++)
-        {
-            for (int j = 0; j < end.x; j++)
-            {
-                if (hitboxData[i][j].tileID == PLAYER_SPAWN_POINT)
-                {
-                    points.push_back(sf::Vector2f((float)hitboxData[i][j].x, (float)hitboxData[i][j].y));
-                }
-            }
-        }
-
-        point = points[0];
         for (sf::Vector2f p : points)
             if (lengthSquared(point - entrance) > lengthSquared(p - entrance))
                 point = p;
     }
+
     return point;
 }
 
@@ -476,36 +514,33 @@ void LevelHandler::generateShadowLines(const std::vector<Terrain>& terrain, std:
     for (const Terrain& ter : terrain)
     {
         const ColliderComp* collider = ter.getColliderComp();
-        if (collider->hasComponent(ColliderKeys::ground))
-        {
-            Line top(
-                collider->getAABB().pos,
-                sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y));
+        Line top(
+            collider->getAABB().pos,
+            sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y));
 
-            Line right(
-                sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y),
-                sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y + collider->getAABB().size.y));
+        Line right(
+            sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y),
+            sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y + collider->getAABB().size.y));
 
-            Line bottom(
-                sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y + collider->getAABB().size.y),
-                sf::Vector2f(collider->getAABB().pos.x, collider->getAABB().pos.y + collider->getAABB().size.y));
+        Line bottom(
+            sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y + collider->getAABB().size.y),
+            sf::Vector2f(collider->getAABB().pos.x, collider->getAABB().pos.y + collider->getAABB().size.y));
 
-            Line left(sf::Vector2f(collider->getAABB().pos.x, collider->getAABB().pos.y + collider->getAABB().size.y),
-                collider->getAABB().pos);
+        Line left(sf::Vector2f(collider->getAABB().pos.x, collider->getAABB().pos.y + collider->getAABB().size.y),
+            collider->getAABB().pos);
 
-            vec->push_back(top);
-            vec->push_back(right);
-            vec->push_back(bottom);
-            vec->push_back(left);
-        }
+        vec->push_back(top);
+        vec->push_back(right);
+        vec->push_back(bottom);
+        vec->push_back(left);
     }
 }
 
 void LevelHandler::generateBreakableShadowLines()
 {
-    breakableShadowLines.clear();
+    m_breakableShadowLines.clear();
 
-    for (auto& ter : breakableTerrain)
+    for (auto& ter : m_breakableTerrain)
     {
         const ColliderComp* collider = ter.getColliderComp();
 
@@ -534,41 +569,41 @@ void LevelHandler::generateBreakableShadowLines()
             lines.push_back(left);
 
 
-            this->breakableShadowLines.push_back(lines);
+            m_breakableShadowLines.push_back(lines);
         }
     }
 }
 
 void LevelHandler::createSpites()
 {
-    linearSprite.clear();
-    breakableTerrain.clear();
-    for (size_t i = 0; i < layers.size(); i++)
+    m_linearSprite.clear();
+    m_breakableTerrain.clear();
+    for (size_t i = 0; i < m_layers.size(); i++)
     {
-        for (size_t j = 0; j < layers[i].size(); j++)
+        for (size_t j = 0; j < m_layers[i].size(); j++)
         {
-            for (size_t k = 0; k < layers[i][j].size(); k++)
+            for (size_t k = 0; k < m_layers[i][j].size(); k++)
             {
-                Tile tile = layers[i][j][k];
+                Tile tile = m_layers[i][j][k];
                 if (tile.tileID != -1)
                 {
-                    int xMap = tile.tileID % tilemaps[tile.textureID].x;
-                    int yMap = tile.tileID / tilemaps[tile.textureID].x;
+                    int xMap = tile.tileID % m_tilemaps[tile.textureID].x;
+                    int yMap = tile.tileID / m_tilemaps[tile.textureID].x;
                     sf::Vector2f pos((float)tile.x, (float)tile.y);
                     sf::IntRect rect(xMap * TILE_SIZE, yMap * TILE_SIZE, TILE_SIZE, TILE_SIZE);
                     
-                    this->dimensions.x = std::max(this->dimensions.x, (int)k * TILE_SIZE);
-                    this->dimensions.y = std::max(this->dimensions.y, (int)j * TILE_SIZE);
+                    m_dimensions.x = std::max(m_dimensions.x, (int)k * TILE_SIZE);
+                    m_dimensions.y = std::max(m_dimensions.y, (int)j * TILE_SIZE);
 
-                    if (hitboxData[j][k].tileID != BREAKABLE_BLOCK || i == 0)
+                    if (m_hitboxData[j][k].tileID != BREAKABLE_BLOCK || i == 0)
                     {
                         sf::Sprite sprite;
-                        sprite.setTexture(tilemaps[tile.textureID].texture);
+                        sprite.setTexture(m_tilemaps[tile.textureID].texture);
                         sprite.setPosition(pos);
 
 
                         sprite.setTextureRect(rect);
-                        linearSprite.push_back(sprite);
+                        m_linearSprite.push_back(sprite);
 
 
                     }
@@ -577,16 +612,16 @@ void LevelHandler::createSpites()
                     {
                         if (i == 1) //layer 2
                         {
-                            BreakableTerrain ter(pos, &tilemaps[tile.textureID].texture, rect);
-                            if (layers[2][j][k].tileID != -1)
+                            BreakableTerrain ter(pos, &m_tilemaps[tile.textureID].texture, rect);
+                            if (m_layers[2][j][k].tileID != -1)
                             {
-                                int xOverMap = tile.tileID % tilemaps[layers[2][j][k].textureID].x;
-                                int yOverMap = tile.tileID / tilemaps[layers[2][j][k].textureID].x;
+                                int xOverMap = tile.tileID % m_tilemaps[m_layers[2][j][k].textureID].x;
+                                int yOverMap = tile.tileID / m_tilemaps[m_layers[2][j][k].textureID].x;
                                 sf::IntRect rectOverlay(xOverMap * TILE_SIZE, yOverMap * TILE_SIZE, TILE_SIZE, TILE_SIZE);
-                                ter.addOverlay(&tilemaps[layers[2][j][k].textureID].texture, rectOverlay);
+                                ter.addOverlay(&m_tilemaps[m_layers[2][j][k].textureID].texture, rectOverlay);
                             }
 
-                            breakableTerrain.push_back(ter);
+                            m_breakableTerrain.push_back(ter);
                         }
                     }
                 }
@@ -599,15 +634,15 @@ void LevelHandler::generateBossSpawner(const CustomHitbox& box)
 {
     std::stringstream sstream(box.flag);
     std::string str;
-    this->bossSpawner.playerItemCriteria.clear();
-    this->bossSpawner.pos = sf::Vector2f(box.min);
-    this->bossSpawner.playerPosCriteria = sf::FloatRect(sf::Vector2f(box.min), sf::Vector2f(box.max));
+    m_bossSpawner.playerItemCriteria.clear();
+    m_bossSpawner.pos = sf::Vector2f(box.min);
+    m_bossSpawner.playerPosCriteria = sf::FloatRect(sf::Vector2f(box.min), sf::Vector2f(box.max));
 
     //Boss flag
     sstream >> str;
 
     sstream >> str;
-    this->bossSpawner.bossID = std::stoi(str);
+    m_bossSpawner.bossID = std::stoi(str);
 
     while (!sstream.eof())
     {
@@ -625,22 +660,22 @@ void LevelHandler::generateBossSpawner(const CustomHitbox& box)
                 sstream >> str;
             }
 
-            this->bossSpawner.playerItemCriteria.push_back(item);
+            m_bossSpawner.playerItemCriteria.push_back(item);
         }
     }
 }
 
 void LevelHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    //target.draw(this->backgroundSprite, states);
+    //target.draw(backgroundSprite, states);
 
     //TODO: only draw stuff thats on the screen
-    for (size_t i = 0; i < linearSprite.size(); i++)
+    for (size_t i = 0; i < m_linearSprite.size(); i++)
     {
-        target.draw(linearSprite[i], states);
+        target.draw(m_linearSprite[i], states);
     }
 
-    for (const BreakableTerrain& ter : breakableTerrain)
+    for (const BreakableTerrain& ter : m_breakableTerrain)
         target.draw(ter, states);
 }
 

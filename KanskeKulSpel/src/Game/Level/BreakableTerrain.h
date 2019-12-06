@@ -11,15 +11,12 @@ public:
 
     virtual void handleCollision(const Collidable* collider);
     virtual void handleExplosion(const Explosion& explosion);
-    virtual const ColliderComp& getCollider()const { return collider; };
 
     void addOverlay(sf::Texture* texture, sf::IntRect texRext);
     bool isBroken() const { return this->broken; };
 private:
     SpriteComp sprite;
     SpriteComp spriteOverlay;
-    ColliderComp collider;
-    TransformComp transform;
     
     bool broken;
     bool overlay;

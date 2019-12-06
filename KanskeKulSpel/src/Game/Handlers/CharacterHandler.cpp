@@ -14,6 +14,7 @@
 
 const std::string CharacterHandler::ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop"};
 const std::string CharacterHandler::BOSSES[BOSS_TEMPLATE_COUNT] = {"fishmonger.mop" };
+bool CharacterHandler::bossActive = false;
 
 CharacterHandler::CharacterHandler(UIHandler* uiHandler)
 {
@@ -85,6 +86,7 @@ CharacterHandler::~CharacterHandler()
 
 void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint)
 {
+    CharacterHandler::bossActive = false;
     this->bossSpawner = nullptr;
     if (boss)
     {
@@ -330,7 +332,10 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
         }
 
         if (spawn)
+        {
             spawnBoss((BossType)bossSpawner->bossID, bossSpawner->pos);
+            CharacterHandler::bossActive = true;
+        }
     }
 
     if (boss)
@@ -381,7 +386,7 @@ void CharacterHandler::queueColliders()
     }
 }
 
-void CharacterHandler::setBossSpawner(const BossSpawner* bossSpawner) 
+void CharacterHandler::setBossSpawner(BossSpawner* bossSpawner) 
 { 
     this->bossSpawner = bossSpawner;
 }
