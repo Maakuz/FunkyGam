@@ -10,20 +10,24 @@
 
 const float ZOOM_LEVEL = 1.f;
 
-Game::Game(const sf::RenderWindow* window) :
-    hubHandler(&this->uiHandler),
-    characterHandler(&this->uiHandler),
-    itemHandler(&this->uiHandler)
+Game::Game(const sf::RenderWindow* window)
 {
     this->window = window;
     this->paused = false;
     this->gameState = GameState::States::hub;
 
+    collisionHandler = new CollisionHandler;
+    levelHandler = new LevelHandler;
+    uiHandler = new UIHandler;
+    projectileHandler = new ProjectileHandler;
+    particleHandler = new ParticleHandler;
+    itemHandler = new ItemHandler(uiHandler);
+    characterHandler = new CharacterHandler(uiHandler);
+    hubHandler = new HubHandler(uiHandler);
+
+    uiHandler->initialize();
+
     this->view.setSize(sf::Vector2f(window->getSize()) / ZOOM_LEVEL);
-    particleHandler.loadEmitters();
-    itemHandler.loadTemplates();
-    projectileHandler.loadTemplates();
-    uiHandler.initialize();
 
     ConsoleWindow::get().addCommand("openItemEditor", [&](Arguments args)->std::string 
         {
@@ -64,7 +68,7 @@ Game::Game(const sf::RenderWindow* window) :
             
             int level = std::stoi(args[0]);
 
-            loadLevel(hubHandler.changeToLevel(level));
+            loadLevel(hubHandler->changeToLevel(level));
 
             return "Warrrrp!";
         });
@@ -73,6 +77,14 @@ Game::Game(const sf::RenderWindow* window) :
 
 Game::~Game()
 {
+    delete hubHandler;
+    delete characterHandler;
+    delete itemHandler;
+    delete projectileHandler;
+    delete uiHandler;
+    delete levelHandler;
+    delete collisionHandler;
+    delete particleHandler;
 }
 
 void Game::runAutoCommands()
@@ -114,7 +126,7 @@ void Game::update(float dt)
 
     KEYBOARD::KeyboardState::updateKeys();
     MOUSE::MouseState::updateButtons();
-    particleHandler.clearEmitterQueue();
+    particleHandler->clearEmitterQueue();
 
     switch (gameState.getState())
     {
@@ -150,9 +162,9 @@ void Game::update(float dt)
 void Game::resetAfterEditing()
 {
     Renderer::setDrawLights(true);
-    this->hubHandler.reload();
+    this->hubHandler->reload();
     if (this->gameState == GameState::States::level)
-        loadLevel(this->hubHandler.getActiveLevel());
+        loadLevel(this->hubHandler->getActiveLevel());
 }
 
 void Game::updateHub(float dt)
@@ -162,17 +174,17 @@ void Game::updateHub(float dt)
 
     this->view.setCenter((sf::Vector2f)window->getSize() / 2.f);
 
-    this->hubHandler.update(dt, this->mousePos);
-    this->uiHandler.update(dt, this->mousePos);
+    this->hubHandler->update(dt, this->mousePos);
+    this->uiHandler->update(dt, this->mousePos);
 
-    if (this->hubHandler.getActiveLevel() != nullptr)
+    if (this->hubHandler->getActiveLevel() != nullptr)
     {
-        loadLevel(this->hubHandler.getActiveLevel());
+        loadLevel(this->hubHandler->getActiveLevel());
         this->gameState = GameState::States::level;
     }
 
-    Renderer::queueUI(&this->hubHandler);
-    Renderer::queueUI(&this->uiHandler);
+    Renderer::queueUI(this->hubHandler);
+    Renderer::queueUI(this->uiHandler);
 }
 
 void Game::updateLevel(float dt)
@@ -182,89 +194,89 @@ void Game::updateLevel(float dt)
 
     if (!paused)
     {
-        static Light light(this->characterHandler.getPlayer()->getComponent<MovementComp>()->transform.pos + sf::Vector2f(32, 30), 400, sf::Vector3f(0.1f, 0.1f, 0.05f));
-        light.pos = this->characterHandler.getPlayer()->getComponent<MovementComp>()->transform.pos;
+        static Light light(this->characterHandler->getPlayer()->getComponent<MovementComp>()->transform.pos + sf::Vector2f(32, 30), 400, sf::Vector3f(0.1f, 0.1f, 0.05f));
+        light.pos = this->characterHandler->getPlayer()->getComponent<MovementComp>()->transform.pos;
         LightQueue::get().queue(&light);
 
-        sf::Vector2f center = this->characterHandler.getPlayer()->getComponent<MovementComp>()->transform.pos;
+        sf::Vector2f center = this->characterHandler->getPlayer()->getComponent<MovementComp>()->transform.pos;
         center.x = std::max(center.x, view.getSize().x / 2);
-        center.x = std::min(center.x, levelHandler.getDimensions().x - (view.getSize().x / 2));
+        center.x = std::min(center.x, levelHandler->getDimensions().x - (view.getSize().x / 2));
         center.y = std::max(center.y, view.getSize().y / 2);
-        center.y = std::min(center.y, levelHandler.getDimensions().y - (view.getSize().y / 2));
+        center.y = std::min(center.y, levelHandler->getDimensions().y - (view.getSize().y / 2));
         this->view.setCenter(center);
 
         PROFILER_START("projectileUpdate");
-        this->itemHandler.update(dt, characterHandler.getPlayer());
-        this->projectileHandler.update(dt, characterHandler.getPlayer());
-        PROFILER_STOP;
-
-        PROFILER_START("particleUpdate");
-        this->particleHandler.update(dt);
+        this->itemHandler->update(dt, characterHandler->getPlayer());
+        this->projectileHandler->update(dt, characterHandler->getPlayer());
         PROFILER_STOP;
 
         PROFILER_START("CharUpdate");
-        this->characterHandler.update(dt, mousePosWorld);
-        if (!this->characterHandler.getPlayer()->isAlive() ||
-            characterHandler.getPlayer()->isReturning())
+        this->characterHandler->update(dt, mousePosWorld);
+        if (!this->characterHandler->getPlayer()->isAlive() ||
+            characterHandler->getPlayer()->isReturning())
         {
             this->gameState = GameState::States::hub;
-            this->hubHandler.reset();
+            this->hubHandler->reset();
         }
 
-        int goal = this->characterHandler.getPlayer()->getExitReached();
+        int goal = this->characterHandler->getPlayer()->getExitReached();
         if (goal != -1)
-            this->loadLevel(hubHandler.changeToNextLevel(goal));
+            this->loadLevel(hubHandler->changeToNextLevel(goal));
 
         PROFILER_STOP;
 
         PROFILER_START("UI_Update");
-        this->uiHandler.update(dt, this->mousePos);
+        this->uiHandler->update(dt, this->mousePos);
         PROFILER_STOP;
 
         PROFILER_START("LevelUpdate");
-        this->levelHandler.updateLevel(dt);
+        this->levelHandler->updateLevel(dt);
+        PROFILER_STOP;
+
+        PROFILER_START("particleUpdate");
+        this->particleHandler->update(dt);
         PROFILER_STOP;
 
         PROFILER_START("Collision");
-        this->projectileHandler.queueColliders();
-        this->characterHandler.queueColliders();
-        this->levelHandler.queueColliders();
+        this->projectileHandler->queueColliders();
+        this->characterHandler->queueColliders();
+        this->levelHandler->queueColliders();
         PROFILER_START("Part_Collision");
-        this->particleHandler.handleCollision();
+        this->particleHandler->handleCollision();
         PROFILER_STOP;
-        this->collisionHandler.processQueue();
+        this->collisionHandler->processQueue();
         PROFILER_STOP;
     }
 
-    this->levelHandler.queueLightsAndShadows();
-    this->particleHandler.queueLights();
-    characterHandler.calculatePlayerIllumination();
+    this->levelHandler->queueLightsAndShadows();
+    this->particleHandler->queueLights();
+    characterHandler->calculatePlayerIllumination();
 
-    Renderer::queueDrawable(&this->levelHandler);
-    Renderer::queueDrawable(&this->characterHandler);
-    Renderer::queueDrawable(&this->itemHandler);
-    Renderer::queueDrawable(&this->projectileHandler);
-    Renderer::queueDrawable(&this->particleHandler);
-    Renderer::queueUI(&this->uiHandler);
+    Renderer::queueDrawable(this->levelHandler);
+    Renderer::queueDrawable(this->characterHandler);
+    Renderer::queueDrawable(this->itemHandler);
+    Renderer::queueDrawable(this->projectileHandler);
+    Renderer::queueDrawable(this->particleHandler);
+    Renderer::queueUI(this->uiHandler);
 
-    Renderer::queueDebug(&this->characterHandler);
-    Renderer::queueDebug(&this->levelHandler);
-    Renderer::queueDebug(&this->projectileHandler);
+    Renderer::queueDebug(this->characterHandler);
+    Renderer::queueDebug(this->levelHandler);
+    Renderer::queueDebug(this->projectileHandler);
 }
 
 void Game::loadLevel(const LevelInfo* level)
 {
     LightQueue::get().clear();
     LightQueueNoShadow::get().clear();
-    int exitTaken = characterHandler.getPlayer()->getExitReached();
-    particleHandler.reset();
-    projectileHandler.reset();
-    levelHandler.loadLevel(level);
-    characterHandler.initializeLevel(levelHandler.getShadowLinePtr(), levelHandler.findPlayerSpawnPoints(exitTaken));
-    characterHandler.setSpawnPoints(levelHandler.generateEnemySpawnPoints());
-    characterHandler.spawnEnemies(level);
-    if (levelHandler.isBossInLevel())
-        characterHandler.setBossSpawner(levelHandler.getBossSpawnerPtr());
-    itemHandler.setGatherPoints(levelHandler.generateGatherPoints(), levelHandler.generateRareGatherPoints());
-    itemHandler.spawnGatherables(level, levelHandler.getShrines());
+    int exitTaken = characterHandler->getPlayer()->getExitReached();
+    particleHandler->reset();
+    projectileHandler->reset();
+    levelHandler->loadLevel(level);
+    characterHandler->initializeLevel(levelHandler->getShadowLinePtr(), levelHandler->findPlayerSpawnPoints(exitTaken));
+    characterHandler->setSpawnPoints(levelHandler->generateEnemySpawnPoints());
+    characterHandler->spawnEnemies(level);
+    if (levelHandler->isBossInLevel())
+        characterHandler->setBossSpawner(levelHandler->getBossSpawnerPtr());
+    itemHandler->setGatherPoints(levelHandler->generateGatherPoints(), levelHandler->generateRareGatherPoints());
+    itemHandler->spawnGatherables(level, levelHandler->getShrines());
 }

@@ -71,7 +71,10 @@ bool LevelHandler::loadLevel(const LevelInfo* level)
         }
     }
     this->createSpites();
-    this->generateShadowLines();
+
+    shadowLines.clear();
+    this->generateShadowLines(terrain, &shadowLines);
+    this->generateBreakableShadowLines();
 
     //if (!this->backgroundTexture.loadFromFile(LEVEL_TEX_FOLDER + LEVEL_BG_NAMES[level]))
     //{
@@ -468,11 +471,9 @@ sf::Vector2f LevelHandler::findPlayerSpawnPoints(int exitTaken)
     return point;
 }
 
-void LevelHandler::generateShadowLines()
+void LevelHandler::generateShadowLines(const std::vector<Terrain>& terrain, std::vector<Line>* vec)
 {
-    shadowLines.clear();
-    breakableShadowLines.clear();
-    for (auto& ter : terrain)
+    for (const Terrain& ter : terrain)
     {
         const ColliderComp* collider = ter.getColliderComp();
         if (collider->hasComponent(ColliderKeys::ground))
@@ -492,21 +493,25 @@ void LevelHandler::generateShadowLines()
             Line left(sf::Vector2f(collider->getAABB().pos.x, collider->getAABB().pos.y + collider->getAABB().size.y),
                 collider->getAABB().pos);
 
-            this->shadowLines.push_back(top);
-            this->shadowLines.push_back(right);
-            this->shadowLines.push_back(bottom);
-            this->shadowLines.push_back(left);
+            vec->push_back(top);
+            vec->push_back(right);
+            vec->push_back(bottom);
+            vec->push_back(left);
         }
     }
+}
 
-    //Might be a criminal now
+void LevelHandler::generateBreakableShadowLines()
+{
+    breakableShadowLines.clear();
+
     for (auto& ter : breakableTerrain)
     {
         const ColliderComp* collider = ter.getColliderComp();
 
         if (collider->hasComponent(ColliderKeys::ground))
-        {            
-             Line top(
+        {
+            Line top(
                 collider->getAABB().pos,
                 sf::Vector2f(collider->getAABB().pos.x + collider->getAABB().size.x, collider->getAABB().pos.y));
 

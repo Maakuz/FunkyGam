@@ -14,11 +14,6 @@
 #include "Game/Particles/TendrilTester.h"
 #include "GameState.h"
 
-#define MAX_LIGHTS 200
-#define NR_OF_RENDER_TARGETS 3
-
-
-
 class Game
 {
 public:
@@ -29,7 +24,7 @@ public:
 
     void update(float dt);
     const sf::View& getView() { return view; };
-    const LevelInfo* getCurrentLevel()const { return hubHandler.getActiveLevel(); };
+    const LevelInfo* getCurrentLevel()const { return hubHandler->getActiveLevel(); };
     void resetAfterEditing();
     void pause() { this->paused = true; };
     void resume() { this->paused = false; };
@@ -45,14 +40,14 @@ private:
     bool paused;
     GameState gameState;
 
-    CollisionHandler collisionHandler;
-    LevelHandler levelHandler;
-    ItemHandler itemHandler;
-    ProjectileHandler projectileHandler;
-    ParticleHandler particleHandler;
-    CharacterHandler characterHandler;
-    UIHandler uiHandler;
-    HubHandler hubHandler;
+    CollisionHandler* collisionHandler;
+    LevelHandler* levelHandler;
+    UIHandler* uiHandler;
+    ProjectileHandler* projectileHandler;
+    ParticleHandler* particleHandler;
+    ItemHandler* itemHandler;
+    CharacterHandler* characterHandler;
+    HubHandler* hubHandler;
 
     ItemEditor itemEditor;
     ParticleEditor particleEditor;

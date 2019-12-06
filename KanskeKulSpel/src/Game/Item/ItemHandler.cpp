@@ -33,11 +33,18 @@ ItemHandler::ItemHandler(UIHandler* uiHandler)
 
             return "Gather range is now " + args[0] + "!";
         });
+
+    loadTemplates();
 }
 
 ItemHandler::~ItemHandler()
 {
     clearTemplates();
+
+    for (GatherItem& gather : gatherItems)
+        delete gather.emitter;
+
+    gatherItems.clear();
 }
 
 void ItemHandler::loadTemplates()
@@ -101,7 +108,8 @@ void ItemHandler::update(float dt, Player* player)
             if (length(player->getComponent<ColliderComp>()->getCenterPos() - item->item.getComponent<SpriteComp>()->getTextureCenterPos()) < this->gatherRange)
                 inRange = item;
 
-            ParticleHandler::queueEmitter(item->emitter);
+            if (item->emitter)
+                ParticleHandler::queueEmitter(item->emitter);
         }
     }
 

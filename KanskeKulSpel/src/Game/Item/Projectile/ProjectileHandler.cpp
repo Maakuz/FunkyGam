@@ -34,6 +34,8 @@ ProjectileHandler::ProjectileHandler()
 
             return "relod";
         });
+
+    loadTemplates();
 }
 
 ProjectileHandler::~ProjectileHandler()

@@ -26,8 +26,6 @@ public:
         fishmonger = 0
     };
 
-
-
     CharacterHandler(UIHandler* uiHandler);
     virtual ~CharacterHandler();
 

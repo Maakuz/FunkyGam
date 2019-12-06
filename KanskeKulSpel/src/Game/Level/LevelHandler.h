@@ -68,7 +68,8 @@ private:
 
     bool importLevel(const LevelInfo* level);
     bool generateHitboxes(int id, ColliderKeys type);
-    void generateShadowLines();
+    void generateShadowLines(const std::vector<Terrain>& terrain, std::vector<Line>* vec);
+    void generateBreakableShadowLines();
     void createSpites();
 
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;

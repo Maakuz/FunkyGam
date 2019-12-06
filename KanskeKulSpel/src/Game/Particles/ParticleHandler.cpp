@@ -22,6 +22,8 @@ ParticleHandler::ParticleHandler()
 
             return "Relodd";
         });
+
+    loadEmitters();
 }
 
 ParticleHandler::~ParticleHandler()
@@ -147,6 +149,7 @@ void ParticleHandler::reset()
 
     activeEmitters.clear();
     dyingEmitters.clear();
+    emitterQueue.clear();
 }
 
 void ParticleHandler::addEmitter(int emitterID, sf::Vector2f pos)
