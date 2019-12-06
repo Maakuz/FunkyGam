@@ -56,7 +56,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
                     int x = std::stoi(args[0]);
                     int y = std::stoi(args[1]);
 
-                     getMovementComp()->transform.pos = (sf::Vector2f(x, y));
+                     this->getMovementComp()->transform.pos = (sf::Vector2f(x, y));
                 }
                 catch (const std::exception & e)
                 {
@@ -105,7 +105,7 @@ Player::Player(AnimationData data, UIHandler* uiHandler, sf::Vector2f pos, sf::V
                 {
                     int x = std::stoi(args[0]);
 
-                    getHealthComp()->setCurrentHealth(x);
+                    this->getHealthComp()->setCurrentHealth(x);
                 }
                 catch (const std::exception & e)
                 {

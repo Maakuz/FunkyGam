@@ -22,7 +22,7 @@ public:
     static void queueEmitter(Emitter* emitter);
 
     //The particlehandler will make sure the memory is released after the emitter is killed
-    static void destroyEmitter(Emitter* emitter, bool killQuick = false);
+    static void destroyEmitter(Emitter*& emitter, bool killQuick = false);
 
     static const std::vector<Emitter>* getEmitterTemplates() { return &emitterTemplates; };
     static std::string getEmitterName(int id);

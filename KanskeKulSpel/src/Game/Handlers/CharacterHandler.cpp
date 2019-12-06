@@ -14,18 +14,18 @@
 
 const std::string CharacterHandler::ENEMIES[ENEMY_TEMPLATE_COUNT] = { "grunt.mop", "bird.mop"};
 const std::string CharacterHandler::BOSSES[BOSS_TEMPLATE_COUNT] = {"fishmonger.mop" };
-bool CharacterHandler::bossActive = false;
+bool CharacterHandler::s_bossActive = false;
 
 CharacterHandler::CharacterHandler(UIHandler* uiHandler)
 {
-    player = nullptr;
-    occluders = nullptr;
-    this->drawHitboxes = false;
-    this->drawSightlines = false;
-    this->boss = nullptr;
-    this->bossSpawner = nullptr;
+    m_player = nullptr;
+    m_occluders = nullptr;
+    m_drawHitboxes = false;
+    m_drawSightlines = false;
+    m_boss = nullptr;
+    m_bossSpawner = nullptr;
 
-    this->ui = uiHandler;
+    m_ui = uiHandler;
 
     loadPlayer();
     loadEnemies();
@@ -48,7 +48,7 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
             if (args.empty())
                 return "Missing argument 0 or 1";
 
-            drawHitboxes = std::stoi(args[0]);
+            m_drawHitboxes = std::stoi(args[0]);
 
 
             return "Hitboxes on mby";
@@ -59,7 +59,7 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
             if (args.empty())
                 return "Missing argument 0 or 1";
 
-            drawSightlines = std::stoi(args[0]);
+            m_drawSightlines = std::stoi(args[0]);
 
 
             return "Hitboxes on mby";
@@ -68,40 +68,40 @@ CharacterHandler::CharacterHandler(UIHandler* uiHandler)
 
 CharacterHandler::~CharacterHandler()
 {
-    if (player)
-        delete player;
+    if (m_player)
+        delete m_player;
 
-    if (boss)
-        delete boss;
+    if (m_boss)
+        delete m_boss;
 
-    for (Enemy* enemy : enemies)
+    for (Enemy* enemy : m_enemies)
         delete enemy;
 
-    for (Enemy* enemy : enemyTemplates)
+    for (Enemy* enemy : m_enemyTemplates)
         delete enemy;
 
-    for (Boss* boss : bossTemplates)
+    for (Boss* boss : m_bossTemplates)
         delete boss;
 }
 
 void CharacterHandler::initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint)
 {
-    CharacterHandler::bossActive = false;
-    this->bossSpawner = nullptr;
-    if (boss)
+    CharacterHandler::s_bossActive = false;
+    m_bossSpawner = nullptr;
+    if (m_boss)
     {
-        delete boss;
-        boss = nullptr;
+        delete m_boss;
+        m_boss = nullptr;
     }
 
-    this->occluders = occluders;
-    this->player->reset(playerSpawnPoint - this->player->getComponent<ColliderComp>()->getSize());
+    m_occluders = occluders;
+    m_player->reset(playerSpawnPoint - m_player->getComponent<ColliderComp>()->getSize());
 }
 
 void CharacterHandler::loadPlayer()
 {
-    if (player)
-        delete player;
+    if (m_player)
+        delete m_player;
 
     std::ifstream file(DATA_PATH "Player.mop");
     std::string trash;
@@ -142,9 +142,9 @@ void CharacterHandler::loadPlayer()
     AnimationData data(TextureHandler::get().getTexture(textureID), frameCount, animations);
 
 
-    this->player = new Player(data, ui, sf::Vector2f(0, 0), sf::Vector2f(32, 92));
+    m_player = new Player(data, m_ui, sf::Vector2f(0, 0), sf::Vector2f(32, 92));
 
-    file >> *this->player;
+    file >> *m_player;
 
 
     file.close();
@@ -152,10 +152,10 @@ void CharacterHandler::loadPlayer()
 
 void CharacterHandler::loadEnemies()
 {
-    for (Enemy* enemy : enemyTemplates)
+    for (Enemy* enemy : m_enemyTemplates)
         delete enemy;
 
-    enemyTemplates.clear();
+    m_enemyTemplates.clear();
 
     for (int i = 0; i < ENEMY_TEMPLATE_COUNT; i++)
     {
@@ -223,14 +223,14 @@ void CharacterHandler::loadEnemies()
         file >> *enemy;
 
         file.close();
-        enemyTemplates.push_back(enemy);
+        m_enemyTemplates.push_back(enemy);
     }
 
     //Bosses get the same treatment
-    for (Boss* boss : bossTemplates)
+    for (Boss* boss : m_bossTemplates)
         delete boss;
 
-    bossTemplates.clear();
+    m_bossTemplates.clear();
 
     for (int i = 0; i < BOSS_TEMPLATE_COUNT; i++)
     {
@@ -293,38 +293,38 @@ void CharacterHandler::loadEnemies()
         file >> *boss;
 
         file.close();
-        bossTemplates.push_back(boss);
+        m_bossTemplates.push_back(boss);
     }
 }
 
 void CharacterHandler::spawnEnemies(const LevelInfo* info)
 {
-    for (Enemy* enemy : enemies)
+    for (Enemy* enemy : m_enemies)
         delete enemy;
 
-    enemies.clear();
+    m_enemies.clear();
 
-    for (const sf::Vector2f& point : spawnPoints)
+    for (const sf::Vector2f& point : m_spawnPoints)
     {
         int i = rand() % info->enemies.size();
         
         Enemy* enemy = spawnEnemy(info->enemies[i]);
         enemy->spawn(point - sf::Vector2f(0, enemy->getColliderComp()->getSize().y));
-        enemies.push_back(enemy);
+        m_enemies.push_back(enemy);
     }
 }
 
 void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 {
-    if (!boss && bossSpawner)
+    if (!m_boss && m_bossSpawner)
     {
         bool spawn = true;
-        if (!this->bossSpawner->playerPosCriteria.contains(this->player->getComponent<MovementComp>()->transform.pos))
+        if (!m_bossSpawner->playerPosCriteria.contains(m_player->getComponent<MovementComp>()->transform.pos))
             spawn = false;
 
         if (spawn)
         {
-            for (const std::string& str : this->bossSpawner->playerItemCriteria)
+            for (const std::string& str : m_bossSpawner->playerItemCriteria)
             {
                 if (!ItemHandler::isOneTimeItemPickedUp(str))
                     spawn = false;
@@ -333,32 +333,32 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
 
         if (spawn)
         {
-            spawnBoss((BossType)bossSpawner->bossID, bossSpawner->pos);
-            CharacterHandler::bossActive = true;
+            spawnBoss((BossType)m_bossSpawner->bossID, m_bossSpawner->pos);
+            CharacterHandler::s_bossActive = true;
         }
     }
 
-    if (boss)
+    if (m_boss)
     {
-        boss->update(dt, this->player->getComponent<ColliderComp>()->getCenterPos());
-        ui->displayEnemyDamage(boss->getHealthComp()->getHealthPercentage());
+        m_boss->update(dt, m_player->getComponent<ColliderComp>()->getCenterPos());
+        m_ui->displayEnemyDamage(m_boss->getHealthComp()->getHealthPercentage());
     }
 
-    this->player->update(dt, mousePos);
+    m_player->update(dt, mousePos);
     
-    for (int i = 0; i < enemies.size(); i++)
+    for (int i = 0; i < m_enemies.size(); i++)
     {
-        Enemy* enemy = enemies[i];
+        Enemy* enemy = m_enemies[i];
         if (enemy->isAlive())
         {
             if (enemy->getState() == AIComp::State::idle || 
                 enemy->getState() == AIComp::State::chasing ||
                 enemy->getState() == AIComp::State::searching ||
                 enemy->getState() == AIComp::State::returning)
-                this->updateEnemyLineOfSight(enemy);
+                updateEnemyLineOfSight(enemy);
 
             if (enemy->isHealthChanged())
-                ui->displayEnemyDamage(enemy->getHealthComp()->getHealthPercentage());
+                m_ui->displayEnemyDamage(enemy->getHealthComp()->getHealthPercentage());
 
             enemy->update(dt);
         }
@@ -366,47 +366,47 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
         else
         {
             delete enemy;
-            unordered_erase(enemies, enemies.begin() + i--);
-            ui->hideEnemyDamage();
+            unordered_erase(m_enemies, m_enemies.begin() + i--);
+            m_ui->hideEnemyDamage();
         }
     }
 }
 
 void CharacterHandler::queueColliders()
 {
-    CollisionHandler::queueCollider(this->player);
+    CollisionHandler::queueCollider(m_player);
 
-    for (Enemy* enemy : enemies)
+    for (Enemy* enemy : m_enemies)
         CollisionHandler::queueCollider(enemy);
 
-    if (boss)
+    if (m_boss)
     {
-        CollisionHandler::queueCollider(boss);
-        boss->queueHitboxes();
+        CollisionHandler::queueCollider(m_boss);
+        m_boss->queueHitboxes();
     }
 }
 
 void CharacterHandler::setBossSpawner(BossSpawner* bossSpawner) 
 { 
-    this->bossSpawner = bossSpawner;
+    m_bossSpawner = bossSpawner;
 }
 
 void CharacterHandler::spawnBoss(BossType bossType, sf::Vector2f pos)
 {
-    if (boss)
-        delete boss;
+    if (m_boss)
+        delete m_boss;
 
     switch (bossType)
     {
     case BossType::fishmonger:
-        boss = new FishMonger(*dynamic_cast<FishMonger*>(bossTemplates[BossType::fishmonger]));
+        m_boss = new FishMonger(*dynamic_cast<FishMonger*>(m_bossTemplates[BossType::fishmonger]));
         break;
     default:
-        boss = new FishMonger(*dynamic_cast<FishMonger*>(bossTemplates[BossType::fishmonger]));
+        m_boss = new FishMonger(*dynamic_cast<FishMonger*>(m_bossTemplates[BossType::fishmonger]));
         break;
     }
 
-    boss->spawn(pos - sf::Vector2f(0, boss->getColliderComp()->getSize().y));
+    m_boss->spawn(pos - sf::Vector2f(0, m_boss->getColliderComp()->getSize().y));
 }
 
 Enemy* CharacterHandler::spawnEnemy(int enemyType)
@@ -415,13 +415,13 @@ Enemy* CharacterHandler::spawnEnemy(int enemyType)
     switch (enemyType)
     {
     case EnemyType::grunt:
-        enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[EnemyType::grunt]));
+        enemy = new Grunt(*dynamic_cast<Grunt*>(m_enemyTemplates[EnemyType::grunt]));
         break;
     case EnemyType::bird:
-        enemy = new Bird(*dynamic_cast<Bird*>(enemyTemplates[EnemyType::bird]));
+        enemy = new Bird(*dynamic_cast<Bird*>(m_enemyTemplates[EnemyType::bird]));
         break;
     default:
-        enemy = new Grunt(*dynamic_cast<Grunt*>(enemyTemplates[EnemyType::grunt]));
+        enemy = new Grunt(*dynamic_cast<Grunt*>(m_enemyTemplates[EnemyType::grunt]));
         break;
     }
 
@@ -437,15 +437,15 @@ void CharacterHandler::calculatePlayerIllumination()
     {
         Light* light = LightQueue::get().getQueue()[i];
         bool playerOccluded = false;
-        sf::Vector2f dir = this->player->getComponent<ColliderComp>()->getCenterPos() - light->pos;
+        sf::Vector2f dir = m_player->getComponent<ColliderComp>()->getCenterPos() - light->pos;
         float distance = length(dir);
         normalize(dir);
         if (light->radius < distance)
             playerOccluded = true;
 
-        for (size_t j = 0; j < occluders->size() && !playerOccluded; j++)
+        for (size_t j = 0; j < m_occluders->size() && !playerOccluded; j++)
         {
-            float t = findIntersectionPoint(light->pos, dir, occluders->at(j).p1, occluders->at(j).p2);
+            float t = findIntersectionPoint(light->pos, dir, m_occluders->at(j).p1, m_occluders->at(j).p2);
             if (abs(t + 1) > EPSYLONE && t < distance)
             {
                 playerOccluded = true;
@@ -467,30 +467,30 @@ void CharacterHandler::calculatePlayerIllumination()
     float finalIllumination = illumination.x + illumination.y + illumination.z;
     finalIllumination *= 0.33 * 100;
     PROFILER_STOP;
-    player->setIllumination(finalIllumination);
+    m_player->setIllumination(finalIllumination);
 }
 
 void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 {
     sf::Vector2f pos = enemy->getEyePos();
-    if ((enemy->getFacingDir() == AIComp::Direction::left && pos.x > player->getComponent<MovementComp>()->transform.pos.x)
-        || (enemy->getFacingDir() == AIComp::Direction::right && pos.x <= player->getComponent<MovementComp>()->transform.pos.x)
+    if ((enemy->getFacingDir() == AIComp::Direction::left && pos.x > m_player->getComponent<MovementComp>()->transform.pos.x)
+        || (enemy->getFacingDir() == AIComp::Direction::right && pos.x <= m_player->getComponent<MovementComp>()->transform.pos.x)
         || enemy->getState() == AIComp::State::chasing)
     {
         bool playerHidden = false;
-        sf::Vector2f dir = this->player->getComponent<ColliderComp>()->getCenterPos() - pos;
+        sf::Vector2f dir = m_player->getComponent<ColliderComp>()->getCenterPos() - pos;
         float distance = length(dir);
         normalize(dir);
 
         if (enemy->getSightRadius() < distance)
             playerHidden = true;
 
-        else if (enemy->getVisionRatingAt(distance) + player->getIllumination() < 100)
+        else if (enemy->getVisionRatingAt(distance) + m_player->getIllumination() < 100)
             playerHidden = true;
 
-        for (size_t i = 0; i < occluders->size() && !playerHidden; i++)
+        for (size_t i = 0; i < m_occluders->size() && !playerHidden; i++)
         {
-            float t = findIntersectionPoint(pos, dir, occluders->at(i).p1, occluders->at(i).p2);
+            float t = findIntersectionPoint(pos, dir, m_occluders->at(i).p1, m_occluders->at(i).p2);
             if (abs(t + 1) > EPSYLONE && t < distance)
             {
                 playerHidden = true;
@@ -499,40 +499,40 @@ void CharacterHandler::updateEnemyLineOfSight(Enemy* enemy)
 
         if (!playerHidden)
         {
-            enemy->notifyEnemy(player->getComponent<MovementComp>()->transform.pos + (player->getComponent<ColliderComp>()->getSize() / 2.f));
+            enemy->notifyEnemy(m_player->getComponent<MovementComp>()->transform.pos + (m_player->getComponent<ColliderComp>()->getSize() / 2.f));
         }
     }
 }
 
 void CharacterHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    target.draw(*player, states);
+    target.draw(*m_player, states);
 
-    if (boss)
-        target.draw(*boss, states);
+    if (m_boss)
+        target.draw(*m_boss, states);
 
 
-    for (Enemy* enemy : enemies)
+    for (Enemy* enemy : m_enemies)
         target.draw(*enemy, states);
 }
 
 void CharacterHandler::drawDebug(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    if (drawHitboxes)
+    if (m_drawHitboxes)
     {
-        target.draw(*player->getComponent<ColliderComp>(), states);
+        target.draw(*m_player->getComponent<ColliderComp>(), states);
 
-        for (Enemy* enemy : enemies)
+        for (Enemy* enemy : m_enemies)
             target.draw(*enemy->getColliderComp(), states);
 
-        if (boss)
-            target.draw(*boss->getColliderComp(), states);
+        if (m_boss)
+            target.draw(*m_boss->getColliderComp(), states);
     }
 
-    if (drawSightlines)
+    if (m_drawSightlines)
     {
         sf::VertexArray arr(sf::PrimitiveType::Lines);
-        for (Enemy* enemy : enemies)
+        for (Enemy* enemy : m_enemies)
         {
             sf::Color color;
             sf::Vertex v;

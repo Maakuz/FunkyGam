@@ -12,8 +12,8 @@ Boss::Boss(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f
 
     addComponent<HealthComp>(new HealthComp);
 
-    this->interrupting = false;
-    this->prevHealth = 0;
+    m_interrupting = false;
+    m_prevHealth = 0;
     movement->transform.pos = pos;
 
     sprite->spriteOffset.y = -(abs(sprite->getTextureRect().height) - size.y);
@@ -39,12 +39,12 @@ void Boss::update(float dt, sf::Vector2f playerPos)
 
 bool Boss::isHealthChanged()
 {
-    return getComponent<HealthComp>()->getCurrentHealth() != prevHealth;
+    return getComponent<HealthComp>()->getCurrentHealth() != m_prevHealth;
 }
 
 void Boss::spawn(sf::Vector2f pos)
 {
-    this->getComponent<MovementComp>()->transform.pos = pos;
+    getComponent<MovementComp>()->transform.pos = pos;
 }
 
 std::istream& operator>>(std::istream& in, Boss& boss)
@@ -59,7 +59,7 @@ std::istream& operator>>(std::istream& in, Boss& boss)
 
     boss.getComponent<HealthComp>()->setMaxHealth(health);
     boss.getComponent<HealthComp>()->fillHealth();
-    boss.prevHealth = health;
+    boss.m_prevHealth = health;
 
     boss.readSpecific(in);
     return in;

@@ -30,23 +30,26 @@ private:
             arm(texture, pos, linkCount, stiffness),
             hand(pos, handSize, handDamage, DamageComp::DamageOrigin::enemies){ }
     };
-    LuaScript ai;
-    SpellComp spell;
+    
+    LuaScript m_ai;
+    SpellComp m_spell;
 
-    sf::Vector2f armAnchor;
-    sf::Vector2f forhead;
-    sf::Vector2f knockback;
-    Arm leftArm;
-    Arm rightArm;
-    Chain lightRope;
-    std::vector<Arm> tentacles;
-    Emitter* light;
-    int transitionEmitterID;
-    int spellID;
+    sf::Vector2f m_armAnchor;
+    sf::Vector2f m_forhead;
+    sf::Vector2f m_knockback;
+    Arm m_leftArm;
+    Arm m_rightArm;
+    Chain m_lightRope;
+    std::vector<Arm> m_tentacles;
+    Emitter* m_lightEmitter;
 
-    bool rightSlap;
-    bool phaseTwoInitialized;
-    bool phaseTwo;
+    int m_transitionEmitterID;
+    Emitter* m_transitionEmitter;
+    int m_spellID;
+
+    bool m_rightSlap;
+    bool m_phaseTwoInitialized;
+    bool m_phaseTwo;
 
     void swingArms(sf::Vector2f target);
 

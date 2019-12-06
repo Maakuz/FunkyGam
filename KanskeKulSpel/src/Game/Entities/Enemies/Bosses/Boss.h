@@ -16,7 +16,7 @@ public:
     virtual void handleCollision(const Collidable* collidable) = 0;
     virtual void handleExplosion(const Explosion& explosion) = 0;
 
-    bool isInterrupting() { return interrupting; };
+    bool isInterrupting() { return m_interrupting; };
     virtual void update(float dt, sf::Vector2f playerPos);
     virtual void spawn(sf::Vector2f pos);
 
@@ -24,10 +24,8 @@ public:
     bool isHealthChanged();
 
 protected:
-    sf::Vector2f playerPos;
-
-    int prevHealth;
-    bool interrupting;
+    int m_prevHealth;
+    bool m_interrupting;
 
     virtual std::istream& readSpecific(std::istream& in) = 0;
 

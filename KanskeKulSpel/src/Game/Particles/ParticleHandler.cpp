@@ -172,9 +172,11 @@ void ParticleHandler::queueEmitter(Emitter* emitter)
     ParticleHandler::emitterQueue.push_back(emitter);
 }
 
-void ParticleHandler::destroyEmitter(Emitter* emitter, bool killQuick)
+void ParticleHandler::destroyEmitter(Emitter*& emitter, bool killQuick)
 {
     dyingEmitters.push_back(emitter);
+
+    emitter = nullptr;
 
     if (killQuick)
         dyingEmitters.back()->killQuick();

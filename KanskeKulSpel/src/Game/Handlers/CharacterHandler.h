@@ -31,7 +31,7 @@ public:
 
     CharacterHandler(const CharacterHandler&) = delete;
 
-    static bool isBossActive() { return CharacterHandler::bossActive; };
+    static bool isBossActive() { return CharacterHandler::s_bossActive; };
 
     void initializeLevel(const std::vector<Line>* occluders, sf::Vector2f playerSpawnPoint);
     void loadPlayer();
@@ -41,28 +41,28 @@ public:
     void queueColliders();
     void setBossSpawner(BossSpawner* bossSpawner);
 
-    void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->spawnPoints = spawnPoints; };
-    Player* getPlayer() const { return this->player; };
+    void setSpawnPoints(std::vector<sf::Vector2f> spawnPoints) { this->m_spawnPoints = spawnPoints; };
+    Player* getPlayer() const { return this->m_player; };
     void calculatePlayerIllumination();
 
     virtual void drawDebug(sf::RenderTarget& target, sf::RenderStates states) const;
 private:
-    const std::vector<Line>* occluders;
-    std::vector<sf::Vector2f> spawnPoints;
-    std::vector<Enemy*> enemies;
+    static bool s_bossActive;
 
-    BossSpawner* bossSpawner;
-    Boss* boss;
-    Player* player;
-    UIHandler* ui;
+    const std::vector<Line>* m_occluders;
+    std::vector<sf::Vector2f> m_spawnPoints;
+    std::vector<Enemy*> m_enemies;
 
-    bool drawHitboxes;
-    bool drawSightlines;
+    BossSpawner* m_bossSpawner;
+    Boss* m_boss;
+    Player* m_player;
+    UIHandler* m_ui;
+
+    bool m_drawHitboxes;
+    bool m_drawSightlines;
    
-    static bool bossActive;
-
-    std::vector<Enemy*> enemyTemplates;
-    std::vector<Boss*> bossTemplates;
+    std::vector<Enemy*> m_enemyTemplates;
+    std::vector<Boss*> m_bossTemplates;
 
     void spawnBoss(BossType bossType, sf::Vector2f pos);
     Enemy* spawnEnemy(int enemyType);
