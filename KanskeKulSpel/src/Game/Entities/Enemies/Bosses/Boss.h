@@ -20,7 +20,7 @@ public:
     virtual void update(float dt, sf::Vector2f playerPos);
     virtual void spawn(sf::Vector2f pos);
 
-    bool isAlive() { return getComponent<HealthComp>()->isAlive(); };
+    bool isAlive() { return getHealthComp()->isAlive(); };
     bool isHealthChanged();
 
 protected:

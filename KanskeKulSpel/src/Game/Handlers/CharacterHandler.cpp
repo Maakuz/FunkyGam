@@ -342,6 +342,13 @@ void CharacterHandler::update(float dt, sf::Vector2f mousePos)
     {
         m_boss->update(dt, m_player->getComponent<ColliderComp>()->getCenterPos());
         m_ui->displayEnemyDamage(m_boss->getHealthComp()->getHealthPercentage());
+
+        if (!m_boss->isAlive())
+        {
+            s_bossActive = false;
+            delete m_boss;
+            m_boss = nullptr;
+        }
     }
 
     m_player->update(dt, mousePos);

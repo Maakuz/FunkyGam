@@ -48,15 +48,16 @@ public:
     };
 
     Tendril(InitGenData data = InitGenData());
-    virtual ~Tendril() {};
+    virtual ~Tendril();
 
     friend std::ostream& operator<<(std::ostream& out, const Tendril& tendril);
     friend std::istream& operator>>(std::istream& in, Tendril& tendril);
 
     void update(float dt);
     void generate(sf::Vector2f start, sf::Vector2f end);
-    InitGenData* getDataPtr() { return &data; };
     bool isComplete()const { return this->complete; };
+
+    InitGenData* getDataPtr() { return &data; };
 private:
     struct Branch 
     {
@@ -83,8 +84,6 @@ private:
             return vertices[i];
         }
     };
-
-    friend class TendrilTester;
 
     float elapsedTime;
     InitGenData data;

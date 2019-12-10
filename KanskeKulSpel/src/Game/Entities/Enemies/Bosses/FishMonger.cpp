@@ -120,15 +120,18 @@ void FishMonger::update(float dt, sf::Vector2f playerPos)
     if (!m_phaseTwoInitialized && m_ai.get<bool>("transitioning"))
         initializePhaseTwo();
 
-    else if (m_phaseTwoInitialized && !m_phaseTwo)
-        m_transitionEmitter->setEmitterPos(collider->getCenterPos());
-
     else if (m_phaseTwo)
     {
         updatePhaseTwo(dt, playerPos);
 
         if (m_transitionEmitter)
             ParticleHandler::destroyEmitter(m_transitionEmitter);
+    }
+
+    if (m_transitionEmitter)
+    {
+        m_transitionEmitter->setEmitterPos(collider->getCenterPos());
+        ParticleHandler::queueEmitter(m_transitionEmitter);
     }
 
     m_lightEmitter->setEmitterPos(m_lightRope.back().pos);

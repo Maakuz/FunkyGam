@@ -16,17 +16,19 @@ Boss::Boss(AnimationData data, sf::Vector2f pos, sf::Vector2f size, sf::Vector2f
     m_prevHealth = 0;
     movement->transform.pos = pos;
 
+    getColliderComp()->addComponent(ColliderKeys::enemy);
+
     sprite->spriteOffset.y = -(abs(sprite->getTextureRect().height) - size.y);
     sprite->spriteOffset += offset;
 }
 
 void Boss::update(float dt, sf::Vector2f playerPos)
 {
-    MovementComp* movement = getComponent<MovementComp>();
-    AnimatedSpriteComp* sprite = getComponent<AnimatedSpriteComp>();
+    MovementComp* movement = getMovementComp();
+    AnimatedSpriteComp* sprite = getAnimatedSpriteComp();
 
     movement->update(dt);
-    getComponent<ColliderComp>()->setPosition(movement->transform.pos);
+    getColliderComp()->setPosition(movement->transform.pos);
     sprite->setPosition(movement->transform.pos);
     sprite->updateAnimation(dt);
 

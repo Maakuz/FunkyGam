@@ -65,7 +65,7 @@ void TomeComp::killEmitter()
 {
     if (channelEmitter)
     {
-        ParticleHandler::destroyEmitter(channelEmitter);
+        ParticleHandler::destroyEmitter(channelEmitter, true);
         channelEmitter = nullptr;
     }
 }

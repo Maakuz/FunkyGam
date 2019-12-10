@@ -55,6 +55,10 @@ Tendril::Tendril(InitGenData data)
     this->complete = false;
 }
 
+Tendril::~Tendril()
+{
+}
+
 void Tendril::update(float dt)
 {
 

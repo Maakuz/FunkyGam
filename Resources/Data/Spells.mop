@@ -1,7 +1,7 @@
 [Fireball]
 Name: Fireball
 [Specific]
-TickDamage: 3
+TickDamage: 1
 MaximumTravel: 600
 TopSpeed: 1.5
 MinCharge: 300

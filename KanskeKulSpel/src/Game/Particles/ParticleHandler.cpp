@@ -164,6 +164,7 @@ Emitter* ParticleHandler::createEmitter(int emitterID, sf::Vector2f pos)
 {
     Emitter* emitter = new Emitter(emitterTemplates[emitterID]);
     emitter->setEmitterPos(pos);
+    emitter->reset();
     return emitter;
 }
 

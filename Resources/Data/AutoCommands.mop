@@ -1,3 +1,2 @@
 #ignore
-setLevel 3
-setPos 2000 2500
+getItem 12 -1
