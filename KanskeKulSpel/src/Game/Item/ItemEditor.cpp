@@ -479,7 +479,7 @@ void ItemEditor::readItems()
 
     if (!file.is_open())
     {
-        printCon("File not found, editing unavailible");
+        printfCon("File not found, editing unavailible");
         closeWindow();
     }
 
@@ -539,7 +539,7 @@ void ItemEditor::readSpells()
 
     if (!file.is_open())
     {
-        printCon("File not found, editing unavailible");
+        printfCon("File not found, editing unavailible");
         closeWindow();
     }
 
@@ -575,7 +575,7 @@ void ItemEditor::readProjectiles()
 
     if (!file.is_open())
     {
-        printCon("File not found, editing unavailible");
+        printfCon("File not found, editing unavailible");
         closeWindow();
     }
 
@@ -618,7 +618,7 @@ void ItemEditor::writeItems()
 
     if (!file.is_open())
     {
-        printCon("File not found, editing unavailible");
+        printfCon("File not found, editing unavailible");
         closeWindow();
     }
 
@@ -662,7 +662,7 @@ void ItemEditor::writeSpells()
 
     if (!file.is_open())
     {
-        printCon("File not found, editing unavailible");
+        printfCon("File not found, editing unavailible");
         closeWindow();
     }
 
@@ -685,7 +685,7 @@ void ItemEditor::writeProjectiles()
 
     if (!file.is_open())
     {
-        printCon("File not found, editing unavailible");
+        printfCon("File not found, editing unavailible");
         closeWindow();
     }
 

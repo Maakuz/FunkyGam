@@ -4,7 +4,7 @@
 #include <string>
 #include "Imgui/imgui.h"
 
-#define printCon(x) ConsoleWindow::get().printText(std::string(x))
+//#define printCon(x) ConsoleWindow::get().printText(std::string(x)) trash
 #define printfCon(x, ...) ConsoleWindow::get().printf(x, __VA_ARGS__)
 
 typedef std::vector<std::string> Arguments;

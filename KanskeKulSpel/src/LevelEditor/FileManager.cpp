@@ -29,11 +29,11 @@ void FileManager::save(const LayerManager & layerManager, const LightManager& li
 
         file.close();
 
-        printCon("Saved!");
+        printfCon("Saved!");
     }
 
     else
-        printCon("NOT saved!");
+        printfCon("NOT saved!");
 
 }
 
@@ -58,11 +58,11 @@ void FileManager::quickSave(const LayerManager & layerManager, const LightManage
 
         file.close();
 
-        printCon("Quacksaved!");
+        printfCon("Quacksaved!");
     }
 
     else
-        printCon("NOT quacksaved!");
+        printfCon("NOT quacksaved!");
 }
 
 void FileManager::load(LayerManager & layerManager, LightManager& lightManager,
@@ -86,11 +86,11 @@ void FileManager::load(LayerManager & layerManager, LightManager& lightManager,
         }
         file.close();
 
-        printCon("Loaded?!");
+        printfCon("Loaded?!");
     }
 
     else 
-        printCon("NOT loaded!");
+        printfCon("NOT loaded!");
 }
 
 void FileManager::exportTextures(const LayerManager & layerManager)
@@ -102,7 +102,7 @@ void FileManager::exportTextures(const LayerManager & layerManager)
         layerManager.getLayerAsImage(i).saveToFile(fileName);
     }
 
-    printCon("exprot comprot");
+    printfCon("exprot comprot");
 }
 
 std::vector<fs::path> FileManager::getTexturePaths()
@@ -126,7 +126,7 @@ int FileManager::addTexture(std::string name, std::string path)
     }
     catch (const char* e)
     {
-        printCon("%s", e);
+        printfCon("%s", e);
     }
 
     return TileMaps::get().getTextureIndex(name);

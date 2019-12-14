@@ -20,51 +20,51 @@ public:
     virtual std::istream& readSpecific(std::istream& in);
     virtual std::ostream& writeSpecific(std::ostream& out) const;
 
-    int getMinCharge() const { return this->minCharge; };
-    void setMinCharge(int minCharge) { this->minCharge = minCharge; };
+    int getMinCharge() const { return this->m_minCharge; };
+    void setMinCharge(int minCharge) { this->m_minCharge = minCharge; };
 
-    int getMaxCharge() const { return this->maxCharge; };
-    void setMaxCharge(int maxCharge) { this->maxCharge = maxCharge; };
+    int getMaxCharge() const { return this->m_maxCharge; };
+    void setMaxCharge(int maxCharge) { this->m_maxCharge = maxCharge; };
 
-    int getTrailEmitterID() const { return this->trailEmitterID; };
-    void setTrailEmitterID(int trailEmitterID) { this->trailEmitterID = trailEmitterID; };
+    int getTrailEmitterID() const { return this->m_trailEmitterID; };
+    void setTrailEmitterID(int trailEmitterID) { this->m_trailEmitterID = trailEmitterID; };
 
-    int getImpactEmitterID() const { return this->impactEmitterID; };
-    void setImpactEmitterID(int impactEmitterID) { this->impactEmitterID = impactEmitterID; };
+    int getImpactEmitterID() const { return this->m_impactEmitterID; };
+    void setImpactEmitterID(int impactEmitterID) { this->m_impactEmitterID = impactEmitterID; };
 
-    int getFullTrailEmitterID() const { return this->fullTrailEmitterID; };
-    void setFullTrailEmitterID(int fullTrailEmitterID) { this->fullTrailEmitterID = fullTrailEmitterID; };
+    int getFullTrailEmitterID() const { return this->m_fullTrailEmitterID; };
+    void setFullTrailEmitterID(int fullTrailEmitterID) { this->m_fullTrailEmitterID = fullTrailEmitterID; };
 
-    int getFullImpactEmitterID() const { return this->fullImpactEmitterID; };
-    void setFullImpactEmitterID(int fullImpactEmitterID) { this->fullImpactEmitterID = fullImpactEmitterID; };
+    int getFullImpactEmitterID() const { return this->m_fullImpactEmitterID; };
+    void setFullImpactEmitterID(int fullImpactEmitterID) { this->m_fullImpactEmitterID = fullImpactEmitterID; };
 
-    float getMaxTravelDistance() const { return this->maxTravelDistance; };
-    void setMaxTravelDistance(float maxTravelDistance) { this->maxTravelDistance = maxTravelDistance; };
+    float getMaxTravelDistance() const { return this->m_maxTravelDistance; };
+    void setMaxTravelDistance(float maxTravelDistance) { this->m_maxTravelDistance = maxTravelDistance; };
 
-    float getTopSpeed() const { return this->topSpeed; };
-    void setTopSpeed(float topSpeed) { this->topSpeed = topSpeed; };
+    float getTopSpeed() const { return this->m_topSpeed; };
+    void setTopSpeed(float topSpeed) { this->m_topSpeed = topSpeed; };
 
-    Explosion* getExplosionPtr() { return &explosion; };
+    Explosion* getExplosionPtr() { return &m_explosion; };
 
 private:
-    int minCharge;
-    int maxCharge;
+    int m_minCharge;
+    int m_maxCharge;
     
-    float maxTravelDistance;
-    float topSpeed;
-    int trailEmitterID;
-    int impactEmitterID;
-    Explosion explosion;
+    float m_maxTravelDistance;
+    float m_topSpeed;
+    int m_trailEmitterID;
+    int m_impactEmitterID;
+    Explosion m_explosion;
 
-    int fullTrailEmitterID;
-    int fullImpactEmitterID;
+    int m_fullTrailEmitterID;
+    int m_fullImpactEmitterID;
 
-    Emitter* trail;
-    sf::Vector2f destination;
-    sf::Vector2f direction;
-    float distance;
-    bool complete;
-    bool fullCharge;
+    Emitter* m_trail;
+    sf::Vector2f m_destination;
+    sf::Vector2f m_direction;
+    float m_distance;
+    bool m_complete;
+    bool m_fullCharge;
 
-    float traveledDistance;
+    float m_traveledDistance;
 };

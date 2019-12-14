@@ -146,7 +146,7 @@ void RecipeEditor::readItems()
 
     if (!file.is_open())
     {
-        printCon("Could not open \"Recipes.mop\". Terminating computer hehe jk lol");
+        printfCon("Could not open \"Recipes.mop\". Terminating computer hehe jk lol");
     }
 
     std::string trash;
@@ -175,7 +175,7 @@ void RecipeEditor::writeRecipes()
 
     if (!file.is_open())
     {
-        printCon("File not found, editing unavailible");
+        printfCon("File not found, editing unavailible");
         closeWindow();
     }
 

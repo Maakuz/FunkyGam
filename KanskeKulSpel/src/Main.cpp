@@ -15,6 +15,8 @@ enum class State
     editor
 };
 
+bool exitPrompt(bool* active);
+
 int main()
 {
 #ifdef _DEBUG
@@ -112,6 +114,7 @@ int main()
     bool debugActivePrev = false;
 
     bool focused = true;
+    bool exitPromptActive = false;
 
     game.runAutoCommands();
     while (wandow.isOpen())
@@ -120,12 +123,9 @@ int main()
         while (wandow.pollEvent(e))
         {
             if (e.type == sf::Event::Closed)
-                wandow.close();
+                exitPromptActive = true;
 
             ImGui::SFML::ProcessEvent(e);
-
-            // if (event.type == sf::Event::KeyPressed)
-              //   printf("%d\n", event.key.code);
 
             if (e.type == sf::Event::KeyPressed && e.key.code == sf::Keyboard::Key(53)) //Tilde in sweden
                 debugActive = !debugActive;
@@ -153,11 +153,20 @@ int main()
         }
 
         if (focused && sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-            wandow.close();
+            exitPromptActive = true;
 
         deltaTime = deltaTimer.restart();
 
         ImGui::SFML::Update(wandow, deltaTime);
+        
+        if (exitPromptActive)
+        {
+            game.pause();
+            editor.pause();
+
+            if (exitPrompt(&exitPromptActive))
+                wandow.close();
+        }
 
         if (debugActive)
         {
@@ -209,7 +218,6 @@ int main()
 
             printscreen = false;
         }
-        //printf("%d\n", 1000 / deltaTime.asMilliseconds());
     }
 
 
@@ -218,4 +226,24 @@ int main()
     return 0;
 };
 
+bool exitPrompt(bool* active)
+{
+    bool exiting = false;
 
+    ImGui::Begin("Do you really want to quit? :(", active);
+
+    if (ImGui::Button("No!"))
+        *active = false;
+
+    ImGui::SameLine();
+
+    if (ImGui::Button("Yes!"))
+        exiting = true;
+
+    ImGui::End();
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
+        exiting = true;
+
+    return exiting;
+}

@@ -138,7 +138,7 @@ void ProjectileHandler::loadTemplates()
 
     if (!file.is_open())
     {
-        printCon("File not found, editing unavailible");
+        printfCon("File not found, editing unavailible");
         system("pause");
         exit(-33);
     }
