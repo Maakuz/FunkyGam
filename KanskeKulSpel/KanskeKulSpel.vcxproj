@@ -211,6 +211,7 @@
     <ClCompile Include="src\Game\Misc\MouseState.cpp" />
     <ClCompile Include="src\Game\Particles\Emitter.cpp" />
     <ClCompile Include="src\Renderer\Renderer.cpp" />
+    <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Game\Collision\CollisionHandler.h" />
@@ -307,6 +308,7 @@
     <ClInclude Include="src\LevelEditor\Queues\TileQueue.h" />
     <ClInclude Include="src\Misc\Structs.h" />
     <ClInclude Include="src\LevelEditor\TileMaps.h" />
+    <ClInclude Include="src\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\Resources\Data\bird.mop" />
