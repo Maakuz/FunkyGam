@@ -63,6 +63,7 @@ void Throwable::throwItem(sf::Vector2f pos, sf::Vector2f momentum, DamageComp::D
     MovementComp* movement = getComponent<MovementComp>();
 
     movement->transform.pos = pos;
+    getColliderComp()->setPosition(pos);
     movement->momentum = momentum;
     this->getComponent<DamageComp>()->origin = origin;
 }

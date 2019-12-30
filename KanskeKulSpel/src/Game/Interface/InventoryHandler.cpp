@@ -8,22 +8,22 @@
 
 InventoryHandler::InventoryHandler()
 {
-    this->selectedQuickslotItem = 0;
-    this->clickedItem = -1;
+    m_selectedQuickslotItem = 0;
+    m_clickedItem = -1;
 
-    this->inventoryOpen = false;
-    this->currentToolTip = -1;
-    this->quickslotsHidden = true;
-    this->slotTexture = nullptr;
-    this->toolTip.create(TextureHandler::get().getTexture(7), TextureHandler::get().getFont());
-    this->toolTip.setCharacterSize(DEFAULT_TEXT_SIZE);
+    m_inventoryOpen = false;
+    m_currentToolTip = -1;
+    m_quickslotsHidden = true;
+    m_slotTexture = nullptr;
+    m_toolTip.create(TextureHandler::get().getTexture(7), TextureHandler::get().getFont());
+    m_toolTip.setCharacterSize(DEFAULT_TEXT_SIZE);
 
     for (int i = 0; i < ITEM_SLOT_COUNT; i++)
     {
-        this->slots[i].size = 0;
-        this->slots[i].text.setFont(*TextureHandler::get().getFont());
-        this->slots[i].text.setCharacterSize(12);
-        this->slots[i].infinite = false;
+        m_slots[i].size = 0;
+        m_slots[i].text.setFont(*TextureHandler::get().getFont());
+        m_slots[i].text.setCharacterSize(12);
+        m_slots[i].infinite = false;
     }
 
     ConsoleWindow::get().addCommand("getItem", [&](Arguments args)->std::string
@@ -51,50 +51,50 @@ InventoryHandler::InventoryHandler()
 
 InventoryHandler::~InventoryHandler()
 {
-    for (InventorySlot& item : slots)
+    for (InventorySlot& item : m_slots)
         delete item.item;
 }
 
 void InventoryHandler::initialize(const sf::Texture* texture)
 {
-    for (InventorySlot& item : slots)
+    for (InventorySlot& item : m_slots)
         delete item.item;
 
-    this->slotTexture = texture;
-    this->slotSize = texture->getSize();
-    this->slotSize.x /= 2;
-    this->quickslotPos.x = WIN_WIDTH / 2 - slotSize.x * 2.5f;
-    sf::Vector2f textPos(slotSize.x - 16, slotSize.y - 16);
+    m_slotTexture = texture;
+    m_slotSize = texture->getSize();
+    m_slotSize.x /= 2;
+    m_quickslotPos.x = WIN_WIDTH / 2 - m_slotSize.x * 2.5f;
+    sf::Vector2f textPos(m_slotSize.x - 16, m_slotSize.y - 16);
 
     for (int i = 0; i < QUICKSLOT_COUNT; i++)
     {
-        this->quickslots[i].rect.setPosition(this->quickslotPos.x + i * this->slotSize.x, 0);
-        this->quickslots[i].rect.setSize(sf::Vector2f(this->slotSize));
-        this->quickslots[i].rect.setTexture(this->slotTexture);
-        this->quickslots[i].rect.setTextureRect(sf::IntRect(0, 0, this->slotSize.x, this->slotSize.y));
+        m_quickslots[i].rect.setPosition(m_quickslotPos.x + i * m_slotSize.x, 0);
+        m_quickslots[i].rect.setSize(sf::Vector2f(m_slotSize));
+        m_quickslots[i].rect.setTexture(m_slotTexture);
+        m_quickslots[i].rect.setTextureRect(sf::IntRect(0, 0, m_slotSize.x, m_slotSize.y));
 
-        this->quickslots[i].sprite.setPosition(this->quickslotPos.x + (i * slotSize.x), 0);
+        m_quickslots[i].sprite.setPosition(m_quickslotPos.x + (i * m_slotSize.x), 0);
         
-        this->quickslots[i].text.setFont(*TextureHandler::get().getFont());
-        this->quickslots[i].text.setCharacterSize(12);
-        this->quickslots[i].text.setPosition(quickslots[i].sprite.getPosition() + textPos);
+        m_quickslots[i].text.setFont(*TextureHandler::get().getFont());
+        m_quickslots[i].text.setCharacterSize(12);
+        m_quickslots[i].text.setPosition(m_quickslots[i].sprite.getPosition() + textPos);
     }
 
-    this->quickslots[0].rect.setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
+    m_quickslots[0].rect.setTextureRect(sf::IntRect(m_slotSize.x, 0, m_slotSize.x, m_slotSize.y));
 
     updateQuickslotSprites();
 
     for (int i = 0; i < ITEM_SLOT_COUNT; i++)
     {
-        this->slots[i].item = nullptr;
-        int x = (WIN_WIDTH / 2.f) - (this->slotSize.x * 5 / 2) + ((i % 5) * slotSize.x);
-        int y = (WIN_HEIGHT / 2.f) - (this->slotSize.y * 5 / 2) + ((i / 5) * slotSize.y);
-        this->slots[i].rect.setPosition(x, y);
-        this->slots[i].rect.setSize(sf::Vector2f(this->slotSize));
-        this->slots[i].rect.setTexture(slotTexture);
-        this->slots[i].rect.setTextureRect(sf::IntRect(0, 0, slotSize.x, slotSize.y));
+        m_slots[i].item = nullptr;
+        int x = (WIN_WIDTH / 2.f) - (m_slotSize.x * 5 / 2) + ((i % 5) * m_slotSize.x);
+        int y = (WIN_HEIGHT / 2.f) - (m_slotSize.y * 5 / 2) + ((i / 5) * m_slotSize.y);
+        m_slots[i].rect.setPosition(x, y);
+        m_slots[i].rect.setSize(sf::Vector2f(m_slotSize));
+        m_slots[i].rect.setTexture(m_slotTexture);
+        m_slots[i].rect.setTextureRect(sf::IntRect(0, 0, m_slotSize.x, m_slotSize.y));
 
-        this->slots[i].text.setPosition(x + textPos.x, y + textPos.y);
+        m_slots[i].text.setPosition(x + textPos.x, y + textPos.y);
     }
 
     addStartItems();
@@ -102,52 +102,52 @@ void InventoryHandler::initialize(const sf::Texture* texture)
 
 void InventoryHandler::update(float dt, sf::Vector2f mousePos)
 {
-    if (inventoryOpen)
+    if (m_inventoryOpen)
     {
         int toolTipItem = -1;
         for (int i = 0; i < ITEM_SLOT_COUNT; i++)
         {
-            if (this->slots[i].rect.getGlobalBounds().contains(mousePos))
+            if (m_slots[i].rect.getGlobalBounds().contains(mousePos))
             {
-                this->slots[i].rect.setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
+                m_slots[i].rect.setTextureRect(sf::IntRect(m_slotSize.x, 0, m_slotSize.x, m_slotSize.y));
 
-                if (this->slots[i].item != nullptr)
+                if (m_slots[i].item != nullptr)
                 {
                     toolTipItem = i;
                 }
 
-                if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && this->slots[i].item != nullptr && this->clickedItem == -1)
+                if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && m_slots[i].item != nullptr && m_clickedItem == -1)
                 {
-                    this->clickedItem = i;
+                    m_clickedItem = i;
                 }
 
-                else if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && this->clickedItem != -1)
+                else if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Left) && m_clickedItem != -1)
                 {
-                    if (!this->mergeStacks(i, this->clickedItem))
-                        this->swapItems(i, this->clickedItem);
-                    this->clickedItem = -1;
+                    if (!mergeStacks(i, m_clickedItem))
+                        swapItems(i, m_clickedItem);
+                    m_clickedItem = -1;
                 }
             }
 
-            else if (i == this->clickedItem)
-                this->slots[i].rect.setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
+            else if (i == m_clickedItem)
+                m_slots[i].rect.setTextureRect(sf::IntRect(m_slotSize.x, 0, m_slotSize.x, m_slotSize.y));
 
             else
-                this->slots[i].rect.setTextureRect(sf::IntRect(0, 0, this->slotSize.x, this->slotSize.y));
+                m_slots[i].rect.setTextureRect(sf::IntRect(0, 0, m_slotSize.x, m_slotSize.y));
         }
 
         if (toolTipItem != -1)
         {
 
-            this->currentToolTip = toolTipItem;
-            this->toolTip.setText(this->slots[toolTipItem].item->getLogisticsComp()->name);
-            this->toolTip.resizeToFit();
+            m_currentToolTip = toolTipItem;
+            m_toolTip.setText(m_slots[toolTipItem].item->getLogisticsComp()->name);
+            m_toolTip.resizeToFit();
             
-            this->toolTip.setPos(mousePos);
+            m_toolTip.setPos(mousePos);
         }
 
         else
-            this->currentToolTip = -1;
+            m_currentToolTip = -1;
     }
 }
 
@@ -175,7 +175,7 @@ void InventoryHandler::addStartItems()
 int InventoryHandler::countItem(int itemID)
 {
     int tally = 0;
-    for (InventorySlot& slot : this->slots)
+    for (InventorySlot& slot : m_slots)
         if (slot.item != nullptr && slot.item->getLogisticsComp()->id == itemID)
             tally += slot.size;
 
@@ -184,23 +184,23 @@ int InventoryHandler::countItem(int itemID)
 
 void InventoryHandler::setSelectedItem(int item)
 {
-    if (this->selectedQuickslotItem == item)
+    if (m_selectedQuickslotItem == item)
         return;
 
-    int prevSelected = this->selectedQuickslotItem;
-    this->selectedQuickslotItem = item;
+    int prevSelected = m_selectedQuickslotItem;
+    m_selectedQuickslotItem = item;
 
     for (int i = 0; i < 4; i++)
     {
-        quickslots[item].rect.setTextureRect(sf::IntRect(this->slotSize.x, 0, this->slotSize.x, this->slotSize.y));
-        quickslots[prevSelected].rect.setTextureRect(sf::IntRect(0, 0, this->slotSize.x, this->slotSize.y));
+        m_quickslots[item].rect.setTextureRect(sf::IntRect(m_slotSize.x, 0, m_slotSize.x, m_slotSize.y));
+        m_quickslots[prevSelected].rect.setTextureRect(sf::IntRect(0, 0, m_slotSize.x, m_slotSize.y));
     }
 }
 
 int InventoryHandler::getSelectedItemID() const
 {
-    if (slots[selectedQuickslotItem].item)
-        return slots[selectedQuickslotItem].item->getLogisticsComp()->id;
+    if (m_slots[m_selectedQuickslotItem].item)
+        return m_slots[m_selectedQuickslotItem].item->getLogisticsComp()->id;
 
     else
         return -1;
@@ -211,18 +211,18 @@ int InventoryHandler::useSelectedItem()
     int id = getSelectedItemID();
     if (id != -1)
     {
-        if (!this->slots[this->selectedQuickslotItem].item->getLogisticsComp()->useable)
+        if (!m_slots[m_selectedQuickslotItem].item->getLogisticsComp()->useable)
             id = -1;
 
-        else if (!this->slots[this->selectedQuickslotItem].infinite)
+        else if (!m_slots[m_selectedQuickslotItem].infinite)
         {
-            this->slots[this->selectedQuickslotItem].size--;
-            this->slots[this->selectedQuickslotItem].text.setString(std::to_string(this->slots[this->selectedQuickslotItem].size));
+            m_slots[m_selectedQuickslotItem].size--;
+            m_slots[m_selectedQuickslotItem].text.setString(std::to_string(m_slots[m_selectedQuickslotItem].size));
 
-            if (this->slots[this->selectedQuickslotItem].size <= 0)
+            if (m_slots[m_selectedQuickslotItem].size <= 0)
             {
-                delete this->slots[this->selectedQuickslotItem].item;
-                this->slots[this->selectedQuickslotItem].item = nullptr;
+                delete m_slots[m_selectedQuickslotItem].item;
+                m_slots[m_selectedQuickslotItem].item = nullptr;
             }
 
             updateQuickslotSprites();
@@ -240,7 +240,7 @@ void InventoryHandler::sortItems()
     {
         for (int j = i; j < ITEM_SLOT_COUNT; j++)
         {
-            if (slots[i].item == nullptr && slots[j].item != nullptr)
+            if (m_slots[i].item == nullptr && m_slots[j].item != nullptr)
                 swapItems(i, j);
         }
     }
@@ -250,7 +250,7 @@ void InventoryHandler::sortItems()
     {
         for (int j = i + 1; j < ITEM_SLOT_COUNT; j++)
         {
-            if (slots[i].item && slots[j].item && slots[i].item->getLogisticsComp()->id == slots[j].item->getLogisticsComp()->id)
+            if (m_slots[i].item && m_slots[j].item && m_slots[i].item->getLogisticsComp()->id == m_slots[j].item->getLogisticsComp()->id)
             {
                 bool fullyMerged = mergeStacks(i, j);
                 if (!fullyMerged)
@@ -267,7 +267,7 @@ void InventoryHandler::sortItems()
     {
         for (int j = i; j < ITEM_SLOT_COUNT; j++)
         {
-            if (slots[i].item == nullptr && slots[j].item != nullptr)
+            if (m_slots[i].item == nullptr && m_slots[j].item != nullptr)
                 swapItems(i, j);
         }
     }
@@ -281,25 +281,25 @@ void InventoryHandler::addItem(int itemID, int amount)
         bool first = true;
         for (int i = 0; i < ITEM_SLOT_COUNT; i++)
         {
-            if (slots[i].item == nullptr && first)
+            if (m_slots[i].item == nullptr && first)
             {
-                this->slots[i].item = new Entity(*ItemHandler::getTemplate(itemID));
-                this->slots[i].item->getSpriteComp()->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
-                slots[i].infinite = true;
-                slots[i].size = 8;
-                slots[i].text.setString("Inf");
+                m_slots[i].item = new Entity(*ItemHandler::getTemplate(itemID));
+                m_slots[i].item->getSpriteComp()->setPosition(m_slots[i].rect.getPosition() + (sf::Vector2f(m_slotSize) / 2.f) - (m_slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
+                m_slots[i].infinite = true;
+                m_slots[i].size = 8;
+                m_slots[i].text.setString("Inf");
                 first = false;            
             }
 
-            else if (slots[i].item && slots[i].item->getLogisticsComp()->id == itemID && first)
+            else if (m_slots[i].item && m_slots[i].item->getLogisticsComp()->id == itemID && first)
             {
-                slots[i].infinite = true;
-                slots[i].size = 8;
-                slots[i].text.setString("Inf");
+                m_slots[i].infinite = true;
+                m_slots[i].size = 8;
+                m_slots[i].text.setString("Inf");
                 first = false;
             }
 
-            else if (slots[i].item && slots[i].item->getLogisticsComp()->id == itemID)
+            else if (m_slots[i].item && m_slots[i].item->getLogisticsComp()->id == itemID)
             {
                 removeAt(i);
             }
@@ -313,30 +313,30 @@ void InventoryHandler::addItem(int itemID, int amount)
         {
             int i = 0;
             while (i < ITEM_SLOT_COUNT &&
-                this->slots[i].item != nullptr &&
-                !(this->slots[i].item->getLogisticsComp()->id == itemID && this->slots[i].item->getLogisticsComp()->stackLimit > this->slots[i].size))
+                m_slots[i].item != nullptr &&
+                !(m_slots[i].item->getLogisticsComp()->id == itemID && m_slots[i].item->getLogisticsComp()->stackLimit > m_slots[i].size))
             {
                 i++;
             }
 
             if (i < ITEM_SLOT_COUNT)
             {
-                if (this->slots[i].item)
+                if (m_slots[i].item)
                 {
-                    int stack = std::min(amount, this->slots[i].item->getLogisticsComp()->stackLimit - this->slots[i].size);
-                    this->slots[i].size += stack;
+                    int stack = std::min(amount, m_slots[i].item->getLogisticsComp()->stackLimit - m_slots[i].size);
+                    m_slots[i].size += stack;
                     amount -= stack;
-                    this->slots[i].text.setString(std::to_string(this->slots[i].size));
+                    m_slots[i].text.setString(std::to_string(m_slots[i].size));
                 }
 
                 else
                 {
-                    this->slots[i].item = new Entity(*ItemHandler::getTemplate(itemID));
-                    this->slots[i].item->getSpriteComp()->setPosition(this->slots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
-                    int stack = std::min(amount, this->slots[i].item->getLogisticsComp()->stackLimit - this->slots[i].size);
-                    this->slots[i].size += stack;
+                    m_slots[i].item = new Entity(*ItemHandler::getTemplate(itemID));
+                    m_slots[i].item->getSpriteComp()->setPosition(m_slots[i].rect.getPosition() + (sf::Vector2f(m_slotSize) / 2.f) - (m_slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
+                    int stack = std::min(amount, m_slots[i].item->getLogisticsComp()->stackLimit - m_slots[i].size);
+                    m_slots[i].size += stack;
                     amount -= stack;
-                    this->slots[i].text.setString(std::to_string(this->slots[i].size));
+                    m_slots[i].text.setString(std::to_string(m_slots[i].size));
                 }
 
                 if (i < QUICKSLOT_COUNT)
@@ -356,19 +356,19 @@ int InventoryHandler::removeItem(int itemID, int amount)
     int tally = 0;
     for (int i = 0; i < ITEM_SLOT_COUNT && amount > 0; i++)
     {
-        if (slots[i].item != nullptr && slots[i].item->getLogisticsComp()->id == itemID)
+        if (m_slots[i].item != nullptr && m_slots[i].item->getLogisticsComp()->id == itemID)
         {
-            int itemsTaken = std::min(amount, slots[i].size);
+            int itemsTaken = std::min(amount, m_slots[i].size);
             tally += itemsTaken;
 
-            slots[i].size -= itemsTaken;
+            m_slots[i].size -= itemsTaken;
             amount -= itemsTaken;
-            slots[i].text.setString(std::to_string(slots[i].size));
+            m_slots[i].text.setString(std::to_string(m_slots[i].size));
 
-            if (slots[i].size <= 0)
+            if (m_slots[i].size <= 0)
             {
-                delete slots[i].item;
-                slots[i].item = nullptr;
+                delete m_slots[i].item;
+                m_slots[i].item = nullptr;
             }
         }
     }
@@ -378,29 +378,29 @@ int InventoryHandler::removeItem(int itemID, int amount)
 
 void InventoryHandler::removeAt(int slot)
 {
-    delete slots[slot].item;
-    slots[slot].item = nullptr;
-    slots[slot].infinite = false;
-    slots[slot].size = 0;
+    delete m_slots[slot].item;
+    m_slots[slot].item = nullptr;
+    m_slots[slot].infinite = false;
+    m_slots[slot].size = 0;
 }
 
 bool InventoryHandler::mergeStacks(int to, int from)
 {
-    if (!slots[to].item || !slots[from].item || slots[to].item->getLogisticsComp()->id != slots[from].item->getLogisticsComp()->id)
+    if (!m_slots[to].item || !m_slots[from].item || m_slots[to].item->getLogisticsComp()->id != m_slots[from].item->getLogisticsComp()->id)
         return false;
 
-    int avaliableSpace = slots[to].item->getLogisticsComp()->stackLimit - slots[to].size;
+    int avaliableSpace = m_slots[to].item->getLogisticsComp()->stackLimit - m_slots[to].size;
 
-    slots[to].size += std::min(slots[from].size, avaliableSpace);
-    slots[from].size -= std::min(slots[from].size, avaliableSpace);
+    m_slots[to].size += std::min(m_slots[from].size, avaliableSpace);
+    m_slots[from].size -= std::min(m_slots[from].size, avaliableSpace);
 
-    slots[to].text.setString(std::to_string(slots[to].size));
-    slots[from].text.setString(std::to_string(slots[from].size));
+    m_slots[to].text.setString(std::to_string(m_slots[to].size));
+    m_slots[from].text.setString(std::to_string(m_slots[from].size));
 
-    if (slots[from].size <= 0)
+    if (m_slots[from].size <= 0)
     {
-        delete slots[from].item;
-        slots[from].item = nullptr;
+        delete m_slots[from].item;
+        m_slots[from].item = nullptr;
         return true;
     }
 
@@ -409,21 +409,22 @@ bool InventoryHandler::mergeStacks(int to, int from)
 
 void InventoryHandler::swapItems(int a, int b)
 {
-    if (this->slots[a].item)
-        this->slots[a].item->getSpriteComp()->setPosition(this->slots[b].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[a].item->getSpriteComp()->getTextureSize() / 2.f));
+    if (m_slots[a].item)
+        m_slots[a].item->getSpriteComp()->setPosition(m_slots[b].rect.getPosition() + (sf::Vector2f(m_slotSize) / 2.f) - (m_slots[a].item->getSpriteComp()->getTextureSize() / 2.f));
 
-    if (this->slots[b].item)
-        this->slots[b].item->getSpriteComp()->setPosition(this->slots[a].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (this->slots[b].item->getSpriteComp()->getTextureSize() / 2.f));
+    if (m_slots[b].item)
+        m_slots[b].item->getSpriteComp()->setPosition(m_slots[a].rect.getPosition() + (sf::Vector2f(m_slotSize) / 2.f) - (m_slots[b].item->getSpriteComp()->getTextureSize() / 2.f));
 
-    std::swap(this->slots[a].item, this->slots[b].item);
-    std::swap(this->slots[a].size, this->slots[b].size);
-    std::swap(this->slots[a].infinite, this->slots[b].infinite);
+    std::swap(m_slots[a].item, m_slots[b].item);
+    std::swap(m_slots[a].size, m_slots[b].size);
+    std::swap(m_slots[a].infinite, m_slots[b].infinite);
 
-    this->slots[a].text.setString(std::to_string(this->slots[a].size));
-    this->slots[b].text.setString(std::to_string(this->slots[b].size));
+    std::string temp = m_slots[a].text.getString();
+    m_slots[a].text.setString(m_slots[b].text.getString());
+    m_slots[b].text.setString(temp);
 
     if (a < QUICKSLOT_COUNT || b < QUICKSLOT_COUNT)
-        this->updateQuickslotSprites();
+        updateQuickslotSprites();
 
 }
 
@@ -431,44 +432,44 @@ void InventoryHandler::updateQuickslotSprites()
 {
     for (int i = 0; i < QUICKSLOT_COUNT; i++)
     {
-        if (this->slots[i].item)
+        if (m_slots[i].item)
         {
-            quickslots[i].sprite.setTexture(*this->slots[i].item->getSpriteComp()->getTexture(), true);
-            quickslots[i].sprite.setPosition(quickslots[i].rect.getPosition() + (sf::Vector2f(this->slotSize) / 2.f) - (slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
+            m_quickslots[i].sprite.setTexture(*m_slots[i].item->getSpriteComp()->getTexture(), true);
+            m_quickslots[i].sprite.setPosition(m_quickslots[i].rect.getPosition() + (sf::Vector2f(m_slotSize) / 2.f) - (m_slots[i].item->getSpriteComp()->getTextureSize() / 2.f));
 
-            quickslots[i].text.setString(slots[i].text.getString());
+            m_quickslots[i].text.setString(m_slots[i].text.getString());
         }
     }
 }
 
 void InventoryHandler::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    if (!quickslotsHidden)
+    if (!m_quickslotsHidden)
     {
         for (int i = 0; i < QUICKSLOT_COUNT; i++)
         {
-            target.draw(quickslots[i].rect, states);
-            if (this->slots[i].item)
+            target.draw(m_quickslots[i].rect, states);
+            if (m_slots[i].item)
             {
-                target.draw(quickslots[i].sprite, states);
-                target.draw(quickslots[i].text, states);
+                target.draw(m_quickslots[i].sprite, states);
+                target.draw(m_quickslots[i].text, states);
             }
         }
     }
 
-    if (inventoryOpen)
+    if (m_inventoryOpen)
     {
         for (int i = 0; i < ITEM_SLOT_COUNT; i++)
         {
-            target.draw(slots[i].rect, states);
-            if (this->slots[i].item)
+            target.draw(m_slots[i].rect, states);
+            if (m_slots[i].item)
             {
-                target.draw(*this->slots[i].item->getSpriteComp(), states);
-                target.draw(this->slots[i].text, states);
+                target.draw(*m_slots[i].item->getSpriteComp(), states);
+                target.draw(m_slots[i].text, states);
             }
         }
 
-        if (this->currentToolTip != -1)
-            target.draw(toolTip, states);
+        if (m_currentToolTip != -1)
+            target.draw(m_toolTip, states);
     }
 }

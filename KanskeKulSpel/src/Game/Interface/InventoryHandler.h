@@ -20,10 +20,10 @@ public:
     void setSelectedItem(int item);
     int getSelectedItemID() const;
     int useSelectedItem();
-    void openInventory() { this->inventoryOpen = true; };
-    void closeInventory() { this->inventoryOpen = false; };
-    bool isInventoryOpen() const { return this->inventoryOpen; };
-    void setQuickslotHidden(bool value) { this->quickslotsHidden = value; };
+    void openInventory() { this->m_inventoryOpen = true; };
+    void closeInventory() { this->m_inventoryOpen = false; };
+    bool isInventoryOpen() const { return this->m_inventoryOpen; };
+    void setQuickslotHidden(bool value) { this->m_quickslotsHidden = value; };
 
     void sortItems();
     void addItem(int itemID, int amount = 1);
@@ -45,7 +45,7 @@ private:
         bool infinite;
     };
 
-    InventorySlot slots[ITEM_SLOT_COUNT];
+    InventorySlot m_slots[ITEM_SLOT_COUNT];
     
     struct Quickslot
     {
@@ -54,19 +54,19 @@ private:
         sf::Sprite sprite;
     };
 
-    Quickslot quickslots[QUICKSLOT_COUNT];
-    sf::Vector2u quickslotPos;
-    int selectedQuickslotItem;
+    Quickslot m_quickslots[QUICKSLOT_COUNT];
+    sf::Vector2u m_quickslotPos;
+    int m_selectedQuickslotItem;
 
-    sf::Vector2u slotSize;
-    const sf::Texture* slotTexture;
+    sf::Vector2u m_slotSize;
+    const sf::Texture* m_slotTexture;
 
-    int currentToolTip;
-    TextBubble toolTip;
+    int m_currentToolTip;
+    TextBubble m_toolTip;
 
-    bool inventoryOpen;
-    bool quickslotsHidden;
-    int clickedItem;
+    bool m_inventoryOpen;
+    bool m_quickslotsHidden;
+    int m_clickedItem;
 
     //return true if merged successfully without leftovers
     bool mergeStacks(int to, int from);

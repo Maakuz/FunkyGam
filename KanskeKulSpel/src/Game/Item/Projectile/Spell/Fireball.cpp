@@ -48,6 +48,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
     else if (channelTime > m_minCharge && channelTime < m_maxCharge)
     {
         getTransformComp()->pos = pos;
+        getColliderComp()->setPosition(pos);
         m_distance = std::min(length(pos - dest), m_maxTravelDistance);
         m_direction = dest - pos;
         normalize(m_direction);
@@ -67,6 +68,7 @@ void Fireball::cast(sf::Vector2f pos, sf::Vector2f dest, float channelTime)
         m_explosion.radius *= 2.5f;
 
         getTransformComp()->pos = pos;
+        getColliderComp()->setPosition(pos);
         m_distance = std::min(length(pos - dest), m_maxTravelDistance);
         m_direction = dest - pos;
         normalize(m_direction);
