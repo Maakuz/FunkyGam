@@ -229,7 +229,7 @@ void FishMonger::updatePhaseTwo(float dt, sf::Vector2f target)
         sf::Vector2f displacement(0, 1);
         displacement = rotateBy(rand() % 360, displacement);
 
-        m_tentacles[currentTentacle].arm.back().pos += displacement * m_ai.get<float>("swingSpeed");
+        m_tentacles[currentTentacle].arm.back().pos += displacement * m_ai.get<float>("swingSpeedPhase2");
     }
 }
 
@@ -270,7 +270,7 @@ void FishMonger::handleCollision(const Collidable* collidable)
     const ColliderComp* collider = getComponent<ColliderComp>();
     MovementComp* movement = getComponent<MovementComp>();
 
-    if (otherCollider->hasComponent(ColliderKeys::ground) || otherCollider->hasComponent(ColliderKeys::platform))
+    if (otherCollider->hasComponent(ColliderKeys::ground))
     {
         //walking on ground
         if (movement->momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), collider->getDownBox()))
@@ -302,6 +302,17 @@ void FishMonger::handleCollision(const Collidable* collidable)
         }
     }
 
+    if (otherCollider->hasComponent(ColliderKeys::platform))
+    {
+        //walking on ground
+        if (movement->momentum.y > 0 && ColliderComp::intersects(otherCollider->getUpBox(), collider->getDownBox()))
+        {
+            movement->momentum.y = 0;
+            movement->transform.pos.y = otherCollider->up() - collider->height();
+            movement->grounded = true;
+        }
+    }
+
     const DamageComp* damage = collidable->getComponent<DamageComp>();
 
     if (damage)
@@ -320,10 +331,8 @@ void FishMonger::handleExplosion(const Explosion& explosion)
 void FishMonger::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
     target.draw(m_rightArm.arm, states);
-    target.draw(*m_rightArm.hand.getColliderComp(), states);
     Boss::draw(target, states);
     target.draw(m_leftArm.arm, states);
-    target.draw(*m_leftArm.hand.getColliderComp(), states);
     target.draw(m_lightRope, states);
 
     if (m_phaseTwo)
@@ -331,7 +340,6 @@ void FishMonger::draw(sf::RenderTarget& target, sf::RenderStates states) const
         for (const Arm& arm : m_tentacles)
         {
             target.draw(arm.arm, states);
-            target.draw(*arm.hand.getColliderComp(), states);
         }
     }
 }
