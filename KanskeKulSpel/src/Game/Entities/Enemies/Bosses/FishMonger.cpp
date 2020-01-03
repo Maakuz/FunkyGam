@@ -17,6 +17,7 @@ FishMonger::FishMonger(AnimationData data, sf::Vector2f pos, sf::Vector2f size, 
     m_phaseTwoInitialized = false;
     m_phaseTwo = false;
     m_lightEmitter = nullptr;
+    m_transitionEmitter = nullptr;
     m_transitionEmitterID = 18;
     m_spellID = 0;
 

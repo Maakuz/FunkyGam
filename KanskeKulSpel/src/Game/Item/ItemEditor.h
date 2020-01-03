@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "Item.h"
+#include "Consumable.h"
 #include "Game/Item/Projectile/Spell/Tome.h"
 #include "Projectile/Throwables/Throwable.h"
 #include "Projectile/Spell/Fireball.h"
@@ -11,10 +12,11 @@ class ItemEditor : public sf::Drawable
 public:
     ItemEditor();
     virtual ~ItemEditor();
+    ItemEditor(ItemEditor&) = delete;
 
     void openWindow();
-    void closeWindow() { open = false; };
-    bool isOpen() const { return open; };
+    void closeWindow() { m_open = false; };
+    bool isOpen() const { return m_open; };
     void update(float dt, sf::Vector2f mouseWorldPos);
     void updateItems(float dt, sf::Vector2f mouseWorldPos);
     void updateSpells(float dt, sf::Vector2f mouseWorldPos);
@@ -27,22 +29,23 @@ private:
         projectiles
     };
 
-    Tab currentTab;
+    Tab m_currentTab;
 
-    bool open;
-    std::vector<Entity*> items;
-    std::vector<Spell*> spells;
-    std::vector<LightProjectile> projectiles;
-    std::vector<std::string> projectileNames;
-    int currentItem;
-    int currentSpell;
-    int currentProjectile;
-    sf::Vector2f pos;
+    bool m_open;
+    std::vector<Entity*> m_items;
+    std::vector<Spell*> m_spells;
+    std::vector<LightProjectile> m_projectiles;
+    std::vector<std::string> m_projectileNames;
+    int m_currentItem;
+    int m_currentSpell;
+    int m_currentProjectile;
+    sf::Vector2f m_pos;
 
     void showItemData(Entity* item);
     void showExplosionData(Explosion* explosion);
     void showThrowableData(Throwable* item);
     void showTomeData(Tome* item);
+    void showConsumableData(Consumable* consumable);
     void showFireballData(Fireball* fireball);
     void showProjectileData(LightProjectile* projectile, std::string* name);
 

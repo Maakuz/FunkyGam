@@ -11,11 +11,11 @@
 
 ItemEditor::ItemEditor()
 {
-    this->open = false;
-    this->currentTab = Tab::items;
-    currentItem = -1;
-    currentSpell = -1;
-    currentProjectile = -1;
+    m_open = false;
+    m_currentTab = Tab::items;
+    m_currentItem = -1;
+    m_currentSpell = -1;
+    m_currentProjectile = -1;
 }
 
 ItemEditor::~ItemEditor()
@@ -26,7 +26,7 @@ ItemEditor::~ItemEditor()
 
 void ItemEditor::openWindow()
 {
-    open = true;
+    m_open = true;
 
     readItems();
     readSpells();
@@ -35,27 +35,27 @@ void ItemEditor::openWindow()
 
 void ItemEditor::update(float dt, sf::Vector2f mouseWorldPos)
 {
-    ImGui::Begin("Item Editor", &this->open);
+    ImGui::Begin("Item Editor", &m_open);
 
     if (ImGui::BeginTabBar("tabbaritems"))
     {
         if (ImGui::BeginTabItem("Items"))
         {
-            currentTab = Tab::items;
+            m_currentTab = Tab::items;
             updateItems(dt, mouseWorldPos);
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Spells"))
         {
-            currentTab = Tab::spells;
+            m_currentTab = Tab::spells;
             updateSpells(dt, mouseWorldPos);
             ImGui::EndTabItem();
         }
 
         if (ImGui::BeginTabItem("Projectiles"))
         {
-            currentTab = Tab::projectiles;
+            m_currentTab = Tab::projectiles;
             updateProjectiles(dt, mouseWorldPos);
             ImGui::EndTabItem();
         }
@@ -67,28 +67,33 @@ void ItemEditor::update(float dt, sf::Vector2f mouseWorldPos)
 
 void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 {
-    if (!items.empty())
+    if (!m_items.empty())
     {
-        if (ImGui::BeginCombo("Select item", this->items[this->currentItem]->getComponent<LogisticsComp>()->name.c_str()))
+        if (ImGui::BeginCombo("Select item", m_items[m_currentItem]->getComponent<LogisticsComp>()->name.c_str()))
         {
-            for (int i = 0; i < items.size(); i++)
+            for (int i = 0; i < m_items.size(); i++)
             {
-                if (ImGui::Selectable(items[i]->getComponent<LogisticsComp>()->name.c_str()))
-                    this->currentItem = i;
+                if (ImGui::Selectable(m_items[i]->getComponent<LogisticsComp>()->name.c_str()))
+                    m_currentItem = i;
             }
 
 
             ImGui::EndCombo();
         }
 
-        Throwable* throwable = dynamic_cast<Throwable*>(items[currentItem]);
-        Tome* tome = dynamic_cast<Tome*>(items[currentItem]);
-        Item* item = dynamic_cast<Item*>(items[currentItem]);
+        Throwable* throwable = dynamic_cast<Throwable*>(m_items[m_currentItem]);
+        Tome* tome = dynamic_cast<Tome*>(m_items[m_currentItem]);
+        Item* item = dynamic_cast<Item*>(m_items[m_currentItem]);
+        Consumable* consumable = dynamic_cast<Consumable*>(m_items[m_currentItem]);
+
         if (throwable)
             showThrowableData(throwable);
 
         else if (tome)
             showTomeData(tome);
+
+        else if (consumable)
+            showConsumableData(consumable);
 
         else if (item)
             showItemData(item);
@@ -99,59 +104,68 @@ void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 
     if (ImGui::Button("Create Item"))
     {
-        Item* item = new Item(sf::Vector2f(), items[currentItem]->getComponent<SpriteComp>()->getTexture());
-        this->items.push_back(item);
-        item->getComponent<LogisticsComp>()->id = this->items.size() - 1;
-        this->currentItem = this->items.size() - 1;
+        Item* item = new Item(sf::Vector2f(), m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture());
+        m_items.push_back(item);
+        item->getComponent<LogisticsComp>()->id = m_items.size() - 1;
+        m_currentItem = m_items.size() - 1;
     }
 
     ImGui::SameLine();
 
     if (ImGui::Button("Create Tome"))
     {
-        Tome* item = new Tome(sf::Vector2f(), items[currentItem]->getComponent<SpriteComp>()->getTexture());
-        this->items.push_back(item);
-        item->getComponent<LogisticsComp>()->id = this->items.size() - 1;
+        Tome* item = new Tome(sf::Vector2f(), m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture());
+        m_items.push_back(item);
+        item->getComponent<LogisticsComp>()->id = m_items.size() - 1;
         item->getComponent<LogisticsComp>()->useable = true;
-        this->currentItem = this->items.size() - 1;
+        m_currentItem = m_items.size() - 1;
     }
 
     ImGui::SameLine();
 
     if (ImGui::Button("Create Throwable"))
     {
-        Throwable* item = new Throwable(sf::Vector2f(), items[currentItem]->getComponent<SpriteComp>()->getTexture(), (sf::Vector2f)items[currentItem]->getComponent<SpriteComp>()->getTexture()->getSize());
-        this->items.push_back(item);
-        item->getComponent<LogisticsComp>()->id = this->items.size() - 1;
+        Throwable* item = new Throwable(sf::Vector2f(), m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture(), (sf::Vector2f)m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture()->getSize());
+        m_items.push_back(item);
+        item->getComponent<LogisticsComp>()->id = m_items.size() - 1;
         item->getComponent<LogisticsComp>()->useable = true;
-        this->currentItem = this->items.size() - 1;
+        m_currentItem = m_items.size() - 1;
+    }
+
+    if (ImGui::Button("Create Consumable"))
+    {
+        Consumable* item = new Consumable(m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture());
+        m_items.push_back(item);
+        item->getComponent<LogisticsComp>()->id = m_items.size() - 1;
+        item->getComponent<LogisticsComp>()->useable = true;
+        m_currentItem = m_items.size() - 1;
     }
 
     if (ImGui::Button("Delete"))
     {
-        this->items.erase(items.begin() + currentItem);
-        this->currentItem = this->items.size() - 1;
+        m_items.erase(m_items.begin() + m_currentItem);
+        m_currentItem = m_items.size() - 1;
     }
 
 }
 
 void ItemEditor::updateSpells(float dt, sf::Vector2f mouseWorldPos)
 {
-    if (!spells.empty())
+    if (!m_spells.empty())
     {
-        if (ImGui::BeginCombo("Select spell", this->spells[this->currentSpell]->getName().c_str()))
+        if (ImGui::BeginCombo("Select spell", m_spells[m_currentSpell]->getName().c_str()))
         {
-            for (int i = 0; i < spells.size(); i++)
+            for (int i = 0; i < m_spells.size(); i++)
             {
-                if (ImGui::Selectable(spells[i]->getName().c_str()))
-                    this->currentSpell = i;
+                if (ImGui::Selectable(m_spells[i]->getName().c_str()))
+                    m_currentSpell = i;
             }
 
 
             ImGui::EndCombo();
         }
 
-        Fireball* fireball = dynamic_cast<Fireball*>(spells[currentSpell]);
+        Fireball* fireball = dynamic_cast<Fireball*>(m_spells[m_currentSpell]);
         if (fireball)
             showFireballData(fireball);
        
@@ -164,16 +178,16 @@ void ItemEditor::updateSpells(float dt, sf::Vector2f mouseWorldPos)
 
 void ItemEditor::updateProjectiles(float dt, sf::Vector2f mouseWorldPos)
 {
-    if (!projectiles.empty())
+    if (!m_projectiles.empty())
     {
-        if (ImGui::BeginCombo("Select projectile", this->projectileNames[this->currentProjectile].c_str()))
+        if (ImGui::BeginCombo("Select projectile", m_projectileNames[m_currentProjectile].c_str()))
         {
-            for (int i = 0; i < projectiles.size(); i++)
+            for (int i = 0; i < m_projectiles.size(); i++)
             {
-                if (ImGui::Selectable(projectileNames[i].c_str()))
+                if (ImGui::Selectable(m_projectileNames[i].c_str()))
                 {
-                    this->currentProjectile = i;
-                    ProjectileHandler::addProjectile(currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), DamageComp::DamageOrigin::neutral);
+                    m_currentProjectile = i;
+                    ProjectileHandler::addProjectile(m_currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), DamageComp::DamageOrigin::neutral);
                 }
             }
 
@@ -183,19 +197,19 @@ void ItemEditor::updateProjectiles(float dt, sf::Vector2f mouseWorldPos)
 
         if (MOUSE::MouseState::isButtonClicked(sf::Mouse::Right))
         {
-            ProjectileHandler::addProjectile(currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), DamageComp::DamageOrigin::neutral);
+            ProjectileHandler::addProjectile(m_currentProjectile, mouseWorldPos, sf::Vector2f(0, -1), DamageComp::DamageOrigin::neutral);
         }
 
-        ImGui::Text("Index: %d", currentProjectile);
-        showProjectileData(&projectiles[currentProjectile], &projectileNames[currentProjectile]);
+        ImGui::Text("Index: %d", m_currentProjectile);
+        showProjectileData(&m_projectiles[m_currentProjectile], &m_projectileNames[m_currentProjectile]);
     }
 
     if (ImGui::Button("Create Light Projectile"))
     {
         LightProjectile projectile;
-        this->projectiles.push_back(projectile);
-        this->projectileNames.push_back("Temp name. Please change me!");
-        this->currentProjectile = this->projectiles.size() - 1;
+        m_projectiles.push_back(projectile);
+        m_projectileNames.push_back("Temp name. Please change me!");
+        m_currentProjectile = m_projectiles.size() - 1;
     }
 
     if (ImGui::Button("save"))
@@ -328,6 +342,69 @@ void ItemEditor::showTomeData(Tome* item)
 
         ImGui::EndCombo();
     }
+}
+
+void ItemEditor::showConsumableData(Consumable* consumable)
+{
+    static int currentActive = 0;
+    static int currentNonActive = 0;
+    showItemData(consumable);
+    ImGui::Separator();
+
+    StatusComp::StatusList* activeStatusList = consumable->getStatusComp()->getStatusPtr();
+    if (!activeStatusList->empty())
+    {
+        if (ImGui::BeginCombo("Active statuses", StatusComp::STATUS_NAME[currentActive].c_str()))
+        {
+            int i = 0;
+            for (auto& pair : *activeStatusList)
+            {
+                if (ImGui::Selectable(StatusComp::STATUS_NAME[(int)pair.first].c_str()))
+                    currentActive = i;
+
+                i++;
+            }
+
+            ImGui::EndCombo();
+        }
+
+        ImGui::DragInt("Duration", &activeStatusList->at((StatusComp::Status)currentActive), 10, 1, 0, "%d ms");
+    }
+
+    StatusComp::StatusList templateList = StatusComp::getTemplateList();
+    StatusComp::StatusList nonActiveList;
+    for (auto& pair : templateList)
+    {
+        if (!activeStatusList->count(pair.first))
+            nonActiveList.emplace(pair.first, pair.second);
+    }
+
+    if (!nonActiveList.empty())
+    {
+        if (ImGui::BeginCombo("Inactive statuses", StatusComp::STATUS_NAME[currentNonActive].c_str()))
+        {
+            int i = 0;
+            for (auto& pair : nonActiveList)
+            {
+                if (ImGui::Selectable(StatusComp::STATUS_NAME[(int)pair.first].c_str()))
+                    currentNonActive = i;
+
+                i++;
+            }
+
+            ImGui::EndCombo();
+        }
+    
+        if (ImGui::Button("Add Status"))
+        {
+            activeStatusList->emplace((StatusComp::Status)currentNonActive, 0);
+        }
+    }
+
+    
+
+
+    ImGui::Separator();
 }
 
 void ItemEditor::showFireballData(Fireball* fireball)
@@ -501,7 +578,7 @@ void ItemEditor::readItems()
                 Throwable* item = new Throwable(sf::Vector2f(), TextureHandler::get().getTexture(texID), (sf::Vector2f)TextureHandler::get().getTexture(texID)->getSize());
                 item->getComponent<LogisticsComp>()->id = id;
                 file >> *item;
-                this->items.push_back(item);
+                m_items.push_back(item);
             }
 
             if (itemType == "[Item]")
@@ -509,7 +586,7 @@ void ItemEditor::readItems()
                 Item* item = new Item(sf::Vector2f(), TextureHandler::get().getTexture(texID));
                 item->getComponent<LogisticsComp>()->id = id;
                 file >> *item->getComponent<LogisticsComp>();
-                this->items.push_back(item);
+                m_items.push_back(item);
             }
 
 
@@ -518,7 +595,7 @@ void ItemEditor::readItems()
                 Tome* item = new Tome(sf::Vector2f(), TextureHandler::get().getTexture(texID));
                 item->getComponent<LogisticsComp>()->id = id;
                 file >> *item;
-                this->items.push_back(item);
+                m_items.push_back(item);
             }
 
 
@@ -529,7 +606,7 @@ void ItemEditor::readItems()
         file.close();
     }
 
-    this->currentItem = this->items.size() - 1;
+    m_currentItem = m_items.size() - 1;
 }
 
 void ItemEditor::readSpells()
@@ -556,7 +633,7 @@ void ItemEditor::readSpells()
             {
                 Fireball* spell = new Fireball(sf::Vector2f());
                 file >> *spell;
-                this->spells.push_back(spell);
+                m_spells.push_back(spell);
             }
         }
 
@@ -565,7 +642,7 @@ void ItemEditor::readSpells()
         file.close();
     }
 
-    this->currentSpell = this->spells.size() - 1;
+    m_currentSpell = m_spells.size() - 1;
 }
 
 void ItemEditor::readProjectiles()
@@ -599,8 +676,8 @@ void ItemEditor::readProjectiles()
                     name.erase(name.begin());
 
                 file >> projectile;
-                this->projectileNames.push_back(name);
-                this->projectiles.push_back(projectile);
+                m_projectileNames.push_back(name);
+                m_projectiles.push_back(projectile);
             }
         }
 
@@ -609,7 +686,7 @@ void ItemEditor::readProjectiles()
         file.close();
     }
 
-    this->currentProjectile = this->projectiles.size() - 1;
+    m_currentProjectile = m_projectiles.size() - 1;
 }
 
 void ItemEditor::writeItems()
@@ -622,7 +699,7 @@ void ItemEditor::writeItems()
         closeWindow();
     }
 
-    for (Entity* item : items)
+    for (Entity* item : m_items)
     {
         LogisticsComp* logistics = item->getComponent<LogisticsComp>();
         SpriteComp* sprite = item->getComponent<SpriteComp>();
@@ -666,7 +743,7 @@ void ItemEditor::writeSpells()
         closeWindow();
     }
 
-    for (Spell* spell : spells)
+    for (Spell* spell : m_spells)
     {
         Fireball* fireball = dynamic_cast<Fireball*>(spell);
         if (fireball)
@@ -689,8 +766,8 @@ void ItemEditor::writeProjectiles()
         closeWindow();
     }
 
-    auto it = projectileNames.begin();
-    for (const LightProjectile& projectile : projectiles)
+    auto it = m_projectileNames.begin();
+    for (const LightProjectile& projectile : m_projectiles)
     {
             file << "[LightProjectile]\n";
             file << *it++ << "\n";
@@ -702,33 +779,33 @@ void ItemEditor::writeProjectiles()
 
 void ItemEditor::clearItems()
 {
-    for (Entity* item : items)
+    for (Entity* item : m_items)
         delete item;
 
-    items.clear();
+    m_items.clear();
 }
 
 void ItemEditor::clearSpells()
 {
-    for (Spell* spell : spells)
+    for (Spell* spell : m_spells)
         delete spell;
 
-    spells.clear();
+    m_spells.clear();
 }
 
 void ItemEditor::clearProjectiles()
 {
-    projectiles.clear();
-    projectileNames.clear();
+    m_projectiles.clear();
+    m_projectileNames.clear();
 }
 
 void ItemEditor::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
-    switch (this->currentTab)
+    switch (m_currentTab)
     {
     case Tab::items:
-        if (!items.empty())
-            target.draw(*items[currentItem]->getComponent<SpriteComp>(), states);
+        if (!m_items.empty())
+            target.draw(*m_items[m_currentItem]->getComponent<SpriteComp>(), states);
         break;
     default:
         break;

@@ -13,7 +13,8 @@ enum class ComponentKey
     sprite,
     tome,
     transform,
-    logistic
+    logistic,
+    status
 };
 
 class Comp

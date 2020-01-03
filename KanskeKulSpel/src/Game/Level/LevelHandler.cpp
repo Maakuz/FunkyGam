@@ -576,6 +576,7 @@ void LevelHandler::generateBreakableShadowLines()
 
 void LevelHandler::createSpites()
 {
+    m_dimensions = sf::Vector2i(0, 0);
     m_linearSprite.clear();
     m_breakableTerrain.clear();
     for (size_t i = 0; i < m_layers.size(); i++)

@@ -70,7 +70,8 @@ void LightProjectile::handleCollision(const Collidable* collidable)
         (otherCollider->hasComponent(ColliderKeys::enemy) && *origin == DamageComp::DamageOrigin::enemies) ||
         otherCollider->hasComponent(ColliderKeys::customTerrain) ||
         otherCollider->hasComponent(ColliderKeys::levelReturn) ||
-        otherCollider->hasComponent(ColliderKeys::projectilePassable))
+        otherCollider->hasComponent(ColliderKeys::projectilePassable) ||
+        otherCollider->hasComponent(ColliderKeys::platform))
         return;
 
     this->destroyed = true;

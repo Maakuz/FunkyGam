@@ -11,6 +11,7 @@
 #define getColliderComp getComponent<ColliderComp>
 #define getDamageComp getComponent<DamageComp>
 #define getTransformComp getComponent<TransformComp>
+#define getStatusComp getComponent<StatusComp>
 
 class Entity
 {
