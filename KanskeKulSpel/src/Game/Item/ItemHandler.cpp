@@ -1,13 +1,11 @@
 #include "ItemHandler.h"
 #include "Game/Collision/CollisionHandler.h"
-#include "Game/Handlers/TextureHandler.h"
 #include "Game/Misc/UnorderedErase.h"
 #include "Misc/ConsoleWindow.h"
 #include "Game/Misc/Definitions.h"
 #include "Game/Particles/ParticleHandler.h"
 #include "Game/Misc/VectorFunctions.h"
 #include <sstream>
-#include <fstream>
 
 std::vector<const Entity*> ItemHandler::itemTemplates;
 std::unordered_set<int> ItemHandler::foundItems;
@@ -64,13 +62,16 @@ void ItemHandler::loadTemplates()
         file >> type;
 
         if (type == "[Throwable]")
-            loadThrowable(file);
+            load<Throwable>(file);
 
         else if (type == "[Item]")
-            loadGatherable(file);
+            load<Item>(file);
 
         else if (type == "[Tome]")
-            loadTome(file);
+            load<Tome>(file);
+
+        else if (type == "[Consumable]")
+            load<Consumable>(file);
     }
 
     file.close();
@@ -211,57 +212,6 @@ void ItemHandler::spawnShrines(std::vector<CustomHitbox> shrines)
 const Entity* ItemHandler::getTemplate(int itemID)
 {
     return itemTemplates[itemID];
-}
-
-void ItemHandler::loadThrowable(std::ifstream& file)
-{
-    std::string trash;
-
-    int itemID;
-    int textureID;
-
-    file >> trash >> itemID;
-    file >> trash >> textureID;
-    Throwable* throwable = new Throwable(sf::Vector2f(), TextureHandler::get().getTexture(textureID), (sf::Vector2f)TextureHandler::get().getTexture(textureID)->getSize());
-
-    file >> *throwable;
-
-    throwable->getComponent<LogisticsComp>()->id = itemID;
-
-    itemTemplates.push_back(throwable);
-}
-
-void ItemHandler::loadGatherable(std::ifstream& file)
-{
-    std::string trash;
-
-    int itemID;
-    int textureID;
-
-    file >> trash >> itemID;
-    file >> trash >> textureID;
-    Item* item = new Item(sf::Vector2f(), TextureHandler::get().getTexture(textureID));
-
-    file >> *item;
-    item->getComponent<LogisticsComp>()->id = itemID;
-
-    itemTemplates.push_back(item);
-}
-
-void ItemHandler::loadTome(std::ifstream& file)
-{
-    std::string trash;
-
-    int itemID;
-    int textureID;
-
-    file >> trash >> itemID;
-    file >> trash >> textureID;
-    Tome* item = new Tome(sf::Vector2f(), TextureHandler::get().getTexture(textureID));
-
-    file >> *item;
-    item->getComponent<LogisticsComp>()->id = itemID;
-    itemTemplates.push_back(item);
 }
 
 void ItemHandler::clearTemplates()

@@ -1,7 +1,7 @@
 #include "Consumable.h"
 
 
-Consumable::Consumable(const sf::Texture* texture, sf::Vector2f pos)
+Consumable::Consumable(sf::Vector2f pos, const sf::Texture* texture)
 {
     SpriteComp* sprite = new SpriteComp(texture, pos);
     addComponent<SpriteComp>(sprite);
@@ -17,6 +17,7 @@ void Consumable::draw(sf::RenderTarget& target, sf::RenderStates states) const
 std::istream& operator>>(std::istream& in, Consumable& item)
 {
     in >> *item.getComponent<LogisticsComp>();
+    in >> *item.getComponent<StatusComp>();
     return in;
 }
 

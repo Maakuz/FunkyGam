@@ -5,8 +5,8 @@
 #include "Misc/ConsoleWindow.h"
 #include "Game/Components/LogisticsComp.h"
 
-Throwable::Throwable(sf::Vector2f pos, const sf::Texture* texture, sf::Vector2f size):
-    Collidable(pos, size)
+Throwable::Throwable(sf::Vector2f pos, const sf::Texture* texture):
+    Collidable(pos, (sf::Vector2f)texture->getSize())
 {
     this->getComponent<ColliderComp>()->addComponent(ColliderKeys::throwable);
     this->armingCounter = 0;

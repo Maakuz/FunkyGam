@@ -201,3 +201,14 @@ Useable: 1
 SpellInvoked: Fireball
 channellID: 10
 
+[Consumable]
+ID: 13
+TexID: 20
+Name: Health Potion
+StackLimit: 5
+EmitterID: -1
+Useable: 1
+[StatusComp]
+Count: 1
+0 10000
+

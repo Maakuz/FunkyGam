@@ -8,7 +8,7 @@
 class Throwable : public Collidable, public sf::Drawable
 {
 public:
-    Throwable(sf::Vector2f pos, const sf::Texture* texture, sf::Vector2f size);
+    Throwable(sf::Vector2f pos, const sf::Texture* texture);
     virtual ~Throwable() { };
 
     friend std::istream& operator>>(std::istream& in, Throwable& throwable);

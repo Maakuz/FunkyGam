@@ -125,7 +125,7 @@ void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 
     if (ImGui::Button("Create Throwable"))
     {
-        Throwable* item = new Throwable(sf::Vector2f(), m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture(), (sf::Vector2f)m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture()->getSize());
+        Throwable* item = new Throwable(sf::Vector2f(), m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture());
         m_items.push_back(item);
         item->getComponent<LogisticsComp>()->id = m_items.size() - 1;
         item->getComponent<LogisticsComp>()->useable = true;
@@ -134,7 +134,7 @@ void ItemEditor::updateItems(float dt, sf::Vector2f mouseWorldPos)
 
     if (ImGui::Button("Create Consumable"))
     {
-        Consumable* item = new Consumable(m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture());
+        Consumable* item = new Consumable(sf::Vector2f(), m_items[m_currentItem]->getComponent<SpriteComp>()->getTexture());
         m_items.push_back(item);
         item->getComponent<LogisticsComp>()->id = m_items.size() - 1;
         item->getComponent<LogisticsComp>()->useable = true;
@@ -368,7 +368,12 @@ void ItemEditor::showConsumableData(Consumable* consumable)
             ImGui::EndCombo();
         }
 
-        ImGui::DragInt("Duration", &activeStatusList->at((StatusComp::Status)currentActive), 10, 1, 0, "%d ms");
+        ImGui::DragInt("Duration", &activeStatusList->at((StatusComp::Status)currentActive), 10, 0, 1000000, "%d ms");
+
+        if (ImGui::Button("Remove"))
+        {
+            activeStatusList->erase((StatusComp::Status)currentActive--);
+        }
     }
 
     StatusComp::StatusList templateList = StatusComp::getTemplateList();
@@ -398,6 +403,7 @@ void ItemEditor::showConsumableData(Consumable* consumable)
         if (ImGui::Button("Add Status"))
         {
             activeStatusList->emplace((StatusComp::Status)currentNonActive, 0);
+            currentActive = currentNonActive;
         }
     }
 
@@ -575,7 +581,7 @@ void ItemEditor::readItems()
 
             if (itemType == "[Throwable]")
             {
-                Throwable* item = new Throwable(sf::Vector2f(), TextureHandler::get().getTexture(texID), (sf::Vector2f)TextureHandler::get().getTexture(texID)->getSize());
+                Throwable* item = new Throwable(sf::Vector2f(), TextureHandler::get().getTexture(texID));
                 item->getComponent<LogisticsComp>()->id = id;
                 file >> *item;
                 m_items.push_back(item);
@@ -593,6 +599,14 @@ void ItemEditor::readItems()
             if (itemType == "[Tome]")
             {
                 Tome* item = new Tome(sf::Vector2f(), TextureHandler::get().getTexture(texID));
+                item->getComponent<LogisticsComp>()->id = id;
+                file >> *item;
+                m_items.push_back(item);
+            }
+
+            if (itemType == "[Consumable]")
+            {
+                Consumable* item = new Consumable(sf::Vector2f(), TextureHandler::get().getTexture(texID));
                 item->getComponent<LogisticsComp>()->id = id;
                 file >> *item;
                 m_items.push_back(item);
@@ -705,6 +719,7 @@ void ItemEditor::writeItems()
         SpriteComp* sprite = item->getComponent<SpriteComp>();
         Throwable* thrw = dynamic_cast<Throwable*>(item);
         Tome* tome = dynamic_cast<Tome*>(item);
+        Consumable* consumable = dynamic_cast<Consumable*>(item);
         if (thrw)
         {
             file << "[Throwable]\n";
@@ -719,6 +734,14 @@ void ItemEditor::writeItems()
             file << "ID: " << logistics->id << "\n";
             file << "TexID: " << TextureHandler::get().getIDForTexture(sprite->getTexture()) << "\n";
             file << *tome << "\n";
+        }
+
+        else if (consumable)
+        {
+            file << "[Consumable]\n";
+            file << "ID: " << logistics->id << "\n";
+            file << "TexID: " << TextureHandler::get().getIDForTexture(sprite->getTexture()) << "\n";
+            file << *consumable << "\n";
         }
 
         else

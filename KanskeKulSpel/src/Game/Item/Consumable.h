@@ -9,7 +9,7 @@
 class Consumable : public Entity, public sf::Drawable
 {
 public:
-	Consumable(const sf::Texture* texture, sf::Vector2f pos = sf::Vector2f());
+	Consumable(sf::Vector2f pos, const sf::Texture* texture);
 	virtual ~Consumable() {};
 
 	friend std::istream& operator>>(std::istream& in, Consumable& item);

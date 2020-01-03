@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <unordered_set>
+#include <fstream>
 #include "Game/Item/Projectile/Throwables/Throwable.h"
 #include "Game/Level/Level.h"
 #include "Game/Entities/Player.h"
@@ -8,7 +9,9 @@
 #include "Game/Interface/UIHandler.h"
 #include "Renderer/DebugDrawable.h"
 #include "Misc/Structs.h"
+#include "Game/Handlers/TextureHandler.h"
 #include "GatherItem.h"
+#include "Consumable.h"
 #include "Game/Item/Projectile/Spell/Fireball.h"
 #include "Game/Item/Projectile/Spell/Tome.h"
 
@@ -44,12 +47,30 @@ private:
     std::vector<GatherItem> gatherItems;
     int gatherRange;
     
+    template <typename ItemType>
+    void load(std::ifstream& file);
 
-    void loadThrowable(std::ifstream& file);
-    void loadGatherable(std::ifstream& file);
-    void loadTome(std::ifstream& file);
     void spawnShrines(std::vector<CustomHitbox> shrines);
 
     void clearTemplates();
     virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 };
+
+template<typename ItemType>
+inline void ItemHandler::load(std::ifstream& file)
+{
+    std::string trash;
+
+    int itemID;
+    int textureID;
+
+    file >> trash >> itemID;
+    file >> trash >> textureID;
+    ItemType* item = new ItemType(sf::Vector2f(), TextureHandler::get().getTexture(textureID));
+
+    file >> *item;
+
+    item->getComponent<LogisticsComp>()->id = itemID;
+
+    itemTemplates.push_back(item);
+}
