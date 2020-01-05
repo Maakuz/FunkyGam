@@ -36,6 +36,19 @@ std::ostream& operator<<(std::ostream& out, const StatusComp& status)
     return out;
 }
 
+void StatusComp::resolveStatusEffects(Entity* owner, float dt)
+{
+}
+
+void StatusComp::addStatusEffect(Status status, int duration)
+{
+    if (m_statuses.count(status))
+        m_statuses[status] = std::max(m_statuses[status], duration);
+
+    else
+        m_statuses.emplace(status, duration);
+}
+
 void StatusComp::addFromStatusComp(const StatusComp& other)
 {
     for (auto& pair : *other.getStatusPtr())

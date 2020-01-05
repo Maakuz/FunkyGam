@@ -7,19 +7,13 @@ class StatusComp : public Comp
 {
 public:
 	static const int STATUS_COUNT = 1;
-	enum class Status
-	{
-		regeneration
-	};
-
-	static const std::string STATUS_NAME[];
 
 	typedef std::unordered_map<Status, int> StatusList;
 
 	StatusComp() {};
 	virtual ~StatusComp() {};
 
-	void resolveStatusEffects(Entity* owner);
+	void resolveStatusEffects(Entity* owner, float dt);
 	void addStatusEffect(Status status, int duration);
 	void addFromStatusComp(const StatusComp& other);
 

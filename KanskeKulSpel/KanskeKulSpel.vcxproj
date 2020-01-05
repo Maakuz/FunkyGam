@@ -151,6 +151,7 @@
     <ClCompile Include="src\Game\Components\MovementComp.cpp" />
     <ClCompile Include="src\Game\Components\SpellComp.cpp" />
     <ClCompile Include="src\Game\Components\StatusComp.cpp" />
+    <ClCompile Include="src\Game\Components\Statuses\Regeneration.cpp" />
     <ClCompile Include="src\Game\Components\TomeComp.cpp" />
     <ClCompile Include="src\Game\Components\SpriteComp.cpp" />
     <ClCompile Include="src\Game\Entities\Chain.cpp" />
@@ -230,6 +231,8 @@
     <ClInclude Include="src\Game\Components\MovementComp.h" />
     <ClInclude Include="src\Game\Components\SpellComp.h" />
     <ClInclude Include="src\Game\Components\StatusComp.h" />
+    <ClInclude Include="src\Game\Components\Statuses\Regeneration.h" />
+    <ClInclude Include="src\Game\Components\Statuses\Status.h" />
     <ClInclude Include="src\Game\Components\TomeComp.h" />
     <ClInclude Include="src\Game\Components\SpriteComp.h" />
     <ClInclude Include="src\Game\Components\TransformComp.h" />
