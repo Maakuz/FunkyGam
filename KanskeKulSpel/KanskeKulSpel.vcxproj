@@ -152,6 +152,7 @@
     <ClCompile Include="src\Game\Components\SpellComp.cpp" />
     <ClCompile Include="src\Game\Components\StatusComp.cpp" />
     <ClCompile Include="src\Game\Components\Statuses\Regeneration.cpp" />
+    <ClCompile Include="src\Game\Components\Statuses\Status.cpp" />
     <ClCompile Include="src\Game\Components\TomeComp.cpp" />
     <ClCompile Include="src\Game\Components\SpriteComp.cpp" />
     <ClCompile Include="src\Game\Entities\Chain.cpp" />

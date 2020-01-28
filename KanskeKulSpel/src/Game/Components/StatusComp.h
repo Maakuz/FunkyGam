@@ -1,20 +1,23 @@
 #pragma once
 #include "Comp.h"
 #include <unordered_map>
-#include "Game/Entities/Entity.h"
+#include "Game/Components/Statuses/Status.h"
 
 class StatusComp : public Comp
 {
 public:
 	static const int STATUS_COUNT = 1;
-
-	typedef std::unordered_map<Status, int> StatusList;
+	
+	//statusID and status
+	typedef std::unordered_map<Statuses, Status*> StatusList; 
 
 	StatusComp() {};
-	virtual ~StatusComp() {};
+	virtual ~StatusComp();
+
 
 	void resolveStatusEffects(Entity* owner, float dt);
-	void addStatusEffect(Status status, int duration);
+	void addStatusEffect(Statuses status, int duration);
+	void removeStatusEffect(Statuses status);
 	void addFromStatusComp(const StatusComp& other);
 
 	friend std::istream& operator>>(std::istream& in, StatusComp& status);
@@ -30,6 +33,7 @@ public:
 private:
 	StatusList m_statuses;
 
+	void clear();
 
 
 };

@@ -4,9 +4,10 @@
 class Regeneration : public Status
 {
 public:
-	Regeneration();
+	Regeneration(int duration);
 	virtual ~Regeneration() {};
 
+	void resolve(Entity* owner, float dt);
 private:
 
 };

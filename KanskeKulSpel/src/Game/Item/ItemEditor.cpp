@@ -346,38 +346,39 @@ void ItemEditor::showTomeData(Tome* item)
 
 void ItemEditor::showConsumableData(Consumable* consumable)
 {
-    static int currentActive = 0;
-    static int currentNonActive = 0;
     showItemData(consumable);
     ImGui::Separator();
 
-    StatusComp::StatusList* activeStatusList = consumable->getStatusComp()->getStatusPtr();
+    StatusComp* comp = consumable->getStatusComp();
+    StatusComp::StatusList* activeStatusList = comp->getStatusPtr();
+    static Statuses currentActive = activeStatusList->begin()->first;
+
     if (!activeStatusList->empty())
     {
-        if (ImGui::BeginCombo("Active statuses", StatusComp::STATUS_NAME[currentActive].c_str()))
+        if (ImGui::BeginCombo("Active statuses", activeStatusList->at(currentActive)->getName().c_str()))
         {
-            int i = 0;
             for (auto& pair : *activeStatusList)
             {
-                if (ImGui::Selectable(StatusComp::STATUS_NAME[(int)pair.first].c_str()))
-                    currentActive = i;
-
-                i++;
+                if (ImGui::Selectable(pair.second->getName().c_str()))
+                    currentActive = pair.first;
             }
 
             ImGui::EndCombo();
         }
 
-        ImGui::DragInt("Duration", &activeStatusList->at((StatusComp::Status)currentActive), 10, 0, 1000000, "%d ms");
+        int duration = activeStatusList->at(currentActive)->getDuration();
+        ImGui::DragInt("Duration", &duration, 10, 0, 1000000, "%d ms");
+        activeStatusList->at(currentActive)->setDuration(duration);
 
         if (ImGui::Button("Remove"))
         {
-            activeStatusList->erase((StatusComp::Status)currentActive--);
+            comp->removeStatusEffect(currentActive);
         }
     }
 
     StatusComp::StatusList templateList = StatusComp::getTemplateList();
     StatusComp::StatusList nonActiveList;
+    static Statuses currentNonActive = nonActiveList.begin()->first;
     for (auto& pair : templateList)
     {
         if (!activeStatusList->count(pair.first))
@@ -386,15 +387,12 @@ void ItemEditor::showConsumableData(Consumable* consumable)
 
     if (!nonActiveList.empty())
     {
-        if (ImGui::BeginCombo("Inactive statuses", StatusComp::STATUS_NAME[currentNonActive].c_str()))
+        if (ImGui::BeginCombo("Inactive statuses", nonActiveList[currentNonActive]->getName().c_str()))
         {
-            int i = 0;
             for (auto& pair : nonActiveList)
             {
-                if (ImGui::Selectable(StatusComp::STATUS_NAME[(int)pair.first].c_str()))
-                    currentNonActive = i;
-
-                i++;
+                if (ImGui::Selectable(pair.second->getName().c_str()))
+                    currentNonActive = pair.first;
             }
 
             ImGui::EndCombo();
@@ -402,7 +400,7 @@ void ItemEditor::showConsumableData(Consumable* consumable)
     
         if (ImGui::Button("Add Status"))
         {
-            activeStatusList->emplace((StatusComp::Status)currentNonActive, 0);
+            comp->addStatusEffect(currentNonActive, 1000);
             currentActive = currentNonActive;
         }
     }

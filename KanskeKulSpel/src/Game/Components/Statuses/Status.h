@@ -10,9 +10,14 @@ enum class Statuses
 class Status
 {
 public:
-    virtual void resolve(Entity* owner, float dt) = 0;
+    Status(int duration, Statuses type);
 
     void setDuration(int duration) { m_duration = duration; };
+    int getDuration() const { return m_duration; };
+    Statuses getType() const { return m_type; };
+    std::string getName();
+
+    virtual void resolve(Entity* owner, float dt) = 0;
 
 protected:
     int m_duration;
@@ -21,5 +26,7 @@ protected:
 
 private:
     friend class Entity;
+
+    static const std::string s_statusNames[];
 
 };
