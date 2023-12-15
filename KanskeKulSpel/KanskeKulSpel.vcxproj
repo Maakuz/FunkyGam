@@ -28,26 +28,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -140,6 +140,7 @@
     <ClCompile Include="..\External\Include\Imgui\imgui_widgets.cpp" />
     <ClCompile Include="..\External\Include\Imgui\misc\cpp\imgui_stdlib.cpp" />
     <ClCompile Include="..\External\Include\Imgui\SFML-imgui\imgui-SFML.cpp" />
+    <ClCompile Include="src\LevelEditor\Interactables\CoordinateBar.cpp" />
     <ClCompile Include="src\Game\Collision\CollisionHandler.cpp" />
     <ClCompile Include="src\Game\Components\AI\AIComp.cpp" />
     <ClCompile Include="src\Game\Components\AI\FlyingAIComp.cpp" />
@@ -218,6 +219,7 @@
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\LevelEditor\Interactables\CoordinateBar.h" />
     <ClInclude Include="src\Game\Collision\CollisionHandler.h" />
     <ClInclude Include="src\Game\Collision\Explosion.h" />
     <ClInclude Include="src\Game\Components\AI\AIComp.h" />
@@ -269,6 +271,7 @@
     <ClInclude Include="src\Game\Particles\ParticleHandler.h" />
     <ClInclude Include="src\LevelEditor\Interactables\ActiveTile.h" />
     <ClInclude Include="src\LevelEditor\Interface\Windows\InfoWindow.h" />
+    <ClInclude Include="src\LevelEditor\Queues\MiscQueue.h" />
     <ClInclude Include="src\LevelEditor\Queues\ToolTileQueue.h" />
     <ClInclude Include="src\LevelEditor\TileStager.h" />
     <ClInclude Include="src\Misc\GlobalDefinitions.h" />

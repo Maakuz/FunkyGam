@@ -2,6 +2,8 @@
 #include "Game/Misc/VectorFunctions.h"
 #include "Game/Handlers/TextureHandler.h"
 #include "Game/Misc/UnorderedErase.h"
+#include <istream>
+#include <ostream>
 
 std::ostream& operator<<(std::ostream& out, const Tendril::InitGenData& data)
 {

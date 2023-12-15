@@ -25,6 +25,7 @@ public:
 
     bool isRenderingLights() const { return renderingLights; };
     bool isGridVisible() const { return gridVisible; };
+    bool isCoordsVisible() const { return coordinatesVisible; };
     bool isOverlayInToolbox()const { return overlayInToolBox; };
     const sf::VertexArray& getGrid() const { return grid; };
     void autosave();
@@ -85,5 +86,6 @@ private:
     bool isImportingTexture;
     bool renderingLights;
     bool gridVisible;
+    bool coordinatesVisible;
     bool turboHitboxOverride;
 };

@@ -1,4 +1,5 @@
-#pragma once#include <vector>
+#pragma once
+#include <vector>
 #include <sstream>
 #include "SFML/Graphics.hpp"
 #include "Renderer/Lighting/Light.h"

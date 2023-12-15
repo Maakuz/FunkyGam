@@ -69,14 +69,8 @@ void LayerManager::insertTiles(const std::vector<ActiveTile>& activeTiles, sf::V
 }
 
 //queue every tile
-void LayerManager::queueTiles(sf::View viewArea)
+void LayerManager::queueTiles(sf::Vector2i min, sf::Vector2i max)
 {
-    //Rounded up
-    sf::Vector2i min(sf::Vector2i(viewArea.getCenter() - (viewArea.getSize() / 2.f)) / TILE_SIZE);
-    sf::Vector2i max(min + (sf::Vector2i(viewArea.getSize()) / TILE_SIZE));
-    min.x = std::max(min.x, 0);
-    min.y = std::max(min.y, 0);
-    
     max.y = std::min(max.y, (int)layers[0].size());
     max.x = std::min(max.x, (int)layers[0][0].size());
 

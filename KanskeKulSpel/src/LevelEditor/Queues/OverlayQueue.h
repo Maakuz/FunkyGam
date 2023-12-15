@@ -28,6 +28,5 @@ public:
     }
 
 private:
-    // Todo: change this to sprites when the time comes
     std::vector<sf::RectangleShape> rects;
 };

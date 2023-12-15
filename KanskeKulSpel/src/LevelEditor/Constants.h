@@ -18,6 +18,8 @@
 #define TILEMENU_BORDER_SIZE 8
 #define TILEMENU_WIDTH ((TILE_SIZE * TILEMENU_X_AREA) + (TILEMENU_BORDER_SIZE * 2))
 
+#define COORDINATE_BAR_SIZE 20
+
 #define TILE_LAYER_AMOUNT 3
 #define LAYER_AMOUNT 4
 static const char* LAYER_BUTTON_LABELS[LAYER_AMOUNT] = { "Layer 1", "Layer 2", "Layer 3", "Hitbox layer" };

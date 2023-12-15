@@ -1,4 +1,6 @@
 #pragma once
+#include <istream>
+#include <ostream>
 
 struct Tile
 {

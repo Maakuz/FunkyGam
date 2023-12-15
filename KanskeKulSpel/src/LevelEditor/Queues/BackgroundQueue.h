@@ -1,5 +1,5 @@
 #pragma once
-#include "SFML\Graphics.hpp"
+#include "SFML/Graphics.hpp"
 #include <vector>
 
 class BackgroundQueue
@@ -10,24 +10,35 @@ public:
         static BackgroundQueue queue;
         return queue;
     }
-    virtual ~BackgroundQueue() {};
+    virtual ~BackgroundQueue() 
+    {
+        for (sf::Drawable*& obj : objects)
+            delete obj;
+    };
 
     void queue(sf::RectangleShape rect)
     {
-        rects.push_back(rect);
+        objects.push_back(new sf::RectangleShape(rect));
+    }
+
+    void queue(sf::Text text)
+    {
+        objects.push_back(new sf::Text(text));
     }
 
     void clear()
     {
-        rects.clear();
+        for (sf::Drawable*& obj : objects)
+            delete obj;
+
+        objects.clear();
     }
 
-    std::vector<sf::RectangleShape>& getQueue()
+    std::vector<sf::Drawable*>& getQueue()
     {
-        return rects;
+        return objects;
     }
 
 private:
-    // Todo: change this to sprites when the time comes
-    std::vector<sf::RectangleShape> rects;
+    std::vector<sf::Drawable*> objects;
 };

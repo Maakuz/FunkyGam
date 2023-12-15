@@ -25,6 +25,7 @@ TileMenuHandler::TileMenuHandler() :
     this->rightClicking = false;
     this->isImportingTexture = false;
     this->renderingLights = false;
+    this->coordinatesVisible = false;
     this->gridVisible = false;
     this->turboHitboxOverride = false;
     this->overlayInToolBox = false;
@@ -189,7 +190,13 @@ void TileMenuHandler::update(sf::Vector2i mousePos, sf::Vector2i viewPortOffset,
 
 void TileMenuHandler::queueItems(sf::View viewArea)
 {
-    layerManager.queueTiles(viewArea);
+    //Rounded up
+    sf::Vector2i min(sf::Vector2i(viewArea.getCenter() - (viewArea.getSize() / 2.f)) / TILE_SIZE);
+    sf::Vector2i max(min + (sf::Vector2i(viewArea.getSize()) / TILE_SIZE));
+    min.x = std::max(min.x, 0);
+    min.y = std::max(min.y, 0);
+
+    layerManager.queueTiles(min, max);
 
 
     //toolbox
@@ -229,9 +236,7 @@ void TileMenuHandler::queueItems(sf::View viewArea)
     }
 
     BackgroundQueue::get().queue(tileBox.getRect());
-
-
-
+   
     for (ActiveTile& i : activeTiles)
     {
         std::vector<sf::RectangleShape> rects = i.box;
@@ -417,6 +422,9 @@ void TileMenuHandler::handleHelpWindow()
             float vec[4] = {gridColor.r / 255.f, gridColor.g / 255.f, gridColor.b / 255.f, gridColor.a / 255.f};
             if (ImGui::Checkbox("Show grid", &gridVisible))
                 generateGrid(gridColor);
+
+            if (ImGui::Checkbox("Show coordinates", &coordinatesVisible))
+            { }
 
             if (ImGui::ColorEdit4("Grid color", vec))
             {
